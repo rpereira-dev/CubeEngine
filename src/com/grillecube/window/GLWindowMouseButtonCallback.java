@@ -13,7 +13,6 @@ public class GLWindowMouseButtonCallback extends GLFWMouseButtonCallback
 	{
 		this._window = w;
 	}
-	
 		
 	@Override
 	public void invoke(long window, int button, int action, int mods)

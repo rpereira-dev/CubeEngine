@@ -1,0 +1,88 @@
+#version 400 core
+
+in vec3 pass_position;
+in float max_sun_dist;
+
+out vec4 vertexColor;
+
+uniform samplerCube cubemap_day;
+uniform samplerCube cubemap_night;
+uniform vec3 fog_color;
+uniform float day_factor;
+uniform vec3 sun_position;
+uniform vec3 sun_color;
+
+# define SKYBOX_SIZE 100
+
+vec4	getTexel(void)
+{
+	vec4	texture_day;
+	vec4	texture_night;
+	vec4	texture_color;
+	vec3	texturecoord;
+
+	texturecoord = vec3(pass_position);
+	texture_day = texture(cubemap_day, texturecoord);
+    texture_night = texture(cubemap_night, texturecoord);
+    texture_color = texture_day * day_factor + texture_night * (1 - day_factor);
+    return (texture_color);
+}
+
+vec4	getFoggedColor(vec4 texture_color)
+{
+	vec4	fogged_color;
+	float	fog_factor;
+	float	m;
+	float	M;
+
+	m = -SKYBOX_SIZE / 4;
+	M = SKYBOX_SIZE / 2;
+	if (pass_position.y > M)
+	{
+	    return (texture_color);
+	}
+	else if (pass_position.y > m && pass_position.y < M)
+	{
+		fog_factor = (pass_position.y - m) / (M - m);
+	    return (mix(vec4(fog_color, 1.0), texture_color, fog_factor));
+	}
+	else /*if (pass_position.y < m)*/
+	{
+		return (vec4(fog_color, 1.0));
+	}
+}
+
+float	getSunDistance(void)
+{
+	return (sqrt((pass_position.x - sun_position.x) * (pass_position.x - sun_position.x)
+	+ (pass_position.y - sun_position.y) * (pass_position.y - sun_position.y)
+	+ (pass_position.z - sun_position.z) * (pass_position.z - sun_position.z)));
+}
+
+float	getSunFactor(float sun_dist)
+{
+	float	f;
+
+	f = 1 - sun_dist / max_sun_dist;
+	f += 0.2;
+	return (f * f * f * f);
+}
+
+void main(void)
+{
+	vec4	texture_color;
+	vec4	fogged_color;
+	float	sun_dist;
+
+	texture_color = getTexel();
+	fogged_color = getFoggedColor(texture_color);
+	sun_dist = getSunDistance();
+	if (sun_dist < max_sun_dist)
+	{
+		vertexColor = mix(fogged_color, vec4(sun_color, 1.0), getSunFactor(sun_dist));
+	}
+	else
+	{
+		vertexColor = fogged_color;
+	}
+}

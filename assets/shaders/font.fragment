@@ -1,0 +1,13 @@
+#version 400 core
+
+in vec2 pass_uv;
+
+out vec4 vertexColor;
+
+uniform sampler2D texture_sampler;
+uniform vec3 font_color;
+
+void	main(void)
+{
+	vertexColor = texture(texture_sampler, pass_uv) * vec4(font_color, 1.0);
+}

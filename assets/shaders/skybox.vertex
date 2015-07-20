@@ -1,0 +1,45 @@
+#version 400 core
+
+in vec3 position;
+
+out vec3 pass_position;
+out float max_sun_dist;
+
+uniform mat4 proj_matrix;
+uniform mat4 view_matrix;
+uniform float day_ratio;
+uniform vec3 sun_position;
+
+# define NIGHT_END 0.0f
+# define DAY_START 0.10f
+# define DAY_END 0.50f
+# define NIGHT_START 0.60f
+# define DAY_MID ((DAY_START + DAY_END) / 2)
+# define NIGHT_MID ((NIGHT_START + NIGHT_END) / 2)
+# define DAY_TRANSITION (DAY_START - NIGHT_END)
+# define NIGHT_TRANSITION (NIGHT_START - DAY_END)
+
+# define SKYBOX_SIZE 100
+
+# define MAX_SUN_DIST (SKYBOX_SIZE / 3 * 2)
+# define MIN_DIST_SUN (SKYBOX_SIZE / 3)
+
+void	setSunData(void)
+{
+	if (day_ratio >= NIGHT_END && day_ratio < DAY_START)
+	{
+		max_sun_dist = (1 - day_ratio / DAY_TRANSITION) * (MAX_SUN_DIST - MIN_DIST_SUN) + MIN_DIST_SUN;
+	}
+	else
+	{
+		max_sun_dist = MIN_DIST_SUN;
+	}
+}
+
+void main(void)
+{
+	gl_Position = proj_matrix * view_matrix * vec4(position, 1.0);
+	
+	pass_position = position;
+	setSunData();
+}

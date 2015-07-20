@@ -1,0 +1,32 @@
+#version 400 core
+
+in vec2 pass_uv;
+in float visibility;
+in vec3 transf_normal;
+in vec3 to_sun_vector;
+
+out vec4 vertexColor;
+
+uniform sampler2D texture_sampler;
+uniform vec3 fog_color;
+uniform vec3 sun_color;
+
+void	main(void)
+{
+	vec4	texture_color;
+	vec3 	normal;
+	vec3	light;
+	float	n;
+	float	brightness;
+	vec3	diffuse;
+	vec4	color;
+
+	normal = normalize(transf_normal);
+	light = normalize(to_sun_vector);
+	n = dot(normal, light);
+	brightness = max(n, 0.4);
+	diffuse = brightness * sun_color;
+
+	texture_color = texture(texture_sampler, pass_uv) * vec4(diffuse, 1.0);
+	vertexColor = mix(vec4(fog_color, 1.0), texture_color, visibility);
+}

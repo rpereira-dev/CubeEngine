@@ -1,0 +1,8 @@
+#version 400 core
+
+out vec4 vertexColor;
+
+void	main(void)
+{
+	vertexColor = vec4(1.0, 1.0, 1.0, 0.0);
+}

@@ -1,0 +1,67 @@
+package com.grillecube.logger;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+public class Logger
+{
+	private static final String ANSI_RESET = "\u001B[0m";
+	private static final String ANSI_BLACK = "\u001B[30m";
+	private static final String ANSI_RED = "\u001B[31m";
+	private static final String ANSI_GREEN = "\u001B[32m";
+	private static final String ANSI_YELLOW = "\u001B[33m";
+	private static final String ANSI_BLUE = "\u001B[34m";
+	private static final String ANSI_PURPLE = "\u001B[35m";
+	private static final String ANSI_CYAN = "\u001B[36m";
+	private static final String ANSI_WHITE = "\u001B[37m";
+	private static final String ANSI_BOLD = "\u001B[1m";
+	
+	private static final DateFormat	_date_format	= new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	private static final Calendar	_calendar		= Calendar.getInstance();
+	
+	public Logger()
+	{
+		
+	}
+	
+	public void log(Logger.LoggerLevel level, String message)
+	{
+		Thread	thrd;
+		
+		thrd = Thread.currentThread();
+		System.out.printf("%s[%s] [%s] [Thread: %s(%d)]%s %s\n",
+				level.getColor(),
+				_date_format.format(_calendar.getTime()), level.getLabel(),
+				thrd.getName(), thrd.getId(),
+				ANSI_RESET,
+				message);
+	}
+
+	public enum LoggerLevel
+	{
+		FINE(ANSI_GREEN, "fine"),
+		WARNING(ANSI_YELLOW, "warning"),
+		ERROR(ANSI_RED, "error"),
+		DEBUG(ANSI_CYAN, "debug");
+		
+		String	_color;
+		String	_label;
+		
+		LoggerLevel(String color, String label)
+		{
+			this._color = color;
+			this._label = label.toUpperCase();
+		}
+		
+		String	getLabel()
+		{
+			return (this._label);
+		}
+		
+		String	getColor()
+		{
+			return (this._color);
+		}
+	}
+}

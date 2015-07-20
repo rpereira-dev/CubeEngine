@@ -1,0 +1,39 @@
+#version 400 core
+
+in vec3 position;
+in vec2 uv;
+in vec3 normal;
+
+out vec2 pass_uv;
+out float visibility;
+out vec3 transf_normal;
+out vec3 to_sun_vector;
+
+uniform mat4 proj_matrix;
+uniform mat4 view_matrix;
+uniform mat4 transf_matrix;
+
+uniform float fog_density;
+uniform float fog_gradient;
+
+uniform vec3 sun_position;
+
+void	main(void)
+{
+	vec4	transf_position;
+	vec4	relative_position_to_camera;
+	float	distance;
+
+	transf_position = transf_matrix * vec4(position, 1.0);
+	relative_position_to_camera = view_matrix * transf_position;
+	gl_Position = proj_matrix * relative_position_to_camera;
+
+	transf_normal = (transf_matrix * vec4(normal, 0)).xyz;
+	to_sun_vector = sun_position - transf_position.xyz;
+
+	distance = length(relative_position_to_camera.xyz);
+	visibility = exp(-pow(distance * fog_density, fog_gradient));
+	visibility = clamp(visibility, 0, 1);
+
+	pass_uv = uv;
+}
