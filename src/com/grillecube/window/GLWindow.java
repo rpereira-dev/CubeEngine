@@ -75,45 +75,8 @@ public class GLWindow
 		
 		GLFW.glfwSetInputMode(this._window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
 		GLFW.glfwSetCursorPos(this._window, (int)(this.getWidth() / 2), (int)(this.getHeight() / 2));
-		
-		System.out.println("GLFW initialized!");
 	}
 
-	public void loop()
-	{
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-		while (GLFW.glfwWindowShouldClose(this._window) == 0)
-		{			
-			GL11.glClearColor(CLEAR_COLOR.x, CLEAR_COLOR.y, CLEAR_COLOR.z, CLEAR_COLOR.w);
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
-			this.updateWindowTitle();
-
-			GLFW.glfwSwapBuffers(this._window);
-			GLFW.glfwPollEvents();
-			GLWindow.glCheckError("Rendering loop");
-			
-			try
-			{
-				Thread.sleep(1000 / 60);
-			}
-			catch (InterruptedException e)
-			{
-				break ;
-			}
-		}
-	}
-	
-	
-	private void	updateWindowTitle()
-	{		
-		GLFW.glfwSetWindowTitle(this._window, "VoxelEngine");
-	}
-	
 	public static void  glCheckError(String label)
 	{
 		String str[] = {
@@ -198,6 +161,25 @@ public class GLWindow
 	public Camera getCamera()
 	{
 		return (this._camera);
+	}
+
+	/** called after each rendered frame */
+	public void update()
+	{
+		GLFW.glfwSwapBuffers(this._window);
+		GLFW.glfwPollEvents();
+		GLWindow.glCheckError("Rendering loop");		
+	}
+
+	public void clear()
+	{
+		GL11.glClearColor(CLEAR_COLOR.x, CLEAR_COLOR.y, CLEAR_COLOR.z, CLEAR_COLOR.w);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		
+	}
+
+	public boolean shouldClose()
+	{
+		return (GLFW.glfwWindowShouldClose(this._window) != 0);
 	}
 }
 
