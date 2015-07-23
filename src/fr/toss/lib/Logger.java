@@ -1,5 +1,6 @@
-package com.grillecube.logger;
+package fr.toss.lib;
 
+import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,9 +21,21 @@ public class Logger
 	private static final DateFormat	_date_format	= new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	private static final Calendar	_calendar		= Calendar.getInstance();
 	
-	public Logger()
+	private PrintStream	_print_stream;
+	
+	public Logger(PrintStream stream)
 	{
-		
+		this._print_stream = stream;
+	}
+	
+	public PrintStream	getPrintStream()
+	{
+		return (this._print_stream);
+	}
+	
+	public void print(String string)
+	{
+		this._print_stream.println(string);
 	}
 	
 	public void log(Logger.LoggerLevel level, String message)
@@ -30,7 +43,7 @@ public class Logger
 		Thread	thrd;
 		
 		thrd = Thread.currentThread();
-		System.out.printf("%s[%s] [%s] [Thread: %s(%d)]%s %s\n",
+		this._print_stream.printf("%s[%s] [%s] [Thread: %s(%d)]%s %s\n",
 				level.getColor(),
 				_date_format.format(_calendar.getTime()), level.getLabel(),
 				thrd.getName(), thrd.getId(),

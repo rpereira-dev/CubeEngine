@@ -1,6 +1,6 @@
-package com.grillecube.renderer;
+package com.grillecube.client.renderer;
 
-import com.grillecube.renderer.program.Program;
+import com.grillecube.client.renderer.program.Program;
 
 public class ProgramTerrain extends Program
 {

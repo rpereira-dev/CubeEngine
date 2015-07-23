@@ -1,4 +1,4 @@
-package com.grillecube;
+package com.grillecube.client;
 
 public class Main
 {

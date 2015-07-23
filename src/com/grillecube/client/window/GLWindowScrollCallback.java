@@ -1,7 +1,9 @@
-package com.grillecube.window;
+package com.grillecube.client.window;
 
 import org.lwjgl.glfw.GLFWScrollCallback;
 import org.lwjgl.util.vector.Vector3f;
+
+import com.grillecube.client.renderer.Camera;
 
 public class GLWindowScrollCallback extends GLFWScrollCallback
 {

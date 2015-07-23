@@ -1,4 +1,4 @@
-package com.grillecube.window;
+package com.grillecube.client.window;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -10,6 +10,8 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.vector.Vector4f;
+
+import com.grillecube.client.renderer.Camera;
 
 public class GLWindow
 {

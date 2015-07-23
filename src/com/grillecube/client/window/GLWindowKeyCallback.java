@@ -1,4 +1,4 @@
-package com.grillecube.window;
+package com.grillecube.client.window;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;

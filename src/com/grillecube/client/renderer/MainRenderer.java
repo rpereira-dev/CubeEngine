@@ -1,8 +1,8 @@
-package com.grillecube.renderer;
+package com.grillecube.client.renderer;
 
 import org.lwjgl.opengl.GL11;
 
-import com.grillecube.renderer.program.Program;
+import com.grillecube.client.renderer.program.Program;
 
 public class MainRenderer
 {

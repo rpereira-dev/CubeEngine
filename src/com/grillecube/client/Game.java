@@ -1,9 +1,10 @@
-package com.grillecube;
+package com.grillecube.client;
 
-import com.grillecube.logger.Logger;
-import com.grillecube.logger.Logger.LoggerLevel;
-import com.grillecube.renderer.MainRenderer;
-import com.grillecube.window.GLWindow;
+import com.grillecube.client.renderer.MainRenderer;
+import com.grillecube.client.window.GLWindow;
+
+import fr.toss.lib.Logger;
+import fr.toss.lib.Logger.LoggerLevel;
 
 public class Game
 {
@@ -30,7 +31,7 @@ public class Game
 	{
 		_instance = this;
 		this._threads = new Thread[0];
-		this._logger = new Logger();
+		this._logger = new Logger(System.out);
 		this._state = 0;
 		this._window = new GLWindow();
 		this._renderer = new MainRenderer();

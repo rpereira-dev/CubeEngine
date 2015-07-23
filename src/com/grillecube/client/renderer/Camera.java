@@ -1,4 +1,4 @@
-package com.grillecube.window;
+package com.grillecube.client.renderer;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.util.vector.Matrix4f;
