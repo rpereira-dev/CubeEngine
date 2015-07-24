@@ -9,38 +9,34 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
+import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import com.grillecube.client.Game;
 import com.grillecube.client.renderer.Camera;
 
 public class GLWindow
 {
 	public static final Vector4f CLEAR_COLOR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	
-	private static GLWindow	_instance;
-
+	/** window pointer */
 	private long	_window;
-
-	private GLWindowMouseButtonCallback	_callback_mouse_button;
-	private GLWindowKeyCallback 		_callback_key;
-	private GLWindowCursorPosCallback 	_callback_mouse_move;
-	private GLWindowScrollCallback 		_callback_mouse_cursor;
-	private GLWindowResizeCallback		_callback_window_size;
 	
-	private Camera	_camera;
+	/** window size (in pixels) */
+	private int	_width;
+	private int	_height;
+
+	/** window event instances */
+	private GLWindowResizeCallback		_callback_window_size;
 	
 	public GLWindow()
 	{
 		this._window = 0;
-		this._camera = null;
-		_instance = this;
 	}
 	
 	public void start()
 	{
 		Dimension	screensize;
-		int			width;
-		int			height;
 
 		GLFW.glfwSetErrorCallback(new GlfwErrorCallback());
 		if (GLFW.glfwInit() == 0)
@@ -50,10 +46,9 @@ public class GLWindow
 		}
 		
 		screensize = Toolkit.getDefaultToolkit().getScreenSize();
-		width = screensize.width / 2;
-		height = screensize.height / 2;
-		this._window = GLFW.glfwCreateWindow(width, height, "VoxelEngine", 0, 0);
-		this._camera = new Camera(width / (float)height);
+		this._width = screensize.width / 2;
+		this._height = screensize.height / 2;
+		this._window = GLFW.glfwCreateWindow(this._width, this._height, "VoxelEngine", 0, 0);
 		if (this._window == 0)
 		{
 			System.err.println("Couldnt create glfw window");
@@ -63,16 +58,8 @@ public class GLWindow
 		GLContext.createFromCurrent();	//finalize context creation depending on OS
 		GLFW.glfwSwapInterval(1);
 		
-		this._callback_key 			= new GLWindowKeyCallback(this);
-		this._callback_mouse_button = new GLWindowMouseButtonCallback(this);
-		this._callback_mouse_move 	= new GLWindowCursorPosCallback(this);
-		this._callback_mouse_cursor = new GLWindowScrollCallback(this);
 		this._callback_window_size 	= new GLWindowResizeCallback(this);
-		
-		GLFW.glfwSetKeyCallback(this._window, this._callback_key);
-		GLFW.glfwSetMouseButtonCallback(this._window, this._callback_mouse_button);
-		GLFW.glfwSetCursorPosCallback(this._window, this._callback_mouse_move);
-		GLFW.glfwSetScrollCallback(this._window, this._callback_mouse_cursor);
+
 		GLFW.glfwSetWindowSizeCallback(this._window, this._callback_window_size);
 		
 		GLFW.glfwSetInputMode(this._window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
@@ -119,58 +106,79 @@ public class GLWindow
 
 	public float getAspectRatio()
 	{
-		IntBuffer	width;
-		IntBuffer	height;
-		
-		width = BufferUtils.createIntBuffer(1);
-		height = BufferUtils.createIntBuffer(1);
-		GLFW.glfwGetWindowSize(this._window, width, height);
-		return (width.get() / (float)height.get());
-	}
-	
-	public int getWidth()
-	{
-		IntBuffer	width;
-		IntBuffer	height;
-		
-		width = BufferUtils.createIntBuffer(1);
-		height = BufferUtils.createIntBuffer(1);
-		GLFW.glfwGetWindowSize(this._window, width, height);
-		return (width.get());
-	}
-	
-	public int getHeight()
-	{
-		IntBuffer	width;
-		IntBuffer	height;
-		
-		width = BufferUtils.createIntBuffer(1);
-		height = BufferUtils.createIntBuffer(1);
-		GLFW.glfwGetWindowSize(this._window, width, height);
-		return (height.get());
+		return (this._width / (float)this._height);
 	}
 
 	public void resize(int width, int height)
 	{
         GL11.glViewport(0, 0, width, height);
+        this._width = width;
+        this._height = height;
 	}
-
-	public static GLWindow	instance()
+	
+	public int	getWidth()
 	{
-		return (_instance);
+		return (this._width);
 	}
-
-	public Camera getCamera()
+	
+	public int	getHeight()
 	{
-		return (this._camera);
+		return (this._height);
 	}
-
+	
 	/** called after each rendered frame */
-	public void update()
+	public void updateDisplay()
 	{
 		GLFW.glfwSwapBuffers(this._window);
 		GLFW.glfwPollEvents();
-		GLWindow.glCheckError("Rendering loop");		
+		GLWindow.glCheckError("Rendering loop");
+		
+		if (GLFW.glfwGetKey(this._window, GLFW.GLFW_KEY_ESCAPE) == GLFW.GLFW_PRESS)
+		{
+			GLFW.glfwSetWindowShouldClose(this._window, 1);
+		}
+	
+		this.updateWindowTitle();
+	}
+	
+	private void	updateWindowTitle()
+	{
+		Camera cam = Game.instance().getRenderer().getCamera();
+
+		StringBuilder	title;
+		Vector3f		pos;
+		Vector3f		look;
+		String			x;
+		String			y;
+		String			z;
+		
+		title = new StringBuilder();
+		pos = cam.getPosition();
+		look = cam.getLookVec();
+		
+		x = String.valueOf(pos.x).substring(0, 3);
+		y = String.valueOf(pos.y).substring(0, 3);
+		z = String.valueOf(pos.z).substring(0, 3);
+		title.append("position:");
+		title.append(" x:");
+		title.append(x);
+		title.append(" y:");
+		title.append(y);
+		title.append(" z:");
+		title.append(z);
+
+		x = String.valueOf(look.x).substring(0, 3);
+		y = String.valueOf(look.y).substring(0, 3);
+		z = String.valueOf(look.z).substring(0, 3);
+		title.append("   |   looking at:");
+		title.append(" x:");
+		title.append(x);
+		title.append(" y:");
+		title.append(y);
+		title.append(" z:");
+		title.append(z);
+		
+		GLFW.glfwSetWindowTitle(this._window, title.toString());
 	}
 
 	public void clear()
@@ -182,6 +190,11 @@ public class GLWindow
 	public boolean shouldClose()
 	{
 		return (GLFW.glfwWindowShouldClose(this._window) != 0);
+	}
+
+	public long getPointer()
+	{
+		return (this._window);
 	}
 }
 

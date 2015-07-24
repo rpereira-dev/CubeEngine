@@ -2,6 +2,7 @@ package com.grillecube.client;
 
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.window.GLWindow;
+import com.grillecube.client.world.WorldClient;
 
 import fr.toss.lib.Logger;
 import fr.toss.lib.Logger.LoggerLevel;
@@ -20,6 +21,9 @@ public class Game
 	/** Game window */
 	private GLWindow	_window;
 	
+	/** World */
+	private WorldClient	_world;
+	
 	/** Renderer */
 	private MainRenderer	_renderer;
 	
@@ -34,7 +38,8 @@ public class Game
 		this._logger = new Logger(System.out);
 		this._state = 0;
 		this._window = new GLWindow();
-		this._renderer = new MainRenderer();
+		this._renderer = new MainRenderer(this._window);
+		this._world = new WorldClient();
 	}
 	
 	public void	start()
@@ -54,8 +59,9 @@ public class Game
 		while (this._window.shouldClose() == false)
 		{
 			this._window.clear();
-			this._renderer.render();
-			this._window.update();
+			this._renderer.update();
+			this._renderer.render(this);
+			this._window.updateDisplay();
 			
 			try
 			{
@@ -72,6 +78,8 @@ public class Game
 
 	public void	stop()
 	{
+		this._logger.log(LoggerLevel.FINE, "Stopping game...");
+
 		for (Thread thrd : this._threads)
 		{
 			try
@@ -81,9 +89,11 @@ public class Game
 			catch (InterruptedException e)
 			{
 				log(Logger.LoggerLevel.ERROR, e.getLocalizedMessage());
+				thrd.interrupt();
 			}
 		}
 		this._window.stop();
+		this._logger.log(LoggerLevel.FINE, "Stopped");
 	}
 	
 	public boolean	hasState(long state)
@@ -119,5 +129,15 @@ public class Game
 	public Logger	getLogger()
 	{
 		return (this._logger);
+	}
+
+	public WorldClient getWorld()
+	{
+		return (this._world);
+	}
+
+	public MainRenderer	getRenderer()
+	{
+		return (this._renderer);
 	}
 }

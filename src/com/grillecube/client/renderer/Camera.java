@@ -4,6 +4,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.grillecube.client.window.GLWindow;
+
 public class Camera
 {
 	public static final int STATE_MOVE_FORWARD	= 1;
@@ -34,8 +36,12 @@ public class Camera
 	private Matrix4f _view_matrix;
 	private Matrix4f _projection_matrix;
 	
+	private CameraPicker	_picker;
+	
+	private GLWindow	_window;
+	
 	/** aspect_ratio is WIDTH / HEIGHT */
-	public Camera(float aspect_ratio)
+	public Camera(GLWindow window)
 	{
 		this._view_matrix = new Matrix4f();
 		this._projection_matrix = new Matrix4f();
@@ -44,8 +50,10 @@ public class Camera
 		this._rot_vec = new Vector3f();
 		this._look_cube = null;
 		this._look_face = null;
-		this._aspect = aspect_ratio;
+		this._aspect = window.getAspectRatio();
+		this._window = window;
 		this.reset();
+		this._picker = new CameraPicker(this);
 	}
 	
 	public boolean	hasState(int state)
@@ -85,16 +93,37 @@ public class Camera
 	
 	public void	update()
 	{
+		this.updateInput();
+		this.updateLook();
+		this.updateMove();
+		this._picker.update();
+		
+		this.createViewMatrix();
+		this.createProjectionMatrix();
+	}
+	
+	private void	updateInput()
+	{
+		this.keyPressed();
+		this.keyReleased();
+	}
+	
+	private void	updateLook()
+	{
+		float	f;
 		this._pitch += this._rot_vec.x * this._rot_speed;
 		this._yaw 	+= this._rot_vec.y * this._rot_speed;
 		this._roll 	+= this._rot_vec.z * this._rot_speed;
-		
-		float pitchcos = (float) Math.cos(this.getPitch());
-		this._look_vec.setX((float) (pitchcos * Math.sin(this.getYaw())));
+
+		f = (float) Math.cos(this.getPitch());
+		this._look_vec.setX((float) (f * Math.sin(this.getYaw())));
 		this._look_vec.setY((float) -Math.sin(this.getPitch()));
-		this._look_vec.setZ((float) (-pitchcos * Math.cos(this.getYaw())));
+		this._look_vec.setZ((float) (-f * Math.cos(this.getYaw())));
 		this._look_vec.normalise();
-						
+	}
+
+	private void	updateMove()
+	{
 		if (this.hasState(STATE_MOVE_FORWARD))
 		{
 			this._pos_vec.setX(this._look_vec.x);
@@ -127,11 +156,8 @@ public class Camera
 		}
 	
 		this.move(this._pos_vec);
-		
-		this.createViewMatrix();
-		this.createProjectionMatrix();
 	}
-
+	
 	public void	createProjectionMatrix()
 	{
 		float	x_scale;
@@ -181,73 +207,84 @@ public class Camera
 		this._pitch = pitch;
 	}
 
-	public void onKeyReleased(int key)
+	private boolean	isKeyPressed(int key)
 	{
-		if (key == GLFW.GLFW_KEY_W)
+		return (GLFW.glfwGetKey(this._window.getPointer(), key) == GLFW.GLFW_PRESS);
+	}
+	
+	private boolean	isKeyReleased(int key)
+	{
+		return (GLFW.glfwGetKey(this._window.getPointer(), key) == GLFW.GLFW_RELEASE);
+	}
+	
+
+	public void keyPressed()
+	{
+		if (isKeyPressed(GLFW.GLFW_KEY_W))
+		{
+			this.setState(STATE_MOVE_FORWARD);
+		}
+		if (isKeyPressed(GLFW.GLFW_KEY_A))
+		{
+			this.setState(STATE_MOVE_LEFT);
+		}
+		if (isKeyPressed(GLFW.GLFW_KEY_D))
+		{
+			this.setState(STATE_MOVE_RIGHT);
+		}
+		if (isKeyPressed(GLFW.GLFW_KEY_S))
+		{
+			this.setState(STATE_MOVE_BACKWARD);
+		}
+		if (isKeyPressed(GLFW.GLFW_KEY_UP))
+		{
+			this._rot_vec.x = -0.05f;
+		}
+		else if (isKeyPressed(GLFW.GLFW_KEY_DOWN))
+		{
+			this._rot_vec.x = 0.05f;
+		}
+		if (isKeyPressed(GLFW.GLFW_KEY_RIGHT))
+		{
+			this._rot_vec.y = 0.05f;
+		}
+		else if (isKeyPressed(GLFW.GLFW_KEY_LEFT))
+		{
+			this._rot_vec.y = -0.05f;
+		}
+	}
+	
+	private void keyReleased()
+	{
+		if (isKeyReleased(GLFW.GLFW_KEY_W))
 		{
 			this.unsetState(STATE_MOVE_FORWARD);
 		}
-		else if (key == GLFW.GLFW_KEY_S)
+		if (isKeyReleased(GLFW.GLFW_KEY_S))
 		{
 			this.unsetState(STATE_MOVE_BACKWARD);
 		}
-		if (key == GLFW.GLFW_KEY_A)
+		if (isKeyReleased(GLFW.GLFW_KEY_A))
 		{
 			this.unsetState(STATE_MOVE_LEFT);
 		}
-		else if (key == GLFW.GLFW_KEY_D)
+		if (isKeyReleased(GLFW.GLFW_KEY_D))
 		{
 			this.unsetState(STATE_MOVE_RIGHT);
 		}
-		else if (key == GLFW.GLFW_KEY_UP || key == GLFW.GLFW_KEY_DOWN)
+		if (isKeyReleased(GLFW.GLFW_KEY_UP) || isKeyReleased(GLFW.GLFW_KEY_DOWN))
 		{
 			this._rot_vec.setX(0);
 		}
-		if (key == GLFW.GLFW_KEY_RIGHT || key == GLFW.GLFW_KEY_LEFT)
+		if (isKeyReleased(GLFW.GLFW_KEY_RIGHT) || isKeyReleased(GLFW.GLFW_KEY_LEFT))
 		{
 			this._rot_vec.setY(0);
 		}
 	}
 
-	public void onKeyPressed(int key)
-	{
-		if (key == GLFW.GLFW_KEY_W)
-		{
-			this.setState(STATE_MOVE_FORWARD);
-		}
-		if (key == GLFW.GLFW_KEY_A)
-		{
-			this.setState(STATE_MOVE_LEFT);
-		}
-		if (key == GLFW.GLFW_KEY_D)
-		{
-			this.setState(STATE_MOVE_RIGHT);
-		}
-		if (key == GLFW.GLFW_KEY_S)
-		{
-			this.setState(STATE_MOVE_BACKWARD);
-		}
-		if (key == GLFW.GLFW_KEY_UP)
-		{
-			this._rot_vec.x = -0.05f;
-		}
-		else if (key == GLFW.GLFW_KEY_DOWN)
-		{
-			this._rot_vec.x = 0.05f;
-		}
-		if (key == GLFW.GLFW_KEY_RIGHT)
-		{
-			this._rot_vec.y = 0.05f;
-		}
-		else if (key == GLFW.GLFW_KEY_LEFT)
-		{
-			this._rot_vec.y = -0.05f;
-		}
-	}
-
 	public void reset()
 	{
-		this.setPosition(new Vector3f(0, 0, 32));
+		this.setPosition(new Vector3f(0, 0, 0));
 		this.setPositionVec(new Vector3f(0, 0, 0));
 		this.setRotationVec(new Vector3f(0, 0, 0));
 		this.setPitch(0);
@@ -338,5 +375,10 @@ public class Camera
 	public void setLookingCubeFace(float x, float y, float z)
 	{
 		this._look_face = new Vector3f(x, y, z);
+	}
+
+	public GLWindow	getWindow()
+	{
+		return (this._window);
 	}
 }

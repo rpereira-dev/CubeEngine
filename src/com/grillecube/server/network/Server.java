@@ -1,11 +1,11 @@
 package com.grillecube.server.network;
 
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.LinkedList;
 
 import com.grillecube.server.Game;
-import com.grillecube.server.network.packet.AClientPacket;
 
 public class Server
 {
@@ -14,7 +14,7 @@ public class Server
 	
 	/** a thread that execute queued packets */
 	private ThreadPacketQueue			_packet_queue;
-	private LinkedList<AClientPacket>	_queue;
+	private LinkedList<DatagramPacket>	_queue;
 
 	
 	/** UDP protocol */
@@ -40,16 +40,25 @@ public class Server
 	public void	stop()
 	{
 		this._socket.close();
+		try
+		{
+			this._packet_queue.join();
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+			this._packet_queue.interrupt();
+		}
 	}
 	
 	/** return the next packet to be executed */
-	public AClientPacket	getNextPacket()
+	public DatagramPacket	getNextPacket()
 	{
 		return (this._queue.removeFirst());
 	}
 
 	/** queue the given packet */
-	public void	queuePacket(AClientPacket packet)
+	public void	queuePacket(DatagramPacket packet)
 	{
 		this._queue.add(packet);
 	}

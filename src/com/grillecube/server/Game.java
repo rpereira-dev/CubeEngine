@@ -1,5 +1,6 @@
 package com.grillecube.server;
 
+import java.net.DatagramPacket;
 import java.net.SocketException;
 
 import com.grillecube.server.network.Server;
@@ -59,7 +60,7 @@ public class Game
 	
 	/** main server loop */
 	public void	loop()
-	{
+	{		
 		this.setState(GameState.RUNNING);
 		while (this.hasState(GameState.RUNNING))
 		{
@@ -69,9 +70,10 @@ public class Game
 			}
 			catch (InterruptedException e)
 			{
-				this.unsetState(Game.GameState.RUNNING);
+				break ;
 			}
 		}
+		this.unsetState(Game.GameState.RUNNING);
 	}
 	
 	/** stop the server */
