@@ -1,7 +1,5 @@
 package com.grillecube.common.world;
 
-import java.util.ArrayList;
-
 public class TerrainLocation
 {
 	private int	_x;
@@ -13,6 +11,11 @@ public class TerrainLocation
 		this._x = 0;
 		this._y = 0;
 		this._z = 0;
+	}
+	
+	public TerrainLocation(int x, int y, int z)
+	{
+		this.set(x, y, z);
 	}
 	
 	public int	getX()
@@ -47,5 +50,11 @@ public class TerrainLocation
 		this._x = x;
 		this._y = y;
 		this._z = z;
+	}
+	
+	@Override
+	public String	toString()
+	{
+		return ("x:" + this._x + " y:" + this._y + " z:" + this._z);
 	}
 }

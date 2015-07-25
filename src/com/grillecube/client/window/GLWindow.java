@@ -2,7 +2,7 @@ package com.grillecube.client.window;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.nio.IntBuffer;
+import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -25,6 +25,15 @@ public class GLWindow
 	/** window size (in pixels) */
 	private int	_width;
 	private int	_height;
+	
+	/** window size (in pixels) */
+	private ByteBuffer	_bufferX;
+	private ByteBuffer	_bufferY;
+	
+	private double	_mouseX;
+	private double	_mouseY;
+	private double	_prev_mouseX;
+	private double	_prev_mouseY;
 
 	/** window event instances */
 	private GLWindowResizeCallback		_callback_window_size;
@@ -64,6 +73,15 @@ public class GLWindow
 		
 		GLFW.glfwSetInputMode(this._window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
 		GLFW.glfwSetCursorPos(this._window, (int)(this.getWidth() / 2), (int)(this.getHeight() / 2));
+
+		this._mouseX = this.getWidth()/ 2;
+		this._mouseY = this.getHeight() / 2;
+		
+		this._prev_mouseX = this.getWidth()/ 2;
+		this._prev_mouseY = this.getHeight() / 2;
+		
+		this._bufferX = BufferUtils.createByteBuffer(8);
+		this._bufferY = BufferUtils.createByteBuffer(8);
 	}
 
 	public static void  glCheckError(String label)
@@ -126,21 +144,6 @@ public class GLWindow
 		return (this._height);
 	}
 	
-	/** called after each rendered frame */
-	public void updateDisplay()
-	{
-		GLFW.glfwSwapBuffers(this._window);
-		GLFW.glfwPollEvents();
-		GLWindow.glCheckError("Rendering loop");
-		
-		if (GLFW.glfwGetKey(this._window, GLFW.GLFW_KEY_ESCAPE) == GLFW.GLFW_PRESS)
-		{
-			GLFW.glfwSetWindowShouldClose(this._window, 1);
-		}
-	
-		this.updateWindowTitle();
-	}
-	
 	private void	updateWindowTitle()
 	{
 		Camera cam = Game.instance().getRenderer().getCamera();
@@ -181,12 +184,37 @@ public class GLWindow
 		GLFW.glfwSetWindowTitle(this._window, title.toString());
 	}
 
-	public void clear()
+	/** should be call before rendering */
+	public void prepareScreen()
 	{
 		GL11.glClearColor(CLEAR_COLOR.x, CLEAR_COLOR.y, CLEAR_COLOR.z, CLEAR_COLOR.w);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		
+		
+		GLFW.glfwGetCursorPos(this._window, this._bufferX, this._bufferY);
+		this._mouseX = this._bufferX.getDouble();
+		this._mouseY = this._bufferY.getDouble();
+		this._bufferX.clear();
+		this._bufferY.clear();
 	}
-
+	
+	/** should be call after rendering */
+	public void	flushScreen()
+	{
+		GLFW.glfwSwapBuffers(this._window);
+		GLFW.glfwPollEvents();
+		
+		if (GLFW.glfwGetKey(this._window, GLFW.GLFW_KEY_ESCAPE) == GLFW.GLFW_PRESS)
+		{
+			GLFW.glfwSetWindowShouldClose(this._window, 1);
+		}
+	
+		this._prev_mouseX = this._mouseX;
+		this._prev_mouseY = this._mouseY;
+		this.updateWindowTitle();
+		
+		GLWindow.glCheckError("GLWindow.flushScreen");
+	}
+	
 	public boolean shouldClose()
 	{
 		return (GLFW.glfwWindowShouldClose(this._window) != 0);
@@ -195,6 +223,26 @@ public class GLWindow
 	public long getPointer()
 	{
 		return (this._window);
+	}
+	
+	public double	getMouseX()
+	{
+		return (this._mouseX);
+	}
+	
+	public double	getMouseY()
+	{
+		return (this._mouseY);
+	}
+	
+	public double	getPrevMouseX()
+	{
+		return (this._prev_mouseX);
+	}
+	
+	public double	getPrevMouseY()
+	{
+		return (this._prev_mouseY);
 	}
 }
 

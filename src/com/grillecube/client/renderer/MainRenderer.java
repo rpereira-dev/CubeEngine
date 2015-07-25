@@ -1,35 +1,29 @@
 package com.grillecube.client.renderer;
 
-import org.lwjgl.opengl.GL11;
-
 import com.grillecube.client.Game;
 import com.grillecube.client.window.GLWindow;
 
 public class MainRenderer
 {
-	/**window */
-	private GLWindow	_window;
-	
 	/** camera */
 	private Camera	_camera;
 	
 	/** renderers */
 	private WorldRenderer	_world_renderer;
+	private QuadRenderer	_quad_renderer;
 
 	public MainRenderer(GLWindow window)
 	{
-		this._window = window;
 		this._world_renderer = new WorldRenderer();
+		this._quad_renderer = new QuadRenderer();
 		this._camera = new Camera(window);
 	}
 	
 	/** call on initialization */
 	public void	start()
 	{
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		this._world_renderer.start();
+		this._quad_renderer.start();
 	}
 	
 	public void	stop()
@@ -41,6 +35,7 @@ public class MainRenderer
 	public void render(Game game)
 	{
 		this._world_renderer.render(game.getWorld(), this._camera);
+		GLWindow.glCheckError("MainRenderer.render()");
 	}
 
 	/** update the renderer */

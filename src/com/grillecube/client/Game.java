@@ -3,6 +3,8 @@ package com.grillecube.client;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.client.world.WorldClient;
+import com.grillecube.client.world.WorldThread;
+import com.grillecube.client.world.blocks.Blocks;
 
 import fr.toss.lib.Logger;
 import fr.toss.lib.Logger.LoggerLevel;
@@ -13,6 +15,8 @@ public class Game
 	private static Game	_instance;
 	
 	/** Thread pool */
+	private static final int THRD_WORLD	= 0;
+	private static final int THRD_MAX	= 1;
 	private Thread	_threads[];
 	
 	/** Logger */
@@ -34,7 +38,7 @@ public class Game
 	public Game()
 	{
 		_instance = this;
-		this._threads = new Thread[0];
+		this._threads = new Thread[THRD_MAX];
 		this._logger = new Logger(System.out);
 		this._state = 0;
 		this._window = new GLWindow();
@@ -45,9 +49,12 @@ public class Game
 	public void	start()
 	{
 		this._logger.log(LoggerLevel.FINE, "Starting game...");
+		this._state = 0;
 		this._window.start();
 		this._renderer.start();
-		this._state = STATE_RUNNING;
+		this._world.start();
+		Blocks.initBlocks();
+		this._threads[THRD_WORLD] = new WorldThread(this);
 		this._logger.log(LoggerLevel.FINE, "Game started!");
 	}
 	
@@ -56,12 +63,17 @@ public class Game
 	{
 		this.setState(STATE_RUNNING);
 		
+		for (Thread thrd : this._threads)
+		{
+			thrd.start();
+		}
+		
 		while (this._window.shouldClose() == false)
 		{
-			this._window.clear();
+			this._window.prepareScreen();
 			this._renderer.update();
 			this._renderer.render(this);
-			this._window.updateDisplay();
+			this._window.flushScreen();
 			
 			try
 			{
@@ -88,7 +100,7 @@ public class Game
 			}
 			catch (InterruptedException e)
 			{
-				log(Logger.LoggerLevel.ERROR, e.getLocalizedMessage());
+				log(Logger.LoggerLevel.ERROR, "interupted");
 				thrd.interrupt();
 			}
 		}

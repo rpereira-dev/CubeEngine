@@ -13,9 +13,6 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 /** openGL program */
-
-
-
 public abstract class Program
 {
 	private FloatBuffer	_matrix_buffer;
@@ -77,6 +74,15 @@ public abstract class Program
 		
 		return (shader_id);
 	}
+
+	public void stop()
+	{
+		GL20.glDetachShader(this._programID, this._vertexID);
+		GL20.glDetachShader(this._programID, this._fragmentID);
+		GL20.glDeleteShader(this._vertexID);
+		GL20.glDeleteShader(this._fragmentID);
+		GL20.glDeleteProgram(this._programID);
+	}
 	
 	public void	useStart()
 	{
@@ -113,7 +119,7 @@ public abstract class Program
 		GL20.glUniform4f(location, vec.x, vec.y, vec.z, vec.w);
 	}
 	
-	protected void	loadUniformMatrix(int location, Matrix4f matrix)
+	public void	loadUniformMatrix(int location, Matrix4f matrix)
 	{
 		matrix.store(_matrix_buffer);
 		_matrix_buffer.flip();
@@ -139,14 +145,5 @@ public abstract class Program
 	public int getUniform(String name)
 	{
 		return (GL20.glGetUniformLocation(this._programID, name));
-	}
-
-	public void delete()
-	{
-		GL20.glDetachShader(this._programID, this._vertexID);
-		GL20.glDetachShader(this._programID, this._fragmentID);
-		GL20.glDeleteShader(this._vertexID);
-		GL20.glDeleteShader(this._fragmentID);
-		GL20.glDeleteProgram(this._programID);		
 	}
 }

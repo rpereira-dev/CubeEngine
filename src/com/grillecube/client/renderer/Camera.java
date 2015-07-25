@@ -5,6 +5,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.window.GLWindow;
+import com.grillecube.common.world.Terrain;
 
 public class Camera
 {
@@ -93,6 +94,7 @@ public class Camera
 	
 	public void	update()
 	{
+		this.rotateCamera();
 		this.updateInput();
 		this.updateLook();
 		this.updateMove();
@@ -100,6 +102,16 @@ public class Camera
 		
 		this.createViewMatrix();
 		this.createProjectionMatrix();
+	}
+
+	/** rotate the camera depending on mouse cursor */
+	private void rotateCamera()
+	{
+		float	mouse_speed = 0.04f;
+		
+		this.increaseYaw((float) ((this._window.getMouseX() - this._window.getPrevMouseX()) * mouse_speed));
+		this.increasePitch((float) ((this._window.getMouseY() - this._window.getPrevMouseY()) * mouse_speed));
+		GLFW.glfwSetInputMode(this._window.getPointer(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
 	}
 	
 	private void	updateInput()
@@ -111,6 +123,7 @@ public class Camera
 	private void	updateLook()
 	{
 		float	f;
+
 		this._pitch += this._rot_vec.x * this._rot_speed;
 		this._yaw 	+= this._rot_vec.y * this._rot_speed;
 		this._roll 	+= this._rot_vec.z * this._rot_speed;
@@ -206,6 +219,26 @@ public class Camera
 	{
 		this._pitch = pitch;
 	}
+	
+	public void	setRoll(float roll)
+	{
+		this._roll = roll;
+	}
+	
+	public void increaseYaw(float yaw)
+	{
+		this._yaw += yaw;
+	}
+	
+	public void	increasePitch(float pitch)
+	{
+		this._pitch += pitch;
+	}
+	
+	public void	increaseRoll(float roll)
+	{
+		this._roll += roll;
+	}
 
 	private boolean	isKeyPressed(int key)
 	{
@@ -217,7 +250,7 @@ public class Camera
 		return (GLFW.glfwGetKey(this._window.getPointer(), key) == GLFW.GLFW_RELEASE);
 	}
 	
-
+	/** check pressed key */
 	public void keyPressed()
 	{
 		if (isKeyPressed(GLFW.GLFW_KEY_W))
@@ -238,22 +271,24 @@ public class Camera
 		}
 		if (isKeyPressed(GLFW.GLFW_KEY_UP))
 		{
-			this._rot_vec.x = -0.05f;
+			this._rot_vec.x = -1;
+			System.out.println(this._rot_vec);
 		}
-		else if (isKeyPressed(GLFW.GLFW_KEY_DOWN))
+		if (isKeyPressed(GLFW.GLFW_KEY_DOWN))
 		{
-			this._rot_vec.x = 0.05f;
+			this._rot_vec.x = 1;
 		}
 		if (isKeyPressed(GLFW.GLFW_KEY_RIGHT))
 		{
-			this._rot_vec.y = 0.05f;
+			this._rot_vec.y = 1;
 		}
-		else if (isKeyPressed(GLFW.GLFW_KEY_LEFT))
+		if (isKeyPressed(GLFW.GLFW_KEY_LEFT))
 		{
-			this._rot_vec.y = -0.05f;
+			this._rot_vec.y = -1;
 		}
 	}
 	
+	/** check released key */
 	private void keyReleased()
 	{
 		if (isKeyReleased(GLFW.GLFW_KEY_W))
@@ -282,6 +317,7 @@ public class Camera
 		}
 	}
 
+	/** reset camera datas */
 	public void reset()
 	{
 		this.setPosition(new Vector3f(0, 0, 0));
@@ -292,7 +328,7 @@ public class Camera
 		this.setRoll(0);
 		this.setFov(70);
 		this.setSpeed(1);
-		this.setRotSpeed(1);
+		this.setRotSpeed(1);	//0.05f
 		this.setRotSpeed(1);
 		this.setNear(0.1f);
 		this.setFar(2000);
@@ -323,11 +359,6 @@ public class Camera
 	public void	setFar(float f)
 	{
 		this._far = f;
-	}
-
-	public void setRoll(float f)
-	{
-		this._roll = f;
 	}
 
 	public void setRotationVec(Vector3f rot)
@@ -381,4 +412,31 @@ public class Camera
 	{
 		return (this._window);
 	}
+	
+
+/** my frustrum culling, check if not too far and if in field of view
+ * 
+	             \-------------/		
+	              \  p        /
+	               \         /
+	                \       /	        p: point to test
+	                 \     /
+	                  \   /             imprecision: make field of view larger
+	                   \ /
+	                  / e \				e: eye
+	                  \___/				
+*/
+	public boolean	isInFrustum(Vector3f point, float impresicion)
+	{
+		Vector3f	to_chunk_vector;
+		double 		dot;
+		double		angle;
+	
+		to_chunk_vector = new Vector3f();
+		to_chunk_vector.normalise(to_chunk_vector);
+		dot = Vector3f.dot(to_chunk_vector, this._look_vec);
+		angle = Math.toDegrees(Math.acos(dot));
+		return (angle < this._fov + impresicion);
+	}
+
 }
