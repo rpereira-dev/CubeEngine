@@ -5,6 +5,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
 import com.grillecube.client.world.TerrainClient;
+import com.grillecube.client.world.WorldClient;
 
 public class ProgramTerrain extends Program
 {
@@ -20,6 +21,10 @@ public class ProgramTerrain extends Program
 	private int	_proj_matrix;
 	private int	_view_matrix;
 	private int	_transf_matrix;
+	
+	private int	_fog_color;	
+	private int	_fog_density;
+	private int	_fog_gradient;
 
 	public ProgramTerrain()
 	{
@@ -41,12 +46,19 @@ public class ProgramTerrain extends Program
 		this._proj_matrix = super.getUniform("proj_matrix");
 		this._view_matrix = super.getUniform("view_matrix");
 		this._transf_matrix = super.getUniform("transf_matrix");
+		this._fog_color = super.getUniform("fog_color");
+		this._fog_gradient = super.getUniform("fog_gradient");
+		this._fog_density = super.getUniform("fog_density");
 	}
 
-	public void	loadUniforms(Camera camera)
+	public void	loadUniforms(WorldClient world, Camera camera)
 	{
 		this.loadUniformMatrix(this._proj_matrix, camera.getProjectionMatrix());
 		this.loadUniformMatrix(this._view_matrix, camera.getViewMatrix());
+		
+		this.loadUniformVec(this._fog_color, world.getWeather().getFogColor());
+		this.loadUniformFloat(this._fog_gradient, world.getWeather().getFogGradient());
+		this.loadUniformFloat(this._fog_density, world.getWeather().getFogDensity());
 	}
 	
 	public void loadInstanceUniforms(TerrainClient terrain)

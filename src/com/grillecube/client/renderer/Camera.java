@@ -321,7 +321,7 @@ public class Camera
 	/** reset camera datas */
 	public void reset()
 	{
-		this.setPosition(new Vector3f(0, Terrain.TERRAIN_SIZE_Y + 1, 0));
+		this.setPosition(new Vector3f(0, Terrain.SIZE_Y + 1, 0));
 		this.setPositionVec(new Vector3f(0, 0, 0));
 		this.setRotationVec(new Vector3f(0, 0, 0));
 		this.setPitch(0);
@@ -428,15 +428,14 @@ public class Camera
 */
 	public boolean	isInFrustum(Vector3f point, float impresicion)
 	{
-		Vector3f	to_chunk_vector;
+		Vector3f	to_point_vector;
 		double 		dot;
 		double		angle;
 	
-		to_chunk_vector = new Vector3f();
-		to_chunk_vector.normalise(to_chunk_vector);
-		dot = Vector3f.dot(to_chunk_vector, this._look_vec);
+		to_point_vector = new Vector3f(point.x - this._pos.x, point.y - this._pos.y, point.z - this._pos.z);
+		to_point_vector.normalise(to_point_vector);
+		dot = Vector3f.dot(to_point_vector, this._look_vec);
 		angle = Math.toDegrees(Math.acos(dot));
 		return (angle < this._fov + impresicion);
 	}
-
 }

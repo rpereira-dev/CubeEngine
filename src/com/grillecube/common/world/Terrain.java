@@ -6,11 +6,11 @@ import com.grillecube.client.world.blocks.Blocks;
 public abstract class Terrain
 {
 	/** terrain dimensions */
-	public static final int	TERRAIN_SIZE_X = 16;
-	public static final int	TERRAIN_SIZE_Y = 64;
-	public static final int	TERRAIN_SIZE_Z = 16;
+	public static final int	SIZE_X = 16;
+	public static final int	SIZE_Y = 64;
+	public static final int	SIZE_Z = 16;
 	
-	private TerrainLocation	_location;
+	protected TerrainLocation	_location;
 	
 	/** blocks */
 	protected byte[][][]	_blocks;
@@ -18,7 +18,7 @@ public abstract class Terrain
 	public Terrain(TerrainLocation location)
 	{
 		this._location = location;
-		this._blocks = new byte[Terrain.TERRAIN_SIZE_X][Terrain.TERRAIN_SIZE_Y][Terrain.TERRAIN_SIZE_Z];
+		this._blocks = new byte[Terrain.SIZE_X][Terrain.SIZE_Y][Terrain.SIZE_Z];
 	}
 	
 	/** return block at given coordinates (terrain-relative) */
@@ -32,6 +32,4 @@ public abstract class Terrain
 	{
 		return (this._location);
 	}
-
-	public abstract void update();
 }

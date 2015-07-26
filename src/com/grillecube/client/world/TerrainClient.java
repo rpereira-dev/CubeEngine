@@ -11,32 +11,32 @@ import com.grillecube.common.world.TerrainLocation;
 
 public class TerrainClient extends Terrain
 {
+	/** world */
+	private WorldClient	_world;
+	
 	/** world position */
 	private Vector3f	_world_position;
 
 	/** terrain meshes */
-	private TerrainMesh[]	_meshes;
+	private TerrainMesh	_mesh;
 	
-	public TerrainClient(TerrainLocation location)
+	public TerrainClient(WorldClient world, TerrainLocation location)
 	{
 		super(location);
 		
-		this._world_position = new Vector3f(location.getX() * Terrain.TERRAIN_SIZE_X,
-											location.getY() * Terrain.TERRAIN_SIZE_Y,
-											location.getZ() * Terrain.TERRAIN_SIZE_Z);
+		this._world = world;
+		this._world_position = new Vector3f(location.getX() * Terrain.SIZE_X,
+											location.getY() * Terrain.SIZE_Y,
+											location.getZ() * Terrain.SIZE_Z);
 		
-		this._meshes = new TerrainMesh[TerrainMesh.MESH_PER_TERRAIN];
-		for (int i = 0 ; i < TerrainMesh.MESH_PER_TERRAIN ; i++)
-		{
-			this._meshes[i] = new TerrainMesh(this, i);
-		}
+		this._mesh = new TerrainMesh(this);
 		
 		Random rand = new Random();
-		for (int x = 0 ; x < Terrain.TERRAIN_SIZE_X ; x++)
+		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
 		{
-			for (int z = 0 ; z < Terrain.TERRAIN_SIZE_Z ; z++)
+			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 			{
-				int	y = Terrain.TERRAIN_SIZE_Y - 1 - (Math.abs(rand.nextInt()) % 3);
+				int	y = Terrain.SIZE_Y - 1 - (Math.abs(rand.nextInt()) % 3);
 				
 				for ( ; y >= 0 ; y--)
 				{
@@ -45,19 +45,10 @@ public class TerrainClient extends Terrain
 			}
 		}
 	}
-
-	@Override
-	public void update()
-	{
-		for (TerrainMesh mesh : this._meshes)
-		{
-			mesh.update();
-		}
-	}
 	
-	public TerrainMesh[]	getMeshes()
+	public TerrainMesh	getMesh()
 	{
-		return (this._meshes);
+		return (this._mesh);
 	}
 
 	public Vector3f getWorldPosition()
@@ -69,6 +60,32 @@ public class TerrainClient extends Terrain
 	public String	toString()
 	{
 		return ("Terrain: " + this.getLocation());
+	}
+
+	
+	/** store in a Terrain array the neighboor terrains 
+	 * 0: bot
+	 * 1: top
+	 * 2: left
+	 * 3: right
+	 * 4: front
+	 * 5: back
+	 */
+	public Terrain[] getNeighboors()
+	{
+		Terrain[]		terrains;
+		TerrainLocation	loc;
+		
+		terrains = new Terrain[6];
+		loc = new TerrainLocation();
+		terrains[0] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY() - 1, this._location.getZ()));
+		terrains[1] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY() + 1, this._location.getZ()));
+		terrains[2] = this._world.getTerrain(loc.set(this._location.getX() - 1, this._location.getY(), this._location.getZ()));
+		terrains[3] = this._world.getTerrain(loc.set(this._location.getX() + 1, this._location.getY(), this._location.getZ()));
+		terrains[4] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY(), this._location.getZ() - 1));
+		terrains[5] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY(), this._location.getZ() + 1));
+		
+		return (terrains);
 	}
 
 }

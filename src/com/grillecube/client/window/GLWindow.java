@@ -17,7 +17,7 @@ import com.grillecube.client.renderer.Camera;
 
 public class GLWindow
 {
-	public static final Vector4f CLEAR_COLOR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+	public static final Vector4f CLEAR_COLOR = new Vector4f(0.46f, 0.71f, 0.99f, 1.0f);
 	
 	/** window pointer */
 	private long	_window;

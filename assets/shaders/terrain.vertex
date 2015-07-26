@@ -5,19 +5,26 @@ in vec3 normal;
 in vec2 uv;
 
 out vec2 pass_uv;
+out float visibility;
 
 uniform mat4 proj_matrix;
 uniform mat4 view_matrix;
 uniform mat4 transf_matrix;
 
+uniform float fog_density;
+uniform float fog_gradient;
+
 void	main(void)
 {
-	vec4	transf_position;
-	vec4	relative_position_to_camera;
-
-	transf_position = transf_matrix * vec4(position, 1.0);
-	relative_position_to_camera = view_matrix * transf_position;
+	//world position
+	vec4 transf_position = transf_matrix * vec4(position, 1.0);
+	vec4 relative_position_to_camera = view_matrix * transf_position;
 	gl_Position = proj_matrix * relative_position_to_camera;
 
+	//fog calculation
+	float distance = length(relative_position_to_camera.xyz);
+	visibility = exp(-pow(distance * fog_density, fog_gradient));
+	visibility = clamp(visibility, 0, 1);
+	
 	pass_uv = uv;
 }

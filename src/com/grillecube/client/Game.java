@@ -1,9 +1,9 @@
 package com.grillecube.client;
 
 import com.grillecube.client.renderer.MainRenderer;
+import com.grillecube.client.renderer.RenderCalculationThread;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.client.world.WorldClient;
-import com.grillecube.client.world.WorldThread;
 import com.grillecube.client.world.blocks.Blocks;
 
 import fr.toss.lib.Logger;
@@ -15,8 +15,8 @@ public class Game
 	private static Game	_instance;
 	
 	/** Thread pool */
-	private static final int THRD_WORLD	= 0;
-	private static final int THRD_MAX	= 1;
+	private static final int THRD_CALCUL	= 0;
+	private static final int THRD_MAX		= 1;
 	private Thread	_threads[];
 	
 	/** Logger */
@@ -54,7 +54,7 @@ public class Game
 		this._renderer.start();
 		this._world.start();
 		Blocks.initBlocks();
-		this._threads[THRD_WORLD] = new WorldThread(this);
+		this._threads[THRD_CALCUL] = new RenderCalculationThread(this);
 		this._logger.log(Level.FINE, "Game started!");
 	}
 
@@ -68,11 +68,11 @@ public class Game
 			thrd.start();
 		}
 		
+		this._window.useVSync(0);
+		
 		long	prev = System.currentTimeMillis();
 		int		frames = 0;
-		
-		//DOLOL
-		
+				
 		while (this._window.shouldClose() == false)
 		{
 			if (System.currentTimeMillis() - prev >= 1000)

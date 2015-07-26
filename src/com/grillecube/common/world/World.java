@@ -11,10 +11,6 @@ public abstract class World
 
 	}
 
-	/** update the world (implemntation depends client or server side */
-	public abstract void	update();
-
-
 	/** get the terrain location (x, y, z) for the given world location */
 	public TerrainLocation	getTerrainLocation(Vector3f pos)
 	{
@@ -23,19 +19,19 @@ public abstract class World
 		location = new TerrainLocation();
 		if (pos.x < 0)
 		{
-			pos.x -= Terrain.TERRAIN_SIZE_X;
+			pos.x -= Terrain.SIZE_X;
 		}
 		if (pos.y < 0)
 		{
-			pos.y -= Terrain.TERRAIN_SIZE_Y;
+			pos.y -= Terrain.SIZE_Y;
 		}
 		if (pos.z < 0)
 		{
-			pos.z -= Terrain.TERRAIN_SIZE_Z;
+			pos.z -= Terrain.SIZE_Z;
 		}
-		location.set((int)pos.x / Terrain.TERRAIN_SIZE_X,
-					(int)pos.y / Terrain.TERRAIN_SIZE_Y,
-					(int)pos.z / Terrain.TERRAIN_SIZE_Z);
+		location.set((int)pos.x / Terrain.SIZE_X,
+					(int)pos.y / Terrain.SIZE_Y,
+					(int)pos.z / Terrain.SIZE_Z);
 		return (location);
 	}
 	
@@ -46,20 +42,20 @@ public abstract class World
 		int	y;
 		int	z;
 		
-		x = (int)vec.x % Terrain.TERRAIN_SIZE_X;
-		y = (int)vec.y % Terrain.TERRAIN_SIZE_Y; 
-		z = (int)vec.z % Terrain.TERRAIN_SIZE_Z;
+		x = (int)vec.x % Terrain.SIZE_X;
+		y = (int)vec.y % Terrain.SIZE_Y; 
+		z = (int)vec.z % Terrain.SIZE_Z;
 		if (x < 0)
 		{
-			x += Terrain.TERRAIN_SIZE_X;
+			x += Terrain.SIZE_X;
 		}
 		if (y < 0)
 		{
-			y += Terrain.TERRAIN_SIZE_Y;
+			y += Terrain.SIZE_Y;
 		}
 		if (z < 0)
 		{
-			z += Terrain.TERRAIN_SIZE_Z;
+			z += Terrain.SIZE_Z;
 		}
 		return (new Vector3i(x, y, z));
 	}

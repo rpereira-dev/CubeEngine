@@ -83,7 +83,7 @@ public class QuadRenderer
 		this._quad_program.useStart();
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, BlockTextures.getGLTextureMap(BlockTextures.RESOLUTION_16));
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, BlockTextures.getGLTextureAtlas(BlockTextures.RESOLUTION_16));
 
 		this._quad_program.loadUniformMatrix(this._quad_program.getTransfMatrix(), mat);
 				

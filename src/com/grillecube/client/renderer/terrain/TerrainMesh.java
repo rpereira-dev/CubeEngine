@@ -8,7 +8,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.util.vector.Vector3f;
 
+import com.grillecube.client.renderer.Camera;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.blocks.Block;
 import com.grillecube.client.world.blocks.BlockTextures;
@@ -21,47 +23,41 @@ public class TerrainMesh
 	private static final float S 	= 1;	//block size unit
 	public static final float UVX 	= 1;
 	public static final float UVY 	= (1 / (float)BlockTextures.MAX_ID);
-
-	public static final int MESH_PER_TERRAIN	= 4;
-	public static final int MESH_SIZE_Y			= Terrain.TERRAIN_SIZE_Y / MESH_PER_TERRAIN;
 	
 	/** Mesh state */
-	private static final int	STATE_INITIALIZED			= 1;
-	private static final int	STATE_VBO_UP_TO_DATE		= 2;
-	private static final int	STATE_VERTICES_UP_TO_DATE	= 4;
+	public static final int	STATE_INITIALIZED			= 1;
+	public static final int	STATE_VBO_UP_TO_DATE		= 2;
+	public static final int	STATE_VERTICES_UP_TO_DATE	= 4;
 	private int	_state;
 	
 	/** terrain data */
 	private TerrainClient	_terrain;
-	private int 			_meshID;
 	private float[]			_vertices;
 	private int				_vertex_count;
+	
+	/** distance to camera */
+	private Vector3f	_center;
+	private float		_camera_dist;
 	
 	/** opengl */
 	private int	_vaoID;
 	private int	_vboID;
 	
-	public TerrainMesh(TerrainClient terrain, int meshID)
+	public TerrainMesh(TerrainClient terrain)
 	{
 		this._terrain = terrain;
-		this._meshID = meshID;
 		this._state = 0;
 		this._vertices = null;
 		this._vertex_count = 0;
+		this._center = new Vector3f(terrain.getLocation().getX() * Terrain.SIZE_X + Terrain.SIZE_X / 2,
+									terrain.getLocation().getY() * Terrain.SIZE_Y + Terrain.SIZE_Y / 2,
+									terrain.getLocation().getZ() * Terrain.SIZE_Z + Terrain.SIZE_Z / 2);
+		this._camera_dist = Float.MAX_VALUE;
 		
 	}
 	
-	/** called in the world update thread */
-	public void update()
-	{
-		if (!this.hasState(STATE_VERTICES_UP_TO_DATE))
-		{
-			this.generateVertices();
-		}
-	}
-	
 	/** set terrain mesh vertices depending on terrain block */
-	private void	generateVertices()
+	public void	generateVertices()
 	{
 		// lock the vboUpdate() function, so it is not called before all vertices are generated
 		this.setState(STATE_VBO_UP_TO_DATE);
@@ -74,10 +70,6 @@ public class TerrainMesh
 		this.pushVisibleFaces(stack);
 		
 		this._vertices = new float[stack.size() * 8]; //each vertex is 8 floats (x, y, z, nx, ny, nz, uvx, uvy)
-		if (this._vertices == null)
-		{
-			return ;
-		}
 		int i = 0;
 		while (stack.size() > 0)
 		{
@@ -183,60 +175,66 @@ public class TerrainMesh
 	
 	private void	pushVisibleFaces(Stack<MeshVertex> stack)
 	{
+		Terrain	neighbors[];
 		Block	block;
-		int		starty;
-		int		endy;
 		float	uvx;
 		float	uvy;
 		
-		starty = this._meshID * TerrainMesh.MESH_SIZE_Y;
-		endy = starty + TerrainMesh.MESH_SIZE_Y;
+		neighbors = this._terrain.getNeighboors();
 		
-		for (int x = 0 ; x < TerrainClient.TERRAIN_SIZE_X ; x++)
+		for (int x = 0 ; x < TerrainClient.SIZE_X ; x++)
 		{
-			for (int y = starty ; y < endy ; y++)
+			for (int y = 0 ; y < TerrainClient.SIZE_Y ; y++)
 			{
-				for (int z = 0 ; z < TerrainClient.TERRAIN_SIZE_Z ; z++)
+				for (int z = 0 ; z < TerrainClient.SIZE_Z ; z++)
 				{
 					block = this._terrain.getBlock(x, y, z);
 					if (block.isVisible())
 					{
-						if (x == 0 || !this._terrain.getBlock(x - 1, y, z).isVisible())
+
+						if ((x == 0 && neighbors[2] != null && (neighbors[2].getBlock(Terrain.SIZE_X - 1, y, z).isVisible() == false))
+							|| (x > 0 && this._terrain.getBlock(x - 1, y, z).isVisible() == false))
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_LEFT) * UVY;
 							this.pushLeftFace(stack, x, y, z, uvx, uvy);
 						}
+
 						
-						if (x == Terrain.TERRAIN_SIZE_X - 1 || !this._terrain.getBlock(x + 1, y, z).isVisible())
+						if ((x == Terrain.SIZE_X - 1 && neighbors[3] != null && (neighbors[3].getBlock(0, y, z).isVisible() == false))
+								|| (x < Terrain.SIZE_X - 1 && this._terrain.getBlock(x + 1, y, z).isVisible() == false))
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_RIGHT) * UVY;
 							this.pushRightFace(stack, x, y, z, uvx, uvy);
 						}
 						
-						if (z == 0 || !this._terrain.getBlock(x, y, z - 1).isVisible())
+						if ((z == 0 && neighbors[4] != null && (neighbors[4].getBlock(x, y, Terrain.SIZE_Z - 1).isVisible() == false))
+								|| (z > 0 && this._terrain.getBlock(x, y, z - 1).isVisible() == false))
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_FRONT) * UVY;
 							this.pushFrontFace(stack, x, y, z, uvx, uvy);
 						}
-						
-						if (z == Terrain.TERRAIN_SIZE_Z - 1 || !this._terrain.getBlock(x, y, z + 1).isVisible())
+
+						if ((z == Terrain.SIZE_Z - 1 && neighbors[5] != null && (neighbors[5].getBlock(x, y, 0).isVisible() == false))
+								|| (z < Terrain.SIZE_Z - 1 && this._terrain.getBlock(x, y, z + 1).isVisible() == false))
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_BACK) * UVY;
 							this.pushBackFace(stack, x, y, z, uvx, uvy);
 						}
 						
-						if (y == 0 || !this._terrain.getBlock(x, y - 1, z).isVisible())
+						if ((y == 0 && neighbors[0] != null && neighbors[0].getBlock(x, Terrain.SIZE_Y - 1, z).isVisible() == false)
+								|| (y > 0 && this._terrain.getBlock(x, y - 1, z).isVisible() == false))
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_BOT) * UVY;
 							this.pushBotFace(stack, x, y, z, uvx, uvy);
 						}
-						
-						if (y == Terrain.TERRAIN_SIZE_Y - 1 || !this._terrain.getBlock(x, y + 1, z).isVisible())
+
+						if ((y == Terrain.SIZE_Y - 1 && (neighbors[1] == null || (neighbors[1].getBlock(x, 0, z).isVisible() == false)))
+								|| (y < Terrain.SIZE_Y - 1 && this._terrain.getBlock(x, y + 1, z).isVisible() == false))
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_TOP) * UVY;
@@ -342,5 +340,30 @@ public class TerrainMesh
 	public void		switchState(int state)
 	{
 		this._state = this._state ^ state;
+	}
+
+	public void updateCameraDistance(Camera camera)
+	{
+	    float dx = camera.getPosition().getX() - this._center.x;
+	    float dy = camera.getPosition().getY() - this._center.y;
+	    float dz = camera.getPosition().getZ() - this._center.z;
+	    
+	    this._camera_dist = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+	}
+	
+	public float	getCameraDistance()
+	{
+		return (this._camera_dist);
+	}
+
+	public Vector3f getCenter()
+	{
+		return (this._center);
+	}
+
+	/** return true if this mesh is visible (executed in the rendernig main thread */
+	public boolean isVisible(Camera camera)
+	{
+		return (true);
 	}
 }

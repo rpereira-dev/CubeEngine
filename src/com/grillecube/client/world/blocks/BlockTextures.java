@@ -170,7 +170,7 @@ public class BlockTextures
 	}
 	
 	/** return the opengl texture map for the given resolution */
-	public static int	getGLTextureMap(int resolutionID)
+	public static int	getGLTextureAtlas(int resolutionID)
 	{
 		return (_gl_texture_map[resolutionID]);
 	}

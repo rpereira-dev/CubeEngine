@@ -44,12 +44,22 @@ public class TerrainLocation
 		hash = ((hash << 5) + hash) + this._z;
 		return (hash);
 	}
+	
+	@Override
+	public boolean	equals(Object obj)
+	{
+		TerrainLocation	loc;
+		
+		loc = (TerrainLocation)obj;
+		return (this._x == loc.getX() && this._y == loc.getY() && this._z == loc.getZ());
+	}
 
-	public void set(int x, int y, int z)
+	public TerrainLocation	set(int x, int y, int z)
 	{
 		this._x = x;
 		this._y = y;
 		this._z = z;
+		return (this);
 	}
 	
 	@Override

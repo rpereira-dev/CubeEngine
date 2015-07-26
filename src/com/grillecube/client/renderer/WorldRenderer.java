@@ -8,10 +8,6 @@ import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.WorldClient;
 import com.grillecube.client.world.blocks.BlockTextures;
-import com.grillecube.common.world.Terrain;
-import com.grillecube.server.Game;
-
-import fr.toss.lib.Logger;
 
 public class WorldRenderer
 {
@@ -39,37 +35,27 @@ public class WorldRenderer
 		GL11.glCullFace(GL11.GL_BACK);
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, BlockTextures.getGLTextureMap(BlockTextures.RESOLUTION_16));
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, BlockTextures.getGLTextureAtlas(BlockTextures.RESOLUTION_16));
 
 		this._terrain_program.useStart();
 		{
-			this._terrain_program.loadUniforms(camera);
+			this._terrain_program.loadUniforms(world, camera);
 			for (TerrainClient terrain : world.getTerrains())
 			{
-				if (isTerrainVisible(terrain, camera))
-				{
-					renderTerrain(terrain);
-				}
+				this.renderTerrain(terrain, camera);
 			}
 		}
 		this._terrain_program.useStop();
 	}
 	
 	/** render a terrain */
-	private void renderTerrain(TerrainClient terrain)
+	private void renderTerrain(TerrainClient terrain, Camera camera)
 	{
 		this._terrain_program.loadInstanceUniforms(terrain);
-		for (TerrainMesh mesh : terrain.getMeshes())
+		if (terrain.getMesh().isVisible(camera))
 		{
-			mesh.render();
+			terrain.getMesh().render();				
 		}
-	}
-
-	/** return true if the terrain is visible */
-	private boolean	isTerrainVisible(Terrain terrain, Camera camera)
-	{
-		//TODO
-		return (true);
 	}
 
 	/** start the renderer */

@@ -10,31 +10,38 @@ import com.grillecube.client.renderer.model.Models;
 import com.grillecube.client.world.entity.EntityModeled;
 import com.grillecube.common.world.TerrainLocation;
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.entity.Entity;
-import com.grillecube.server.Game;
-
-import fr.toss.lib.Logger;
 
 public class WorldClient extends World
 {
 	/** every loaded terrain are in */
 	private HashMap<TerrainLocation, TerrainClient>	_terrains;
 	
+	/** every world entities */
 	private ArrayList<EntityModeled>	_entities;
+	
+	/** world weather */
+	private Weather	_weather;
 	
 	public WorldClient()
 	{
 		super();
 		this._terrains = new HashMap<TerrainLocation, TerrainClient>();
 		this._entities = new ArrayList<EntityModeled>();
+		this._weather = new Weather();
 	}
 	
 
 	/** called on initiliaztion */
 	public void start()
 	{
-		this.addTerrain(new TerrainClient(new TerrainLocation(0, 0, 0)));				
-		
+		for (int x = -16 ; x < 16 ; x++)
+		{
+			for (int z = -8 ; z < 8 ; z++)
+			{
+				this.addTerrain(new TerrainClient(this, new TerrainLocation(x, 0, z)));
+			}
+		}
+				
 		this._entities.add(new EntityModeled(Models.getModel(Models.PIG))
 		{
 
@@ -42,16 +49,6 @@ public class WorldClient extends World
 			protected void updateEntity() {}
 	
 		});
-	}
-	
-	/** called in the WorldThread thread, (not in the rendering one) */
-	@Override
-	public void update()
-	{
-		for (TerrainClient terrain : this._terrains.values())
-		{
-			terrain.update();
-		}
 	}
 	
 	/** add the terrain to the world */
@@ -88,5 +85,11 @@ public class WorldClient extends World
 	public ArrayList<EntityModeled>	getEntities()
 	{
 		return (this._entities);
+	}
+
+	/** return world weather */
+	public Weather	getWeather()
+	{
+		return (this._weather);
 	}
 }
