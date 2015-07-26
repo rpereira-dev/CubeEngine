@@ -72,7 +72,7 @@ public class Game
 		
 		long	prev = System.currentTimeMillis();
 		int		frames = 0;
-				
+
 		while (this._window.shouldClose() == false)
 		{
 			if (System.currentTimeMillis() - prev >= 1000)

@@ -2,16 +2,11 @@ package com.grillecube.server;
 
 import java.net.SocketException;
 
-import com.grillecube.server.network.Server;
-
 import fr.toss.lib.Logger;
 
 public class Game
 {
 	private static final Logger	_logger = new Logger(System.out);
-
-	/** Server network */
-	private Server	_server;
 	
 	/** Game states */
 	private int	_state;
@@ -35,24 +30,14 @@ public class Game
 	
 	public Game()
 	{
-		this._server = new Server(this, 4242);
 		this._state = 0;
 	}
 
 	/** start the server */
 	public void start()
 	{
-		getLogger().log(Logger.Level.FINE, "Starting game...");
+		getLogger().log(Logger.Level.FINE, "Starting serveur...");
 
-		try
-		{
-			this._server.start();
-			getLogger().log(Logger.Level.FINE, "Server started!");
-		}
-		catch (SocketException e)
-		{
-			getLogger().log(Logger.Level.ERROR, "SocketException: " + e);
-		}
 		
 		getLogger().log(Logger.Level.FINE, "Started.");
 	}
@@ -113,11 +98,5 @@ public class Game
 	{
 		return (_logger);
 	}
-
-	public Server	getServer()
-	{
-		return (this._server);
-	}
-	
 
 }
