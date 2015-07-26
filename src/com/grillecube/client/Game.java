@@ -57,8 +57,8 @@ public class Game
 		this._threads[THRD_WORLD] = new WorldThread(this);
 		this._logger.log(Level.FINE, "Game started!");
 	}
-	
 
+	/** main game loop (dedicated to rendering) */
 	public void loop()
 	{
 		this.setState(STATE_RUNNING);
@@ -70,6 +70,8 @@ public class Game
 		
 		long	prev = System.currentTimeMillis();
 		int		frames = 0;
+		
+		//DOLOL
 		
 		while (this._window.shouldClose() == false)
 		{
@@ -86,15 +88,6 @@ public class Game
 			this._window.flushScreen();
 			
 			frames++;
-			
-			try
-			{
-				Thread.sleep(1000 / 60);
-			}
-			catch (InterruptedException e)
-			{
-				break ;
-			}
 		}
 		
 		this.unsetState(STATE_RUNNING);
