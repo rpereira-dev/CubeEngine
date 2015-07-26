@@ -1,7 +1,6 @@
 package com.grillecube.client.world;
 
 import com.grillecube.client.Game;
-import com.grillecube.common.world.TerrainLocation;
 
 public class WorldThread extends Thread
 {
@@ -24,7 +23,7 @@ public class WorldThread extends Thread
 			world.update();
 			try
 			{
-				Thread.sleep(1000 / 120);
+				Thread.sleep(8);
 			}
 			catch (InterruptedException e)
 			{

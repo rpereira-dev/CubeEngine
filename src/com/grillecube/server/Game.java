@@ -42,7 +42,7 @@ public class Game
 	/** start the server */
 	public void start()
 	{
-		getLogger().log(Logger.Level.FINE, "Starting game...");
+		getLogger().log(Logger.Level.FINE, "Starting serveur...");
 
 		try
 		{

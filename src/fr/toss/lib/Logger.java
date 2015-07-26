@@ -45,8 +45,10 @@ public class Logger
 		thrd = Thread.currentThread();
 		this._print_stream.printf("%s[%s] [%s] [Thread: %s(%d)]%s %s\n",
 				level.getColor(),
-				_date_format.format(_calendar.getTime()), level.getLabel(),
-				thrd.getName(), thrd.getId(),
+				_date_format.format(_calendar.getTime()),
+				level.getLabel(),
+				thrd.getName(),
+				thrd.getId(),
 				ANSI_RESET,
 				message);
 	}
