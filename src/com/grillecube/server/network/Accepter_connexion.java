@@ -19,7 +19,7 @@ public class Accepter_connexion implements Runnable{
 		try {
 			while(true){
 				socket = socketserver.accept();
-				System.out.println("Quelqu'un veut se connecter  ");
+				System.out.println("Quelqu'un veut se connecter...");
 				
 				t1 = new Thread(new Authentification(socket));
 				t1.start();

@@ -36,18 +36,15 @@ public class Authentification implements Runnable {
 			login = in.readLine();
 			
 			
-			out.println("Entrez votre mot de passe :");
-			out.flush();
-			pass = in.readLine();
+			
 
-			if(isValid(login, pass)){
+
 				
 				out.println("connecte");
 				System.out.println(login +" vient de se connecter ");
 				out.flush();
 				authentifier = true;	
-			}
-			else {out.println("erreur"); out.flush();}
+			
 		 }
 			t2 = new Thread(new Chat_ClientServeur(socket,login));
 			t2.start();
@@ -58,12 +55,5 @@ public class Authentification implements Runnable {
 		}
 	}
 	
-	private static boolean isValid(String login, String pass) {
-		
-		
-		boolean connexion = true;
-	return connexion;
-		
-	}
 
 }

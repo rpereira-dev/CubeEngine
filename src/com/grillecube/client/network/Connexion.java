@@ -8,7 +8,7 @@ public class Connexion implements Runnable {
 
 	private Socket socket = null;
 	public static Thread t2;
-	public static String login = null, pass = null, message1 = null, message2 = null, message3 = null;
+	public static String login = null, message1 = null, message2 = null, message3 = null;
 	private PrintWriter out = null;
 	private BufferedReader in = null;
 	private Scanner sc = null;
@@ -35,10 +35,6 @@ public class Connexion implements Runnable {
 		out.println(login);
 		out.flush();
 		
-		System.out.println(in.readLine());
-		pass = sc.nextLine();
-		out.println(pass);
-		out.flush();
 		
 		if(in.readLine().equals("connecte")){
 			
@@ -51,7 +47,6 @@ public class Connexion implements Runnable {
 		  }
 		
 	}
-			
 			t2 = new Thread(new Chat_ClientServeur(socket));
 			t2.start();
 		
