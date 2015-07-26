@@ -4,6 +4,7 @@ import com.grillecube.client.Game;
 import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.WorldClient;
+import com.grillecube.common.world.Terrain;
 
 /** this thread is dedicated to rendering calculation, such as:
  * 
@@ -48,11 +49,22 @@ public class RenderCalculationThread extends Thread
 	{
 		for (TerrainClient terrain : world.getTerrains())
 		{
-			terrain.getMesh().updateCameraDistance(camera);
+			TerrainMesh	mesh = terrain.getMesh();
+			
+			mesh.updateCameraDistance(camera);
 
-			if (!terrain.getMesh().hasState(TerrainMesh.STATE_VERTICES_UP_TO_DATE))
+			if (!mesh.hasState(TerrainMesh.STATE_VERTICES_UP_TO_DATE))
 			{
-				terrain.getMesh().generateVertices();
+				mesh.generateVertices();
+			}
+			
+			if (camera.isInFrustum(mesh.getCenter(), Terrain.SIZE_X / 2, Terrain.SIZE_Y / 2, Terrain.SIZE_Z / 2))
+			{
+				mesh.setState(TerrainMesh.STATE_VISIBLE);
+			}
+			else
+			{
+				mesh.unsetState(TerrainMesh.STATE_VISIBLE);
 			}
 		}
 	}

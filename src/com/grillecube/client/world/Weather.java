@@ -20,7 +20,7 @@ public class Weather
 	public Weather()
 	{
 		this._sun_pos = new Vector3f(0, Terrain.SIZE_Y * 4, Terrain.SIZE_Z);
-		this._sun_color = new Vector3f(1.0f, 1.0f, 1.0f);
+		this._sun_color = new Vector3f(1.2f, 1.0f, 0.8f);
 		this._sun_intensity = 1;
 		
 		this._fog_color = new Vector3f(1.0f, 1.0f, 1.0f);

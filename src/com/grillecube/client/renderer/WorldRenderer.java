@@ -51,9 +51,9 @@ public class WorldRenderer
 	/** render a terrain */
 	private void renderTerrain(TerrainClient terrain, Camera camera)
 	{
-		this._terrain_program.loadInstanceUniforms(terrain);
-		if (terrain.getMesh().isVisible(camera))
+		if (terrain.getMesh().hasState(TerrainMesh.STATE_VISIBLE))
 		{
+			this._terrain_program.loadInstanceUniforms(terrain);
 			terrain.getMesh().render();				
 		}
 	}

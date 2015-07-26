@@ -1,7 +1,5 @@
 package com.grillecube.client.world;
 
-import java.util.Random;
-
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.terrain.TerrainMesh;
@@ -11,6 +9,10 @@ import com.grillecube.common.world.TerrainLocation;
 
 public class TerrainClient extends Terrain
 {
+	//terrain generator
+	private static final SimplexNoise noise = new SimplexNoise((int) System.currentTimeMillis());
+		
+	
 	/** world */
 	private WorldClient	_world;
 	
@@ -30,17 +32,37 @@ public class TerrainClient extends Terrain
 											location.getZ() * Terrain.SIZE_Z);
 		
 		this._mesh = new TerrainMesh(this);
-		
-		Random rand = new Random();
+
 		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
 		{
 			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 			{
-				int	y = Terrain.SIZE_Y - 1 - (Math.abs(rand.nextInt()) % 3);
-				
-				for ( ; y >= 0 ; y--)
+				for (int y = 0 ; y < Terrain.SIZE_Y - 1 ; y++)
 				{
-					this._blocks[x][y][z] = Blocks.DIRT;
+					if (noise.noise((this._world_position.x + x) / 64.0f,
+							(this._world_position.y + y) / 64.0f,
+							(this._world_position.z + z) / 64.0f) < 0)
+					{
+						this._blocks[x][y][z] = Blocks.DIRT;
+					}
+					else
+					{
+						this._blocks[x][y][z] = Blocks.AIR;
+					}
+				}
+			}
+		}
+		
+		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
+		{
+			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
+			{
+				for (int y = 0 ; y < Terrain.SIZE_Y ; y++)
+				{
+					if (this._blocks[x][y][z] == Blocks.DIRT && this._blocks[x][y + 1][z] == Blocks.AIR)
+					{
+						this._blocks[x][y][z] = Blocks.GRASS;
+					}
 				}
 			}
 		}
@@ -71,12 +93,12 @@ public class TerrainClient extends Terrain
 	 * 4: front
 	 * 5: back
 	 */
-	public Terrain[] getNeighboors()
+	public TerrainClient[] getNeighboors()
 	{
-		Terrain[]		terrains;
+		TerrainClient[]	terrains;
 		TerrainLocation	loc;
 		
-		terrains = new Terrain[6];
+		terrains = new TerrainClient[6];
 		loc = new TerrainLocation();
 		terrains[0] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY() - 1, this._location.getZ()));
 		terrains[1] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY() + 1, this._location.getZ()));

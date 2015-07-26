@@ -438,4 +438,18 @@ public class Camera
 		angle = Math.toDegrees(Math.acos(dot));
 		return (angle < this._fov + impresicion);
 	}
+	
+	/** return true if the box of center "center" with dimension x, y, z is in camera frustum */
+	public boolean	isInFrustum(Vector3f center, float x, float y, float z)
+	{
+		return (this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z), 0)
+				|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z), 0)
+				|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z), 0)
+				|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z), 0)
+				|| this.isInFrustum(new Vector3f(center.x, center.y + y, center.z + z), 0)
+				|| this.isInFrustum(new Vector3f(center.x, center.y + y, center.z - z), 0)
+				|| this.isInFrustum(new Vector3f(center.x, center.y - y, center.z + z), 0)
+				|| this.isInFrustum(new Vector3f(center.x, center.y - y, center.z - z), 0)
+				);
+	}
 }

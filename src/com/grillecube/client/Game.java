@@ -67,9 +67,7 @@ public class Game
 		{
 			thrd.start();
 		}
-		
-		this._window.useVSync(0);
-		
+				
 		long	prev = System.currentTimeMillis();
 		int		frames = 0;
 

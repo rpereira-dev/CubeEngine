@@ -26,6 +26,9 @@ public class ProgramTerrain extends Program
 	private int	_fog_density;
 	private int	_fog_gradient;
 
+	private int	_sun_color;
+	private int	_sun_position;
+	
 	public ProgramTerrain()
 	{
 		super("terrain", "terrain");
@@ -49,6 +52,8 @@ public class ProgramTerrain extends Program
 		this._fog_color = super.getUniform("fog_color");
 		this._fog_gradient = super.getUniform("fog_gradient");
 		this._fog_density = super.getUniform("fog_density");
+		this._sun_color = super.getUniform("sun_color");
+		this._sun_position = super.getUniform("sun_position");
 	}
 
 	public void	loadUniforms(WorldClient world, Camera camera)
@@ -59,6 +64,9 @@ public class ProgramTerrain extends Program
 		this.loadUniformVec(this._fog_color, world.getWeather().getFogColor());
 		this.loadUniformFloat(this._fog_gradient, world.getWeather().getFogGradient());
 		this.loadUniformFloat(this._fog_density, world.getWeather().getFogDensity());
+		
+		this.loadUniformVec(this._sun_color, world.getWeather().getSunColor());
+		this.loadUniformVec(this._sun_position, world.getWeather().getSunPos());
 	}
 	
 	public void loadInstanceUniforms(TerrainClient terrain)
