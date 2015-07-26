@@ -10,10 +10,6 @@ import com.grillecube.client.renderer.model.Models;
 import com.grillecube.client.world.entity.EntityModeled;
 import com.grillecube.common.world.TerrainLocation;
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.entity.Entity;
-import com.grillecube.server.Game;
-
-import fr.toss.lib.Logger;
 
 public class WorldClient extends World
 {

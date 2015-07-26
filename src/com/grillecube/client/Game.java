@@ -71,6 +71,8 @@ public class Game
 		long	prev = System.currentTimeMillis();
 		int		frames = 0;
 		
+		
+		
 		while (this._window.shouldClose() == false)
 		{
 			if (System.currentTimeMillis() - prev >= 1000)
@@ -87,14 +89,14 @@ public class Game
 			
 			frames++;
 			
-			try
-			{
-				Thread.sleep(1000 / 60);
-			}
-			catch (InterruptedException e)
-			{
-				break ;
-			}
+//			try
+//			{
+//				Thread.sleep(1000 / 60);
+//			}
+//			catch (InterruptedException e)
+//			{
+//				break ;
+//			}
 		}
 		
 		this.unsetState(STATE_RUNNING);
