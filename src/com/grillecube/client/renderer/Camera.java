@@ -51,10 +51,10 @@ public class Camera
 		this._rot_vec = new Vector3f();
 		this._look_cube = null;
 		this._look_face = null;
-		this._aspect = window.getAspectRatio();
 		this._window = window;
 		this.reset();
 		this._picker = new CameraPicker(this);
+		this._aspect = 0;
 	}
 	
 	public boolean	hasState(int state)
@@ -107,7 +107,7 @@ public class Camera
 	/** rotate the camera depending on mouse cursor */
 	private void rotateCamera()
 	{
-		float	mouse_speed = 0.04f;
+		float	mouse_speed = 0.004f;
 		
 		this.increaseYaw((float) ((this._window.getMouseX() - this._window.getPrevMouseX()) * mouse_speed));
 		this.increasePitch((float) ((this._window.getMouseY() - this._window.getPrevMouseY()) * mouse_speed));
@@ -177,10 +177,12 @@ public class Camera
 		float	y_scale;
 		float	frustrum_length;
 		
+		this._aspect = this._window.getAspectRatio();
+
 		y_scale = (float) (1.0f / Math.tan(Math.toRadians(this._fov / 2.0f)) * this._aspect);
 		x_scale = y_scale / this._aspect;
 		frustrum_length = this._far - this._near;
-		
+
 		this._projection_matrix.setIdentity();
 		this._projection_matrix.m00 = x_scale;
 		this._projection_matrix.m11 = y_scale;
@@ -272,7 +274,6 @@ public class Camera
 		if (isKeyPressed(GLFW.GLFW_KEY_UP))
 		{
 			this._rot_vec.x = -1;
-			System.out.println(this._rot_vec);
 		}
 		if (isKeyPressed(GLFW.GLFW_KEY_DOWN))
 		{
@@ -320,7 +321,7 @@ public class Camera
 	/** reset camera datas */
 	public void reset()
 	{
-		this.setPosition(new Vector3f(0, 0, 0));
+		this.setPosition(new Vector3f(0, Terrain.TERRAIN_SIZE_Y + 1, 0));
 		this.setPositionVec(new Vector3f(0, 0, 0));
 		this.setRotationVec(new Vector3f(0, 0, 0));
 		this.setPitch(0);
@@ -328,11 +329,10 @@ public class Camera
 		this.setRoll(0);
 		this.setFov(70);
 		this.setSpeed(1);
-		this.setRotSpeed(1);	//0.05f
 		this.setRotSpeed(1);
 		this.setNear(0.1f);
 		this.setFar(2000);
-		
+		this._aspect = this._window.getAspectRatio();						
 		this._state = 0;
 	}
 	

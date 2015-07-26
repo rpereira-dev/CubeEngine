@@ -1,5 +1,7 @@
 package com.grillecube.client.world;
 
+import java.util.Random;
+
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.terrain.TerrainMesh;
@@ -29,13 +31,16 @@ public class TerrainClient extends Terrain
 			this._meshes[i] = new TerrainMesh(this, i);
 		}
 		
+		Random rand = new Random();
 		for (int x = 0 ; x < Terrain.TERRAIN_SIZE_X ; x++)
 		{
 			for (int z = 0 ; z < Terrain.TERRAIN_SIZE_Z ; z++)
 			{
-				for (int y = 0 ; y < Terrain.TERRAIN_SIZE_Y ; y++)
+				int	y = Terrain.TERRAIN_SIZE_Y - 1 - (Math.abs(rand.nextInt()) % 3);
+				
+				for ( ; y >= 0 ; y--)
 				{
-					this._blocks[x][y][z] = Blocks.DIRT;					
+					this._blocks[x][y][z] = Blocks.DIRT;
 				}
 			}
 		}

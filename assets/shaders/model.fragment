@@ -1,0 +1,19 @@
+#version 400 core
+
+in vec4 pass_color;
+
+out	vec4 vertexColor;
+
+uniform int	use_wireframe;
+
+void	main(void)
+{
+	if (use_wireframe == 1)
+	{
+		vertexColor = mix(pass_color, vec4(0, 0, 0, 1.0), 0.5);	
+	}
+	else
+	{
+		vertexColor = pass_color;
+	}
+}

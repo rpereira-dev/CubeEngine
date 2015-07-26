@@ -34,7 +34,7 @@ public class ThreadPacketQueue extends Thread
 			}
 			catch (IOException e)
 			{
-				Game.getLogger().log(Logger.LoggerLevel.WARNING, "Exception occured while received datagram packet: " + e.getMessage());
+				Game.getLogger().log(Logger.Level.WARNING, "Exception occured while received datagram packet: " + e.getMessage());
 			}
 		}
 	}

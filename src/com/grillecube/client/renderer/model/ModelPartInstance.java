@@ -37,4 +37,15 @@ public class ModelPartInstance
 	{
 		return (this._animation_instance.isPlaying());
 	}
+	
+	/** return model part which is used by this instance */
+	public ModelPart	getModelPart()
+	{
+		return (this._model_part);
+	}
+
+	public AnimationInstance	getAnimationInstance()
+	{
+		return (this._animation_instance);
+	}
 }

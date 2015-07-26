@@ -18,16 +18,16 @@ import fr.toss.lib.Logger;
 public class BlockTextures
 {
 	/** textures ID */
-	public static final int NONE	= 0;
-	public static final int DIRT 	= 1;
-	public static final int MAX_ID 	= 2;
+	public static final int NONE 		= 0;
+	public static final int DIRT 		= 1;
+	public static final int GRASS_TOP	= 2;
+	public static final int GRASS_SIDE	= 3;
+	public static final int STONE		= 4;
+	public static final int MAX_ID 		= 5;
 	
 	/** texture constants */
 	public static final int	TEXTURE_WIDTH	= 16;
-	public static final int	TEXTURE_HEIGHT = 16;
-	
-	public static final float TEXTURE_UV_WIDTH_UNIT 	= 1;
-	public static final float TEXTURE_UV_HEIGHT_UNIT 	= (1 / (float)MAX_ID);
+	public static final int	TEXTURE_HEIGHT 	= 16;
 	
 	/** texture map resolution */
 	public static final int	RESOLUTION_16 		= 0;
@@ -131,7 +131,7 @@ public class BlockTextures
 		}
 		catch (IOException e)
 		{
-			Game.getLogger().log(Logger.LoggerLevel.WARNING, "Cant save texture atlas: " + e.getMessage());
+			Game.getLogger().log(Logger.Level.WARNING, "Cant save texture atlas: " + e.getMessage());
 		}
 		return (atlas);		
 	}
@@ -148,7 +148,7 @@ public class BlockTextures
 		}
 		catch (IOException e)
 		{
-			Game.getLogger().log(Logger.LoggerLevel.WARNING, "Cant get texture file data: " + filename);
+			Game.getLogger().log(Logger.Level.WARNING, "Cant get texture file data: " + filename);
 		}
 		return (image);
 	}
@@ -160,8 +160,10 @@ public class BlockTextures
 
 		textures = new BufferedImage[BlockTextures.MAX_ID];
 		
-		textures[BlockTextures.NONE] = readImagePixels("none");
-		textures[BlockTextures.DIRT] = readImagePixels("dirt");
+		textures[BlockTextures.NONE] 		= readImagePixels("none");
+		textures[BlockTextures.DIRT] 		= readImagePixels("dirt");
+		textures[BlockTextures.GRASS_TOP] 	= readImagePixels("grass_top");
+		textures[BlockTextures.GRASS_SIDE] 	= readImagePixels("grass_side");
 		
 		allocateGLTextures();	//allocate opengl texture name for each resolution
 		generateGLTextures(createTextureAtlas(textures));

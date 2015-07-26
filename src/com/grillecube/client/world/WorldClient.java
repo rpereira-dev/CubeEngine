@@ -1,34 +1,47 @@
 package com.grillecube.client.world;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.grillecube.client.renderer.model.Models;
+import com.grillecube.client.world.entity.EntityModeled;
 import com.grillecube.common.world.TerrainLocation;
 import com.grillecube.common.world.World;
+import com.grillecube.common.world.entity.Entity;
+import com.grillecube.server.Game;
+
+import fr.toss.lib.Logger;
 
 public class WorldClient extends World
 {
+	/** every loaded terrain are in */
 	private HashMap<TerrainLocation, TerrainClient>	_terrains;
+	
+	private ArrayList<EntityModeled>	_entities;
 	
 	public WorldClient()
 	{
 		super();
 		this._terrains = new HashMap<TerrainLocation, TerrainClient>();
+		this._entities = new ArrayList<EntityModeled>();
 	}
 	
 
 	/** called on initiliaztion */
 	public void start()
 	{
-		for (int x = 0 ; x < 4 ; x++)
+		this.addTerrain(new TerrainClient(new TerrainLocation(0, 0, 0)));				
+		
+		this._entities.add(new EntityModeled(Models.getModel(Models.PIG))
 		{
-			for (int z = 0 ; z < 4 ; z++)
-			{
-				this.addTerrain(new TerrainClient(new TerrainLocation(x, 0, z)));				
-			}
-		}
+
+			@Override
+			protected void updateEntity() {}
+	
+		});
 	}
 	
 	/** called in the WorldThread thread, (not in the rendering one) */
@@ -63,5 +76,17 @@ public class WorldClient extends World
 	public Collection<TerrainClient>	getTerrains()
 	{
 		return (this._terrains.values());
+	}
+
+	public void	spawnEntity(EntityModeled entity, Vector3f pos)
+	{
+		entity.setPosition(pos);
+		entity.setWorld(this);
+		this._entities.add(entity);
+	}
+	
+	public ArrayList<EntityModeled>	getEntities()
+	{
+		return (this._entities);
 	}
 }

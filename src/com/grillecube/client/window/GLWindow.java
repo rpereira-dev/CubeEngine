@@ -83,6 +83,11 @@ public class GLWindow
 		this._bufferX = BufferUtils.createByteBuffer(8);
 		this._bufferY = BufferUtils.createByteBuffer(8);
 	}
+	
+	public void	useVSync(int v)
+	{
+		GLFW.glfwSwapInterval(v);
+	}
 
 	public static void  glCheckError(String label)
 	{

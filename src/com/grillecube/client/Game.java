@@ -7,7 +7,7 @@ import com.grillecube.client.world.WorldThread;
 import com.grillecube.client.world.blocks.Blocks;
 
 import fr.toss.lib.Logger;
-import fr.toss.lib.Logger.LoggerLevel;
+import fr.toss.lib.Logger.Level;
 
 public class Game
 {
@@ -48,14 +48,14 @@ public class Game
 	
 	public void	start()
 	{
-		this._logger.log(LoggerLevel.FINE, "Starting game...");
+		this._logger.log(Level.FINE, "Starting game...");
 		this._state = 0;
 		this._window.start();
 		this._renderer.start();
 		this._world.start();
 		Blocks.initBlocks();
 		this._threads[THRD_WORLD] = new WorldThread(this);
-		this._logger.log(LoggerLevel.FINE, "Game started!");
+		this._logger.log(Level.FINE, "Game started!");
 	}
 	
 
@@ -68,12 +68,24 @@ public class Game
 			thrd.start();
 		}
 		
+		long	prev = System.currentTimeMillis();
+		int		frames = 0;
+		
 		while (this._window.shouldClose() == false)
 		{
+			if (System.currentTimeMillis() - prev >= 1000)
+			{
+				log(Logger.Level.DEBUG, "fps: " + frames);
+				frames = 0;
+				prev = System.currentTimeMillis();
+			}
+			
 			this._window.prepareScreen();
 			this._renderer.update();
 			this._renderer.render(this);
 			this._window.flushScreen();
+			
+			frames++;
 			
 			try
 			{
@@ -90,7 +102,7 @@ public class Game
 
 	public void	stop()
 	{
-		this._logger.log(LoggerLevel.FINE, "Stopping game...");
+		this._logger.log(Level.FINE, "Stopping game...");
 
 		for (Thread thrd : this._threads)
 		{
@@ -100,12 +112,12 @@ public class Game
 			}
 			catch (InterruptedException e)
 			{
-				log(Logger.LoggerLevel.ERROR, "interupted");
+				log(Logger.Level.ERROR, "interupted");
 				thrd.interrupt();
 			}
 		}
 		this._window.stop();
-		this._logger.log(LoggerLevel.FINE, "Stopped");
+		this._logger.log(Level.FINE, "Stopped");
 	}
 	
 	public boolean	hasState(long state)
@@ -133,7 +145,7 @@ public class Game
 		return (_instance);
 	}
 	
-	public static void	log(LoggerLevel level, String message)
+	public static void	log(Level level, String message)
 	{
 		_instance.getLogger().log(level, message);
 	}

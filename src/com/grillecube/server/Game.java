@@ -1,6 +1,5 @@
 package com.grillecube.server;
 
-import java.net.DatagramPacket;
 import java.net.SocketException;
 
 import com.grillecube.server.network.Server;
@@ -43,19 +42,19 @@ public class Game
 	/** start the server */
 	public void start()
 	{
-		getLogger().log(Logger.LoggerLevel.FINE, "Starting game...");
+		getLogger().log(Logger.Level.FINE, "Starting game...");
 
 		try
 		{
 			this._server.start();
-			getLogger().log(Logger.LoggerLevel.FINE, "Server started!");
+			getLogger().log(Logger.Level.FINE, "Server started!");
 		}
 		catch (SocketException e)
 		{
-			getLogger().log(Logger.LoggerLevel.ERROR, "SocketException: " + e);
+			getLogger().log(Logger.Level.ERROR, "SocketException: " + e);
 		}
 		
-		getLogger().log(Logger.LoggerLevel.FINE, "Started.");
+		getLogger().log(Logger.Level.FINE, "Started.");
 	}
 	
 	/** main server loop */
@@ -79,8 +78,8 @@ public class Game
 	/** stop the server */
 	public void stop()
 	{
-		getLogger().log(Logger.LoggerLevel.FINE, "Stopping game...");
-		getLogger().log(Logger.LoggerLevel.FINE, "Stopped");
+		getLogger().log(Logger.Level.FINE, "Stopping game...");
+		getLogger().log(Logger.Level.FINE, "Stopped");
 	}
 	
 	public void	setState(Game.GameState state)

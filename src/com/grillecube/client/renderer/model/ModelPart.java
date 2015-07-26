@@ -10,6 +10,9 @@ import org.lwjgl.opengl.GL30;
 
 public class ModelPart
 {
+	/** model part name */
+	private String	_name;
+	
 	/** opengl */
 	private int	_vaoID;
 	private int	_vboID;
@@ -31,6 +34,11 @@ public class ModelPart
 		this._animations = null;
 	}
 	
+	public ModelPart(String name)
+	{
+		this._name = name;
+	}
+
 	/** initalize opengl vao / vbo */
 	private void prepareMesh()
 	{
@@ -63,7 +71,7 @@ public class ModelPart
 		}
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		
-		this._vertex_count = vertices.length / 6;
+		this._vertex_count = vertices.length / 7;
 	}
 	
 	/** set modelaprt vertices, should only be called once ! */
@@ -129,5 +137,27 @@ public class ModelPart
 	public boolean	hasState(int state)
 	{
 		return ((this._state & state) == state);
+	}
+
+	public void render()
+	{
+		GL30.glBindVertexArray(this._vaoID);
+		
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
+		
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, this._vertex_count);
+
+		GL30.glBindVertexArray(0);		
+	}
+
+	public String	getName()
+	{
+		return (this._name);
+	}
+
+	public int	getVertexCount() 
+	{
+		return (this._vertex_count);
 	}
 }

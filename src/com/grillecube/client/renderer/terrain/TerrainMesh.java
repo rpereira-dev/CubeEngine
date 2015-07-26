@@ -13,41 +13,15 @@ import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.blocks.Block;
 import com.grillecube.client.world.blocks.BlockTextures;
 import com.grillecube.common.world.Terrain;
-import com.grillecube.server.Game;
-
-import fr.toss.lib.Logger;
-
-/* 
-//POINTS:
-		 
-  4-----7
- /|    /|
-0-----3 |
-| 5___|_6 
-|/    | /
-1-----2		               		
-*/
-
-	//POINT0(X, Y, Z, S) new_vec3(-S + X,  S + Y, -S + Z)
-	//POINT1(X, Y, Z, S) new_vec3(-S + X, -S + Y, -S + Z)
-	//POINT2(X, Y, Z, S) new_vec3(-S + X, -S + Y,  S + Z)
-	//POINT3(X, Y, Z, S) new_vec3(-S + X,  S + Y,  S + Z)
-	//POINT4(X, Y, Z, S) new_vec3( S + X,  S + Y, -S + Z)
-	//POINT5(X, Y, Z, S) new_vec3( S + X, -S + Y, -S + Z)
-	//POINT6(X, Y, Z, S) new_vec3( S + X, -S + Y,  S + Z)
-	//POINT7(X, Y, Z, S) new_vec3( S + X,  S + Y,  S + Z)
-
-/*
-	UVS (texture):
-	0--3
-	|  |
-	1--2
-*/
 
 public class TerrainMesh
 {
+	
 	/** constants */
-	private static final float S = 1;	//block size unit
+	private static final float S 	= 1;	//block size unit
+	public static final float UVX 	= 1;
+	public static final float UVY 	= (1 / (float)BlockTextures.MAX_ID);
+
 	public static final int MESH_PER_TERRAIN	= 4;
 	public static final int MESH_SIZE_Y			= Terrain.TERRAIN_SIZE_Y / MESH_PER_TERRAIN;
 	
@@ -74,6 +48,7 @@ public class TerrainMesh
 		this._state = 0;
 		this._vertices = null;
 		this._vertex_count = 0;
+		
 	}
 	
 	/** called in the world update thread */
@@ -82,13 +57,15 @@ public class TerrainMesh
 		if (!this.hasState(STATE_VERTICES_UP_TO_DATE))
 		{
 			this.generateVertices();
-			Game.getLogger().log(Logger.LoggerLevel.DEBUG, "generating mesh vertices!");
 		}
 	}
 	
 	/** set terrain mesh vertices depending on terrain block */
 	private void	generateVertices()
 	{
+		// lock the vboUpdate() function, so it is not called before all vertices are generated
+		this.setState(STATE_VBO_UP_TO_DATE);
+
 		Stack<MeshVertex>	stack;
 		MeshVertex			vertex;
 		
@@ -97,7 +74,10 @@ public class TerrainMesh
 		this.pushVisibleFaces(stack);
 		
 		this._vertices = new float[stack.size() * 8]; //each vertex is 8 floats (x, y, z, nx, ny, nz, uvx, uvy)
-		
+		if (this._vertices == null)
+		{
+			return ;
+		}
 		int i = 0;
 		while (stack.size() > 0)
 		{
@@ -116,33 +96,97 @@ public class TerrainMesh
 		stack.clear();
 		
 		this.setState(STATE_VERTICES_UP_TO_DATE);
+		this.unsetState(STATE_VBO_UP_TO_DATE);
 	}
-
-	/** 4 5 1		|	4 1 0 */
-	private void pushLeftFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvy)
+	
+	 
+/*
+		  4-----7
+		 /|    /|		7 4
+		0-----3 |		6 5
+		| 5___|_6 
+		|/    | /
+		1-----2
+*/
+	
+	//4, 0, 3 ; 4, 3, 7
+	private void pushTopFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
 	{
-		stack.add(new MeshVertex(-S + X,  S + Y, -S + Z, 0.0f, 0.0f, -1.0f, BlockTextures.TEXTURE_UV_WIDTH_UNIT, uvy + BlockTextures.TEXTURE_UV_HEIGHT_UNIT));	//1
-		stack.add(new MeshVertex(S + X, -S + Y, -S + Z, 0.0f, 0.0f, -1.0f, 0.0f, uvy + BlockTextures.TEXTURE_UV_HEIGHT_UNIT));	//5
-		stack.add(new MeshVertex(S + X,  S + Y, -S + Z, 0.0f, 0.0f, -1.0f, 0.0f, uvy));		//4
+		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 0, 0, uvx, uvy + UVY));
+		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 0, 0, uvx + UVX, uvy + UVY));
 		
-		stack.add(new MeshVertex(-S + X,  S + Y, -S + Z, 0.0f, 0.0f, -1.0f, BlockTextures.TEXTURE_UV_WIDTH_UNIT, uvy));		//4
-		stack.add(new MeshVertex(S + X,  S + Y, -S + Z, 0.0f, 0.0f, -1.0f, 0.0f, uvy));		//4
-		stack.add(new MeshVertex(-S + X,  S + Y, -S + Z, 0.0f, 0.0f, -1.0f, BlockTextures.TEXTURE_UV_WIDTH_UNIT, uvy + BlockTextures.TEXTURE_UV_HEIGHT_UNIT));	//1
+		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 0, 0, uvx + UVX, uvy + UVY));
+		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 0, 0, uvx + UVX, uvy));
+	}
+	
+	//1, 5, 6 ; 1 6 2
+	private void pushBotFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+	{
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, 0, 0, uvx, uvy + UVY));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, 0, 0, uvx + UVX, uvy + UVY));
+		
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, 0, 0, uvx + UVX, uvy + UVY));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, 0, 0, uvx + UVX, uvy));
+	}
+	
+	//4, 5, 1 ; 4, 1, 0
+	private void pushLeftFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+	{
+		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, 0, 0, uvx, uvy + UVY));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, 0, 0, uvx + UVX, uvy + UVY));
+		
+		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, 0, 0, uvx + UVX, uvy + UVY));
+		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 0, 0, uvx + UVX, uvy));
+	}
+	
+	//3, 2, 6 ; 3, 6, 7
+	private void pushRightFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+	{
+		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, 0, 0, uvx, uvy + UVY));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, 0, 0, uvx + UVX, uvy + UVY));
+		
+		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, 0, 0, uvx + UVX, uvy + UVY));
+		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 0, 0, uvx + UVX, uvy));
+	}
+	
+	//0, 1, 2 ; 0, 2, 3
+	private void pushFrontFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+	{
+		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, 0, 0, uvx, uvy + UVY));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, 0, 0, uvx + UVX, uvy + UVY));
+		
+		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, 0, 0, uvx + UVX, uvy + UVY));
+		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 0, 0, uvx + UVX, uvy));
+	}
+	
+	//7, 6, 5 ; 7, 5, 4
+	private void pushBackFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+	{
+		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, 0, 0, uvx, uvy + UVY));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, 0, 0, uvx + UVX, uvy + UVY));
+		
+		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 0, 0, uvx, uvy));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, 0, 0, uvx + UVX, uvy + UVY));
+		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 0, 0, uvx + UVX, uvy));
 	}
 	
 	private void	pushVisibleFaces(Stack<MeshVertex> stack)
 	{
-		stack.push(new MeshVertex(-1, 1, -1, 0, 0, 0, 0, 0));
-		stack.push(new MeshVertex(-1, -1, -1, 0, 0, 0, 0, 0));
-		stack.push(new MeshVertex(1, -1, -1, 0, 0, 0, 0, 0));
-		
-		stack.push(new MeshVertex(-1, 1, -1, 0, 0, 0, 0, 0));
-		stack.push(new MeshVertex(1, -1, -1, 0, 0, 0, 0, 0));
-		stack.push(new MeshVertex(1, 1, -1, 0, 0, 0, 0, 0));
-		/*
 		Block	block;
 		int		starty;
 		int		endy;
+		float	uvx;
 		float	uvy;
 		
 		starty = this._meshID * TerrainMesh.MESH_SIZE_Y;
@@ -159,45 +203,49 @@ public class TerrainMesh
 					{
 						if (x == 0 || !this._terrain.getBlock(x - 1, y, z).isVisible())
 						{
-							uvy = block.getTextureIDForFace(Block.FACE_LEFT) * BlockTextures.TEXTURE_UV_HEIGHT_UNIT;
-							//this.pushLeftFace(stack, x, y, z, uvy);							
+							uvx = 0;
+							uvy = block.getTextureIDForFace(Block.FACE_LEFT) * UVY;
+							this.pushLeftFace(stack, x, y, z, uvx, uvy);
 						}
 						
 						if (x == Terrain.TERRAIN_SIZE_X - 1 || !this._terrain.getBlock(x + 1, y, z).isVisible())
 						{
-							uvy = block.getTextureIDForFace(Block.FACE_RIGHT) * BlockTextures.TEXTURE_UV_HEIGHT_UNIT;
-							//this.pushRightFace(stack, x, y, z, uvy);
+							uvx = 0;
+							uvy = block.getTextureIDForFace(Block.FACE_RIGHT) * UVY;
+							this.pushRightFace(stack, x, y, z, uvx, uvy);
 						}
 						
 						if (z == 0 || !this._terrain.getBlock(x, y, z - 1).isVisible())
 						{
-							uvy = block.getTextureIDForFace(Block.FACE_FRONT) * BlockTextures.TEXTURE_UV_HEIGHT_UNIT;
-							//this.pushFrontFace(stack, x, y, z, uvy);
+							uvx = 0;
+							uvy = block.getTextureIDForFace(Block.FACE_FRONT) * UVY;
+							this.pushFrontFace(stack, x, y, z, uvx, uvy);
 						}
 						
 						if (z == Terrain.TERRAIN_SIZE_Z - 1 || !this._terrain.getBlock(x, y, z + 1).isVisible())
 						{
-							uvy = block.getTextureIDForFace(Block.FACE_BACK) * BlockTextures.TEXTURE_UV_HEIGHT_UNIT;
-							//this.pushBackFace(stack, x, y, z, uvy);
+							uvx = 0;
+							uvy = block.getTextureIDForFace(Block.FACE_BACK) * UVY;
+							this.pushBackFace(stack, x, y, z, uvx, uvy);
 						}
-
 						
 						if (y == 0 || !this._terrain.getBlock(x, y - 1, z).isVisible())
 						{
-							uvy = block.getTextureIDForFace(Block.FACE_BOT) * BlockTextures.TEXTURE_UV_HEIGHT_UNIT;
-							//this.pushBotFace(stack, x, y, z, uvy);
+							uvx = 0;
+							uvy = block.getTextureIDForFace(Block.FACE_BOT) * UVY;
+							this.pushBotFace(stack, x, y, z, uvx, uvy);
 						}
 						
 						if (y == Terrain.TERRAIN_SIZE_Y - 1 || !this._terrain.getBlock(x, y + 1, z).isVisible())
 						{
-							uvy = block.getTextureIDForFace(Block.FACE_TOP) * BlockTextures.TEXTURE_UV_HEIGHT_UNIT;
-							//this.pushTopFace(stack, x, y, z, uvy);							
+							uvx = 0;
+							uvy = block.getTextureIDForFace(Block.FACE_TOP) * UVY;
+							this.pushTopFace(stack, x, y, z, uvx, uvy);							
 						}
 					}
 				}
 			}
 		}
-		*/
 	}
 
 	/** initialize opengl stuff (vao, vbo) */
@@ -219,7 +267,6 @@ public class TerrainMesh
 		GL30.glBindVertexArray(0);
 				
 		this.setState(STATE_INITIALIZED);
-		Game.getLogger().log(Logger.LoggerLevel.DEBUG, "initializing mesh!");
 	}
 	
 	/** update vertex buffer object (vertices buffer opengl-side) */
@@ -246,7 +293,6 @@ public class TerrainMesh
 		this._vertices = null;	//gc will delete it
 		this.setState(STATE_VBO_UP_TO_DATE);
 		
-		Game.getLogger().log(Logger.LoggerLevel.DEBUG, "update mesh vbo!");
 	}
 	
 	/** called in the rendering thread */
@@ -257,7 +303,7 @@ public class TerrainMesh
 			this.initialize();
 		}
 		
-		if (!this.hasState(STATE_VBO_UP_TO_DATE))
+		if (!this.hasState(STATE_VBO_UP_TO_DATE) && this.hasState(STATE_VERTICES_UP_TO_DATE))
 		{
 			this.updateVBO();
 		}

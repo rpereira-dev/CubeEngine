@@ -3,14 +3,14 @@ package com.grillecube.client.renderer.model;
 public class Model
 {
 	/** model name */
-	private String		_name;
+	private String	_name;
 	
 	/** model parts */
 	private ModelPart[]	_parts;
-	
-	public Model(String filepath)
+
+	public Model(String name)
 	{
-		ModelLoader.loadModel(this, filepath);
+		this._name = name;
 	}
 	
 	/** return model parts */
@@ -44,5 +44,10 @@ public class Model
 			return (null);
 		}
 		return (this._parts[i]);
+	}
+
+	public String	getName()
+	{
+		return (this._name);
 	}
 }

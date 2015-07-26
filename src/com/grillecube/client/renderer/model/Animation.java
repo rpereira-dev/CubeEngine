@@ -21,6 +21,12 @@ public class Animation
 
 	public Animation() {}
 	
+	public Animation(String name, int id)
+	{
+		this._name = name;
+		this._animationID = id;
+	}
+
 	public AnimationFrame[]	getFrames()
 	{
 		return (this._frames);

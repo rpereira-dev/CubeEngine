@@ -15,9 +15,18 @@ public abstract class Entity
 	private Vector3f	_pos_vel;
 	private Vector3f	_rot_vel;
 	
+	public Entity()
+	{
+		this(null);
+	}
+	
 	public Entity(World world)
 	{
 		this._world = world;
+		this._pos = new Vector3f(0, 0, 0);
+		this._pos_vel = new Vector3f(0, 0, 0);
+		this._rot = new Vector3f(0, 0, 0);
+		this._rot_vel = new Vector3f(0, 0, 0);
 	}
 	
 	/** update the entity */
@@ -59,5 +68,15 @@ public abstract class Entity
 	public Vector3f	getRotationVelocity()
 	{
 		return (this._rot_vel);
+	}
+
+	public void setPosition(Vector3f pos)
+	{
+		this._pos = pos;
+	}
+	
+	public void setWorld(World world)
+	{
+		this._world = world;
 	}
 }

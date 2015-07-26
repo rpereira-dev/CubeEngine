@@ -15,6 +15,17 @@ public abstract class EntityModeled extends Entity
 		this._model_instance = new ModelInstance(model);
 	}
 	
+	public EntityModeled(Model model)
+	{
+		this(null, model);
+	}
+	
+	/** return model instance for this entity */
+	public ModelInstance	getModelInstance()
+	{
+		return (this._model_instance);
+	}
+	
 	/** start the animation for this entity */
 	public void	startAnimation(int animationID)
 	{

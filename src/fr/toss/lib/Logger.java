@@ -38,7 +38,7 @@ public class Logger
 		this._print_stream.println(string);
 	}
 	
-	public void log(Logger.LoggerLevel level, String message)
+	public void log(Logger.Level level, String message)
 	{
 		Thread	thrd;
 		
@@ -51,7 +51,7 @@ public class Logger
 				message);
 	}
 
-	public enum LoggerLevel
+	public enum Level
 	{
 		FINE(ANSI_GREEN, "fine"),
 		WARNING(ANSI_YELLOW, "warning"),
@@ -61,7 +61,7 @@ public class Logger
 		String	_color;
 		String	_label;
 		
-		LoggerLevel(String color, String label)
+		Level(String color, String label)
 		{
 			this._color = color;
 			this._label = label.toUpperCase();

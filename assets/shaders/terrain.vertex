@@ -4,13 +4,11 @@ in vec3 position;
 in vec3 normal;
 in vec2 uv;
 
-out vec4 pass_color;
+out vec2 pass_uv;
 
 uniform mat4 proj_matrix;
 uniform mat4 view_matrix;
 uniform mat4 transf_matrix;
-
-out vec2 pass_uv;
 
 void	main(void)
 {
@@ -19,7 +17,7 @@ void	main(void)
 
 	transf_position = transf_matrix * vec4(position, 1.0);
 	relative_position_to_camera = view_matrix * transf_position;
-	gl_Position =transf_position;
+	gl_Position = proj_matrix * relative_position_to_camera;
 
 	pass_uv = uv;
 }

@@ -10,11 +10,13 @@ public class MainRenderer
 	
 	/** renderers */
 	private WorldRenderer	_world_renderer;
+	private ModelRenderer	_model_renderer;
 	private QuadRenderer	_quad_renderer;
 
 	public MainRenderer(GLWindow window)
 	{
 		this._world_renderer = new WorldRenderer();
+		this._model_renderer = new ModelRenderer();
 		this._quad_renderer = new QuadRenderer();
 		this._camera = new Camera(window);
 	}
@@ -23,18 +25,21 @@ public class MainRenderer
 	public void	start()
 	{
 		this._world_renderer.start();
+		this._model_renderer.start();
 		this._quad_renderer.start();
 	}
 	
 	public void	stop()
 	{
 		this._world_renderer.stop();
+		this._model_renderer.stop();
 	}
 
 	/** main rendering function (screen is already cleared, and frame buffer will be swapped after this render */
 	public void render(Game game)
 	{
 		this._world_renderer.render(game.getWorld(), this._camera);
+		this._model_renderer.render(game.getWorld(), this._camera);
 		GLWindow.glCheckError("MainRenderer.render()");
 	}
 

@@ -2,6 +2,10 @@ package com.grillecube.client.renderer.model;
 
 public class ModelInstance
 {
+	/** model reference */
+	private Model	_model;
+	
+	/** model parts instances */
 	private ModelPartInstance[]	_parts_instances;
 	
 	public ModelInstance(Model model)
@@ -13,6 +17,13 @@ public class ModelInstance
 		{
 			this._parts_instances[i] = new ModelPartInstance(model.getPartAt(i));
 		}
+		this._model = model;
+	}
+	
+	/** get model from this model instance */
+	public Model	getModel()
+	{
+		return (this._model);
 	}
 	
 	/** start animation for this model instance */
@@ -40,5 +51,10 @@ public class ModelInstance
 		{
 			parts.stopAnimations();
 		}
+	}
+
+	public ModelPartInstance[]	getPartInstances()
+	{
+		return (this._parts_instances);
 	}
 }
