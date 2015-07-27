@@ -3,10 +3,10 @@
 in vec3 position;
 in vec3 normal;
 in vec2 uv;
-in float ao;	//ambiant occlusion factor, see http://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
+in float shade;
 
 out vec2 pass_uv;
-out float pass_ao;
+out float pass_shade;
 out float visibility;
 out vec3 transf_normal;
 out vec3 to_sun_vector;
@@ -37,5 +37,5 @@ void	main(void)
 	visibility = clamp(visibility, 0, 1);
 	
 	pass_uv = uv;
-	pass_ao = ao;
+	pass_shade = shade;
 }

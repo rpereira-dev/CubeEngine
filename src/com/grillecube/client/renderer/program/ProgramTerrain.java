@@ -41,6 +41,7 @@ public class ProgramTerrain extends Program
 		super.bindAttribute(0, "position");
 		super.bindAttribute(1, "normal");
 		super.bindAttribute(2, "uv");
+		super.bindAttribute(3, "shade");
 	}
 
 	@Override

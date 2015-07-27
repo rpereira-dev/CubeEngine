@@ -39,9 +39,9 @@ public class TerrainClient extends Terrain
 			{
 				for (int y = 0 ; y < Terrain.SIZE_Y - 1 ; y++)
 				{
-					if (noise.noise((this._world_position.x + x + 1) / 64.0f,
-							(this._world_position.y + y + 1) / 64.0f,
-							(this._world_position.z + z + 1) / 64.0f) < 0)
+					if (noise.noise((this._world_position.x + x + 1) / 32.0f,
+							(this._world_position.y + y + 1) / 32.0f,
+							(this._world_position.z + z + 1) / 32.0f) < 0)
 					{
 						this._blocks[x][y][z] = Blocks.DIRT;
 					}

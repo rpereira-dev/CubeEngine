@@ -47,8 +47,7 @@ public class Server {
     }
 
     public static void main(String[] args) throws Exception {
-        int port;
-        port = 4242;
+        int port = 4242;
         new Server(port).run();
     }
 }

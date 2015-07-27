@@ -1,7 +1,7 @@
 #version 400 core
 
 in vec2 pass_uv;
-in float pass_ao;
+in float pass_shade;
 in float visibility;
 in vec3 transf_normal;
 in vec3 to_sun_vector;
@@ -15,16 +15,20 @@ uniform sampler2D texture_sampler;
 
 void	main(void)
 {
-	vec3 normal = normalize(transf_normal);
-	vec3 light = normalize(to_sun_vector);
-	float n = dot(normal, light);
-	float brightness = max(n, 0.4);
+//	vec3 normal = normalize(transf_normal);
+//	vec3 light = normalize(to_sun_vector);
+//	float n = dot(normal, light);
+//	float brightness = max(n, 0.4);
 	
 	
-	vec3 diffuse = brightness * sun_color;
+//	vec3 diffuse = brightness * sun_color;
 
-	vec4 texture_color = texture(texture_sampler, pass_uv) * vec4(diffuse, 1.0);
-	vertexColor = mix(vec4(fog_color, 1.0), texture_color, visibility);
+
+	vec4 texture_color = texture(texture_sampler, pass_uv); //* vec4(diffuse, 1.0);;
+	vec4 ao_color = mix(texture_color, vec4(0, 0, 0, 1.0), pass_shade / 3.0);
+	vertexColor = ao_color;
+	
+//	vertexColor = mix(vec4(fog_color, 1.0), ao_color, visibility);
 
 	//gamma correction
 	//float gamma = 1.5f;
