@@ -32,4 +32,9 @@ public abstract class Terrain
 	{
 		return (this._location);
 	}
+
+	public byte[][][] getBlocks()
+	{
+		return (this._blocks);
+	}
 }

@@ -1,5 +1,7 @@
 package com.grillecube.server;
 
+import com.grillecube.common.network.Packets;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -20,6 +22,9 @@ public class Server {
     public void run() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+        
+        Packets.loadPackets();	//LOAD EVERY PACKETS TO A HASMAP
+        
         try {
             ServerBootstrap b = new ServerBootstrap(); // (2)
             b.group(bossGroup, workerGroup)
