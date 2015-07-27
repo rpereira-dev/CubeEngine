@@ -1,6 +1,7 @@
 package com.grillecube.server.network.packet;
 
 import com.grillecube.common.network.Packet;
+import com.grillecube.common.network.Packets;
 import com.grillecube.common.world.Terrain;
 
 import io.netty.channel.Channel;
@@ -32,5 +33,11 @@ public class PacketTerrain extends Packet
 		size = 4 * 3;	//terrain coordinates (x, y, z)
 		size += Terrain.SIZE_X * Terrain.SIZE_Y * Terrain.SIZE_Z; //terrain blocks
 		return (size);
+	}
+
+	@Override
+	public int getPacketID()
+	{
+		return (Packets.TERRAIN_FULL);
 	}
 }

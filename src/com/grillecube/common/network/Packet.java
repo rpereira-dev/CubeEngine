@@ -30,7 +30,7 @@ public abstract class Packet
 	// return the sum of every packet's data size
 	public abstract int	getPacketSize();
 	
-	//return packet unique ID (integer between 0 and PacketHandlers.HANDLER_MAX
+	//return packet unique ID (so client and server knows how to handle it)
 	public abstract int	getPacketID();
 
 	public void writeInt(int value)
