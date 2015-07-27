@@ -23,6 +23,17 @@ public class PacketTerrain extends Packet
 		super.writeInt(this._terrain.getLocation().getX());
 		super.writeInt(this._terrain.getLocation().getY());
 		super.writeInt(this._terrain.getLocation().getZ());
+		
+		for (int x = 0 ; x < Terrain.SIZE_X  ; x++)
+		{
+			for (int y = 0 ; y < Terrain.SIZE_Y  ; y++)
+			{
+				for (int z = 0 ; z < Terrain.SIZE_Z  ; z++)
+				{
+					super.writeByte(this._terrain.getBlock(x, y, z).getID());
+				}
+			}
+		}
 	}
 
 	@Override

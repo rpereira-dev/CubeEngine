@@ -1,5 +1,7 @@
 package com.grillecube.common.network;
 
+import com.grillecube.client.world.blocks.Block;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 
@@ -36,5 +38,10 @@ public abstract class Packet
 	public void writeInt(int value)
 	{
 		this._byteBuffer.writeInt(value);
+	}
+
+	public void writeByte(byte value)
+	{
+		this._byteBuffer.writeByte(value);
 	}
 }
