@@ -73,7 +73,7 @@ public class ProgramTerrain extends Program
 	public void loadInstanceUniforms(TerrainClient terrain)
 	{
 		this._matrix_buffer.setIdentity();
-		this._matrix_buffer.translate(terrain.getWorldPosition());
+		this._matrix_buffer.translate(terrain.getWorldPosition().toVector3f());
 		this._matrix_buffer.rotate(0, X_AXIS);
 		this._matrix_buffer.rotate(0, Y_AXIS);
 		this._matrix_buffer.rotate(0, Z_AXIS);

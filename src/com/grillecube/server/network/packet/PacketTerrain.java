@@ -4,16 +4,13 @@ import com.grillecube.common.network.Packet;
 import com.grillecube.common.network.Packets;
 import com.grillecube.common.world.Terrain;
 
-import io.netty.channel.Channel;
-
 //implementation example:
 public class PacketTerrain extends Packet
 {
 	private Terrain	_terrain;
 	
-	public PacketTerrain(Channel channel, Terrain terrain)
+	public PacketTerrain(Terrain terrain)
 	{
-		super(channel);
 		this._terrain = terrain;
 	}
 

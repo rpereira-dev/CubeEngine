@@ -7,23 +7,15 @@ import io.netty.channel.Channel;
 
 public abstract class Packet
 {
-	private static final int maxSize = 1024;
-	
-	private Channel _channel;
-	private ByteBuf _byteBuffer;
-	
-	public Packet(Channel channel)
-	{
-		this._channel = channel;
-		this._byteBuffer = channel.alloc().buffer(this.getPacketSize());
-	}
+	private ByteBuf	_buffer;
 	
 	//send the packetID, the packet data
-	public void send()
+	public void send(Channel channel)
 	{
+		this._buffer = channel.alloc().buffer(this.getPacketSize() + 4);
 		this.writeInt(this.getPacketID());
 		this.writeData();
-		this._channel.writeAndFlush(_byteBuffer);
+		channel.writeAndFlush(this._buffer);
 	}
  
 	//write every packet data
@@ -37,11 +29,16 @@ public abstract class Packet
 
 	public void writeInt(int value)
 	{
-		this._byteBuffer.writeInt(value);
+		this._buffer.writeInt(value);
+	}
+	
+	public void writeBytes(byte[] bytes)
+	{
+		this._buffer.writeBytes(bytes);
 	}
 
 	public void writeByte(byte value)
 	{
-		this._byteBuffer.writeByte(value);
+		this._buffer.writeByte(value);
 	}
 }

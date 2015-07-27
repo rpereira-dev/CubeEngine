@@ -1,11 +1,13 @@
 package com.grillecube.client.world;
 
-import org.lwjgl.util.vector.Vector3f;
+import java.util.Random;
 
 import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.world.blocks.Blocks;
 import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.TerrainLocation;
+
+import fr.toss.lib.Vector3i;
 
 public class TerrainClient extends Terrain
 {
@@ -17,7 +19,7 @@ public class TerrainClient extends Terrain
 	private WorldClient	_world;
 	
 	/** world position */
-	private Vector3f	_world_position;
+	private Vector3i	_world_position;
 
 	/** terrain meshes */
 	private TerrainMesh	_mesh;
@@ -27,23 +29,30 @@ public class TerrainClient extends Terrain
 		super(location);
 		
 		this._world = world;
-		this._world_position = new Vector3f(location.getX() * Terrain.SIZE_X,
+		this._world_position = new Vector3i(location.getX() * Terrain.SIZE_X,
 											location.getY() * Terrain.SIZE_Y,
 											location.getZ() * Terrain.SIZE_Z);
 		
 		this._mesh = new TerrainMesh(this);
-
+		Random r = new Random();
 		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
 		{
 			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 			{
 				for (int y = 0 ; y < Terrain.SIZE_Y - 1 ; y++)
 				{
-					if (noise.noise((this._world_position.x + x + 1) / 32.0f,
-							(this._world_position.y + y + 1) / 32.0f,
-							(this._world_position.z + z + 1) / 32.0f) < 0)
+					if (noise.noise((this._world_position.x + x) / 256.0f,
+									(this._world_position.y + y) / 256.0f,
+									(this._world_position.z + z) / 256.0f) < 0)
 					{
-						this._blocks[x][y][z] = Blocks.DIRT;
+						if (y < Terrain.SIZE_Y - 16)
+						{
+							this._blocks[x][y][z] = Blocks.STONE;
+						}
+						else
+						{
+							this._blocks[x][y][z] = Blocks.DIRT;
+						}
 					}
 					else
 					{
@@ -73,7 +82,7 @@ public class TerrainClient extends Terrain
 		return (this._mesh);
 	}
 
-	public Vector3f getWorldPosition()
+	public Vector3i getWorldPosition()
 	{
 		return (this._world_position);
 	}
@@ -108,6 +117,11 @@ public class TerrainClient extends Terrain
 		terrains[5] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY(), this._location.getZ() + 1));
 		
 		return (terrains);
+	}
+
+	public WorldClient	getWorld()
+	{
+		return (this._world);
 	}
 
 }

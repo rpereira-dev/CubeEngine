@@ -162,6 +162,7 @@ public class BlockTextures
 		
 		textures[BlockTextures.NONE] 		= readImagePixels("none");
 		textures[BlockTextures.DIRT] 		= readImagePixels("dirt");
+		textures[BlockTextures.STONE] 		= readImagePixels("stone");
 		textures[BlockTextures.GRASS_TOP] 	= readImagePixels("grass_top");
 		textures[BlockTextures.GRASS_SIDE] 	= readImagePixels("grass_side");
 		

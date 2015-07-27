@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.grillecube.client.Game;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.common.world.Terrain;
 

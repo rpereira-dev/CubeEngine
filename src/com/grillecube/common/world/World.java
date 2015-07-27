@@ -12,39 +12,42 @@ public abstract class World
 	}
 
 	/** get the terrain location (x, y, z) for the given world location */
-	public TerrainLocation	getTerrainLocation(Vector3f pos)
+	public TerrainLocation	getTerrainLocation(float x, float y, float z)
 	{
 		TerrainLocation	location;
 
 		location = new TerrainLocation();
-		if (pos.x < 0)
+		if (x < 0)
 		{
-			pos.x -= Terrain.SIZE_X;
+			x -= Terrain.SIZE_X;
 		}
-		if (pos.y < 0)
+		if (y < 0)
 		{
-			pos.y -= Terrain.SIZE_Y;
+			y -= Terrain.SIZE_Y;
 		}
-		if (pos.z < 0)
+		if (z < 0)
 		{
-			pos.z -= Terrain.SIZE_Z;
+			z -= Terrain.SIZE_Z;
 		}
-		location.set((int)pos.x / Terrain.SIZE_X,
-					(int)pos.y / Terrain.SIZE_Y,
-					(int)pos.z / Terrain.SIZE_Z);
+		location.set((int)x / Terrain.SIZE_X,
+					(int)y / Terrain.SIZE_Y,
+					(int)z / Terrain.SIZE_Z);
 		return (location);
 	}
 	
-	/** return positions relative to the terrain */
-	public Vector3i	getTerrainRelativePos(Vector3f vec)
+	/** get the terrain location (x, y, z) for the given world location */
+	public TerrainLocation	getTerrainLocation(Vector3f pos)
 	{
-		int	x;
-		int	y;
-		int	z;
-		
-		x = (int)vec.x % Terrain.SIZE_X;
-		y = (int)vec.y % Terrain.SIZE_Y; 
-		z = (int)vec.z % Terrain.SIZE_Z;
+		return (getTerrainLocation(pos.x, pos.y, pos.z));
+	}
+	
+	
+	/** return positions relative to the terrain */
+	public Vector3i	getTerrainRelativePos(int x, int y, int z)
+	{
+		x = (int)x % Terrain.SIZE_X;
+		y = (int)y % Terrain.SIZE_Y; 
+		z = (int)z % Terrain.SIZE_Z;
 		if (x < 0)
 		{
 			x += Terrain.SIZE_X;

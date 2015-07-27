@@ -1,4 +1,4 @@
-package com.grillecube.client.network.packet;
+package com.grillecube.client.network;
 
 import java.util.Date;
 

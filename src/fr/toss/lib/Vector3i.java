@@ -1,10 +1,12 @@
 package fr.toss.lib;
 
+import org.lwjgl.util.vector.Vector3f;
+
 public class Vector3i
 {
-	public int	_x;
-	public int	_y;
-	public int	_z;
+	public int	x;
+	public int	y;
+	public int	z;
 	
 	public Vector3i(int x, int y, int z)
 	{
@@ -18,23 +20,28 @@ public class Vector3i
 	
 	public void	set(int x, int y, int z)
 	{
-		this._x = x;
-		this._y = y;
-		this._z = z;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 	
 	public int	getX()
 	{
-		return (this._x);
+		return (this.x);
 	}
 	
 	public int	getY()
 	{
-		return (this._y);
+		return (this.y);
 	}
 	
 	public int	getZ()
 	{
-		return (this._z);
+		return (this.z);
+	}
+
+	public Vector3f toVector3f()
+	{
+		return (new Vector3f(this.x, this.y, this.z));
 	}
 }

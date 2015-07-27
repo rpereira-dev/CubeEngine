@@ -8,9 +8,13 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.model.Models;
 import com.grillecube.client.renderer.terrain.TerrainMesh;
+import com.grillecube.client.world.blocks.Block;
+import com.grillecube.client.world.blocks.Blocks;
 import com.grillecube.client.world.entity.EntityModeled;
 import com.grillecube.common.world.TerrainLocation;
 import com.grillecube.common.world.World;
+
+import fr.toss.lib.Vector3i;
 
 public class WorldClient extends World
 {
@@ -34,9 +38,9 @@ public class WorldClient extends World
 	/** called on initiliaztion */
 	public void start()
 	{
-		for (int x = -4 ; x < 4 ; x++)
+		for (int x = 0 ; x < 16 ; x++)
 		{
-			for (int z = -4 ; z < 4 ; z++)
+			for (int z = 0 ; z < 16 ; z++)
 			{
 				for (int y = 0 ; y < 1 ; y++)
 				{
@@ -44,6 +48,7 @@ public class WorldClient extends World
 				}
 			}
 		}
+
 
 		this._entities.add(new EntityModeled(Models.getModel(Models.PIG))
 		{
@@ -104,5 +109,26 @@ public class WorldClient extends World
 	public Weather	getWeather()
 	{
 		return (this._weather);
+	}
+
+	public Block getBlock(int x, int y, int z)
+	{
+		TerrainLocation	location;
+		Vector3i		pos;
+		TerrainClient	terrain;
+		
+		location = super.getTerrainLocation(x, y, z);
+		pos = super.getTerrainRelativePos(x, y, z);
+		terrain = this.getTerrain(location);
+		if (terrain == null)
+		{
+			return (Blocks.getBlockByID(Blocks.AIR));
+		}
+		return (terrain.getBlock(pos.x, pos.y, pos.z));
+	}
+
+	public Block	getBlock(float x, float y, float z)
+	{
+		return (this.getBlock((int)x, (int)y, (int)z));
 	}
 }
