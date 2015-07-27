@@ -4,6 +4,7 @@ import com.grillecube.common.network.Packet;
 import com.grillecube.common.network.Packets;
 import com.grillecube.common.world.Terrain;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 
 //implementation example:
@@ -15,6 +16,32 @@ public class PacketTerrain extends Packet
 	{
 		super(channel);
 		this._terrain = terrain;
+	}
+	
+	public PacketTerrain(Channel channel, ByteBuf byteBuffer) {
+		super(channel, byteBuffer);
+	}
+	
+	@Override
+	public void readData() {
+		/**
+		 * Read every data and create terrain
+		 */
+	
+		super.readInt(); //Location X
+		super.readInt(); //Location Y
+		super.readInt(); //Location Z
+		
+		for (int x = 0 ; x < Terrain.SIZE_X  ; x++)
+		{
+			for (int y = 0 ; y < Terrain.SIZE_Y  ; y++)
+			{
+				for (int z = 0 ; z < Terrain.SIZE_Z  ; z++)
+				{
+					super.readByte(); // this._terrain.getBlock(x, y, z).getID()
+				}
+			}
+		}
 	}
 
 	@Override
@@ -51,4 +78,10 @@ public class PacketTerrain extends Packet
 	{
 		return (Packets.TERRAIN_FULL);
 	}
+
+	public Terrain getTerrain() {
+		return _terrain;
+	}
+	
+	
 }

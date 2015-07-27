@@ -1,7 +1,5 @@
 package com.grillecube.common.network;
 
-import com.grillecube.client.world.blocks.Block;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 
@@ -18,6 +16,12 @@ public abstract class Packet
 		this._byteBuffer = channel.alloc().buffer(this.getPacketSize());
 	}
 	
+	public Packet(Channel channel, ByteBuf byteBuffer)
+	{
+		this._channel = channel;
+		this._byteBuffer = byteBuffer;
+	}
+	
 	//send the packetID, the packet data
 	public void send()
 	{
@@ -26,6 +30,9 @@ public abstract class Packet
 		this._channel.writeAndFlush(_byteBuffer);
 	}
  
+	//read every packet data (when received)
+	public abstract void readData();
+	
 	//write every packet data
 	public abstract void writeData();
 	
@@ -34,14 +41,45 @@ public abstract class Packet
 	
 	//return packet unique ID (so client and server knows how to handle it)
 	public abstract int	getPacketID();
+	
+	public static Packet fromByteBuffer(ByteBuf byteBuffer) {
+		//Returns implementation of packet from byteBuffer
+		return Packets.getFromPacketId(byteBuffer.readInt(), byteBuffer);
+	}
+	
 
-	public void writeInt(int value)
+	/**
+	 * Protected 'cause it should only be used by children
+	 * @param value
+	 */
+	protected void writeInt(int value)
 	{
 		this._byteBuffer.writeInt(value);
 	}
 
-	public void writeByte(byte value)
+	protected void writeByte(byte value)
 	{
 		this._byteBuffer.writeByte(value);
+	}
+	
+	protected void writeString(String value) {
+		this._byteBuffer.writeBytes(value.getBytes());
+	}
+	
+	/**
+	 * Need to read also...
+	 */
+	/**
+	 * Protected 'cause it should only be used by children
+	 * @param value
+	 */
+	protected int readInt()
+	{
+		return this._byteBuffer.readInt();
+	}
+
+	protected byte readByte()
+	{
+		return this._byteBuffer.readByte();
 	}
 }
