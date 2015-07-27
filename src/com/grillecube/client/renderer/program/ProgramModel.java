@@ -75,5 +75,7 @@ public class ProgramModel extends Program
 		matrix.rotate(rotation.z, new Vector3f(0, 0, 1));
 		matrix.translate(offset.negate(offset));	//unset rotation point
 		matrix.scale(scaling);
+		
+		this.loadUniformMatrix(this._transformation_matrix, matrix);
 	}
 }

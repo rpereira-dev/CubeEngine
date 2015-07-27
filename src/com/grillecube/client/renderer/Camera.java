@@ -54,7 +54,7 @@ public class Camera
 		this._window = window;
 		this.reset();
 		this._picker = new CameraPicker(this);
-		this._aspect = 0;
+		this._aspect = 1.0f;
 	}
 	
 	public boolean	hasState(int state)
@@ -124,6 +124,8 @@ public class Camera
 	{
 		float	f;
 
+		this._aspect = this._window.getAspectRatio();
+		
 		this._pitch += this._rot_vec.x * this._rot_speed;
 		this._yaw 	+= this._rot_vec.y * this._rot_speed;
 		this._roll 	+= this._rot_vec.z * this._rot_speed;
@@ -177,8 +179,6 @@ public class Camera
 		float	y_scale;
 		float	frustrum_length;
 		
-		this._aspect = this._window.getAspectRatio();
-
 		y_scale = (float) (1.0f / Math.tan(Math.toRadians(this._fov / 2.0f)) * this._aspect);
 		x_scale = y_scale / this._aspect;
 		frustrum_length = this._far - this._near;
@@ -328,7 +328,7 @@ public class Camera
 		this.setYaw(0);
 		this.setRoll(0);
 		this.setFov(70);
-		this.setSpeed(1);
+		this.setSpeed(2);
 		this.setRotSpeed(1);
 		this.setNear(0.1f);
 		this.setFar(2000);

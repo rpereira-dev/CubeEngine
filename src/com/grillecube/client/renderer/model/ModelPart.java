@@ -8,6 +8,10 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import com.grillecube.client.Game;
+
+import fr.toss.lib.Logger;
+
 public class ModelPart
 {
 	/** model part name */
@@ -79,6 +83,7 @@ public class ModelPart
 	{
 		if (this.hasState(STATE_ININITIALIZED))
 		{
+			Game.log(Logger.Level.ERROR, "Tried to set vertices severals time on the same ModelPart (setVertices())");
 			return ;
 		}
 		this.prepareMesh();

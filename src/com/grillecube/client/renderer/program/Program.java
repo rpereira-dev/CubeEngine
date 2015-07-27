@@ -12,6 +12,10 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import com.grillecube.client.Game;
+
+import fr.toss.lib.Logger;
+
 /** openGL program */
 public abstract class Program
 {
@@ -25,6 +29,8 @@ public abstract class Program
 	{
 		vertex = "./assets/shaders/" + vertex + ".vertex";
 		fragment = "./assets/shaders/" + fragment + ".fragment";
+		
+		Game.log(Logger.Level.FINE, "Loading shader: " + vertex);
 		this._matrix_buffer = BufferUtils.createFloatBuffer(4 * 4);
 		this._vertexID = loadShader(vertex, GL20.GL_VERTEX_SHADER);
 		this._fragmentID = loadShader(fragment, GL20.GL_FRAGMENT_SHADER);

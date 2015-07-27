@@ -38,7 +38,7 @@ public class WorldClient extends World
 		{
 			for (int z = -4 ; z < 4 ; z++)
 			{
-				for (int y = -2 ; y < 2 ; y++)
+				for (int y = 0 ; y < 1 ; y++)
 				{
 					this.addTerrain(new TerrainClient(this, new TerrainLocation(x, y, z)));
 				}

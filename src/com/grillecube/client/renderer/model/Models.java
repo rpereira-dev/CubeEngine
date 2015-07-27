@@ -15,15 +15,6 @@ public class Models
 	{
 		_models = new Model[MAX_ID];
 		_models[PIG] = ModelLoader.loadModel("pig");
-		
-		
-		
-		System.out.println(_models[PIG].getName());
-		
-		for (ModelPart part  : _models[PIG].getParts())
-		{
-			System.out.println(part.getName() + " : " + part.getVertexCount());
-		}
 	}
 	
 	/** return the model with the given ID */

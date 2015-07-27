@@ -37,6 +37,9 @@ public class WorldRenderer
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, BlockTextures.getGLTextureAtlas(BlockTextures.RESOLUTION_16));
 
+//		GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_LINE);
+//		GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_LINE);
+		
 		this._terrain_program.useStart();
 		{
 			this._terrain_program.loadUniforms(world, camera);
@@ -46,6 +49,9 @@ public class WorldRenderer
 			}
 		}
 		this._terrain_program.useStop();
+		
+		GL11.glDisable(GL11.GL_CULL_FACE);
+
 	}
 	
 	/** render a terrain */

@@ -37,7 +37,7 @@ public class ModelRenderer
 				{
 					ModelPart model_part = part.getModelPart();
 					AnimationInstance animation_instance = part.getAnimationInstance();
-					
+
 					animation_instance.update();
 					this._program_model.loadAnimationUniforms(entity, animation_instance);
 					
