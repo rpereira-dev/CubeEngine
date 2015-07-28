@@ -67,6 +67,19 @@ public abstract class Packet
 		this._buffer.writeByte(value);
 	}
 	
+	protected void writeShort(short value)
+	{
+		this._buffer.writeShort(value);
+	}
+	
+	protected void writeShorts(short[] values)
+	{
+		for (short s : values)
+		{
+			this._buffer.writeShort(s);			
+		}
+	}
+	
 	/**
 	 * Need to read also...
 	 */

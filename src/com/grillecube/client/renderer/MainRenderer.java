@@ -3,7 +3,6 @@ package com.grillecube.client.renderer;
 import java.util.ArrayList;
 
 import com.grillecube.client.Game;
-import com.grillecube.client.renderer.gui.QuadRenderer;
 import com.grillecube.client.renderer.model.ModelRenderer;
 import com.grillecube.client.renderer.sky.SkyRenderer;
 import com.grillecube.client.renderer.terrain.TerrainRenderer;
@@ -25,7 +24,7 @@ public class MainRenderer
 		this._renderers = new ArrayList<IRenderer>();
 	}
 	
-	public void	addRenderer(IRenderer renderer)
+	public void	registerRenderer(IRenderer renderer)
 	{
 		Game.instance().getLogger().log(Logger.Level.FINE, "Adding renderer: " + renderer.getClass().getName());
 		this._renderers.add(renderer);
@@ -34,11 +33,9 @@ public class MainRenderer
 	/** call on initialization */
 	public void	start()
 	{
-		this.addRenderer(new TerrainRenderer());
-		this.addRenderer(new ModelRenderer());
-		this.addRenderer(new QuadRenderer());
-		this.addRenderer(new SkyRenderer());
-		
+		this.registerRenderer(new TerrainRenderer());
+		this.registerRenderer(new ModelRenderer());
+		this.registerRenderer(new SkyRenderer());
 		for (IRenderer renderer : this._renderers)
 		{
 			renderer.start();

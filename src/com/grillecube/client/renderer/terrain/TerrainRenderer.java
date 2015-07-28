@@ -3,9 +3,9 @@ package com.grillecube.client.renderer.terrain;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
+import com.grillecube.client.Game;
 import com.grillecube.client.renderer.Camera;
 import com.grillecube.client.renderer.IRenderer;
-import com.grillecube.client.ressources.BlockTextures;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.WorldClient;
 
@@ -30,7 +30,7 @@ public class TerrainRenderer implements IRenderer
 		GL11.glCullFace(GL11.GL_BACK);
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, BlockTextures.getGLTextureAtlas(BlockTextures.RESOLUTION_16));
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, Game.instance().getResourceManager().getBlockManager().getTextureAtlas()); //TODO CHANGE IT
 
 //		GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_LINE);
 //		GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_LINE);

@@ -6,10 +6,11 @@ import java.util.HashMap;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.grillecube.client.mod.ResourceBlocks;
 import com.grillecube.client.renderer.model.Models;
 import com.grillecube.client.renderer.terrain.TerrainMesh;
+import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.world.blocks.Block;
-import com.grillecube.client.world.blocks.Blocks;
 import com.grillecube.client.world.entity.EntityModeled;
 import com.grillecube.common.world.TerrainLocation;
 import com.grillecube.common.world.World;
@@ -129,7 +130,7 @@ public class WorldClient extends World
 		terrain = this.getTerrain(location);
 		if (terrain == null)
 		{
-			return (Blocks.getBlockByID(Blocks.AIR));
+			return (BlockManager.getBlockByID(ResourceBlocks.AIR));
 		}
 		return (terrain.getBlock(pos.x, pos.y, pos.z));
 	}

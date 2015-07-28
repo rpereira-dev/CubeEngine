@@ -1,7 +1,7 @@
 package com.grillecube.client.world;
 
+import com.grillecube.client.mod.ResourceBlocks;
 import com.grillecube.client.renderer.terrain.TerrainMesh;
-import com.grillecube.client.world.blocks.Blocks;
 import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.TerrainLocation;
 
@@ -46,34 +46,25 @@ public class TerrainClient extends Terrain
 								(this._world_position.y + y + 1024) / 128.0f,
 								(this._world_position.z + z + 1024) / 128.0f) < 0)
 						{
-							this._blocks[x][y][z] = Blocks.STONE;
+							this._blocks[x][y][z] = ResourceBlocks.STONE;
+						}
+						else if (y == Terrain.SIZE_Y - 1)
+						{
+							this._blocks[x][y][z] = ResourceBlocks.GRASS;
 						}
 						else
 						{
-							this._blocks[x][y][z] = Blocks.DIRT;
+							this._blocks[x][y][z] = ResourceBlocks.DIRT;
 						}
 					}
 					else
 					{
-						this._blocks[x][y][z] = Blocks.AIR;
+						this._blocks[x][y][z] = ResourceBlocks.AIR;
 					}
 				}
 			}
 		}
-		
-		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
-		{
-			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
-			{
-				for (int y = 0 ; y < Terrain.SIZE_Y - 1; y++)
-				{
-					if (this._blocks[x][y][z] == Blocks.DIRT && this._blocks[x][y + 1][z] == Blocks.AIR)
-					{
-						this._blocks[x][y][z] = Blocks.GRASS;
-					}
-				}
-			}
-		}
+
 	}
 	
 	public TerrainMesh	getMesh()

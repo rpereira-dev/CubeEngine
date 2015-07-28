@@ -11,7 +11,7 @@ import io.netty.buffer.ByteBuf;
 public class PacketTerrain extends Packet
 {
 	private TerrainLocation	_location;
-	private byte[][][]		_blocks;
+	private short[][][]		_blocks;
 
 	public PacketTerrain(ByteBuf buffer)
 	{
@@ -33,7 +33,7 @@ public class PacketTerrain extends Packet
 	public void readData()
 	{		
 		this._location = new TerrainLocation(super.readInt(), super.readInt(), super.readInt());
-		this._blocks = new byte[Terrain.SIZE_X][Terrain.SIZE_Y][Terrain.SIZE_Z];
+		this._blocks = new short[Terrain.SIZE_X][Terrain.SIZE_Y][Terrain.SIZE_Z];
 		for (int x = 0 ; x < Terrain.SIZE_X  ; x++)
 		{
 			for (int y = 0 ; y < Terrain.SIZE_Y  ; y++)
@@ -59,7 +59,7 @@ public class PacketTerrain extends Packet
 			{
 				for (int z = 0 ; z < Terrain.SIZE_Z  ; z++)
 				{
-					super.writeByte(this._blocks[x][y][z]);
+					super.writeShort(this._blocks[x][y][z]);
 				}
 			}
 		}
@@ -81,7 +81,7 @@ public class PacketTerrain extends Packet
 		return (Packets.TERRAIN_FULL);
 	}
 
-	public byte[][][]	getBlocks()
+	public short[][][]	getBlocks()
 	{
 		return (this._blocks);
 	}

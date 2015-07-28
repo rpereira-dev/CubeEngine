@@ -13,9 +13,6 @@ public class Block
 	/** block name */
 	private String	_name;
 	
-	/** block id */
-	private short	_blockID;
-	
 	/** block opengl textureID (see faces indices) */
 	private int[]	_textureID;
 	
@@ -24,11 +21,10 @@ public class Block
 	 * @param name		: block name
 	 * @param blockID	: block unique ID
 	 */
-	public Block(String name, short blockID, int textureID)
+	public Block(String name, int textureID)
 	{
 		this._textureID = new int[6];
 		this._name = name;
-		this._blockID = blockID;
 		
 		this._textureID[FACE_LEFT] 	= textureID;
 		this._textureID[FACE_RIGHT]	= textureID;
@@ -39,9 +35,9 @@ public class Block
 	}
 	
 	/** @param faces		: special faces (BLOCK_FACE_FRONT, TEXTURE_ID....) */
-	public Block(String name, short blockID, int textureID, int ... faces)
+	public Block(String name, int textureID, int ... faces)
 	{
-		this(name, blockID, textureID);
+		this(name, textureID);
 		
 		for (int i = 0 ; i < faces.length ; i += 2)
 		{
@@ -49,7 +45,12 @@ public class Block
 		}
 	}
 	
-	public Block	setFace(int faceID, int textureID)
+	public Block(String string)
+	{
+		this(string, 0);
+	}
+
+	public Block setFace(int faceID, int textureID)
 	{
 		if (faceID >= 0 && faceID < 6)
 		{
@@ -58,10 +59,10 @@ public class Block
 		return (this);
 	}
 	
-	/** get block ID */
-	public short	getID()
+	/** to string function */
+	public String	toString()
 	{
-		return (this._blockID);
+		return ("Block: " + this.getName());
 	}
 	
 	/** get block name */
@@ -69,16 +70,11 @@ public class Block
 	{
 		return (this._name);
 	}
-	
-	@Override
-	public String	toString()
-	{
-		return ("Block{" + this._blockID + " : " + this._name + "}");
-	}
 
 	public boolean isVisible()
 	{
-		return (this._blockID != Blocks.AIR);
+		//TODO: change this
+		return (!this.getName().equals("air"));
 	}
 
 	public int	getTextureIDForFace(int face)

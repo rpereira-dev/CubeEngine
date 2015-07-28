@@ -1,7 +1,7 @@
 package com.grillecube.common.world;
 
+import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.world.blocks.Block;
-import com.grillecube.client.world.blocks.Blocks;
 
 public abstract class Terrain
 {
@@ -13,18 +13,18 @@ public abstract class Terrain
 	protected TerrainLocation	_location;
 	
 	/** blocks */
-	protected byte[][][]	_blocks;
+	protected short[][][]	_blocks;
 	
 	public Terrain(TerrainLocation location)
 	{
 		this._location = location;
-		this._blocks = new byte[Terrain.SIZE_X][Terrain.SIZE_Y][Terrain.SIZE_Z];
+		this._blocks = new short[Terrain.SIZE_X][Terrain.SIZE_Y][Terrain.SIZE_Z];
 	}
 	
 	/** return block at given coordinates (terrain-relative) */
-	public Block	getBlock(int x, int y, int z)
+	public Block getBlock(int x, int y, int z)
 	{
-		return (Blocks.getBlockByID(this._blocks[x][y][z]));
+		return (BlockManager.getBlockByID(this._blocks[x][y][z]));
 	}
 	
 	/** return terrain location */
@@ -33,7 +33,7 @@ public abstract class Terrain
 		return (this._location);
 	}
 
-	public byte[][][] getBlocks()
+	public short[][][] getBlocks()
 	{
 		return (this._blocks);
 	}

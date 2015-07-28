@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.ressources.BlockTextures;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.blocks.Block;
 import com.grillecube.common.world.Terrain;
@@ -20,8 +19,10 @@ public class TerrainMesh
 {
 	/** constants */
 	private static final float S 	= 1;	//block size unit
-	public static final float UVX 	= 1;
-	public static final float UVY 	= (1 / (float)BlockTextures.MAX_ID);
+	
+	//unit uv for a block
+	public static float UVX 	= 1;
+	public static float UVY 	= 1;
 	
 	/** Mesh state */
 	public static final int	STATE_INITIALIZED			= 1;

@@ -15,16 +15,23 @@ import fr.toss.lib.Logger;
 
 public class ModLoader
 {
+	/** mod state */
+	private byte _state;
+	private static final byte STATE_NOT_INITIALIZED = 1;
+	private static final byte STATE_INITIALIZED		= 2;
+	private static final byte STATE_DEINITIALIZED	= 3;
+	
+	/** every mods */
 	private ArrayList<IMod>	_mods;
 	
 	public ModLoader()
 	{
 		this._mods = new ArrayList<IMod>();
-		this.loadMods("./mods/");
+		this._state = STATE_NOT_INITIALIZED;
 	}
 	
-	/** find mods into "./mods" folder and add it IMod class to the _mods list */
-	private void loadMods(String filepath)
+	/** find mods into the given folder and try to load it */
+	public void loadMods(String filepath)
 	{
 		File folder = new File(filepath);
 		
@@ -53,6 +60,7 @@ public class ModLoader
 		}
 	}
 	
+	/** load a mod from the given file (which should be a JarFile) */
 	@SuppressWarnings({ "resource" })
 	private void loadMod(File file) throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException
 	{
@@ -74,7 +82,7 @@ public class ModLoader
 				{
 					if (clazz.isAnnotationPresent(ModInfo.class))
 					{
-						this._mods.add((IMod) clazz.newInstance());
+						this.injectMod((IMod) clazz.newInstance());
 						Game.instance().getLogger().log(Logger.Level.FINE, "Adding mod: " + clazz);
 					}
 					else
@@ -86,6 +94,20 @@ public class ModLoader
 		}
 	}
 
+	/** add the given mod to the mods */
+	public void injectMod(IMod mod)
+	{
+		if (this._state == STATE_NOT_INITIALIZED)
+		{
+			this._mods.add(mod);			
+		}
+		else
+		{
+			Game.instance().getLogger().log(Logger.Level.WARNING, "Tried to inject a mod after the mod initialization! canceling");
+		}
+	}
+
+	/** return true if the class implements IMod interface */
 	private boolean isClassMod(Class<?> clazz)
 	{
 		Class<?>[] interfaces = clazz.getInterfaces();
@@ -100,16 +122,20 @@ public class ModLoader
 		return (false);
 	}
 	
+	/** initialize every mods */
 	public void	initializeAll(Game game)
 	{
+		this._state = STATE_INITIALIZED;
 		for (IMod mod : this._mods)
 		{
 			mod.initialize(game);
 		}
 	}
 	
+	/** deinitialize every mods */
 	public void	deinitializeAll(Game game)
 	{
+		this._state = STATE_DEINITIALIZED;
 		for (IMod mod : this._mods)
 		{
 			mod.deinitialize(game);

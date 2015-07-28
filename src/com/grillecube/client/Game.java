@@ -1,11 +1,12 @@
+
 package com.grillecube.client;
 
+import com.grillecube.client.mod.ModBidon;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.RenderCalculationThread;
 import com.grillecube.client.ressources.ResourceManager;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.client.world.WorldClient;
-import com.grillecube.client.world.blocks.Blocks;
 import com.grillecube.common.mod.ModLoader;
 
 import fr.toss.lib.Logger;
@@ -54,6 +55,8 @@ public class Game
 		this._world = new WorldClient();
 		this._resources = new ResourceManager();
 		this._mod_loader = new ModLoader();
+		this._mod_loader.loadMods("./mods");
+		this._mod_loader.injectMod(new ModBidon());
 	}
 	
 	public void	start()
@@ -63,12 +66,11 @@ public class Game
 		this._window.start();
 		
 		this._mod_loader.initializeAll(this);
-
+		
 		this._renderer.start();
 		this._resources.start();
 		this._world.start();
-		Blocks.initBlocks();
-		
+				
 		this._threads[THRD_CALCUL] = new RenderCalculationThread(this);
 		this._logger.log(Level.FINE, "Game started!");
 	}
@@ -171,5 +173,10 @@ public class Game
 	public MainRenderer	getRenderer()
 	{
 		return (this._renderer);
+	}
+	
+	public ResourceManager	getResourceManager()
+	{
+		return (this._resources);
 	}
 }
