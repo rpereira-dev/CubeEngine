@@ -13,6 +13,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class Server {
 
+	public static final int MAX_NB_THREADS = 4;
     private int port;
 
     public Server(int port) {
