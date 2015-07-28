@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.program;
+package com.grillecube.client.renderer;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

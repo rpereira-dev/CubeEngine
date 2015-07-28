@@ -1,4 +1,6 @@
-package com.grillecube.client.renderer.program;
+package com.grillecube.client.renderer.gui;
+
+import com.grillecube.client.renderer.Program;
 
 public class ProgramQuad extends Program
 {

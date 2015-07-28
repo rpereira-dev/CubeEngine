@@ -18,7 +18,6 @@ import com.grillecube.common.world.Terrain;
 
 public class TerrainMesh
 {
-	
 	/** constants */
 	private static final float S 	= 1;	//block size unit
 	public static final float UVX 	= 1;
@@ -29,7 +28,6 @@ public class TerrainMesh
 	public static final int	STATE_VBO_UP_TO_DATE		= 2;
 	public static final int	STATE_VERTICES_UP_TO_DATE	= 4;
 	public static final int	STATE_VISIBLE				= 8;
-	
 	private int	_state;
 	
 	/** terrain data */

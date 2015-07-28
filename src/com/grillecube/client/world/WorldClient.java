@@ -55,8 +55,9 @@ public class WorldClient extends World
 
 			@Override
 			protected void updateEntity() {}
-			
 		});
+		
+		this._entities.get(0).setPosition(new Vector3f(16, 64, 16));
 	}
 	
 	/** add the terrain to the world */

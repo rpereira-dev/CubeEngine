@@ -13,7 +13,6 @@ public class TerrainClient extends Terrain
 {
 	//terrain generator
 	private static final SimplexNoise noise = new SimplexNoise((int) System.currentTimeMillis());
-		
 	
 	/** world */
 	private WorldClient	_world;
@@ -34,18 +33,20 @@ public class TerrainClient extends Terrain
 											location.getZ() * Terrain.SIZE_Z);
 		
 		this._mesh = new TerrainMesh(this);
-		Random r = new Random();
+
 		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
 		{
 			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 			{
 				for (int y = 0 ; y < Terrain.SIZE_Y - 1 ; y++)
 				{
-					if (noise.noise((this._world_position.x + x) / 256.0f,
-									(this._world_position.y + y) / 256.0f,
-									(this._world_position.z + z) / 256.0f) < 0)
+					if (noise.noise((this._world_position.x + x) / 128.0f,
+									(this._world_position.y + y) / 128.0f,
+									(this._world_position.z + z) / 128.0f) < 0)
 					{
-						if (y < Terrain.SIZE_Y - 16)
+						if (y < Terrain.SIZE_Y - 4 && noise.noise((this._world_position.x + x + 1024) / 128.0f,
+								(this._world_position.y + y + 1024) / 128.0f,
+								(this._world_position.z + z + 1024) / 128.0f) < 0)
 						{
 							this._blocks[x][y][z] = Blocks.STONE;
 						}

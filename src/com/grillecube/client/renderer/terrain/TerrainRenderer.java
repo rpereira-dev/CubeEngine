@@ -1,22 +1,17 @@
-package com.grillecube.client.renderer;
+package com.grillecube.client.renderer.terrain;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
-import com.grillecube.client.renderer.program.ProgramTerrain;
-import com.grillecube.client.renderer.terrain.TerrainMesh;
+import com.grillecube.client.renderer.Camera;
+import com.grillecube.client.renderer.IRenderer;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.WorldClient;
 import com.grillecube.client.world.blocks.BlockTextures;
 
-public class WorldRenderer
+public class TerrainRenderer implements IRenderer
 {
 	private ProgramTerrain	_terrain_program;
-	
-	public WorldRenderer()
-	{
-		
-	}
 	
 	/** render the given world */
 	public void	render(WorldClient world, Camera camera)

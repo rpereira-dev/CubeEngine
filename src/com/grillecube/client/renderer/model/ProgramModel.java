@@ -1,10 +1,10 @@
-package com.grillecube.client.renderer.program;
+package com.grillecube.client.renderer.model;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.model.AnimationInstance;
+import com.grillecube.client.renderer.Program;
 import com.grillecube.client.world.entity.EntityModeled;
 import com.grillecube.common.world.entity.Entity;
 
@@ -51,7 +51,7 @@ public class ProgramModel extends Program
 		//TODO : add entity position
 		
 		matrix = new Matrix4f();
-		
+				
 		if (animation.isPlaying())
 		{
 			translation = animation.getTranslation();
@@ -67,6 +67,8 @@ public class ProgramModel extends Program
 			scaling = new Vector3f(1, 1, 1);
 		}
 
+		matrix.translate(entity.getPosition());
+
 		matrix.translate(translation);
 		offset = new Vector3f(offset.x + 0.5f, offset.y + 0.5f, offset.z + 0.5f);
 		matrix.translate(offset);	//set rotation point
@@ -74,6 +76,10 @@ public class ProgramModel extends Program
 		matrix.rotate(rotation.y, new Vector3f(0, 1, 0));
 		matrix.rotate(rotation.z, new Vector3f(0, 0, 1));
 		matrix.translate(offset.negate(offset));	//unset rotation point
+		
+		scaling.x /= 16.0f;
+		scaling.y /= 16.0f;
+		scaling.z /= 16.0f;
 		matrix.scale(scaling);
 		
 		this.loadUniformMatrix(this._transformation_matrix, matrix);

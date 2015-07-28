@@ -1,9 +1,10 @@
-package com.grillecube.client.renderer.program;
+package com.grillecube.client.renderer.terrain;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
+import com.grillecube.client.renderer.Program;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.WorldClient;
 
@@ -67,7 +68,10 @@ public class ProgramTerrain extends Program
 		this.loadUniformFloat(this._fog_density, world.getWeather().getFogDensity());
 		
 		this.loadUniformVec(this._sun_color, world.getWeather().getSunColor());
-		this.loadUniformVec(this._sun_position, world.getWeather().getSunPos());
+		
+		Vector3f sun_pos = new Vector3f();
+		Vector3f.add(world.getWeather().getSunPos(), camera.getPosition(), sun_pos);
+		this.loadUniformVec(this._sun_position, sun_pos);
 	}
 	
 	public void loadInstanceUniforms(TerrainClient terrain)

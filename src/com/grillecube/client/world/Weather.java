@@ -2,10 +2,13 @@ package com.grillecube.client.world;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.grillecube.common.world.Terrain;
+import com.grillecube.client.renderer.sky.SkyDome;
 
 public class Weather
 {
+	/** sky data */
+	private Vector3f	_sky_color;
+	
 	/** sun position */
 	private Vector3f	_sun_pos;
 	private Vector3f	_sun_color;
@@ -19,7 +22,9 @@ public class Weather
 	/** Weather constructor */
 	public Weather()
 	{
-		this._sun_pos = new Vector3f(0, Terrain.SIZE_Y * 4, Terrain.SIZE_Z);
+		this._sky_color = new Vector3f(0.46f, 0.71f, 0.99f);
+
+		this._sun_pos = new Vector3f(0, 0, SkyDome.RAYON);
 		this._sun_color = new Vector3f(1.2f, 1.0f, 0.8f);
 		this._sun_intensity = 1;
 		
@@ -71,5 +76,10 @@ public class Weather
 	public float	getSunIntensity()
 	{
 		return (this._sun_intensity);
+	}
+
+	public Vector3f getSkyColor()
+	{
+		return (this._sky_color);
 	}
 }

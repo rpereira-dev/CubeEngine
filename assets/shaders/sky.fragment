@@ -1,0 +1,29 @@
+#version 400 core
+
+in float sun_dist;
+
+out vec4 vertexColor;
+
+uniform vec3 sun_color;
+
+uniform vec3 sky_color;
+
+#define SUN_RADIUS 	24.0f		//sun default radius
+#define SUN_RAY		(SUN_RADIUS * 4)			//sun max distance for rays to change sky color
+
+void	main(void)
+{	
+	if (sun_dist < SUN_RADIUS)
+	{
+		vertexColor = vec4(sun_color, 1.0);	
+	}
+	else if (sun_dist < SUN_RAY)
+	{
+		float f = sun_dist / SUN_RAY;
+		vertexColor = mix(vec4(sun_color, 1.0), vec4(sky_color, 1.0), f * f);
+	}
+	else
+	{
+		vertexColor = vec4(sky_color, 1.0);	
+	}
+}

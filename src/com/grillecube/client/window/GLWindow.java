@@ -10,15 +10,12 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
 
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.Camera;
 
 public class GLWindow
-{
-	public static final Vector4f CLEAR_COLOR = new Vector4f(0.46f, 0.71f, 0.99f, 1.0f);
-	
+{	
 	/** window pointer */
 	private long	_window;
 	
@@ -192,7 +189,7 @@ public class GLWindow
 	/** should be call before rendering */
 	public void prepareScreen()
 	{
-		GL11.glClearColor(CLEAR_COLOR.x, CLEAR_COLOR.y, CLEAR_COLOR.z, CLEAR_COLOR.w);
+		GL11.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		
 		
 		GLFW.glfwGetCursorPos(this._window, this._bufferX, this._bufferY);

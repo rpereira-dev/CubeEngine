@@ -1,23 +1,15 @@
-package com.grillecube.client.renderer;
+package com.grillecube.client.renderer.model;
 
 import org.lwjgl.opengl.GL11;
 
-import com.grillecube.client.renderer.model.AnimationInstance;
-import com.grillecube.client.renderer.model.ModelInstance;
-import com.grillecube.client.renderer.model.ModelPart;
-import com.grillecube.client.renderer.model.ModelPartInstance;
-import com.grillecube.client.renderer.model.Models;
-import com.grillecube.client.renderer.program.ProgramModel;
+import com.grillecube.client.renderer.Camera;
+import com.grillecube.client.renderer.IRenderer;
 import com.grillecube.client.world.WorldClient;
 import com.grillecube.client.world.entity.EntityModeled;
 
-public class ModelRenderer
+public class ModelRenderer implements IRenderer
 {	
 	private ProgramModel	_program_model;
-	
-	public ModelRenderer()
-	{
-	}
 	
 	/** render world terrains */
 	public void render(WorldClient world, Camera camera)
@@ -38,6 +30,10 @@ public class ModelRenderer
 					ModelPart model_part = part.getModelPart();
 					AnimationInstance animation_instance = part.getAnimationInstance();
 
+					if (part.isPlayingAnimation() == false)
+					{
+						part.startAnimation(0);
+					}
 					animation_instance.update();
 					this._program_model.loadAnimationUniforms(entity, animation_instance);
 					
