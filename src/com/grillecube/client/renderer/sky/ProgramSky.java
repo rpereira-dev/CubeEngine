@@ -15,6 +15,7 @@ public class ProgramSky extends Program
 	
 	private int	_sun_pos;
 	private int	_sun_color;
+	private int _sun_intensity;
 
 	private int	_fog_color;
 
@@ -39,6 +40,7 @@ public class ProgramSky extends Program
 		
 		this._sun_pos = super.getUniform("sun_pos");
 		this._sun_color = super.getUniform("sun_color");
+		this._sun_intensity = super.getUniform("sun_intensity");
 
 		this._fog_color = super.getUniform("fog_color");
 	}
@@ -57,6 +59,7 @@ public class ProgramSky extends Program
 		
 		this.loadUniformVec(this._sky_color, weather.getSkyColor());
 		
+		this.loadUniformFloat(this._sun_intensity, weather.getSunIntensity());
 		this.loadUniformVec(this._sun_pos, weather.getSunPos());
 		this.loadUniformVec(this._sun_color, weather.getSunColor());
 		

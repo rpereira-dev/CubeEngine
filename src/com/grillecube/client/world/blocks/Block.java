@@ -14,7 +14,7 @@ public class Block
 	private String	_name;
 	
 	/** block id */
-	private byte	_blockID;
+	private short	_blockID;
 	
 	/** block opengl textureID (see faces indices) */
 	private int[]	_textureID;
@@ -24,7 +24,7 @@ public class Block
 	 * @param name		: block name
 	 * @param blockID	: block unique ID
 	 */
-	public Block(String name, byte blockID, int textureID)
+	public Block(String name, short blockID, int textureID)
 	{
 		this._textureID = new int[6];
 		this._name = name;
@@ -39,7 +39,7 @@ public class Block
 	}
 	
 	/** @param faces		: special faces (BLOCK_FACE_FRONT, TEXTURE_ID....) */
-	public Block(String name, byte blockID, int textureID, int ... faces)
+	public Block(String name, short blockID, int textureID, int ... faces)
 	{
 		this(name, blockID, textureID);
 		
@@ -49,8 +49,17 @@ public class Block
 		}
 	}
 	
+	public Block	setFace(int faceID, int textureID)
+	{
+		if (faceID >= 0 && faceID < 6)
+		{
+			this._textureID[faceID] = textureID;
+		}
+		return (this);
+	}
+	
 	/** get block ID */
-	public byte	getID()
+	public short	getID()
 	{
 		return (this._blockID);
 	}

@@ -2,9 +2,11 @@ package com.grillecube.client;
 
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.RenderCalculationThread;
+import com.grillecube.client.ressources.ResourceManager;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.client.world.WorldClient;
 import com.grillecube.client.world.blocks.Blocks;
+import com.grillecube.common.mod.ModLoader;
 
 import fr.toss.lib.Logger;
 import fr.toss.lib.Logger.Level;
@@ -19,6 +21,9 @@ public class Game
 	private static final int THRD_MAX		= 1;
 	private Thread	_threads[];
 	
+	/** Mod loaded */
+	private ModLoader	_mod_loader;
+	
 	/** Logger */
 	private Logger	_logger;
 	
@@ -30,6 +35,9 @@ public class Game
 	
 	/** Renderer */
 	private MainRenderer	_renderer;
+	
+	/** Resource manager */
+	private ResourceManager	_resources;
 	
 	/** Game state */
 	public static final long STATE_RUNNING = 1;
@@ -44,6 +52,8 @@ public class Game
 		this._window = new GLWindow();
 		this._renderer = new MainRenderer(this._window);
 		this._world = new WorldClient();
+		this._resources = new ResourceManager();
+		this._mod_loader = new ModLoader();
 	}
 	
 	public void	start()
@@ -51,9 +61,14 @@ public class Game
 		this._logger.log(Level.FINE, "Starting game...");
 		this._state = 0;
 		this._window.start();
+		
+		this._mod_loader.initializeAll(this);
+
 		this._renderer.start();
+		this._resources.start();
 		this._world.start();
 		Blocks.initBlocks();
+		
 		this._threads[THRD_CALCUL] = new RenderCalculationThread(this);
 		this._logger.log(Level.FINE, "Game started!");
 	}
@@ -108,6 +123,7 @@ public class Game
 				thrd.interrupt();
 			}
 		}
+		this._mod_loader.deinitializeAll(this);
 		this._window.stop();
 		this._logger.log(Level.FINE, "Stopped");
 	}

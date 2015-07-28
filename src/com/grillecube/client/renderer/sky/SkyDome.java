@@ -21,9 +21,9 @@ public class SkyDome
 {
 	//TODO : edit these 3 lines if you want more details on skybox
 	public static final float RAYON			= 256.0f;
-	public static final int DETAILS			= 4;
-	public static final int TRIANGLES		= 2048;
-	public static final int FLOATS_COUNT	= 49152;
+	public static final int DETAILS			= 3;
+	public static final int TRIANGLES		= 512;
+	public static final int FLOATS_COUNT	= 12288;
 	public static final int VERTICES_COUNT	= TRIANGLES * 3;
 
 	private static int _index;

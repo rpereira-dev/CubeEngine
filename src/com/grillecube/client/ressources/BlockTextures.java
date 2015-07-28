@@ -1,4 +1,4 @@
-package com.grillecube.client.world.blocks;
+package com.grillecube.client.ressources;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -15,7 +15,7 @@ import com.grillecube.server.Game;
 
 import fr.toss.lib.Logger;
 
-public class BlockTextures
+public class BlockTextures implements IResource
 {
 	/** textures ID */
 	public static final int NONE 		= 0;
@@ -153,8 +153,13 @@ public class BlockTextures
 		return (image);
 	}
 	
-	/** initialize opengl textures */
-	public static void	initTextures()
+	/** return the opengl texture map for the given resolution */
+	public static int	getGLTextureAtlas(int resolutionID)
+	{
+		return (_gl_texture_map[resolutionID]);
+	}
+	
+	public void load()
 	{
 		BufferedImage	textures[];	//array which will contains every textures
 
@@ -169,10 +174,9 @@ public class BlockTextures
 		allocateGLTextures();	//allocate opengl texture name for each resolution
 		generateGLTextures(createTextureAtlas(textures));
 	}
-	
-	/** return the opengl texture map for the given resolution */
-	public static int	getGLTextureAtlas(int resolutionID)
+
+	public void unload()
 	{
-		return (_gl_texture_map[resolutionID]);
+		// TODO Auto-generated method stub
 	}
 }

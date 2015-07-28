@@ -1,7 +1,5 @@
 package com.grillecube.client.world;
 
-import java.util.Random;
-
 import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.world.blocks.Blocks;
 import com.grillecube.common.world.Terrain;
@@ -38,7 +36,7 @@ public class TerrainClient extends Terrain
 		{
 			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 			{
-				for (int y = 0 ; y < Terrain.SIZE_Y - 1 ; y++)
+				for (int y = 0 ; y < Terrain.SIZE_Y ; y++)
 				{
 					if (noise.noise((this._world_position.x + x) / 128.0f,
 									(this._world_position.y + y) / 128.0f,
@@ -67,7 +65,7 @@ public class TerrainClient extends Terrain
 		{
 			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 			{
-				for (int y = 0 ; y < Terrain.SIZE_Y ; y++)
+				for (int y = 0 ; y < Terrain.SIZE_Y - 1; y++)
 				{
 					if (this._blocks[x][y][z] == Blocks.DIRT && this._blocks[x][y + 1][z] == Blocks.AIR)
 					{
@@ -95,28 +93,25 @@ public class TerrainClient extends Terrain
 	}
 
 	
-	/** store in a Terrain array the neighboor terrains 
-	 * 0: bot
-	 * 1: top
-	 * 2: left
-	 * 3: right
-	 * 4: front
-	 * 5: back
-	 */
-	public TerrainClient[] getNeighboors()
+	/** store in a Terrain array the neighboor terrains  */
+	public TerrainClient[][][] getNeighboors()
 	{
-		TerrainClient[]	terrains;
-		TerrainLocation	loc;
+		TerrainClient[][][]	terrains;
+		TerrainLocation		loc;
 		
-		terrains = new TerrainClient[6];
+		terrains = new TerrainClient[3][3][3];
 		loc = new TerrainLocation();
-		terrains[0] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY() - 1, this._location.getZ()));
-		terrains[1] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY() + 1, this._location.getZ()));
-		terrains[2] = this._world.getTerrain(loc.set(this._location.getX() - 1, this._location.getY(), this._location.getZ()));
-		terrains[3] = this._world.getTerrain(loc.set(this._location.getX() + 1, this._location.getY(), this._location.getZ()));
-		terrains[4] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY(), this._location.getZ() - 1));
-		terrains[5] = this._world.getTerrain(loc.set(this._location.getX(), this._location.getY(), this._location.getZ() + 1));
-		
+		for (int x = 0 ; x < 3 ; x++)
+		{
+			for (int y = 0 ; y < 3 ; y++)
+			{
+				for (int z = 0 ; z < 3 ; z++)
+				{
+					loc.set(this._location.getX() + x - 1, this._location.getY() + y - 1, this._location.getZ() + z - 1);
+					terrains[x][y][z] = this._world.getTerrain(loc);
+				}
+			}
+		}
 		return (terrains);
 	}
 

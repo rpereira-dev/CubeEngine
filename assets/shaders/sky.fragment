@@ -1,29 +1,41 @@
 #version 400 core
 
 in float sun_dist;
+in float fog_factor;
 
 out vec4 vertexColor;
 
 uniform vec3 sun_color;
-
 uniform vec3 sky_color;
+uniform vec3 fog_color;
 
-#define SUN_RADIUS 	24.0f		//sun default radius
-#define SUN_RAY		(SUN_RADIUS * 4)			//sun max distance for rays to change sky color
+uniform float sun_intensity;
+
+#define SKYDOME_SIZE 256.0f
 
 void	main(void)
-{	
-	if (sun_dist < SUN_RADIUS)
+{
+	float sun_radius = (SKYDOME_SIZE / 16.0f) * sun_intensity;
+	float sun_ray = sun_radius * 5 * sun_intensity;
+
+	vec4	color;
+	vec4	sun_color_emit;
+	
+	sun_color_emit = vec4(sun_color, 1.0) * sun_intensity;
+	
+	if (sun_dist < sun_radius)
 	{
-		vertexColor = vec4(sun_color, 1.0);	
+		color = sun_color_emit;	
 	}
-	else if (sun_dist < SUN_RAY)
+	else if (sun_dist < sun_ray)
 	{
-		float f = sun_dist / SUN_RAY;
-		vertexColor = mix(vec4(sun_color, 1.0), vec4(sky_color, 1.0), f * f);
+		float f = sun_dist / sun_ray;
+		color = mix(sun_color_emit, vec4(sky_color, 1.0), f * f);
 	}
 	else
 	{
-		vertexColor = vec4(sky_color, 1.0);	
+		color = vec4(sky_color, 1.0);	
 	}
+	
+	vertexColor = mix(color, vec4(fog_color, 1.0), fog_factor);
 }

@@ -31,10 +31,11 @@ public class RenderCalculationThread extends Thread
 		while (this._game.hasState(Game.STATE_RUNNING))
 		{
 			this.updateTerrains(world, camera);
+			world.getWeather().update();
 			
 			try
 			{
-				Thread.sleep(1000 / 120);
+				Thread.sleep(1000 / 60);
 			}
 			catch (InterruptedException e)
 			{

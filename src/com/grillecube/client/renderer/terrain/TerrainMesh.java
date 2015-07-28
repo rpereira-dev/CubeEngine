@@ -11,9 +11,9 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
+import com.grillecube.client.ressources.BlockTextures;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.blocks.Block;
-import com.grillecube.client.world.blocks.BlockTextures;
 import com.grillecube.common.world.Terrain;
 
 public class TerrainMesh
@@ -69,7 +69,7 @@ public class TerrainMesh
 		
 		this.pushVisibleFaces(stack);
 		
-		this._vertices = new float[stack.size() * 9]; //each vertex is 9 floats (x, y, z, nx, ny, nz, uvx, uvy, ao)
+		this._vertices = new float[stack.size() * 9]; //each vertex is 9 floats (x, y, z, nx, ny, nz, uvx, uvy, shade)
 		int i = 0;
 		while (stack.size() > 0)
 		{
@@ -82,7 +82,7 @@ public class TerrainMesh
 			this._vertices[i++] = vertex.normalz;
 			this._vertices[i++] = vertex.uvx;
 			this._vertices[i++] = vertex.uvy;
-			this._vertices[i++] = vertex.ao;
+			this._vertices[i++] = 0;
 
 			stack.pop();
 		}
@@ -101,31 +101,6 @@ public class TerrainMesh
 		|/    | /
 		1-----2
 */
-	
-	private int	getVertexAO(Block side1, Block side2, Block corner)
-	{
-		int	ao;
-		
-		if (side1.isVisible() && side2.isVisible())
-		{
-			return (0);
-		}
-		ao = 0;
-		if (side1.isVisible())
-		{
-			ao++;
-		}
-		if (side2.isVisible())
-		{
-			ao++;
-		}
-		if (corner.isVisible())
-		{
-			ao++;
-		}
-		return (ao);
-	}
-	
 	//4, 0, 3 ; 4, 3, 7
 	private void pushTopFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
 	{
@@ -206,14 +181,12 @@ public class TerrainMesh
 	 */
 	private void	pushVisibleFaces(Stack<MeshVertex> stack)
 	{
+		TerrainClient	neighbors[][][];
 		Block	block;
-		float	shade;
 		float	uvx;
 		float	uvy;
-		int		posx;
-		int		posy;
-		int		posz;
-				
+
+		neighbors = this._terrain.getNeighboors();
 		for (int x = 0 ; x < TerrainClient.SIZE_X ; x++)
 		{
 			for (int y = 0 ; y < TerrainClient.SIZE_Y ; y++)
@@ -223,70 +196,42 @@ public class TerrainMesh
 					block = this._terrain.getBlock(x, y, z);
 					if (block.isVisible())
 					{
-						posx = this._terrain.getWorldPosition().x + x;
-						posy = this._terrain.getWorldPosition().y + y;
-						posz = this._terrain.getWorldPosition().z + z;
-												
-						shade = 0;
-						for (int i = 1 ; i <= 4 ; i++)
-						{
-							if (this._terrain.getWorld().getBlock(posx - 1, posy + i, posz).isVisible())
-							{
-								shade++;
-							}
-							
-							if (this._terrain.getWorld().getBlock(posx + 1, posy + i, posz).isVisible())
-							{
-								shade++;
-							}
-							
-							if (this._terrain.getWorld().getBlock(posx, posy + i, posz + 1).isVisible())
-							{
-								shade++;
-							}
-							
-							if (this._terrain.getWorld().getBlock(posx, posy + i, posz - 1).isVisible())
-							{
-								shade++;
-							}
-						}
-						
-						if (this._terrain.getWorld().getBlock(posx - 1, posy, posz).isVisible() == false)
+						if (this.isBlockVisible(neighbors, x - 1, y, z) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_LEFT) * UVY;
 							this.pushLeftFace(stack, x, y, z, uvx, uvy);
 						}
 						
-						if (this._terrain.getWorld().getBlock(posx + 1, posy, posz).isVisible() == false)
+						if (this.isBlockVisible(neighbors, x + 1, y, z) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_RIGHT) * UVY;
 							this.pushRightFace(stack, x, y, z, uvx, uvy);
 						}
 						
-						if (this._terrain.getWorld().getBlock(posx, posy, posz - 1).isVisible() == false)
+						if (this.isBlockVisible(neighbors, x, y, z - 1) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_FRONT) * UVY;
 							this.pushFrontFace(stack, x, y, z, uvx, uvy);
 						}
 
-						if (this._terrain.getWorld().getBlock(posx, posy, posz + 1).isVisible() == false)
+						if (this.isBlockVisible(neighbors, x, y, z + 1) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_BACK) * UVY;
 							this.pushBackFace(stack, x, y, z, uvx, uvy);
 						}
 						
-						if (this._terrain.getWorld().getBlock(posx, posy - 1, posz).isVisible() == false)
+						if (this.isBlockVisible(neighbors, x, y - 1, z) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_BOT) * UVY;
 							this.pushBotFace(stack, x, y, z, uvx, uvy);
 						}
 
-						if (this._terrain.getWorld().getBlock(posx, posy + 1, posz).isVisible() == false)
+						if (this.isBlockVisible(neighbors, x, y + 1, z) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_TOP) * UVY;
@@ -296,6 +241,53 @@ public class TerrainMesh
 				}
 			}
 		}
+	}
+	
+	/** position are relative to this._terrain (=== neighbors[1][1][1]) */
+	private boolean isBlockVisible(TerrainClient[][][] neighbors, int posx, int posy, int posz)
+	{
+		int	terrainx;
+		int	terrainy;
+		int	terrainz;
+		
+		terrainx = 1;
+		terrainy = 1;
+		terrainz = 1;
+		if (posx < 0)
+		{
+			terrainx--;
+			posx += Terrain.SIZE_X;
+		}
+		if (posy < 0)
+		{
+			terrainy--;
+			posy += Terrain.SIZE_Y;
+		}
+		if (posz < 0)
+		{
+			terrainz--;
+			posz += Terrain.SIZE_Z;
+		}
+		if (posx >= Terrain.SIZE_X)
+		{
+			terrainx++;
+			posx -= Terrain.SIZE_X;
+		}
+		if (posy >= Terrain.SIZE_Y)
+		{
+			terrainy++;
+			posy -= Terrain.SIZE_Y;
+		}
+		if (posz >= Terrain.SIZE_Z)
+		{
+			terrainz++;
+			posz -= Terrain.SIZE_Z;
+		}
+		if (neighbors[terrainx][terrainy][terrainz] == null)
+		{
+			return (false);
+		}
+		return (neighbors[terrainx][terrainy][terrainz].getBlock(posx, posy, posz).isVisible());
 	}
 
 	/** initialize opengl stuff (vao, vbo) */

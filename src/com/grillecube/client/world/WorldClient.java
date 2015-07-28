@@ -42,7 +42,7 @@ public class WorldClient extends World
 		{
 			for (int z = 0 ; z < 16 ; z++)
 			{
-				for (int y = 0 ; y < 1 ; y++)
+				for (int y = 0 ; y < 2 ; y++)
 				{
 					this.addTerrain(new TerrainClient(this, new TerrainLocation(x, y, z)));
 				}
@@ -63,14 +63,20 @@ public class WorldClient extends World
 	/** add the terrain to the world */
 	public void	addTerrain(TerrainClient terrain)
 	{
-		TerrainClient[]	neighbors;
+		TerrainClient[][][]	neighbors;
 		
 		neighbors = terrain.getNeighboors();
-		for (TerrainClient t : neighbors)
+		for (TerrainClient[][] t1 : neighbors)
 		{
-			if (t != null)
+			for (TerrainClient[] t2 : t1)
 			{
-				t.getMesh().unsetState(TerrainMesh.STATE_VERTICES_UP_TO_DATE);
+				for (TerrainClient t3 : t2)
+				{
+					if (t3 != null)
+					{
+						t3.getMesh().unsetState(TerrainMesh.STATE_VERTICES_UP_TO_DATE);
+					}	
+				}
 			}
 		}
 		this._terrains.put(terrain.getLocation(), terrain);

@@ -68,19 +68,19 @@ public class ProgramModel extends Program
 		}
 
 		matrix.translate(entity.getPosition());
-
 		matrix.translate(translation);
+
+		
+		scaling.x /= 16.0f;
+		scaling.y /= 16.0f;
+		scaling.z /= 16.0f;
+		matrix.scale(scaling);
 		offset = new Vector3f(offset.x + 0.5f, offset.y + 0.5f, offset.z + 0.5f);
 		matrix.translate(offset);	//set rotation point
 		matrix.rotate(rotation.x, new Vector3f(1, 0, 0));
 		matrix.rotate(rotation.y, new Vector3f(0, 1, 0));
 		matrix.rotate(rotation.z, new Vector3f(0, 0, 1));
 		matrix.translate(offset.negate(offset));	//unset rotation point
-		
-		scaling.x /= 16.0f;
-		scaling.y /= 16.0f;
-		scaling.z /= 16.0f;
-		matrix.scale(scaling);
 		
 		this.loadUniformMatrix(this._transformation_matrix, matrix);
 	}

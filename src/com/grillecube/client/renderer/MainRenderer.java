@@ -9,6 +9,8 @@ import com.grillecube.client.renderer.sky.SkyRenderer;
 import com.grillecube.client.renderer.terrain.TerrainRenderer;
 import com.grillecube.client.window.GLWindow;
 
+import fr.toss.lib.Logger;
+
 public class MainRenderer
 {
 	/** camera */
@@ -21,20 +23,22 @@ public class MainRenderer
 	{
 		this._camera = new Camera(window);
 		this._renderers = new ArrayList<IRenderer>();
-		this.addRenderer(new TerrainRenderer());
-		this.addRenderer(new ModelRenderer());
-		this.addRenderer(new QuadRenderer());
-		this.addRenderer(new SkyRenderer());
 	}
 	
 	public void	addRenderer(IRenderer renderer)
 	{
+		Game.instance().getLogger().log(Logger.Level.FINE, "Adding renderer: " + renderer.getClass().getName());
 		this._renderers.add(renderer);
 	}
 	
 	/** call on initialization */
 	public void	start()
 	{
+		this.addRenderer(new TerrainRenderer());
+		this.addRenderer(new ModelRenderer());
+		this.addRenderer(new QuadRenderer());
+		this.addRenderer(new SkyRenderer());
+		
 		for (IRenderer renderer : this._renderers)
 		{
 			renderer.start();

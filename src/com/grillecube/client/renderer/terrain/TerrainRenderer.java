@@ -5,9 +5,9 @@ import org.lwjgl.opengl.GL13;
 
 import com.grillecube.client.renderer.Camera;
 import com.grillecube.client.renderer.IRenderer;
+import com.grillecube.client.ressources.BlockTextures;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.WorldClient;
-import com.grillecube.client.world.blocks.BlockTextures;
 
 public class TerrainRenderer implements IRenderer
 {

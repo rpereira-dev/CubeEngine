@@ -8,6 +8,12 @@ uniform mat4 view_matrix;
 uniform vec3 sun_pos;
 
 out float sun_dist;
+out float fog_factor;
+
+#define SKYDOME_SIZE 256.0f
+
+const float fog_begin = -SKYDOME_SIZE;
+const float fog_end = SKYDOME_SIZE / 4.0 * 3.0;
 
 void	main(void)
 {
@@ -19,4 +25,13 @@ void	main(void)
 	//sun
 	sun_dist = length(position - sun_pos);
 
+	//fog_factor
+	if (position.y >= fog_begin && position.y < fog_end)
+	{
+		fog_factor = (fog_end - position.y) / (fog_end - fog_begin);
+	}
+	else
+	{
+		fog_factor = 0;
+	}
 }
