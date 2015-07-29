@@ -1,6 +1,6 @@
 package com.grillecube.client.world;
 
-import com.grillecube.client.mod.ResourceBlocks;
+import com.grillecube.client.mod.blocks.ResourceBlocks;
 import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.TerrainLocation;
@@ -111,4 +111,14 @@ public class TerrainClient extends Terrain
 		return (this._world);
 	}
 
+	public void setBlock(int x, int y, int z, short blockID)
+	{
+		this._blocks[x][y][z] = blockID;
+		this._mesh.unsetState(TerrainMesh.STATE_VERTICES_UP_TO_DATE);
+	}
+
+	public void setBlock(Vector3i vec, short blockID)
+	{
+		this.setBlock(vec.x, vec.y, vec.z, blockID);
+	}
 }

@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.grillecube.client.mod.ResourceBlocks;
+import com.grillecube.client.mod.blocks.ResourceBlocks;
 import com.grillecube.client.renderer.model.Models;
 import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.ressources.BlockManager;
@@ -119,24 +119,31 @@ public class WorldClient extends World
 		return (this._weather);
 	}
 
-	public Block getBlock(int x, int y, int z)
+	public Block getBlock(Vector3f pos)
 	{
 		TerrainLocation	location;
-		Vector3i		pos;
+		Vector3i		terrainpos;
 		TerrainClient	terrain;
 		
-		location = super.getTerrainLocation(x, y, z);
-		pos = super.getTerrainRelativePos(x, y, z);
+		location = super.getTerrainLocation(pos);
+		terrainpos = super.getTerrainRelativePos(pos);
 		terrain = this.getTerrain(location);
 		if (terrain == null)
 		{
 			return (BlockManager.getBlockByID(ResourceBlocks.AIR));
 		}
-		return (terrain.getBlock(pos.x, pos.y, pos.z));
+		return (terrain.getBlock(terrainpos));
 	}
-
-	public Block	getBlock(float x, float y, float z)
+	
+	public void setBlock(Vector3f pos, short blockID)
 	{
-		return (this.getBlock((int)x, (int)y, (int)z));
+		TerrainClient terrain = this.getTerrainAt(pos);
+		
+		if (terrain == null)
+		{
+			return ;
+		}
+		Vector3i vec = this.getTerrainRelativePos(pos);
+		terrain.setBlock(vec, blockID);
 	}
 }

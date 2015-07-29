@@ -5,6 +5,8 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.Game;
+import com.grillecube.client.mod.blocks.ResourceBlocks;
+import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.common.world.Terrain;
 
@@ -117,6 +119,7 @@ public class Camera
 	
 	private void	updateInput()
 	{
+		this.mouseClick();
 		this.keyPressed();
 		this.keyReleased();
 	}
@@ -253,6 +256,15 @@ public class Camera
 		return (GLFW.glfwGetKey(this._window.getPointer(), key) == GLFW.GLFW_RELEASE);
 	}
 	
+	/** update mouse clicking */
+	public void mouseClick()
+	{
+		if (GLFW.glfwGetMouseButton(this.getWindow().getPointer(), GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS)
+		{
+			Game.instance().getWorld().setBlock(this._pos, ResourceBlocks.STONE);
+		}
+	}
+	
 	/** check pressed key */
 	public void keyPressed()
 	{
@@ -329,7 +341,7 @@ public class Camera
 		this.setYaw(0);
 		this.setRoll(0);
 		this.setFov(70);
-		this.setSpeed(2);
+		this.setSpeed(1);
 		this.setRotSpeed(1);
 		this.setNear(0.1f);
 		this.setFar(2000);
@@ -427,7 +439,7 @@ public class Camera
 	                  / e \				e: eye
 	                  \___/				
 */
-	public boolean	isInFrustum(Vector3f point, float impresicion)
+	public boolean	isInFrustum(Vector3f point, float imprecision)
 	{
 		Vector3f	to_point_vector;
 		double 		dot;
@@ -437,20 +449,33 @@ public class Camera
 		to_point_vector.normalise(to_point_vector);
 		dot = Vector3f.dot(to_point_vector, this._look_vec);
 		angle = Math.toDegrees(Math.acos(dot));
-		return (angle < this._fov + impresicion);
+		return (angle < this._fov / 2 + imprecision);
 	}
 	
 	/** return true if the box of center "center" with dimension x, y, z is in camera frustum */
 	public boolean	isInFrustum(Vector3f center, float x, float y, float z)
 	{
-		return (this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z), 0)
-				|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z), 0)
-				|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z), 0)
-				|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z), 0)
-				|| this.isInFrustum(new Vector3f(center.x, center.y + y, center.z + z), 0)
-				|| this.isInFrustum(new Vector3f(center.x, center.y + y, center.z - z), 0)
-				|| this.isInFrustum(new Vector3f(center.x, center.y - y, center.z + z), 0)
-				|| this.isInFrustum(new Vector3f(center.x, center.y - y, center.z - z), 0)
-				);
+		float	dist;
+		float	diagonal;
+		
+		dist = ((center.x - this._pos.x) * (center.x - this._pos.x)
+				+ (center.y - this._pos.y) * (center.y - this._pos.y)
+				+ (center.z - this._pos.z) * (center.z - this._pos.z));
+		diagonal = (x * x * 4 + y * y * 4 + z * z * 4) / 2;
+		if (dist <= diagonal)
+		{
+			return (true);
+		}
+		return (this.isInFrustum(center, 0)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z + z), 0)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z + z), 0)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z - z), 0)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z - z), 0)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z + z), 0)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y - y, center.z + z), 0)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z - z), 0)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y - y, center.z - z), 0)
+		);
 	}
+
 }

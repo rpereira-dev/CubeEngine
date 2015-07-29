@@ -1,7 +1,7 @@
 
 package com.grillecube.client;
 
-import com.grillecube.client.mod.ModBidon;
+import com.grillecube.client.mod.blocks.ModBidon;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.RenderCalculationThread;
 import com.grillecube.client.ressources.ResourceManager;

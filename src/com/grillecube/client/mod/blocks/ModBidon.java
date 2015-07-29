@@ -1,4 +1,4 @@
-package com.grillecube.client.mod;
+package com.grillecube.client.mod.blocks;
 
 import com.grillecube.client.Game;
 import com.grillecube.common.mod.IMod;

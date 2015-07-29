@@ -2,7 +2,7 @@ package com.grillecube.client.ressources;
 
 import java.util.ArrayList;
 
-import com.grillecube.client.mod.ResourceBlocks;
+import com.grillecube.client.mod.blocks.ResourceBlocks;
 
 public class ResourceManager
 {

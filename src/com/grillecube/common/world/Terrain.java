@@ -3,6 +3,8 @@ package com.grillecube.common.world;
 import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.world.blocks.Block;
 
+import fr.toss.lib.Vector3i;
+
 public abstract class Terrain
 {
 	/** terrain dimensions */
@@ -25,6 +27,11 @@ public abstract class Terrain
 	public Block getBlock(int x, int y, int z)
 	{
 		return (BlockManager.getBlockByID(this._blocks[x][y][z]));
+	}
+	
+	public Block getBlock(Vector3i terrainpos)
+	{
+		return (BlockManager.getBlockByID(this._blocks[terrainpos.x][terrainpos.y][terrainpos.z]));
 	}
 	
 	/** return terrain location */

@@ -13,9 +13,9 @@ public class MeshVertex
 	public float	uvx;
 	public float	uvy;
 	
-	public float	shade;
+	public float	ao;
 
-	public MeshVertex(float px, float py, float pz, float nx, float ny, float nz, float ux, float uy, float shade)
+	public MeshVertex(float px, float py, float pz, float nx, float ny, float nz, float ux, float uy, float ao)
 	{
 		this.posx = px;
 		this.posy = py;
@@ -28,7 +28,7 @@ public class MeshVertex
 		this.uvx = ux;
 		this.uvy = uy;
 		
-		this.shade = shade;
+		this.ao = ao;
 	}
 
 }

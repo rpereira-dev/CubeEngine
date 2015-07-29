@@ -70,7 +70,7 @@ public class TerrainMesh
 		
 		this.pushVisibleFaces(stack);
 		
-		this._vertices = new float[stack.size() * 9]; //each vertex is 9 floats (x, y, z, nx, ny, nz, uvx, uvy, shade)
+		this._vertices = new float[stack.size() * 9]; //each vertex is 9 floats (x, y, z, nx, ny, nz, uvx, uvy, ao)
 		int i = 0;
 		while (stack.size() > 0)
 		{
@@ -83,7 +83,7 @@ public class TerrainMesh
 			this._vertices[i++] = vertex.normalz;
 			this._vertices[i++] = vertex.uvx;
 			this._vertices[i++] = vertex.uvy;
-			this._vertices[i++] = 0;
+			this._vertices[i++] = vertex.ao;
 
 			stack.pop();
 		}
@@ -93,6 +93,31 @@ public class TerrainMesh
 		this.unsetState(STATE_VBO_UP_TO_DATE);
 	}
 	
+	//the float returned is the ratio of black which will be used for this vertex
+	private float getVertexAO(TerrainClient[][][] neighbors, int x, int y, int z, int ox, int oy, int oz)
+	{
+		boolean side1 = this.isBlockVisible(neighbors, x + ox, y + oy, z);
+		boolean side2 = this.isBlockVisible(neighbors, x, y + oy, z + oz);
+		boolean corner = this.isBlockVisible(neighbors, x + ox, y + oy, z + oz);
+		if (side1 && side2)
+		{
+			return (0.5f);
+		}
+		float ao = 0;
+		if (side1)
+		{
+			ao += 0.2f;
+		}
+		if (side2)
+		{
+			ao += 0.2f;
+		}
+		if (corner)
+		{
+			ao += 0.2f;
+		}
+		return (ao);
+	}
 	 
 /*
 		  4-----7
@@ -102,76 +127,62 @@ public class TerrainMesh
 		|/    | /
 		1-----2
 */
-	//4, 0, 3 ; 4, 3, 7
-	private void pushTopFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+	//1, 5, 6 ; 1 6 2
+	private void pushBotFace(TerrainClient[][][] neighbors, Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
 	{
-		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 1, 0, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 1, 0, uvx, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 1, 0, uvx + UVX, uvy + UVY, 0));
-		
-		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 1, 0, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 1, 0, uvx + UVX, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 1, 0, uvx + UVX, uvy, 0 ));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, -1, 0, uvx, uvy, this.getVertexAO(neighbors, X, Y, Z, -1, -1, -1)));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, -1, 0, uvx, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, -1, -1, 1)));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, -1, 0, uvx + UVX, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, 1, -1, 1)));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, -1, 0, uvx + UVX, uvy, this.getVertexAO(neighbors, X, Y, Z, 1, -1, -1)));
 	}
 	
-	//1, 5, 6 ; 1 6 2
-	private void pushBotFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+
+	//4, 0, 3 ; 4, 3, 7
+	private void pushTopFace(TerrainClient[][][] neighbors, Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
 	{
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, -1, 0, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, -1, 0, uvx, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, -1, 0, uvx + UVX, uvy + UVY, 0));
+		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 1, 0, uvx, uvy, this.getVertexAO(neighbors, X, Y, Z, -1, 1, 1)));
+		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 1, 0, uvx, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, -1, 1, -1)));
+		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 1, 0, uvx + UVX, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, 1, 1, -1)));
+		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 1, 0, uvx + UVX, uvy, this.getVertexAO(neighbors, X, Y, Z, 1, 1, 1)));
+	}
+
+	
+	//3, 2, 6 ; 3, 6, 7
+	private void pushRightFace(TerrainClient[][][] neighbors, Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+	{
+		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 1, 0, 0, uvx, uvy, this.getVertexAO(neighbors, X, Y, Z, 1, 1, -1)));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 1, 0, 0, uvx, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, 1, 0, -1)));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 1, 0, 0, uvx + UVX, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, 1, 0, 1)));
+		stack.push(new MeshVertex(X + S, Y + S, Z + S, 1, 0, 0, uvx + UVX, uvy, this.getVertexAO(neighbors, X, Y, Z, 1, 1, 1)));
+	}
 		
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, -1, 0, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, -1, 0, uvx + UVX, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, -1, 0, uvx + UVX, uvy, 0));
+		
+	//4, 5, 1 ; 4, 1, 0
+	private void pushLeftFace(TerrainClient[][][] neighbors, Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+	{
+		stack.push(new MeshVertex(X + 0, Y + S, Z + S, -1, 0, 0, uvx, uvy, this.getVertexAO(neighbors, X, Y, Z, -1, 1, 1)));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, -1, 0, 0, uvx, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, -1, 0, 1)));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, -1, 0, 0, uvx + UVX, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, -1, 0, -1)));
+		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, -1, 0, 0, uvx + UVX, uvy, this.getVertexAO(neighbors, X, Y, Z, -1, 1, -1)));
+	}
+	
+
+	//7, 6, 5 ; 7, 5, 4
+	private void pushBackFace(TerrainClient[][][] neighbors, Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+	{
+		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 0, 1, uvx, uvy, this.getVertexAO(neighbors, X, Y, Z, 1, 1, 1)));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, 0, 1, uvx, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, 1, 0, 1)));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, 0, 1, uvx + UVX, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, -1, 0, 1)));
+		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 0, 1, uvx + UVX, uvy, this.getVertexAO(neighbors, X, Y, Z, -1, 1, 1)));
 	}
 	
 	//0, 1, 2 ; 0, 2, 3
-	private void pushFrontFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
+	private void pushFrontFace(TerrainClient[][][] neighbors, Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
 	{
-		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 0, -1, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, 0, -1, uvx, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, 0, -1, uvx + UVX, uvy + UVY, 0));
-		
-		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 0, -1, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, 0, -1, uvx + UVX, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 0, -1, uvx + UVX, uvy, 0));
-	}
-	
-	//7, 6, 5 ; 7, 5, 4
-	private void pushBackFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
-	{
-		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 0, 1, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, 0, 1, uvx, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, 0, 1, uvx + UVX, uvy + UVY, 0));
-
-		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 0, 1, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, 0, 1, uvx + UVX, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 0, 1, uvx + UVX, uvy, 0));
-	}
-	
-	//4, 5, 1 ; 4, 1, 0
-	private void pushLeftFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
-	{
-		stack.push(new MeshVertex(X + 0, Y + S, Z + S, -1, 0, 0, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, -1, 0, 0, uvx, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, -1, 0, 0, uvx + UVX, uvy + UVY, 0));
-		
-		stack.push(new MeshVertex(X + 0, Y + S, Z + S, -1, 0, 0, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, -1, 0, 0, uvx + UVX, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, -1, 0, 0, uvx + UVX, uvy, 0));
-	}
-	
-	//3, 2, 6 ; 3, 6, 7
-	private void pushRightFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
-	{
-		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 1, 0, 0, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 1, 0, 0, uvx, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 1, 0, 0, uvx + UVX, uvy + UVY, 0));
-		
-		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 1, 0, 0, uvx, uvy, 0));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 1, 0, 0, uvx + UVX, uvy + UVY, 0));
-		stack.push(new MeshVertex(X + S, Y + S, Z + S, 1, 0, 0, uvx + UVX, uvy, 0));
+		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 0, -1, uvx, uvy, this.getVertexAO(neighbors, X, Y, Z, -1, 1, -1)));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, 0, -1, uvx, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, -1, 0, -1)));
+		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, 0, -1, uvx + UVX, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, 1, 0, -1)));
+		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 0, -1, uvx + UVX, uvy, this.getVertexAO(neighbors, X, Y, Z, 1, 1, -1)));
 	}
 	
 	/**
@@ -201,42 +212,42 @@ public class TerrainMesh
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_LEFT) * UVY;
-							this.pushLeftFace(stack, x, y, z, uvx, uvy);
+							this.pushLeftFace(neighbors, stack, x, y, z, uvx, uvy);
 						}
 						
 						if (this.isBlockVisible(neighbors, x + 1, y, z) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_RIGHT) * UVY;
-							this.pushRightFace(stack, x, y, z, uvx, uvy);
+							this.pushRightFace(neighbors, stack, x, y, z, uvx, uvy);
 						}
 						
 						if (this.isBlockVisible(neighbors, x, y, z - 1) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_FRONT) * UVY;
-							this.pushFrontFace(stack, x, y, z, uvx, uvy);
+							this.pushFrontFace(neighbors, stack, x, y, z, uvx, uvy);
 						}
 
 						if (this.isBlockVisible(neighbors, x, y, z + 1) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_BACK) * UVY;
-							this.pushBackFace(stack, x, y, z, uvx, uvy);
+							this.pushBackFace(neighbors, stack, x, y, z, uvx, uvy);
 						}
 						
 						if (this.isBlockVisible(neighbors, x, y - 1, z) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_BOT) * UVY;
-							this.pushBotFace(stack, x, y, z, uvx, uvy);
+							this.pushBotFace(neighbors, stack, x, y, z, uvx, uvy);
 						}
 
 						if (this.isBlockVisible(neighbors, x, y + 1, z) == false)
 						{
 							uvx = 0;
 							uvy = block.getTextureIDForFace(Block.FACE_TOP) * UVY;
-							this.pushTopFace(stack, x, y, z, uvx, uvy);							
+							this.pushTopFace(neighbors, stack, x, y, z, uvx, uvy);							
 						}
 					}
 				}
@@ -362,9 +373,9 @@ public class TerrainMesh
 		GL20.glEnableVertexAttribArray(0);	//position
 		GL20.glEnableVertexAttribArray(1);	//normal
 		GL20.glEnableVertexAttribArray(2);	//uv
-		GL20.glEnableVertexAttribArray(3);	//shade factor
+		GL20.glEnableVertexAttribArray(3);	//ao factor
 
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, this._vertex_count);
+		GL11.glDrawArrays(GL11.GL_QUADS, 0, this._vertex_count);
 								
 		GL30.glBindVertexArray(0);
 	}

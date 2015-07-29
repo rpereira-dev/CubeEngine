@@ -38,28 +38,28 @@ public abstract class World
 	/** get the terrain location (x, y, z) for the given world location */
 	public TerrainLocation	getTerrainLocation(Vector3f pos)
 	{
-		return (getTerrainLocation(pos.x, pos.y, pos.z));
+		return (this.getTerrainLocation(pos.x, pos.y, pos.z));
 	}
 	
 	
 	/** return positions relative to the terrain */
-	public Vector3i	getTerrainRelativePos(int x, int y, int z)
+	public Vector3i	getTerrainRelativePos(Vector3f pos)
 	{
-		x = (int)x % Terrain.SIZE_X;
-		y = (int)y % Terrain.SIZE_Y; 
-		z = (int)z % Terrain.SIZE_Z;
-		if (x < 0)
+		pos.x = (int)pos.x % Terrain.SIZE_X;
+		pos.y = (int)pos.y % Terrain.SIZE_Y; 
+		pos.z = (int)pos.z % Terrain.SIZE_Z;
+		if (pos.x < 0)
 		{
-			x += Terrain.SIZE_X;
+			pos.x += Terrain.SIZE_X;
 		}
-		if (y < 0)
+		if (pos.y < 0)
 		{
-			y += Terrain.SIZE_Y;
+			pos.y += Terrain.SIZE_Y;
 		}
-		if (z < 0)
+		if (pos.z < 0)
 		{
-			z += Terrain.SIZE_Z;
+			pos.z += Terrain.SIZE_Z;
 		}
-		return (new Vector3i(x, y, z));
+		return (new Vector3i((int)pos.x, (int)pos.y, (int)pos.z));
 	}
 }

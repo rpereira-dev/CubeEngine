@@ -10,7 +10,7 @@ import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.WorldClient;
 
 public class TerrainRenderer implements IRenderer
-{
+{	
 	private ProgramTerrain	_terrain_program;
 	
 	/** render the given world */

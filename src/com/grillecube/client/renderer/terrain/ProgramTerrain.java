@@ -1,5 +1,6 @@
 package com.grillecube.client.renderer.terrain;
 
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -30,6 +31,8 @@ public class ProgramTerrain extends Program
 	private int	_sun_color;
 	private int	_sun_position;
 	
+	private int	_use_ao;
+	
 	public ProgramTerrain()
 	{
 		super("terrain", "terrain");
@@ -42,7 +45,7 @@ public class ProgramTerrain extends Program
 		super.bindAttribute(0, "position");
 		super.bindAttribute(1, "normal");
 		super.bindAttribute(2, "uv");
-		super.bindAttribute(3, "shade");
+		super.bindAttribute(3, "ao");
 	}
 
 	@Override
@@ -56,6 +59,7 @@ public class ProgramTerrain extends Program
 		this._fog_density = super.getUniform("fog_density");
 		this._sun_color = super.getUniform("sun_color");
 		this._sun_position = super.getUniform("sun_position");
+		this._use_ao = super.getUniform("use_ao");
 	}
 
 	public void	loadUniforms(WorldClient world, Camera camera)
@@ -72,6 +76,8 @@ public class ProgramTerrain extends Program
 		Vector3f sun_pos = new Vector3f();
 		Vector3f.add(world.getWeather().getSunPos(), camera.getPosition(), sun_pos);
 		this.loadUniformVec(this._sun_position, sun_pos);
+		
+		this.loadUniformInteger(this._use_ao, GLFW.glfwGetKey(camera.getWindow().getPointer(), GLFW.GLFW_KEY_R) == GLFW.GLFW_PRESS? 0 : 1);
 	}
 	
 	public void loadInstanceUniforms(TerrainClient terrain)
