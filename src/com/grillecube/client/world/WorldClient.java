@@ -39,26 +39,27 @@ public class WorldClient extends World
 	/** called on initiliaztion */
 	public void start()
 	{
-		for (int x = 0 ; x < 16 ; x++)
+		for (int x = -8 ; x < 8 ; x++)
 		{
-			for (int z = 0 ; z < 16 ; z++)
+			for (int z = -8 ; z < 8 ; z++)
 			{
-				for (int y = 0 ; y < 2 ; y++)
+				for (int y = -4 ; y < 4 ; y++)
 				{
 					this.addTerrain(new TerrainClient(this, new TerrainLocation(x, y, z)));
 				}
 			}
 		}
-
-
-		this._entities.add(new EntityModeled(Models.getModel(Models.PIG))
-		{
-
-			@Override
-			protected void updateEntity() {}
-		});
 		
-		this._entities.get(0).setPosition(new Vector3f(16, 64, 16));
+//		this.addTerrain(new TerrainClient(this, new TerrainLocation(0, 0, 0)));
+
+
+//		this._entities.add(new EntityModeled(Models.getModel(Models.PIG))
+//		{
+//
+//			@Override
+//			protected void updateEntity() {}
+//		});
+		
 	}
 	
 	/** add the terrain to the world */

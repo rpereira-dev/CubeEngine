@@ -46,6 +46,7 @@ public class TerrainRenderer implements IRenderer
 		this._terrain_program.useStop();
 		
 		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
 	}
 	

@@ -11,9 +11,12 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
+import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.blocks.Block;
 import com.grillecube.common.world.Terrain;
+
+import fr.toss.lib.Vector3i;
 
 public class TerrainMesh
 {
@@ -38,11 +41,12 @@ public class TerrainMesh
 	
 	/** distance to camera */
 	private Vector3f	_center;
-	private float		_camera_dist;
 	
 	/** opengl */
 	private int	_vaoID;
 	private int	_vboID;
+
+	private float _camera_dist;
 	
 	public TerrainMesh(TerrainClient terrain)
 	{
@@ -52,9 +56,7 @@ public class TerrainMesh
 		this._vertex_count = 0;
 		this._center = new Vector3f(terrain.getLocation().getX() * Terrain.SIZE_X + Terrain.SIZE_X / 2,
 									terrain.getLocation().getY() * Terrain.SIZE_Y + Terrain.SIZE_Y / 2,
-									terrain.getLocation().getZ() * Terrain.SIZE_Z + Terrain.SIZE_Z / 2);
-		this._camera_dist = Float.MAX_VALUE;
-		
+									terrain.getLocation().getZ() * Terrain.SIZE_Z + Terrain.SIZE_Z / 2);		
 	}
 	
 	/** set terrain mesh vertices depending on terrain block */
@@ -165,6 +167,7 @@ public class TerrainMesh
 		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, -1, 0, 0, uvx + UVX, uvy + UVY, this.getVertexAO(neighbors, X, Y, Z, -1, 0, -1)));
 		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, -1, 0, 0, uvx + UVX, uvy, this.getVertexAO(neighbors, X, Y, Z, -1, 1, -1)));
 	}
+
 	
 
 	//7, 6, 5 ; 7, 5, 4
@@ -374,7 +377,7 @@ public class TerrainMesh
 		GL20.glEnableVertexAttribArray(1);	//normal
 		GL20.glEnableVertexAttribArray(2);	//uv
 		GL20.glEnableVertexAttribArray(3);	//ao factor
-
+		
 		GL11.glDrawArrays(GL11.GL_QUADS, 0, this._vertex_count);
 								
 		GL30.glBindVertexArray(0);
@@ -400,22 +403,119 @@ public class TerrainMesh
 		this._state = this._state ^ state;
 	}
 
-	public void updateCameraDistance(Camera camera)
-	{
-	    float dx = camera.getPosition().getX() - this._center.x;
-	    float dy = camera.getPosition().getY() - this._center.y;
-	    float dz = camera.getPosition().getZ() - this._center.z;
-	    
-	    this._camera_dist = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-	}
-	
-	public float	getCameraDistance()
-	{
-		return (this._camera_dist);
-	}
-
 	public Vector3f getCenter()
 	{
 		return (this._center);
 	}
+
+	/** return true if this terrain mesh in the given Camera frustum */
+	public boolean	isInFrustum(Camera camera)
+	{
+		float dx = camera.getPosition().getX() - this._center.x;
+		float dy = camera.getPosition().getY() - this._center.y;
+		float dz = camera.getPosition().getZ() - this._center.z;
+		
+		this._camera_dist = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+		
+		if (this._camera_dist >= camera.getRenderDistance())
+		{
+			return (false);
+		}
+		return (camera.isInFrustum(this.getCenter(), Terrain.SIZE_X / 2, Terrain.SIZE_Y / 2, Terrain.SIZE_Z / 2));
+	}
+
+	/**
+	 * implementations follows this:
+	 * https://tomcc.github.io/2014/08/31/visibility-1.html
+	 * 
+	 * FIRST:
+	 * 		In each terrain meshes, determines which faces can be seen from another one
+	 * 		(visibility is registered in 'this._faces_visibility'
+	 */
+
+	/**
+	 * this function updates the visibility of each face toward another using a flood fill algorythm
+	 */
+	private short	_faces_visibility;
+	public static final int LEFT_RIGHT	= 0b0000000000000001;
+	public static final int LEFT_BOT	= 0b0000000000000010;
+	public static final int LEFT_TOP	= 0b0000000000000100;
+	public static final int LEFT_FRONT	= 0b0000000000001000;
+	public static final int LEFT_BACK	= 0b0000000000010000;
+	
+	public static final int RIGHT_TOP	= 0b0000000000100000;
+	public static final int RIGHT_BOT	= 0b0000000001000000;
+	public static final int RIGHT_FRONT	= 0b0000000010000000;
+	public static final int RIGHT_BACK	= 0b0000000100000000;
+	
+	public static final int TOP_BOT		= 0b0000001000000000;
+	public static final int TOP_FRONT	= 0b0000010000000000;
+	public static final int TOP_BACK	= 0b0000100000000000;
+	
+	public static final int BOT_FRONT	= 0b0001000000000000;
+	public static final int BOT_BACK	= 0b0010000000000000;
+	
+	public static final int FRONT_BACK	= 0b0100000000000000;
+	
+	public void updateFacesVisiblity()
+	{
+		short[][][] blocks;
+		short[][][] flood;
+		short	color;
+		
+		blocks = this._terrain.getBlocks();
+		flood = new short[Terrain.SIZE_X][Terrain.SIZE_Y][Terrain.SIZE_Z];
+		this._faces_visibility = 0;
+		
+		color = 1;
+		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
+		{
+			for (int y = 0 ; y < Terrain.SIZE_Y ; y++)
+			{
+				for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
+				{
+					if (!BlockManager.getBlockByID(blocks[x][y][z]).isOpaque() && flood[x][y][z] == 0)
+					{
+						this.floodFill(blocks, flood, x, y, z, color);
+						color++;
+					}
+				}
+			}
+		}
+	}
+	
+	//TODO: replace this with an explicit stack
+	private void floodFill(short[][][] blocks, short[][][] flood, int x, int y, int z, short color)
+	{
+		Stack<Vector3i>	stack = new Stack<Vector3i>();
+		
+		stack.push(new Vector3i(x, y, z));
+		while (!stack.isEmpty())
+		{
+			Vector3i pos = stack.pop();
+			
+			if (pos.x < 0 || pos.x >= Terrain.SIZE_X
+					|| pos.y < 0 || pos.y >= Terrain.SIZE_Y
+					|| pos.z < 0 || pos.z >= Terrain.SIZE_Z)
+			{
+				continue ;
+			}
+
+			if (BlockManager.getBlockByID(blocks[pos.x][pos.y][pos.z]).isOpaque() || flood[pos.x][pos.y][pos.z] != 0)
+			{
+				continue ;
+			}
+			
+			flood[pos.x][pos.y][pos.z] = color;
+			
+			stack.push(new Vector3i(x + 1, y + 0, z + 0));
+			stack.push(new Vector3i(x - 1, y + 0, z + 0));
+			stack.push(new Vector3i(x + 0, y + 1, z + 0));
+			stack.push(new Vector3i(x + 0, y - 1, z + 0));
+			stack.push(new Vector3i(x + 0, y + 0, z + 1));
+			stack.push(new Vector3i(x + 0, y + 0, z - 1));
+		}
+	}
+	
+	
 }

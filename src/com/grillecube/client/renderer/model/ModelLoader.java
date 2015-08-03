@@ -13,6 +13,7 @@ import fr.toss.lib.Logger;
 
 public class ModelLoader
 {
+	private static final float UNIT = 1 / 16.0f;
 	public static Model	loadModel(String filename)
 	{
 		FileInputStream	fstream;
@@ -66,7 +67,14 @@ public class ModelLoader
 		i = 0;
 		while (i < float_count)
 		{
-			vertices[i++] = dis.readFloat();
+			if (i % 7 < 4)
+			{
+				vertices[i++] = dis.readFloat() * UNIT;	//coordinates
+			}
+			else
+			{
+				vertices[i++] = dis.readFloat();	//color
+			}
 		}
 		part.setVertices(vertices);
 		
@@ -104,10 +112,10 @@ public class ModelLoader
 		for (i = 0 ; i < frames_count ; i++)
 		{
 			time = dis.readFloat();
-			translate = new Vector3f(dis.readFloat(), dis.readFloat(), dis.readFloat());
+			translate = new Vector3f(dis.readFloat() * UNIT, dis.readFloat() * UNIT, dis.readFloat() * UNIT);
 			rot = new Vector3f(dis.readFloat(), dis.readFloat(), dis.readFloat());
 			scale = new Vector3f(dis.readFloat(), dis.readFloat(), dis.readFloat());
-			offset = new Vector3f(dis.readFloat(), dis.readFloat(), dis.readFloat());
+			offset = new Vector3f(dis.readFloat() * UNIT, dis.readFloat() * UNIT, dis.readFloat() * UNIT);
 			frames[i] = new AnimationFrame(time, translate, rot, scale, offset);
 		}
 		animation.setFrames(frames);

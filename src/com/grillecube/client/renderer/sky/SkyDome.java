@@ -1,5 +1,7 @@
 package com.grillecube.client.renderer.sky;
 
+import com.grillecube.client.world.Weather;
+
 /**
  * this implementation is based on this one:
  * 
@@ -20,7 +22,7 @@ package com.grillecube.client.renderer.sky;
 public class SkyDome
 {
 	//TODO : edit these 3 lines if you want more details on skybox
-	public static final float RAYON			= 256.0f;
+	public static final float RAYON			= Weather.SUN_DIST;
 	public static final int DETAILS			= 3;
 	public static final int TRIANGLES		= 512;
 	public static final int FLOATS_COUNT	= 12288;

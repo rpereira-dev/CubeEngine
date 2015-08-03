@@ -3,6 +3,7 @@ package com.grillecube.client.renderer;
 import java.util.ArrayList;
 
 import com.grillecube.client.Game;
+import com.grillecube.client.renderer.font.FontRenderer;
 import com.grillecube.client.renderer.model.ModelRenderer;
 import com.grillecube.client.renderer.sky.SkyRenderer;
 import com.grillecube.client.renderer.terrain.TerrainRenderer;
@@ -33,9 +34,12 @@ public class MainRenderer
 	/** call on initialization */
 	public void	start()
 	{
+		//TODO : should default renderer be added like this?
 		this.registerRenderer(new TerrainRenderer());
 		this.registerRenderer(new ModelRenderer());
 		this.registerRenderer(new SkyRenderer());
+		this.registerRenderer(new FontRenderer());
+
 		for (IRenderer renderer : this._renderers)
 		{
 			renderer.start();

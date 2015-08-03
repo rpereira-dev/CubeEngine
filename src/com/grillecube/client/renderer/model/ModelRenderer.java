@@ -32,7 +32,7 @@ public class ModelRenderer implements IRenderer
 
 					if (part.isPlayingAnimation() == false)
 					{
-						part.startAnimation(2);
+						part.startAnimation(0);
 					}
 					animation_instance.update();
 					this._program_model.loadAnimationUniforms(entity, animation_instance);

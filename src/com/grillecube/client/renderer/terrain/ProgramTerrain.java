@@ -5,7 +5,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.Program;
+import com.grillecube.client.renderer.opengl.Program;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.WorldClient;
 

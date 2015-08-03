@@ -1,0 +1,27 @@
+#version 430 compatibility
+#extension GL_ARB_compute_shader : enable
+#extension GL_ARB_shader_storage_buffer_object : enable
+
+layout(std140, binding=0) buffer pos
+{
+	vec4 positions[];
+};
+
+layout(std140, binding=1) buffer vel
+{
+	vec4 velocities[];
+};
+
+layout(std140, binding=2) buffer col
+{
+	vec4 colors[];
+};
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+void	main(void)
+{
+	uint gid = gl_GlobalInvocationID.x;
+	
+	positions[gid].xyz += velocities[gid].xyz * velocities[gid].w;
+}

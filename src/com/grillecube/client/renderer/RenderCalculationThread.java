@@ -4,7 +4,6 @@ import com.grillecube.client.Game;
 import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.world.TerrainClient;
 import com.grillecube.client.world.WorldClient;
-import com.grillecube.common.world.Terrain;
 
 /** this thread is dedicated to rendering calculation, such as:
  * 
@@ -31,11 +30,14 @@ public class RenderCalculationThread extends Thread
 		while (this._game.hasState(Game.STATE_RUNNING))
 		{
 			this.updateTerrains(world, camera);
+			
+			
+			//weather will be update somewhere else later so this thread iwll be dedicated to terrain updates
 			world.getWeather().update();
 			
 			try
 			{
-				Thread.sleep(1000 / 60);
+				Thread.sleep(20);
 			}
 			catch (InterruptedException e)
 			{
@@ -52,14 +54,14 @@ public class RenderCalculationThread extends Thread
 		{
 			TerrainMesh	mesh = terrain.getMesh();
 			
-			mesh.updateCameraDistance(camera);
-
 			if (!mesh.hasState(TerrainMesh.STATE_VERTICES_UP_TO_DATE))
 			{
 				mesh.generateVertices();
+				mesh.updateFacesVisiblity();
 			}
-			
-			if (camera.isInFrustum(mesh.getCenter(), Terrain.SIZE_X / 2, Terrain.SIZE_Y / 2, Terrain.SIZE_Z / 2))
+
+			//TODO : change visibility test by an occlusion test
+			if (mesh.isInFrustum(camera))
 			{
 				mesh.setState(TerrainMesh.STATE_VISIBLE);
 			}

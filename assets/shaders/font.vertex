@@ -2,8 +2,10 @@
 
 in vec3 position;
 in vec2 uv;
+in vec4 color;
 
 out vec2 pass_uv;
+out vec4 pass_color;
 
 uniform mat4 transf_matrix;
 
@@ -11,4 +13,5 @@ void	main(void)
 {
 	gl_Position = transf_matrix * vec4(position, 1.0);
 	pass_uv = uv;
+	pass_color = color;
 }

@@ -9,7 +9,7 @@ public abstract class Terrain
 {
 	/** terrain dimensions */
 	public static final int	SIZE_X = 16;
-	public static final int	SIZE_Y = 64;
+	public static final int	SIZE_Y = 16;
 	public static final int	SIZE_Z = 16;
 	
 	protected TerrainLocation	_location;

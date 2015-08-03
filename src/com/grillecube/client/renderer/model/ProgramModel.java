@@ -4,7 +4,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.Program;
+import com.grillecube.client.renderer.opengl.Program;
 import com.grillecube.client.world.entity.EntityModeled;
 import com.grillecube.common.world.entity.Entity;
 
@@ -69,11 +69,6 @@ public class ProgramModel extends Program
 
 		matrix.translate(entity.getPosition());
 		matrix.translate(translation);
-
-		
-		scaling.x /= 16.0f;
-		scaling.y /= 16.0f;
-		scaling.z /= 16.0f;
 		matrix.scale(scaling);
 		offset = new Vector3f(offset.x + 0.5f, offset.y + 0.5f, offset.z + 0.5f);
 		matrix.translate(offset);	//set rotation point

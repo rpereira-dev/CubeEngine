@@ -1,7 +1,8 @@
 
 package com.grillecube.client;
 
-import com.grillecube.client.mod.blocks.ModBidon;
+import com.grillecube.client.mod.blocks.ModBlocks;
+import com.grillecube.client.mod.renderer.ModRenderer;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.RenderCalculationThread;
 import com.grillecube.client.ressources.ResourceManager;
@@ -56,7 +57,10 @@ public class Game
 		this._resources = new ResourceManager();
 		this._mod_loader = new ModLoader();
 		this._mod_loader.loadMods("./mods");
-		this._mod_loader.injectMod(new ModBidon());
+		
+		//TODO : default mods are injected here
+		this._mod_loader.injectMod(new ModBlocks());
+		this._mod_loader.injectMod(new ModRenderer());
 	}
 	
 	public void	start()
@@ -88,7 +92,6 @@ public class Game
 		long	prev = System.currentTimeMillis();
 		int		frames = 0;
 
-//		this._window.useVSync(0);
 		while (this._window.shouldClose() == false)
 		{
 			if (System.currentTimeMillis() - prev >= 1000)

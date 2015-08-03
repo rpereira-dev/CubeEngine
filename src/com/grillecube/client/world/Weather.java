@@ -2,7 +2,7 @@ package com.grillecube.client.world;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.grillecube.client.renderer.sky.SkyDome;
+import com.grillecube.client.renderer.Camera;
 
 public class Weather
 {
@@ -40,6 +40,7 @@ public class Weather
 	private Vector3f	_sky_color;
 	
 	/** sun position */
+	public static final float		SUN_DIST		= Camera.RENDER_DISTANCE;
 	private static final Vector3f	SUN_RISE_COLOR 	= new Vector3f(1.2f, 1.0f, 0.8f);
 	private static final Vector3f	SUN_COLOR 		= new Vector3f(1.0f, 1.0f, 1.0f);
 	private Vector3f	_sun_pos;
@@ -66,7 +67,7 @@ public class Weather
 		this._sun_intensity = 1.1f;
 		
 		this._fog_color = new Vector3f(1.0f, 1.0f, 1.0f);
-		this._fog_density = 0.008f;
+		this._fog_density = 0.004f;
 		this._fog_gradient = 2.5f;
 	}
 	
@@ -127,8 +128,8 @@ public class Weather
 
 	private void calculateSun()
 	{
-		this._sun_pos.x = (float) Math.cos(this._cycle_ratio * Math.PI * 2) * SkyDome.RAYON;
-		this._sun_pos.y = (float) Math.sin(this._cycle_ratio * Math.PI * 2) * SkyDome.RAYON;
+		this._sun_pos.x = (float) Math.cos(this._cycle_ratio * Math.PI * 2) * Weather.SUN_DIST;
+		this._sun_pos.y = (float) Math.sin(this._cycle_ratio * Math.PI * 2) * Weather.SUN_DIST;
 		this._sun_pos.z = 0;
 	}
 	

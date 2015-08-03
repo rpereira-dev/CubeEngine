@@ -73,10 +73,14 @@ public class Block
 
 	public boolean isVisible()
 	{
-		//TODO: change this
-		return (!this.getName().equals("air"));
+		return (true);
 	}
 
+	public boolean isOpaque()
+	{
+		return (true);
+	}
+	
 	public int	getTextureIDForFace(int face)
 	{
 		return (this._textureID[face]);

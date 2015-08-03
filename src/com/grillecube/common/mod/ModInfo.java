@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface ModInfo
 {
 	String author() default "unknown";
+	String version() default "0.0";
 }

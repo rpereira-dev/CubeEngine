@@ -17,7 +17,7 @@ import fr.toss.lib.Logger;
 public class TextureManager
 {	
 	/** create opengl textures ID */
-	public int	newGLTexture()
+	public static int	newGLTexture()
 	{
 		ByteBuffer	buffer;				
 	
@@ -28,7 +28,7 @@ public class TextureManager
 	
 
 	/** set the given opengl textureID pixels data */
-	public void setGLTextureData(int gl_textureID, BufferedImage img)
+	public static void setGLTextureData(int gl_textureID, BufferedImage img)
 	{
 		ByteBuffer	buffer;
 		byte[]		pixels;
@@ -37,7 +37,7 @@ public class TextureManager
 		{
 			return ;
 		}
-		pixels = this.getImagePixels(img);
+		pixels = TextureManager.getImagePixels(img);
 		buffer = BufferUtils.createByteBuffer(pixels.length);
 		buffer.put(pixels);
 		buffer.flip();
@@ -55,7 +55,7 @@ public class TextureManager
 	}
 	
 	/** return an image for this file */
-	public BufferedImage	readImage(String filepath)
+	public static BufferedImage	readImage(String filepath)
 	{
 		BufferedImage	image;
 		
@@ -72,7 +72,7 @@ public class TextureManager
 	}
 	
 	/** return a byte array which contains texture pixels in RGBA format */
-	public byte[] getImagePixels(BufferedImage img)
+	public static byte[] getImagePixels(BufferedImage img)
 	{
 		byte[]	pixels;
 		int[]	buffer;
@@ -92,5 +92,15 @@ public class TextureManager
 			pixels[i++] = (byte) (value >> 24 & 0xFF);	//a
 		}
 		return (pixels);
+	}
+
+
+	public static int loadGLTexture(String filepath)
+	{
+		int	glID;
+		
+		glID = TextureManager.newGLTexture();
+		TextureManager.setGLTextureData(glID, TextureManager.readImage(filepath));
+		return (glID);
 	}
 }

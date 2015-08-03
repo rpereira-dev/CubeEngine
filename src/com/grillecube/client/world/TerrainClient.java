@@ -32,19 +32,43 @@ public class TerrainClient extends Terrain
 		
 		this._mesh = new TerrainMesh(this);
 
+//		this.generateTestTerrain();
+		this.generateRandomTerrain();
+
+	}
+	
+	private void generateTestTerrain()
+	{
+		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
+		{
+			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
+			{
+				this._blocks[x][0][z] = ResourceBlocks.STONE;
+			}
+		}
+		
+		this._blocks[8][1][8] = ResourceBlocks.GRASS;
+		this._blocks[9][1][8] = ResourceBlocks.GRASS;
+		this._blocks[10][1][8] = ResourceBlocks.GRASS;
+
+	}
+
+	private void generateRandomTerrain()
+	{
 		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
 		{
 			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 			{
 				for (int y = 0 ; y < Terrain.SIZE_Y ; y++)
 				{
-					if (noise.noise((this._world_position.x + x) / 128.0f,
-									(this._world_position.y + y) / 128.0f,
-									(this._world_position.z + z) / 128.0f) < 0)
+					if (noise.noise((this._world_position.x + x) / 64.0f,
+									(this._world_position.y + y) / 64.0f,
+									(this._world_position.z + z) / 64.0f) < 0)
 					{
-						if (y < Terrain.SIZE_Y - 4 && noise.noise((this._world_position.x + x + 1024) / 128.0f,
-								(this._world_position.y + y + 1024) / 128.0f,
-								(this._world_position.z + z + 1024) / 128.0f) < 0)
+						if (y < Terrain.SIZE_Y - 4 && noise.noise(
+								(this._world_position.x + x + 1024) / 64.0f,
+								(this._world_position.y + y + 1024) / 64.0f,
+								(this._world_position.z + z + 1024) / 64.0f) < 0)
 						{
 							this._blocks[x][y][z] = ResourceBlocks.STONE;
 						}
@@ -63,10 +87,9 @@ public class TerrainClient extends Terrain
 					}
 				}
 			}
-		}
-
+		}		
 	}
-	
+
 	public TerrainMesh	getMesh()
 	{
 		return (this._mesh);

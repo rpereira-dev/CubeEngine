@@ -151,7 +151,7 @@ public class ModelPart
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, this._vertex_count);
+		GL11.glDrawArrays(GL11.GL_QUADS, 0, this._vertex_count);
 
 		GL30.glBindVertexArray(0);		
 	}

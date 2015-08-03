@@ -6,12 +6,13 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.Game;
 import com.grillecube.client.mod.blocks.ResourceBlocks;
-import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.common.world.Terrain;
 
 public class Camera
 {
+	public static final float RENDER_DISTANCE = Terrain.SIZE_X * 24;
+	
 	public static final int STATE_MOVE_FORWARD	= 1;
 	public static final int STATE_MOVE_BACKWARD = 2;
 	public static final int STATE_MOVE_LEFT 	= 4;
@@ -344,7 +345,7 @@ public class Camera
 		this.setSpeed(1);
 		this.setRotSpeed(1);
 		this.setNear(0.1f);
-		this.setFar(2000);
+		this.setFar(RENDER_DISTANCE * 2);
 		this._aspect = this._window.getAspectRatio();						
 		this._state = 0;
 	}
@@ -467,15 +468,20 @@ public class Camera
 			return (true);
 		}
 		return (this.isInFrustum(center, 0)
-		|| this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z + z), 0)
-		|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z + z), 0)
-		|| this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z - z), 0)
-		|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z - z), 0)
-		|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z + z), 0)
-		|| this.isInFrustum(new Vector3f(center.x - x, center.y - y, center.z + z), 0)
-		|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z - z), 0)
-		|| this.isInFrustum(new Vector3f(center.x - x, center.y - y, center.z - z), 0)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z + z), 10)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z + z), 10)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z - z), 10)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z - z), 10)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z + z), 10)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y - y, center.z + z), 10)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z - z), 10)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y - y, center.z - z), 10)
 		);
+	}
+
+	public float getRenderDistance()
+	{
+		return (Camera.RENDER_DISTANCE);
 	}
 
 }
