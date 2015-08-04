@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.grillecube.client.renderer.Camera;
 import com.grillecube.client.renderer.opengl.Program;
 import com.grillecube.client.world.TerrainClient;
-import com.grillecube.client.world.WorldClient;
+import com.grillecube.client.world.Weather;
 
 public class ProgramTerrain extends Program
 {
@@ -62,19 +62,19 @@ public class ProgramTerrain extends Program
 		this._use_ao = super.getUniform("use_ao");
 	}
 
-	public void	loadUniforms(WorldClient world, Camera camera)
+	public void	loadUniforms(Weather weather, Camera camera)
 	{
 		this.loadUniformMatrix(this._proj_matrix, camera.getProjectionMatrix());
 		this.loadUniformMatrix(this._view_matrix, camera.getViewMatrix());
 		
-		this.loadUniformVec(this._fog_color, world.getWeather().getFogColor());
-		this.loadUniformFloat(this._fog_gradient, world.getWeather().getFogGradient());
-		this.loadUniformFloat(this._fog_density, world.getWeather().getFogDensity());
+		this.loadUniformVec(this._fog_color, weather.getFogColor());
+		this.loadUniformFloat(this._fog_gradient, weather.getFogGradient());
+		this.loadUniformFloat(this._fog_density, weather.getFogDensity());
 		
-		this.loadUniformVec(this._sun_color, world.getWeather().getSunColor());
+		this.loadUniformVec(this._sun_color, weather.getSunColor());
 		
 		Vector3f sun_pos = new Vector3f();
-		Vector3f.add(world.getWeather().getSunPos(), camera.getPosition(), sun_pos);
+		Vector3f.add(weather.getSunPos(), camera.getPosition(), sun_pos);
 		this.loadUniformVec(this._sun_position, sun_pos);
 		
 		this.loadUniformInteger(this._use_ao, GLFW.glfwGetKey(camera.getWindow().getPointer(), GLFW.GLFW_KEY_R) == GLFW.GLFW_PRESS? 0 : 1);

@@ -2,12 +2,16 @@ package com.grillecube.client.renderer.font;
 
 import java.util.ArrayList;
 
-import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.IRenderer;
-import com.grillecube.client.world.WorldClient;
+import com.grillecube.client.Game;
+import com.grillecube.client.renderer.ARenderer;
 
-public class FontRenderer implements IRenderer
+public class FontRenderer extends ARenderer
 {
+	public FontRenderer(Game game)
+	{
+		super(game);
+	}
+
 	/** rendering program */
 	private ProgramFont	_program;
 	
@@ -37,14 +41,28 @@ public class FontRenderer implements IRenderer
 	}
 
 	@Override
-	public void render(WorldClient world, Camera camera)
+	public void render()
 	{
+		FontModel	model;
+		int 		i;
+		
 		this._program.useStart();
-		for (FontModel model : this._fonts_model)
+		
+		i = 0;
+		while (i < this._fonts_model.size())
 		{
+			model = this._fonts_model.get(i);
+			model.update();
+			if (model.hasTimerEnded())
+			{
+				this._fonts_model.remove(i);
+				continue ;
+			}
 			this._program.bindFontModel(model);
 			model.render();
+			i++;
 		}
+		
 		this._program.useStop();
 	}
 

@@ -8,12 +8,16 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.IRenderer;
-import com.grillecube.client.world.WorldClient;
+import com.grillecube.client.Game;
+import com.grillecube.client.renderer.ARenderer;
 
-public class SkyRenderer implements IRenderer
+public class SkyRenderer extends ARenderer
 {
+	public SkyRenderer(Game game)
+	{
+		super(game);
+	}
+
 	/** program */
 	private ProgramSky	_sky_program;
 	
@@ -51,10 +55,12 @@ public class SkyRenderer implements IRenderer
 		this._sky_program.stop();
 	}
 
-	public void render(WorldClient world, Camera camera)
+	public void render()
 	{
+		this.getWeather().update();
+
 		this._sky_program.useStart();
-		this._sky_program.loadUniforms(world.getWeather(), camera);
+		this._sky_program.loadUniforms(this.getWeather(), this.getCamera());
 		GL30.glBindVertexArray(this._vaoID);
 		
 		GL20.glEnableVertexAttribArray(0);

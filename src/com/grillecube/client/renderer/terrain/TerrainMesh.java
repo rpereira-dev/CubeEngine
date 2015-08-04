@@ -31,7 +31,6 @@ public class TerrainMesh
 	public static final int	STATE_INITIALIZED			= 1;
 	public static final int	STATE_VBO_UP_TO_DATE		= 2;
 	public static final int	STATE_VERTICES_UP_TO_DATE	= 4;
-	public static final int	STATE_VISIBLE				= 8;
 	private int	_state;
 	
 	/** terrain data */
@@ -436,38 +435,55 @@ public class TerrainMesh
 	/**
 	 * this function updates the visibility of each face toward another using a flood fill algorythm
 	 */
-	private short	_faces_visibility;
-	public static final int LEFT_RIGHT	= 0b0000000000000001;
-	public static final int LEFT_BOT	= 0b0000000000000010;
-	public static final int LEFT_TOP	= 0b0000000000000100;
-	public static final int LEFT_FRONT	= 0b0000000000001000;
-	public static final int LEFT_BACK	= 0b0000000000010000;
+	private int	_faces_visibility;
+
+	public static final int LEFT_RIGHT	= (1 << 0);
+	public static final int LEFT_BOT	= (1 << 1);
+	public static final int LEFT_TOP	= (1 << 2);
+	public static final int LEFT_FRONT	= (1 << 3);
+	public static final int LEFT_BACK	= (1 << 4);
 	
-	public static final int RIGHT_TOP	= 0b0000000000100000;
-	public static final int RIGHT_BOT	= 0b0000000001000000;
-	public static final int RIGHT_FRONT	= 0b0000000010000000;
-	public static final int RIGHT_BACK	= 0b0000000100000000;
+	public static final int RIGHT_TOP	= (1 << 5);
+	public static final int RIGHT_BOT	= (1 << 6);
+	public static final int RIGHT_FRONT	= (1 << 7);
+	public static final int RIGHT_BACK	= (1 << 8);
 	
-	public static final int TOP_BOT		= 0b0000001000000000;
-	public static final int TOP_FRONT	= 0b0000010000000000;
-	public static final int TOP_BACK	= 0b0000100000000000;
+	public static final int TOP_BOT		= (1 << 9);
+	public static final int TOP_FRONT	= (1 << 10);
+	public static final int TOP_BACK	= (1 << 11);
 	
-	public static final int BOT_FRONT	= 0b0001000000000000;
-	public static final int BOT_BACK	= 0b0010000000000000;
+	public static final int BOT_FRONT	= (1 << 12);
+	public static final int BOT_BACK	= (1 << 13);
 	
-	public static final int FRONT_BACK	= 0b0100000000000000;
+	public static final int FRONT_BACK	= (1 << 14);
 	
+	//index for the 'touch_by_flood' array
+	private static final int LEFT 	= 0;
+	private static final int RIGHT	= 1;
+	private static final int FRONT	= 2;
+	private static final int BACK	= 3;
+	private static final int TOP	= 4;
+	private static final int BOT	= 5;
+	
+	/** this set the 'this._faces_visibility' bits to 1 if faces can be seen from another 
+	 * 
+	 *	This uses an explicit stack (to avoid stackoverflow in recursive) 
+	 **/
 	public void updateFacesVisiblity()
 	{
+		Stack<Vector3i>	stack;	//explicit stack
 		short[][][] blocks;
 		short[][][] flood;
-		short	color;
-		
+		short		color;
+		boolean[]	touched_by_flood;
+
+		this._faces_visibility = 0;
+		stack = new Stack<Vector3i>();
 		blocks = this._terrain.getBlocks();
 		flood = new short[Terrain.SIZE_X][Terrain.SIZE_Y][Terrain.SIZE_Z];
-		this._faces_visibility = 0;
-		
 		color = 1;
+		touched_by_flood = new boolean[6];
+
 		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
 		{
 			for (int y = 0 ; y < Terrain.SIZE_Y ; y++)
@@ -475,47 +491,159 @@ public class TerrainMesh
 				for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 				{
 					if (!BlockManager.getBlockByID(blocks[x][y][z]).isOpaque() && flood[x][y][z] == 0)
-					{
-						this.floodFill(blocks, flood, x, y, z, color);
-						color++;
+					{						
+						for (int i = 0 ; i < 6 ; i++)
+						{
+							touched_by_flood[i] = false;
+						}
+						
+						stack.push(new Vector3i(x, y, z));
+						while (!stack.isEmpty())	//this loop will empty the stack and propagate the flood
+						{
+							Vector3i pos = stack.pop();
+							
+							if (pos.x < 0)
+							{
+								touched_by_flood[LEFT] = true;
+								continue ;
+							}
+			
+							if (pos.y < 0)
+							{
+								touched_by_flood[BOT] = true;
+								continue ;
+							}
+							
+							if (pos.z < 0)
+							{
+								touched_by_flood[FRONT] = true;
+								continue ;
+							}
+							
+							if (pos.x >= Terrain.SIZE_X)
+							{
+								touched_by_flood[RIGHT] = true;
+								continue ;
+							}
+			
+							if (pos.y >= Terrain.SIZE_Y)
+							{
+								touched_by_flood[TOP] = true;
+								continue ;
+							}
+							
+							if (pos.z >= Terrain.SIZE_Z)
+							{
+								touched_by_flood[BACK] = true;
+								continue ;
+							}
+							
+							if (BlockManager.getBlockByID(blocks[pos.x][pos.y][pos.z]).isOpaque() || flood[pos.x][pos.y][pos.z] != 0)
+							{
+								//hitted a full block
+								continue ;
+							}
+
+							flood[pos.x][pos.y][pos.z] = color;
+							
+							stack.push(new Vector3i(pos.x + 1, pos.y + 0, pos.z + 0));
+							stack.push(new Vector3i(pos.x - 1, pos.y + 0, pos.z + 0));
+							stack.push(new Vector3i(pos.x + 0, pos.y + 1, pos.z + 0));
+							stack.push(new Vector3i(pos.x + 0, pos.y - 1, pos.z + 0));
+							stack.push(new Vector3i(pos.x + 0, pos.y + 0, pos.z + 1));
+							stack.push(new Vector3i(pos.x + 0, pos.y + 0, pos.z - 1));
+						}
+						
+						//the flood propagation is ended, the 'touch_by_flood' array contains linked face
+						//time to create 15 conditions to set flags
+						//left
+						if (touched_by_flood[LEFT] && touched_by_flood[RIGHT])
+						{
+							this._faces_visibility = this._faces_visibility | LEFT_RIGHT;
+						}
+						
+						if (touched_by_flood[LEFT] && touched_by_flood[TOP])
+						{
+							this._faces_visibility = this._faces_visibility | LEFT_TOP;
+						}
+						
+						if (touched_by_flood[LEFT] && touched_by_flood[BOT])
+						{
+							this._faces_visibility = this._faces_visibility | LEFT_BOT;
+						}
+						
+						if (touched_by_flood[LEFT] && touched_by_flood[FRONT])
+						{
+							this._faces_visibility = this._faces_visibility | LEFT_FRONT;
+						}
+						
+						if (touched_by_flood[LEFT] && touched_by_flood[BACK])
+						{
+							this._faces_visibility = this._faces_visibility | LEFT_BACK;
+						}
+						
+						//right
+						if (touched_by_flood[RIGHT] && touched_by_flood[TOP])
+						{
+							this._faces_visibility = this._faces_visibility | RIGHT_TOP;
+						}
+						
+						if (touched_by_flood[RIGHT] && touched_by_flood[BOT])
+						{
+							this._faces_visibility = this._faces_visibility | RIGHT_BOT;
+						}
+						
+						if (touched_by_flood[RIGHT] && touched_by_flood[FRONT])
+						{
+							this._faces_visibility = this._faces_visibility | RIGHT_FRONT;
+						}
+						
+						if (touched_by_flood[RIGHT] && touched_by_flood[BACK])
+						{
+							this._faces_visibility = this._faces_visibility | RIGHT_BACK;
+						}
+						
+						//TOP
+						if (touched_by_flood[TOP] && touched_by_flood[BOT])
+						{
+							this._faces_visibility = this._faces_visibility | TOP_BOT;
+						}
+						
+						if (touched_by_flood[TOP] && touched_by_flood[FRONT])
+						{
+							this._faces_visibility = this._faces_visibility | TOP_FRONT;
+						}
+						
+						if (touched_by_flood[TOP] && touched_by_flood[BACK])
+						{
+							this._faces_visibility = this._faces_visibility | TOP_BACK;
+						}
+						
+						//BOT
+						if (touched_by_flood[BOT] && touched_by_flood[FRONT])
+						{
+							this._faces_visibility = this._faces_visibility | BOT_FRONT;
+						}
+
+						if (touched_by_flood[BOT] && touched_by_flood[BACK])
+						{
+							this._faces_visibility = this._faces_visibility | BOT_BACK;
+						}
+						
+						//FRONT
+						if (touched_by_flood[FRONT] && touched_by_flood[BACK])
+						{
+							this._faces_visibility = this._faces_visibility | FRONT_BACK;
+						}
 					}
 				}
 			}
 		}
 	}
 	
-	//TODO: replace this with an explicit stack
-	private void floodFill(short[][][] blocks, short[][][] flood, int x, int y, int z, short color)
+	/** return true if the given faces id are linked (e.g: FRONT_BACK) */
+	public boolean areFacesLinked(int id)
 	{
-		Stack<Vector3i>	stack = new Stack<Vector3i>();
-		
-		stack.push(new Vector3i(x, y, z));
-		while (!stack.isEmpty())
-		{
-			Vector3i pos = stack.pop();
-			
-			if (pos.x < 0 || pos.x >= Terrain.SIZE_X
-					|| pos.y < 0 || pos.y >= Terrain.SIZE_Y
-					|| pos.z < 0 || pos.z >= Terrain.SIZE_Z)
-			{
-				continue ;
-			}
-
-			if (BlockManager.getBlockByID(blocks[pos.x][pos.y][pos.z]).isOpaque() || flood[pos.x][pos.y][pos.z] != 0)
-			{
-				continue ;
-			}
-			
-			flood[pos.x][pos.y][pos.z] = color;
-			
-			stack.push(new Vector3i(x + 1, y + 0, z + 0));
-			stack.push(new Vector3i(x - 1, y + 0, z + 0));
-			stack.push(new Vector3i(x + 0, y + 1, z + 0));
-			stack.push(new Vector3i(x + 0, y - 1, z + 0));
-			stack.push(new Vector3i(x + 0, y + 0, z + 1));
-			stack.push(new Vector3i(x + 0, y + 0, z - 1));
-		}
+		return ((this._faces_visibility & id) == id);
 	}
-	
-	
 }

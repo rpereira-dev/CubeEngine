@@ -32,8 +32,8 @@ public class TerrainClient extends Terrain
 		
 		this._mesh = new TerrainMesh(this);
 
-//		this.generateTestTerrain();
-		this.generateRandomTerrain();
+		this.generateTestTerrain();
+//		this.generateRandomTerrain();
 
 	}
 	
@@ -43,14 +43,9 @@ public class TerrainClient extends Terrain
 		{
 			for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 			{
-				this._blocks[x][0][z] = ResourceBlocks.STONE;
+				this._blocks[x][Terrain.SIZE_Y - 1][z] = ResourceBlocks.STONE;
 			}
 		}
-		
-		this._blocks[8][1][8] = ResourceBlocks.GRASS;
-		this._blocks[9][1][8] = ResourceBlocks.GRASS;
-		this._blocks[10][1][8] = ResourceBlocks.GRASS;
-
 	}
 
 	private void generateRandomTerrain()
@@ -143,5 +138,36 @@ public class TerrainClient extends Terrain
 	public void setBlock(Vector3i vec, short blockID)
 	{
 		this.setBlock(vec.x, vec.y, vec.z, blockID);
+	}
+	
+	/** thoses functions return the left, right, top, bot, front or back terrain to this one */
+	public TerrainClient getLeft()
+	{
+		return (this._world.getTerrain(this._location.getX() - 1, this._location.getY(), this._location.getZ()));
+	}
+	
+	public TerrainClient getRight()
+	{
+		return (this._world.getTerrain(this._location.getX() + 1, this._location.getY(), this._location.getZ()));
+	}
+	
+	public TerrainClient getTop()
+	{
+		return (this._world.getTerrain(this._location.getX(), this._location.getY() + 1, this._location.getZ()));
+	}
+	
+	public TerrainClient getBot()
+	{
+		return (this._world.getTerrain(this._location.getX(), this._location.getY() - 1, this._location.getZ()));
+	}
+	
+	public TerrainClient getFront()
+	{
+		return (this._world.getTerrain(this._location.getX(), this._location.getY(), this._location.getZ() - 1));
+	}
+	
+	public TerrainClient getBack()
+	{
+		return (this._world.getTerrain(this._location.getX(), this._location.getY() + 1, this._location.getZ() + 1));
 	}
 }

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.mod.blocks.ResourceBlocks;
-import com.grillecube.client.renderer.model.Models;
 import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.world.blocks.Block;
@@ -39,18 +38,18 @@ public class WorldClient extends World
 	/** called on initiliaztion */
 	public void start()
 	{
-		for (int x = -8 ; x < 8 ; x++)
-		{
-			for (int z = -8 ; z < 8 ; z++)
-			{
-				for (int y = -4 ; y < 4 ; y++)
-				{
-					this.addTerrain(new TerrainClient(this, new TerrainLocation(x, y, z)));
-				}
-			}
-		}
+//		for (int x = -4 ; x < 4 ; x++)
+//		{
+//			for (int z = -4 ; z < 4 ; z++)
+//			{
+//				for (int y = -2 ; y < 2 ; y++)
+//				{
+//					this.addTerrain(new TerrainClient(this, new TerrainLocation(x, y, z)));
+//				}
+//			}
+//		}
 		
-//		this.addTerrain(new TerrainClient(this, new TerrainLocation(0, 0, 0)));
+		this.addTerrain(new TerrainClient(this, new TerrainLocation(0, 0, 0)));
 
 
 //		this._entities.add(new EntityModeled(Models.getModel(Models.PIG))
@@ -146,5 +145,10 @@ public class WorldClient extends World
 		}
 		Vector3i vec = this.getTerrainRelativePos(pos);
 		terrain.setBlock(vec, blockID);
+	}
+
+	public TerrainClient getTerrain(int x, int y, int z)
+	{
+		return (this.getTerrain(new TerrainLocation(x, y, z)));
 	}
 }

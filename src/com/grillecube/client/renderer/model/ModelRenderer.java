@@ -2,17 +2,21 @@ package com.grillecube.client.renderer.model;
 
 import org.lwjgl.opengl.GL11;
 
-import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.IRenderer;
-import com.grillecube.client.world.WorldClient;
+import com.grillecube.client.Game;
+import com.grillecube.client.renderer.ARenderer;
 import com.grillecube.client.world.entity.EntityModeled;
 
-public class ModelRenderer implements IRenderer
+public class ModelRenderer extends ARenderer
 {	
+	public ModelRenderer(Game game)
+	{
+		super(game);
+	}
+
 	private ProgramModel	_program_model;
 	
 	/** render world terrains */
-	public void render(WorldClient world, Camera camera)
+	public void render()
 	{
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -20,8 +24,8 @@ public class ModelRenderer implements IRenderer
 
 		this._program_model.useStart();
 		{
-			this._program_model.loadUniforms(camera);
-			for (EntityModeled entity : world.getEntities())
+			this._program_model.loadUniforms(this.getCamera());
+			for (EntityModeled entity : this.getWorld().getEntities())
 			{
 				ModelInstance instance = entity.getModelInstance();
 				

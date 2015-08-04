@@ -26,6 +26,8 @@ public class FontModel
 	
 	public static final float DEFAULT_FONT_SIZE		= 0.1f;
 	
+	public static final long DEFAULT_TIMER			= 5000;	//5sec
+	
 	/** opengl IDs */
 	private int	_vaoID;
 	private int	_vboID;
@@ -38,14 +40,26 @@ public class FontModel
 	private Vector4f	_color;
 	private Font 		_font;
 	
+	/** transf matrix */
 	private Matrix4f 	_matrix;
-
-	public FontModel(Font font, String text)
-	{		
+	
+	/** timers */
+	private long	_timer;
+	private long	_last_for;
+	private long	_last_tick;
+	
+	public FontModel(Font font, String text, long last_for)
+	{
 		this._vaoID = GL30.glGenVertexArrays();
 		this._vboID = GL15.glGenBuffers();
 		this._matrix = new Matrix4f();
-		
+		this._timer = 0;
+		this._last_for = last_for;
+		this._last_tick = System.currentTimeMillis();
+		this._pos = new Vector3f(0, 0, 0);
+		this._rot = new Vector3f(0, 0, 0);
+		this._scale = new Vector3f(DEFAULT_FONT_SIZE / 2.0f, DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
+		this._color = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
 		GL30.glBindVertexArray(this._vaoID);
 		{
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this._vboID);
@@ -59,20 +73,19 @@ public class FontModel
 		GL30.glBindVertexArray(0);
 		
 		this.setFont(font);
-		
-		this._pos = new Vector3f(0, 0, 0);
-		this._rot = new Vector3f(0, 0, 0);
-		this._scale = new Vector3f(DEFAULT_FONT_SIZE / 2.0f, DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
-		this._color = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
-		
 		this.setText(text);
 	}
 
 	public FontModel(Font font)
 	{
-		this(font, "");
+		this(font, "", DEFAULT_TIMER);
 	}
 	
+	public FontModel(Font font, String str)
+	{
+		this(font, str, DEFAULT_TIMER);
+	}
+
 	/** destroy the model */
 	public void destroy()
 	{
@@ -216,7 +229,7 @@ public class FontModel
 		this._color.z = b;
 	}
 	
-	public void updateTransformationMatrix()
+	private void updateTransformationMatrix()
 	{
 		this._matrix.setIdentity();
 		this._matrix.translate(this._pos);
@@ -247,5 +260,33 @@ public class FontModel
 	public Vector4f	getFontColor()
 	{
 		return (this._color);
+	}
+
+	/** update the timer */
+	public void update()
+	{
+		long t = System.currentTimeMillis();
+		
+		this._timer += (System.currentTimeMillis() - this._last_tick);
+		
+		this._last_tick = t;
+	}
+	
+	/** return true if the timer has ended */
+	public boolean hasTimerEnded()
+	{
+		return (this._timer >= this._last_for);
+	}
+	
+	/** end the timer */
+	public void	endTimer()
+	{
+		this._timer = this._last_for;
+	}
+	
+	/** restart the timer */
+	public void	restartTimer()
+	{
+		this._timer = 0;
 	}
 }

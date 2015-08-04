@@ -1,26 +1,30 @@
 package com.grillecube.client.renderer.terrain;
 
+import java.util.ArrayList;
+
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
 import com.grillecube.client.Game;
-import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.IRenderer;
+import com.grillecube.client.renderer.ARenderer;
 import com.grillecube.client.world.TerrainClient;
-import com.grillecube.client.world.WorldClient;
 
-public class TerrainRenderer implements IRenderer
-{	
-	private ProgramTerrain	_terrain_program;
+public class TerrainRenderer extends ARenderer
+{
+	/** rendering program */
+	private ProgramTerrain			_terrain_program;
+	
+	/** calculation thread (meshing + visibility) */
+	private TerrainRendererThread	_calculation_thread;
+	
+	public TerrainRenderer(Game game)
+	{
+		super(game);
+	}
 	
 	/** render the given world */
-	public void	render(WorldClient world, Camera camera)
-	{
-		this.renderTerrains(world, camera);
-	}
-
-	/** render world terrains */
-	private void renderTerrains(WorldClient world, Camera camera)
+	public void	render()
 	{
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -30,17 +34,29 @@ public class TerrainRenderer implements IRenderer
 		GL11.glCullFace(GL11.GL_BACK);
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, Game.instance().getResourceManager().getBlockManager().getTextureAtlas()); //TODO CHANGE IT
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getResourceManager().getBlockManager().getTextureAtlas());
 
-//		GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_LINE);
-//		GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_LINE);
+		if (GLFW.glfwGetKey(this.getWindow().getPointer(), GLFW.GLFW_KEY_F) == GLFW.GLFW_PRESS)
+		{
+			GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_LINE);
+			GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_LINE);
+		}
+		else
+		{
+			GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_FILL);
+			GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_FILL);
+		}
 		
 		this._terrain_program.useStart();
 		{
-			this._terrain_program.loadUniforms(world, camera);
-			for (TerrainClient terrain : world.getTerrains())
+			this._terrain_program.loadUniforms(this.getWorld().getWeather(), this.getCamera());
+
+			ArrayList<TerrainClient> to_render = this._calculation_thread.getRendererList();
+			
+			for (TerrainClient terrain : to_render)
 			{
-				this.renderTerrain(terrain, camera);
+				this._terrain_program.loadInstanceUniforms(terrain);
+				terrain.getMesh().render();
 			}
 		}
 		this._terrain_program.useStop();
@@ -49,23 +65,16 @@ public class TerrainRenderer implements IRenderer
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
 	}
-	
-	/** render a terrain */
-	private void renderTerrain(TerrainClient terrain, Camera camera)
-	{
-		if (terrain.getMesh().hasState(TerrainMesh.STATE_VISIBLE))
-		{
-			this._terrain_program.loadInstanceUniforms(terrain);
-			terrain.getMesh().render();				
-		}
-	}
 
 	/** start the renderer */
 	public void start()
 	{
 		this._terrain_program = new ProgramTerrain();
+		this._calculation_thread = new TerrainRendererThread(this.getGame());
+		this.getGame().registerThread(this._calculation_thread);
+		
 	}
-	
+
 	/** stop the renderer */
 	public void stop()
 	{

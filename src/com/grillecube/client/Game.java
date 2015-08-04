@@ -1,10 +1,11 @@
 
 package com.grillecube.client;
 
+import java.util.ArrayList;
+
 import com.grillecube.client.mod.blocks.ModBlocks;
-import com.grillecube.client.mod.renderer.ModRenderer;
+import com.grillecube.client.mod.renderer.particles.ModParticles;
 import com.grillecube.client.renderer.MainRenderer;
-import com.grillecube.client.renderer.RenderCalculationThread;
 import com.grillecube.client.ressources.ResourceManager;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.client.world.WorldClient;
@@ -17,11 +18,6 @@ public class Game
 {
 	/** game instance */
 	private static Game	_instance;
-	
-	/** Thread pool */
-	private static final int THRD_CALCUL	= 0;
-	private static final int THRD_MAX		= 1;
-	private Thread	_threads[];
 	
 	/** Mod loaded */
 	private ModLoader	_mod_loader;
@@ -44,12 +40,14 @@ public class Game
 	/** Game state */
 	public static final long STATE_RUNNING = 1;
 	private long _state;
+
+	private ArrayList<Thread>	_threads;
 	
 	public Game()
 	{
 		_instance = this;
-		this._threads = new Thread[THRD_MAX];
 		this._logger = new Logger(System.out);
+		this._threads = new ArrayList<Thread>();
 		this._state = 0;
 		this._window = new GLWindow();
 		this._renderer = new MainRenderer(this._window);
@@ -60,7 +58,7 @@ public class Game
 		
 		//TODO : default mods are injected here
 		this._mod_loader.injectMod(new ModBlocks());
-		this._mod_loader.injectMod(new ModRenderer());
+		this._mod_loader.injectMod(new ModParticles());
 	}
 	
 	public void	start()
@@ -71,11 +69,10 @@ public class Game
 		
 		this._mod_loader.initializeAll(this);
 		
-		this._renderer.start();
+		this._renderer.start(this);
 		this._resources.start();
 		this._world.start();
 				
-		this._threads[THRD_CALCUL] = new RenderCalculationThread(this);
 		this._logger.log(Level.FINE, "Game started!");
 	}
 
@@ -83,14 +80,14 @@ public class Game
 	public void loop()
 	{
 		this.setState(STATE_RUNNING);
+				
+		long	prev = System.currentTimeMillis();
+		int		frames = 0;
 		
 		for (Thread thrd : this._threads)
 		{
 			thrd.start();
 		}
-				
-		long	prev = System.currentTimeMillis();
-		int		frames = 0;
 
 		while (this._window.shouldClose() == false)
 		{
@@ -103,7 +100,7 @@ public class Game
 			
 			this._window.prepareScreen();
 			this._renderer.update();
-			this._renderer.render(this);
+			this._renderer.render();
 			this._window.flushScreen();
 			
 			frames++;
@@ -112,6 +109,7 @@ public class Game
 		this.unsetState(STATE_RUNNING);
 	}
 
+	/** stop the game properly */
 	public void	stop()
 	{
 		this._logger.log(Level.FINE, "Stopping game...");
@@ -130,7 +128,14 @@ public class Game
 		}
 		this._mod_loader.deinitializeAll(this);
 		this._window.stop();
+		this._renderer.stop();
 		this._logger.log(Level.FINE, "Stopped");
+	}
+	
+	/** register a thread which will be launch when the game will be launched, and stopped when the game ends*/
+	public void	registerThread(Thread thrd)
+	{
+		this._threads.add(thrd);
 	}
 	
 	public boolean	hasState(long state)
@@ -181,5 +186,10 @@ public class Game
 	public ResourceManager	getResourceManager()
 	{
 		return (this._resources);
+	}
+
+	public GLWindow getGLWindow()
+	{
+		return (this._window);
 	}
 }

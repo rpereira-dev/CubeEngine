@@ -1,7 +1,5 @@
 package com.grillecube.client.renderer;
 
-import com.grillecube.client.world.WorldClient;
-
 public interface IRenderer
 {
 	/** call on initialization : load your shaders / and buffer heres */
@@ -11,5 +9,5 @@ public interface IRenderer
 	public void	stop();
 	
 	/** main rendering function : draw your stuff here */
-	public void	render(WorldClient world, Camera camera);
+	public void	render();
 }

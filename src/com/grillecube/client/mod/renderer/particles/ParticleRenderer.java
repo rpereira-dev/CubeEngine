@@ -11,15 +11,19 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GL43;
 
-import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.IRenderer;
-import com.grillecube.client.world.WorldClient;
+import com.grillecube.client.Game;
+import com.grillecube.client.renderer.ARenderer;
 
 /**
  * 	Implementation follows: http://web.engr.oregonstate.edu/~mjb/cs557/Handouts/compute.shader.1pp.pdf
  */
-public class ParticleRenderer implements IRenderer
+public class ParticleRenderer extends ARenderer
 {	
+	public ParticleRenderer(Game game)
+	{
+		super(game);
+	}
+
 	/** compute program */
 	private ProgramComputeParticles	_compute_program;
 	private int	_ssboPos;
@@ -106,7 +110,7 @@ public class ParticleRenderer implements IRenderer
 	}
 
 	@Override
-	public void render(WorldClient world, Camera camera)
+	public void render()
 	{
 		GL30.glBindBufferBase(GL43.GL_SHADER_STORAGE_BUFFER, 0, this._ssboPos);
 		GL30.glBindBufferBase(GL43.GL_SHADER_STORAGE_BUFFER, 1, this._ssboVel);
@@ -117,7 +121,7 @@ public class ParticleRenderer implements IRenderer
 		this._compute_program.useStop();
 		
 		this._render_program.useStart();
-		this._render_program.loadUniforms(camera);
+		this._render_program.loadUniforms(this.getCamera());
 		
 		GL30.glBindVertexArray(this._vaoID);
 		

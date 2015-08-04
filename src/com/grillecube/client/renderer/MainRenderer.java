@@ -18,6 +18,9 @@ public class MainRenderer
 	
 	/** renderers list, will be useful for modding*/
 	private ArrayList<IRenderer>	_renderers;
+	
+	/** default renderers */
+	
 
 	public MainRenderer(GLWindow window)
 	{
@@ -32,13 +35,13 @@ public class MainRenderer
 	}
 	
 	/** call on initialization */
-	public void	start()
+	public void	start(Game game)
 	{
 		//TODO : should default renderer be added like this?
-		this.registerRenderer(new TerrainRenderer());
-		this.registerRenderer(new ModelRenderer());
-		this.registerRenderer(new SkyRenderer());
-		this.registerRenderer(new FontRenderer());
+		this.registerRenderer(new TerrainRenderer(game));
+		this.registerRenderer(new ModelRenderer(game));
+		this.registerRenderer(new SkyRenderer(game));
+		this.registerRenderer(new FontRenderer(game));
 
 		for (IRenderer renderer : this._renderers)
 		{
@@ -55,11 +58,11 @@ public class MainRenderer
 	}
 
 	/** main rendering function (screen is already cleared, and frame buffer will be swapped after this render */
-	public void render(Game game)
+	public void render()
 	{
 		for (IRenderer renderer : this._renderers)
 		{
-			renderer.render(game.getWorld(), this._camera);
+			renderer.render();
 		}
 		
 		GLWindow.glCheckError("MainRenderer.render()");
@@ -76,6 +79,4 @@ public class MainRenderer
 	{
 		return (this._camera);
 	}
-	
-
 }
