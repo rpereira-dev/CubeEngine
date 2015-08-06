@@ -1,20 +1,12 @@
 package com.grillecube.client.renderer.opengl;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
-
-import com.grillecube.client.Game;
-
-import fr.toss.lib.Logger;
 
 /** openGL program */
 public abstract class Program

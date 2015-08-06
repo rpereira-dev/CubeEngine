@@ -10,8 +10,6 @@ import javax.imageio.ImageIO;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import com.grillecube.server.Game;
-
 import fr.toss.lib.Logger;
 
 public class TextureManager
@@ -66,7 +64,7 @@ public class TextureManager
 		}
 		catch (IOException e)
 		{
-			Game.getLogger().log(Logger.Level.WARNING, "Cant get texture file: " + filepath);
+			Logger.get().log(Logger.Level.WARNING, "Cant get texture file: " + filepath);
 		}
 		return (image);
 	}

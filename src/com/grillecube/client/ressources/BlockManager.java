@@ -10,7 +10,6 @@ import javax.imageio.ImageIO;
 
 import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.world.blocks.Block;
-import com.grillecube.server.Game;
 
 import fr.toss.lib.Logger;
 
@@ -34,11 +33,8 @@ public class BlockManager
 	private int _textures_count;
 	private short _blocks_count;
 	
-	private ResourceManager	_manager;
-	
 	public BlockManager(ResourceManager manager)
 	{
-		this._manager = manager;
 		this._textures_list = new ArrayList<BufferedImage>();
 		this._blocks_list = new ArrayList<Block>();
 		this._textures_count = 0;
@@ -77,7 +73,7 @@ public class BlockManager
 		}
 		catch (IOException e)
 		{
-			Game.getLogger().log(Logger.Level.WARNING, "Cant save texture atlas: " + e.getMessage());
+			Logger.get().log(Logger.Level.WARNING, "Cant save texture atlas: " + e.getMessage());
 		}
 		return (atlas);		
 	}
@@ -93,7 +89,7 @@ public class BlockManager
 	{
 		BufferedImage	img;
 		
-		img = this._manager.getTextureManager().readImage(filepath);
+		img = TextureManager.readImage(filepath);
 		if (img == null)
 		{
 			return (-1);
@@ -114,7 +110,7 @@ public class BlockManager
 		blockID = this._blocks_count;
 		this._blocks_list.add(block);
 		this._blocks_count++;
-		Game.getLogger().log(Logger.Level.FINE, "Adding a block: " + block.toString());
+		Logger.get().log(Logger.Level.FINE, "Adding a block: " + block.toString());
 		return (blockID);
 	}
 	
@@ -123,9 +119,9 @@ public class BlockManager
 	{
 		BufferedImage	atlas;
 		
-		_gl_texture_atlas = this._manager.getTextureManager().newGLTexture();
+		_gl_texture_atlas = TextureManager.newGLTexture();
 		atlas = this.generateTextureAtlas();
-		this._manager.getTextureManager().setGLTextureData(_gl_texture_atlas, atlas);
+		TextureManager.setGLTextureData(_gl_texture_atlas, atlas);
 		
 		//set data for the mesher
 		TerrainMesh.UVX = 1;

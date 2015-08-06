@@ -1,4 +1,4 @@
-package com.grillecube.client.mod.renderer.particles;
+package com.grillecube.client.mod.renderer.sky;
 
 import com.grillecube.client.Game;
 import com.grillecube.common.mod.IMod;
@@ -10,19 +10,19 @@ import fr.toss.lib.Logger;
  * Modding test class
  */
 @ModInfo(author = "toss", version = "1.0")
-public class ModParticles implements IMod
+public class ModSkyRenderer implements IMod
 {
 	@Override
 	public void initialize(Game game)
 	{
-		Logger.get().log(Logger.Level.DEBUG, "Loading particle mod!");
-//		game.getRenderer().registerRenderer(new ParticleRenderer(game));
+		Logger.get().log(Logger.Level.DEBUG, "Loading sky renderer mod!");
+		game.getRenderer().registerRenderer(new SkyRenderer(game));
 	}
 
 	@Override
 	public void deinitialize(Game game)
 	{
-		Logger.get().log(Logger.Level.DEBUG, "Unloading particle mod!");
+		Logger.get().log(Logger.Level.DEBUG, "Unloading sky renderer mod!");
 	}
 
 }

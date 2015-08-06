@@ -5,8 +5,8 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
 import com.grillecube.client.renderer.opengl.Program;
+import com.grillecube.client.world.entity.Entity;
 import com.grillecube.client.world.entity.EntityModeled;
-import com.grillecube.common.world.entity.Entity;
 
 public class ProgramModel extends Program
 {

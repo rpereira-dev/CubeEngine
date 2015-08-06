@@ -35,9 +35,15 @@ public class ModLoader
 	{
 		File folder = new File(filepath);
 		
+		if (!folder.exists())
+		{
+			Logger.get().log(Logger.Level.WARNING, "Mod folder doesnt exists: " + filepath);
+			return ;
+		}
+		
 		if (!folder.isDirectory())
 		{
-			System.err.println("Mods folder isnt a folder?");
+			Logger.get().log(Logger.Level.WARNING, "Mod folder ... isnt a folder? " + filepath);
 			return ;
 		}
 		
@@ -83,11 +89,11 @@ public class ModLoader
 					if (clazz.isAnnotationPresent(ModInfo.class))
 					{
 						this.injectMod((IMod) clazz.newInstance());
-						Game.instance().getLogger().log(Logger.Level.FINE, "Adding mod: " + clazz);
+						Logger.get().log(Logger.Level.FINE, "Adding mod: " + clazz);
 					}
 					else
 					{
-						Game.instance().getLogger().log(Logger.Level.FINE, "Not a mod class! " + clazz);
+						Logger.get().log(Logger.Level.FINE, "Not a mod class! " + clazz);
 					}
 				}
 			}
@@ -103,7 +109,7 @@ public class ModLoader
 		}
 		else
 		{
-			Game.instance().getLogger().log(Logger.Level.WARNING, "Tried to inject a mod after the mod initialization! canceling");
+			Logger.get().log(Logger.Level.WARNING, "Tried to inject a mod after the mod initialization! canceling");
 		}
 	}
 

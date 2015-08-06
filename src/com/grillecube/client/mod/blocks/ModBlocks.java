@@ -15,14 +15,14 @@ public class ModBlocks implements IMod
 	@Override
 	public void initialize(Game game)
 	{
-		game.getLogger().log(Logger.Level.DEBUG, "Loading Blocks mods!");
+		Logger.get().log(Logger.Level.DEBUG, "Loading Blocks mods!");
 		game.getResourceManager().addRessource(new ResourceBlocks());
 	}
 
 	@Override
 	public void deinitialize(Game game)
 	{
-		game.getLogger().log(Logger.Level.DEBUG, "Unloading Blocks mods!");
+		Logger.get().log(Logger.Level.DEBUG, "Unloading Blocks mods!");
 	}
 
 }

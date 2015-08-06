@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.font;
+package com.grillecube.client.mod.renderer.font;
 
 import com.grillecube.client.ressources.TextureManager;
 

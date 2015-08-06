@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.sky;
+package com.grillecube.client.mod.renderer.sky;
 
 import com.grillecube.client.world.Weather;
 
@@ -21,7 +21,7 @@ import com.grillecube.client.world.Weather;
 
 public class SkyDome
 {
-	//TODO : edit these 3 lines if you want more details on skybox
+	//edit these 3 lines if you want more details on skybox
 	public static final float RAYON			= Weather.SUN_DIST;
 	public static final int DETAILS			= 3;
 	public static final int TRIANGLES		= 512;

@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.font;
+package com.grillecube.client.mod.renderer.font;
 
 import java.nio.FloatBuffer;
 
@@ -27,6 +27,7 @@ public class FontModel
 	public static final float DEFAULT_FONT_SIZE		= 0.1f;
 	
 	public static final long DEFAULT_TIMER			= 5000;	//5sec
+	public static final long INFINITE_TIMER			 = -1;
 	
 	/** opengl IDs */
 	private int	_vaoID;
@@ -40,8 +41,14 @@ public class FontModel
 	private Vector4f	_color;
 	private Font 		_font;
 	
+	/** status */
+	private boolean _initialized;
+	
 	/** transf matrix */
 	private Matrix4f 	_matrix;
+	
+	/** text */
+	private String _text;
 	
 	/** timers */
 	private long	_timer;
@@ -50,8 +57,9 @@ public class FontModel
 	
 	public FontModel(Font font, String text, long last_for)
 	{
-		this._vaoID = GL30.glGenVertexArrays();
-		this._vboID = GL15.glGenBuffers();
+		this._initialized = false;
+		this._text = text;
+		this._font = font;
 		this._matrix = new Matrix4f();
 		this._timer = 0;
 		this._last_for = last_for;
@@ -60,6 +68,15 @@ public class FontModel
 		this._rot = new Vector3f(0, 0, 0);
 		this._scale = new Vector3f(DEFAULT_FONT_SIZE / 2.0f, DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
 		this._color = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+	}
+	
+	private void initialize()
+	{
+		this._initialized = true;
+		
+		this._vaoID = GL30.glGenVertexArrays();
+		this._vboID = GL15.glGenBuffers();
+		
 		GL30.glBindVertexArray(this._vaoID);
 		{
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this._vboID);
@@ -71,35 +88,32 @@ public class FontModel
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		}
 		GL30.glBindVertexArray(0);
-		
-		this.setFont(font);
-		this.setText(text);
-	}
-
-	public FontModel(Font font)
-	{
-		this(font, "", DEFAULT_TIMER);
-	}
-	
-	public FontModel(Font font, String str)
-	{
-		this(font, str, DEFAULT_TIMER);
 	}
 
 	/** destroy the model */
 	public void destroy()
 	{
-		GL30.glDeleteVertexArrays(this._vaoID);
-		GL15.glDeleteBuffers(this._vboID);
+		if (this._initialized)
+		{
+			GL30.glDeleteVertexArrays(this._vaoID);
+			GL15.glDeleteBuffers(this._vboID);
+			this._initialized = false;	
+		}
 	}
 	
 	/** rebuild the mesh depending on the given string */
-	public void setText(String str)
+	public void updateText(String str)
+	{
+		this._text = str;
+		this.updateText();
+	}
+	
+	private void updateText()
 	{
 		FloatBuffer	buffer;
 		float[]		vertices;
 				
-		vertices = this.generateFontBuffer(str);
+		vertices = this.generateFontBuffer(this._text);
 
 		buffer = BufferUtils.createFloatBuffer(vertices.length);
 		buffer.put(vertices);
@@ -113,7 +127,7 @@ public class FontModel
 		}
 		GL30.glBindVertexArray(0);
 		
-		this._vertex_count = vertices.length / 5;
+		this._vertex_count = vertices.length / 5;	
 	}
 
 	/** each char is a quad (4 vertex) of 5 floats (pos + uv) */
@@ -192,11 +206,6 @@ public class FontModel
 		
 		return (vertices);
 	}
-	
-	public void setFont(Font font)
-	{
-		this._font = font;
-	}
 
 	public void	setPosition(float x, float y, float z)
 	{
@@ -265,6 +274,16 @@ public class FontModel
 	/** update the timer */
 	public void update()
 	{
+		if (this._timer == FontModel.INFINITE_TIMER)
+		{
+			return ;
+		}
+		
+		if (this._initialized == false)
+		{
+			this.initialize();
+		}
+		
 		long t = System.currentTimeMillis();
 		
 		this._timer += (System.currentTimeMillis() - this._last_tick);

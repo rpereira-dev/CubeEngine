@@ -14,6 +14,8 @@ import org.lwjgl.util.vector.Vector3f;
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.Camera;
 
+import fr.toss.lib.Logger;
+
 public class GLWindow
 {	
 	/** window pointer */
@@ -34,6 +36,12 @@ public class GLWindow
 
 	/** window event instances */
 	private GLWindowResizeCallback		_callback_window_size;
+	
+	/** frames data */
+	private long _prev_frame; //previous frame timer
+	private long _frames; //total frames flushed
+	private long _fps_counter; //frame per second counter
+	private long _fps; //last frame per second calculated
 	
 	public GLWindow()
 	{
@@ -79,6 +87,11 @@ public class GLWindow
 		
 		this._bufferX = BufferUtils.createByteBuffer(8);
 		this._bufferY = BufferUtils.createByteBuffer(8);
+		
+		this._prev_frame = System.currentTimeMillis();
+		this._frames = 0;
+		this._fps_counter = 0;
+		this._fps = 0;
 	}
 	
 	public void	useVSync(int v)
@@ -213,10 +226,29 @@ public class GLWindow
 		this._prev_mouseX = this._mouseX;
 		this._prev_mouseY = this._mouseY;
 		this.updateWindowTitle();
+	
+		this.updateFpsCounter();
 		
-		GLWindow.glCheckError("GLWindow.flushScreen");
+		GLWindow.glCheckError("GLWindow.flushScreen()");
 	}
 	
+	private void updateFpsCounter()
+	{
+		if (System.currentTimeMillis() - this._prev_frame >= 1000)
+		{
+			this._fps = this._fps_counter;
+			Logger.get().log(Logger.Level.DEBUG, "fps: " + this._fps);
+			this._fps_counter = 0;
+			this._prev_frame = System.currentTimeMillis();
+		}
+		else
+		{
+			this._fps_counter++;
+		}
+		
+		this._frames++;		
+	}
+
 	public boolean shouldClose()
 	{
 		return (GLFW.glfwWindowShouldClose(this._window) != 0);

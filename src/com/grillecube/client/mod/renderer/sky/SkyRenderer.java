@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.sky;
+package com.grillecube.client.mod.renderer.sky;
 
 import java.nio.FloatBuffer;
 

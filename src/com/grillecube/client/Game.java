@@ -4,7 +4,9 @@ package com.grillecube.client;
 import java.util.ArrayList;
 
 import com.grillecube.client.mod.blocks.ModBlocks;
+import com.grillecube.client.mod.renderer.font.ModFontRenderer;
 import com.grillecube.client.mod.renderer.particles.ModParticles;
+import com.grillecube.client.mod.renderer.sky.ModSkyRenderer;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.ressources.ResourceManager;
 import com.grillecube.client.window.GLWindow;
@@ -38,33 +40,36 @@ public class Game
 	private ResourceManager	_resources;
 	
 	/** Game state */
-	public static final long STATE_RUNNING = 1;
-	private long _state;
+	private GameStateFactory _state_factory;
+	private GameState _state;
 
-	private ArrayList<Thread>	_threads;
+	/** game threads */
+	private ArrayList<Thread> _threads;
 	
+	/** game events */
+	//TODO : events
+	private ArrayList[] _events;
+
 	public Game()
 	{
 		_instance = this;
 		this._logger = new Logger(System.out);
 		this._threads = new ArrayList<Thread>();
-		this._state = 0;
+		this._events = new ArrayList[GameEvent.MAX_ID];
+		this._state_factory = new GameStateFactory();
+		this._state = this._state_factory.registerNewState();
 		this._window = new GLWindow();
 		this._renderer = new MainRenderer(this._window);
 		this._world = new World();
 		this._resources = new ResourceManager();
 		this._mod_loader = new ModLoader();
-		this._mod_loader.loadMods("./mods");
-		
-		//TODO : default mods are injected here
-		this._mod_loader.injectMod(new ModBlocks());
-		this._mod_loader.injectMod(new ModParticles());
 	}
 	
 	public void	start()
-	{
+	{		
+		this.injectMods();
+		
 		this._logger.log(Level.FINE, "Starting game...");
-		this._state = 0;
 		this._window.start();
 		
 		this._mod_loader.initializeAll(this);
@@ -72,47 +77,59 @@ public class Game
 		this._renderer.start(this);
 		this._resources.start();
 		this._world.start();
-				
 		this._logger.log(Level.FINE, "Game started!");
+	}
+
+	/** load every mods */
+	private void injectMods()
+	{
+		this._mod_loader.loadMods("./mods");
+		
+		//TODO : default mods are injected here
+		this._mod_loader.injectMod(new ModBlocks());
+		this._mod_loader.injectMod(new ModParticles());
+		this._mod_loader.injectMod(new ModSkyRenderer());
+		this._mod_loader.injectMod(new ModFontRenderer());
 	}
 
 	/** main game loop (dedicated to rendering) */
 	public void loop()
 	{
-		this.setState(STATE_RUNNING);
-				
-		long	prev = System.currentTimeMillis();
-		int		frames = 0;
+		this._state.set(GameState.RUNNING);
 		
 		for (Thread thrd : this._threads)
 		{
 			thrd.start();
 		}
 
-		while (this._window.shouldClose() == false)
+		while (this.isRunning())
 		{
-			if (System.currentTimeMillis() - prev >= 1000)
-			{
-				log(Logger.Level.DEBUG, "fps: " + frames);
-				frames = 0;
-				prev = System.currentTimeMillis();
-			}
-			
 			this._window.prepareScreen();
 			this._renderer.update();
 			this._renderer.render();
 			this._window.flushScreen();
 			
-			frames++;
+			if (this._window.shouldClose())
+			{
+				this.stop();
+			}
 		}
 		
-		this.unsetState(STATE_RUNNING);
+		this.stopAll();
 	}
 
+	/** request the game to stop */
+	public void stop()
+	{
+		this._state.unset(GameState.RUNNING);
+	}
+	
 	/** stop the game properly */
-	public void	stop()
+	private void stopAll()
 	{
 		this._logger.log(Level.FINE, "Stopping game...");
+
+		this._state.unset(GameState.RUNNING);
 
 		for (Thread thrd : this._threads)
 		{
@@ -122,7 +139,7 @@ public class Game
 			}
 			catch (InterruptedException e)
 			{
-				log(Logger.Level.ERROR, "interupted");
+				Logger.get().log(Logger.Level.ERROR, "interupted");
 				thrd.interrupt();
 			}
 		}
@@ -137,59 +154,52 @@ public class Game
 	{
 		this._threads.add(thrd);
 	}
-	
-	public boolean	hasState(long state)
+
+	/** register a new game state */
+	public GameState registerNewState()
 	{
-		return ((this._state & state) == state);
+		return (this._state_factory.registerNewState());
 	}
 	
-	public void		setState(long state)
+	/** return current game state */
+	public GameState getState()
 	{
-		this._state = this._state | state;
-	}
-	
-	public void		unsetState(long state)
-	{
-		this._state = this._state & ~(state);
-	}
-	
-	public void		switchState(long state)
-	{
-		this._state = this._state ^ state;
+		return (this._state);
 	}
 
-	public static Game	instance()
+	/** return game instance */
+	public static Game instance()
 	{
 		return (_instance);
 	}
-	
-	public static void	log(Level level, String message)
-	{
-		_instance.getLogger().log(level, message);
-	}
 
-	public Logger	getLogger()
-	{
-		return (this._logger);
-	}
-
+	/** return the world */
 	public World getWorld()
 	{
 		return (this._world);
 	}
 
+	/** return the main renderer */
 	public MainRenderer	getRenderer()
 	{
 		return (this._renderer);
 	}
 	
-	public ResourceManager	getResourceManager()
+	/** return the main resource manager */
+	public ResourceManager getResourceManager()
 	{
 		return (this._resources);
 	}
 
+	/** return the window in use */
 	public GLWindow getGLWindow()
 	{
 		return (this._window);
+	}
+
+	/** return true if the game is running */
+	public boolean isRunning()
+	{
+		return (this.getState().has(GameState.RUNNING));
 	}
 }

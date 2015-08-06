@@ -7,8 +7,6 @@ import java.io.IOException;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.grillecube.server.Game;
-
 import fr.toss.lib.Logger;
 
 public class ModelLoader
@@ -22,7 +20,7 @@ public class ModelLoader
 		File			file;
 		
 		filename = "./assets/models/" + filename + ".mdl";
-		Game.getLogger().log(Logger.Level.DEBUG, "Loading new model: " + filename);
+		Logger.get().log(Logger.Level.DEBUG, "Loading new model: " + filename);
 		file = new File(filename);
 		try
 		{

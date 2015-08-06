@@ -7,8 +7,6 @@ import java.io.IOException;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
-import com.grillecube.client.Game;
-
 import fr.toss.lib.Logger;
 
 public class Shader
@@ -20,7 +18,7 @@ public class Shader
 		String			line;
 		int				shader_id;
 		
-		Game.log(Logger.Level.FINE, "Loading shader: " + file);
+		Logger.get().log(Logger.Level.FINE, "Loading shader: " + file);
 
 		shader_id = 0;
 		try {

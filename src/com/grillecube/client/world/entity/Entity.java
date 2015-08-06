@@ -1,4 +1,4 @@
-package com.grillecube.common.world.entity;
+package com.grillecube.client.world.entity;
 
 import org.lwjgl.util.vector.Vector3f;
 

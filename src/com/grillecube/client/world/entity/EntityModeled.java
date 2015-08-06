@@ -3,7 +3,6 @@ package com.grillecube.client.world.entity;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelInstance;
 import com.grillecube.client.world.World;
-import com.grillecube.common.world.entity.Entity;
 
 public abstract class EntityModeled extends Entity
 {

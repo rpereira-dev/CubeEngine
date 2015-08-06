@@ -42,7 +42,7 @@ public class TerrainRendererThread extends Thread
 		
 		world = this._game.getWorld();
 		camera = this._game.getRenderer().getCamera();
-		while (this._game.hasState(Game.STATE_RUNNING))
+		while (this._game.isRunning())
 		{
 			this.updateTerrains(world, camera);
 

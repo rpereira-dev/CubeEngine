@@ -8,10 +8,7 @@ public class Main
 		
 		game = new Game();
 		game.start();
-
-		game.loop();
-		
-		game.stop();
+		game.loop();		
 	}
 
 }
