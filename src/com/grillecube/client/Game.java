@@ -3,6 +3,7 @@ package com.grillecube.client;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.event.IEvent;
 import com.grillecube.client.mod.blocks.ModBlocks;
 import com.grillecube.client.mod.renderer.font.ModFontRenderer;
 import com.grillecube.client.mod.renderer.particles.ModParticles;
@@ -48,6 +49,7 @@ public class Game
 	
 	/** game events */
 	//TODO : events
+	@SuppressWarnings("rawtypes")
 	private ArrayList[] _events;
 
 	public Game()
@@ -56,6 +58,10 @@ public class Game
 		this._logger = new Logger(System.out);
 		this._threads = new ArrayList<Thread>();
 		this._events = new ArrayList[GameEvent.MAX_ID];
+		for (int i = 0 ; i < GameEvent.MAX_ID ; i++)
+		{
+			this._events[i] = new ArrayList<IEvent>();
+		}
 		this._state_factory = new GameStateFactory();
 		this._state = this._state_factory.registerNewState();
 		this._window = new GLWindow();

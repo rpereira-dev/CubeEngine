@@ -1,8 +1,6 @@
 package com.grillecube.client.world;
 
-import org.lwjgl.util.vector.Vector3f;
-
-import fr.toss.lib.Vector3i;
+import org.lwjgl.util.vector.Vector3i;
 
 public class Faces
 {

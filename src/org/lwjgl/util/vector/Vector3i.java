@@ -1,9 +1,18 @@
-package fr.toss.lib;
+package org.lwjgl.util.vector;
 
-import org.lwjgl.util.vector.Vector3f;
+import java.nio.ByteBuffer;
 
-public class Vector3i
+/**
+ * 
+ * @author Romain
+ *
+ *	3d vector made of integer, following LWJGL util vector library implementations
+ */
+
+public class Vector3i extends Vector
 {
+	private static final long serialVersionUID = 1L;
+	
 	public int	x;
 	public int	y;
 	public int	z;
@@ -86,5 +95,48 @@ public class Vector3i
 		sb.append(z);
 		sb.append(']');
 		return (sb.toString());
+	}
+
+	@Override
+	public float lengthSquared()
+	{
+		return (this.x * this.x + this.y * this.y + this.z * this.z);
+	}
+
+	@Override
+	public Vector load(ByteBuffer buf)
+	{
+		this.x = buf.getInt();
+		this.y = buf.getInt();
+		this.z = buf.getInt();
+		return (this);
+	}
+
+	@Override
+	public Vector store(ByteBuffer buf)
+	{
+		buf.putInt(this.x);
+		buf.putInt(this.y);
+		buf.putInt(this.z);
+		return (this);
+	}
+	
+	@Override
+	public Vector negate()
+	{
+		this.x = -this.x;
+		this.y = -this.y;
+		this.z = -this.z;
+		return (this);
+	}
+	
+	@Override
+	public Vector scale(float scale)
+	{
+		this.x *= scale;
+		this.y *= scale;
+		this.z *= scale;
+
+		return (this);
 	}
 }

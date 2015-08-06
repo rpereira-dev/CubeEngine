@@ -8,13 +8,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.util.vector.Vector3i;
 
 import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.world.Faces;
 import com.grillecube.client.world.Terrain;
 import com.grillecube.client.world.blocks.Block;
-
-import fr.toss.lib.Vector3i;
 
 public class TerrainMesh
 {

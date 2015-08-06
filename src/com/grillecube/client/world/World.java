@@ -5,13 +5,12 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector3i;
 
 import com.grillecube.client.mod.blocks.ResourceBlocks;
 import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.world.blocks.Block;
 import com.grillecube.client.world.entity.EntityModeled;
-
-import fr.toss.lib.Vector3i;
 
 public class World
 {

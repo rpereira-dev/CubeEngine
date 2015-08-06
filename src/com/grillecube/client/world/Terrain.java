@@ -1,14 +1,13 @@
 package com.grillecube.client.world;
 
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector3i;
 
 import com.grillecube.client.mod.blocks.ResourceBlocks;
 import com.grillecube.client.renderer.Camera;
 import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.world.blocks.Block;
-
-import fr.toss.lib.Vector3i;
 
 public class Terrain
 {
