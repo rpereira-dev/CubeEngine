@@ -8,7 +8,7 @@ import com.grillecube.client.mod.renderer.particles.ModParticles;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.ressources.ResourceManager;
 import com.grillecube.client.window.GLWindow;
-import com.grillecube.client.world.WorldClient;
+import com.grillecube.client.world.World;
 import com.grillecube.common.mod.ModLoader;
 
 import fr.toss.lib.Logger;
@@ -29,7 +29,7 @@ public class Game
 	private GLWindow	_window;
 	
 	/** World */
-	private WorldClient	_world;
+	private World	_world;
 	
 	/** Renderer */
 	private MainRenderer	_renderer;
@@ -51,7 +51,7 @@ public class Game
 		this._state = 0;
 		this._window = new GLWindow();
 		this._renderer = new MainRenderer(this._window);
-		this._world = new WorldClient();
+		this._world = new World();
 		this._resources = new ResourceManager();
 		this._mod_loader = new ModLoader();
 		this._mod_loader.loadMods("./mods");
@@ -173,7 +173,7 @@ public class Game
 		return (this._logger);
 	}
 
-	public WorldClient getWorld()
+	public World getWorld()
 	{
 		return (this._world);
 	}

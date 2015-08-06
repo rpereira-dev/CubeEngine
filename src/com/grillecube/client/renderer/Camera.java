@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.grillecube.client.Game;
 import com.grillecube.client.mod.blocks.ResourceBlocks;
 import com.grillecube.client.window.GLWindow;
-import com.grillecube.common.world.Terrain;
+import com.grillecube.client.world.Terrain;
 
 public class Camera
 {
@@ -335,11 +335,11 @@ public class Camera
 	/** reset camera datas */
 	public void reset()
 	{
-		this.setPosition(new Vector3f(0, Terrain.SIZE_Y + 1, 0));
+		this.setPosition(new Vector3f(0, 0, -24));
 		this.setPositionVec(new Vector3f(0, 0, 0));
 		this.setRotationVec(new Vector3f(0, 0, 0));
 		this.setPitch(0);
-		this.setYaw(0);
+		this.setYaw(3.14f);
 		this.setRoll(0);
 		this.setFov(70);
 		this.setSpeed(1);

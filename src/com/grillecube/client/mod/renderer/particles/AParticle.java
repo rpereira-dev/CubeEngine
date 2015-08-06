@@ -2,11 +2,11 @@ package com.grillecube.client.mod.renderer.particles;
 
 import java.util.Comparator;
 
-import com.grillecube.client.world.WorldClient;
+import com.grillecube.client.world.World;
 
 public abstract class AParticle
 {
-	private WorldClient	_world;
+	private World _world;
 	
 	public float	posX;
 	public float	posY;
@@ -22,7 +22,7 @@ public abstract class AParticle
 	
 	private int			_particleID;
 	
-	public AParticle(WorldClient world)
+	public AParticle(World world)
 	{
 		this._world = world;
 		

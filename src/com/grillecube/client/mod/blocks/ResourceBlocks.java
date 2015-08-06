@@ -3,6 +3,7 @@ package com.grillecube.client.mod.blocks;
 import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.ressources.IResource;
 import com.grillecube.client.ressources.ResourceManager;
+import com.grillecube.client.world.Faces;
 import com.grillecube.client.world.blocks.Block;
 
 public class ResourceBlocks implements IResource
@@ -38,7 +39,7 @@ public class ResourceBlocks implements IResource
 	{
 		AIR = manager.registerBlock(new BlockAir());
 		DIRT = manager.registerBlock(new Block("dirt", T_DIRT));
-		GRASS = manager.registerBlock(new Block("grass", T_GRASS_SIDE, Block.FACE_TOP, T_GRASS_TOP, Block.FACE_BOT, T_DIRT));
+		GRASS = manager.registerBlock(new Block("grass", T_GRASS_SIDE, Faces.TOP, T_GRASS_TOP, Faces.BOT, T_DIRT));
 		STONE = manager.registerBlock(new Block("stone", T_STONE));
 	}
 	

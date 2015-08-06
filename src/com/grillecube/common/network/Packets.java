@@ -1,10 +1,8 @@
 package com.grillecube.common.network;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import com.grillecube.server.network.packet.PacketString;
-import com.grillecube.server.network.packet.PacketTerrain;
 
 import io.netty.buffer.ByteBuf;
 
@@ -14,8 +12,7 @@ public class Packets
 	private static final HashMap<Integer, Class<? extends Packet>>	_packets = new HashMap<Integer, Class<? extends Packet>>();
 	
 	/** every packets ID should be listed here */
-	public static final int TERRAIN_FULL	= 1;
-	public static final int STRING			= 2;	//TO REMOVE: only a small example
+	public static final int STRING = 1;	//TO REMOVE: only a small example
 
 	/** add a packet class to the map 
 	 * @throws WrongPacketFormatException */
@@ -40,7 +37,6 @@ public class Packets
 	 * 	@throws WrongPacketFormatException : if a packet is wrongly formatted*/
 	public static void	loadPackets() throws WrongPacketFormatException
 	{
-		registerPacket(PacketTerrain.class, TERRAIN_FULL);
 		registerPacket(PacketString.class, STRING);
 	}
 

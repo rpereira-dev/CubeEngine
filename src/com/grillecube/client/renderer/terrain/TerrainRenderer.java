@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL13;
 
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.ARenderer;
-import com.grillecube.client.world.TerrainClient;
+import com.grillecube.client.world.Terrain;
 
 public class TerrainRenderer extends ARenderer
 {
@@ -30,8 +30,8 @@ public class TerrainRenderer extends ARenderer
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
+//		GL11.glEnable(GL11.GL_CULL_FACE);
+//		GL11.glCullFace(GL11.GL_BACK);
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getResourceManager().getBlockManager().getTextureAtlas());
@@ -51,9 +51,9 @@ public class TerrainRenderer extends ARenderer
 		{
 			this._terrain_program.loadUniforms(this.getWorld().getWeather(), this.getCamera());
 
-			ArrayList<TerrainClient> to_render = this._calculation_thread.getRendererList();
+			ArrayList<Terrain> to_render = this._calculation_thread.getRendererList();
 			
-			for (TerrainClient terrain : to_render)
+			for (Terrain terrain : to_render)
 			{
 				this._terrain_program.loadInstanceUniforms(terrain);
 				terrain.getMesh().render();

@@ -2,12 +2,12 @@ package com.grillecube.client.world.entity;
 
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelInstance;
-import com.grillecube.common.world.World;
+import com.grillecube.client.world.World;
 import com.grillecube.common.world.entity.Entity;
 
 public abstract class EntityModeled extends Entity
 {
-	private ModelInstance	_model_instance;
+	private ModelInstance _model_instance;
 	
 	public EntityModeled(World world, Model model)
 	{

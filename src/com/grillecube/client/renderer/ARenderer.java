@@ -4,7 +4,7 @@ import com.grillecube.client.Game;
 import com.grillecube.client.ressources.ResourceManager;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.client.world.Weather;
-import com.grillecube.client.world.WorldClient;
+import com.grillecube.client.world.World;
 
 public abstract class ARenderer implements IRenderer
 {
@@ -20,7 +20,7 @@ public abstract class ARenderer implements IRenderer
 		return (this._game);
 	}
 	
-	protected WorldClient getWorld()
+	protected World getWorld()
 	{
 		return (this._game.getWorld());
 	}

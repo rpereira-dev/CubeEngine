@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
 import com.grillecube.client.renderer.opengl.Program;
-import com.grillecube.client.world.TerrainClient;
+import com.grillecube.client.world.Terrain;
 import com.grillecube.client.world.Weather;
 
 public class ProgramTerrain extends Program
@@ -80,10 +80,10 @@ public class ProgramTerrain extends Program
 		this.loadUniformInteger(this._use_ao, GLFW.glfwGetKey(camera.getWindow().getPointer(), GLFW.GLFW_KEY_R) == GLFW.GLFW_PRESS? 0 : 1);
 	}
 	
-	public void loadInstanceUniforms(TerrainClient terrain)
+	public void loadInstanceUniforms(Terrain terrain)
 	{
 		this._matrix_buffer.setIdentity();
-		this._matrix_buffer.translate(terrain.getWorldPosition().toVector3f());
+		this._matrix_buffer.translate(terrain.getWorldLocation());
 		this._matrix_buffer.rotate(0, X_AXIS);
 		this._matrix_buffer.rotate(0, Y_AXIS);
 		this._matrix_buffer.rotate(0, Z_AXIS);

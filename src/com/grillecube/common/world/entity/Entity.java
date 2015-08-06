@@ -2,12 +2,12 @@ package com.grillecube.common.world.entity;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.grillecube.common.world.World;
+import com.grillecube.client.world.World;
 
 public abstract class Entity
 {
 	/** entity's world */
-	private World		_world;
+	private World _world;
 	
 	/** entity's world pos */
 	private Vector3f	_pos;

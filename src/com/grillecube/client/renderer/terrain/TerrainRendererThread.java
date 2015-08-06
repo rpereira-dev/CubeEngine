@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.world.TerrainClient;
-import com.grillecube.client.world.WorldClient;
-
-import fr.toss.lib.Logger;
+import com.grillecube.client.world.Terrain;
+import com.grillecube.client.world.TerrainLocation;
+import com.grillecube.client.world.World;
 
 /** this thread is dedicated to rendering calculation, such as:
  * 
@@ -22,15 +21,15 @@ public class TerrainRendererThread extends Thread
 	private Game	_game;
 	
 	/** terrain to render list, the renderer get the next ready list before rendering */
-	private ArrayList<TerrainClient>	_terrain_to_render;
-	
+	private ArrayList<Terrain> _terrain_to_render;
+
 	public TerrainRendererThread(Game game)
 	{
 		this._game = game;
-		this._terrain_to_render	= new ArrayList<TerrainClient>();
+		this._terrain_to_render	= new ArrayList<Terrain>();
 	}
 
-	public ArrayList<TerrainClient>	getRendererList()
+	public ArrayList<Terrain>	getRendererList()
 	{
 		return (this._terrain_to_render);
 	}
@@ -38,7 +37,7 @@ public class TerrainRendererThread extends Thread
 	@Override
 	public void	run()
 	{
-		WorldClient	world;
+		World	world;
 		Camera		camera;
 		
 		world = this._game.getWorld();
@@ -59,11 +58,9 @@ public class TerrainRendererThread extends Thread
 	}
 	
 	/** called in the RenderCalculatriceThread, (not in the rendering one) */
-	public void updateTerrains(WorldClient world, Camera camera)
+	public void updateTerrains(World world, Camera camera)
 	{
-		ArrayList<TerrainClient> buffer = new ArrayList<TerrainClient>(128);
-		
-		for (TerrainClient terrain : world.getTerrains())
+		for (Terrain terrain : world.getTerrains())
 		{
 			TerrainMesh	mesh = terrain.getMesh();
 			
@@ -74,25 +71,38 @@ public class TerrainRendererThread extends Thread
 			}
 		}
 		
-		this.fillRenderingBuffer(world, camera, buffer);
-		
-		this._terrain_to_render = buffer;
+		this._terrain_to_render = this.getNewFrustumCullingRendererList(world, camera);
 		
 //		this._game.getLogger().log(Logger.Level.DEBUG, "Terrain rendered: " + buffer.size());
 	}
 
-	private void fillRenderingBuffer(WorldClient world, Camera camera, ArrayList<TerrainClient> buffer)
+
+	/** create an arraylist which contains every terrains that are in view frustum */
+	private ArrayList<Terrain> getNewFrustumCullingRendererList(World world, Camera camera)
 	{
-		TerrainClient terrain = world.getTerrainAt(camera.getPosition());
+		ArrayList<Terrain> terrains = new ArrayList<Terrain>(128);
 		
-		for (TerrainClient t : world.getTerrains())
+		for (Terrain terrain : world.getTerrains())
 		{
-			if (t.getMesh().isInFrustum(camera))
+			if (terrain.isInFrustum(camera))
 			{
-				buffer.add(t);
+				terrains.add(terrain);
 			}
 		}
-		
+		return (terrains);
 	}
+}
 
+class TerrainSearchData
+{
+	public int from_face; //face id where we come from
+	public int to_face; //face id where we come from
+	public TerrainLocation to_visit; //the terrain we are visiting
+	
+	public TerrainSearchData(int from, int to, TerrainLocation to_visit)
+	{
+		this.from_face = from;
+		this.to_face = to;
+		this.to_visit = to_visit;
+	}
 }

@@ -1,15 +1,9 @@
 package com.grillecube.client.world.blocks;
 
+import com.grillecube.client.world.Faces;
+
 public class Block
-{
-	/**	face indices */
-	public static final int	FACE_LEFT 	= 0;
-	public static final int	FACE_RIGHT 	= 1;
-	public static final int	FACE_TOP 	= 2;
-	public static final int FACE_BOT 	= 3;
-	public static final int	FACE_FRONT	= 4;
-	public static final int	FACE_BACK	= 5;
-	
+{	
 	/** block name */
 	private String	_name;
 	
@@ -26,12 +20,12 @@ public class Block
 		this._textureID = new int[6];
 		this._name = name;
 		
-		this._textureID[FACE_LEFT] 	= textureID;
-		this._textureID[FACE_RIGHT]	= textureID;
-		this._textureID[FACE_TOP] 	= textureID;
-		this._textureID[FACE_BOT] 	= textureID;
-		this._textureID[FACE_FRONT]	= textureID;
-		this._textureID[FACE_BACK]	= textureID;
+		this._textureID[Faces.LEFT] 	= textureID;
+		this._textureID[Faces.RIGHT]	= textureID;
+		this._textureID[Faces.TOP] 		= textureID;
+		this._textureID[Faces.BOT] 		= textureID;
+		this._textureID[Faces.FRONT]	= textureID;
+		this._textureID[Faces.BACK]		= textureID;
 	}
 	
 	/** @param faces		: special faces (BLOCK_FACE_FRONT, TEXTURE_ID....) */

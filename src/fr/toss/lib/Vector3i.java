@@ -44,4 +44,47 @@ public class Vector3i
 	{
 		return (new Vector3f(this.x, this.y, this.z));
 	}
+	
+	@Override
+	public int	hashCode()
+	{	
+		int x = (this.x < 0) ? (this.x ^ Integer.MIN_VALUE) : this.x;
+		int y = (this.y < 0) ? (this.y ^ Integer.MIN_VALUE) : this.y;
+		int z = (this.z < 0) ? (this.z ^ Integer.MIN_VALUE) : this.z;
+		int hash = ((x & 0xFF) << 16) | ((y & 0xFF) << 8) | (z & 0xFF);
+
+		return (hash);
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		Vector3i vec = (Vector3i)obj;
+		return (this.x == vec.x && this.y == vec.y && this.z == vec.z);
+	}
+
+	public static Vector3i add(Vector3i a, Vector3i b)
+	{
+		return (new Vector3i(a.x + b.x, a.y + b.y, a.z + b.z));
+	}
+	
+	public static Vector3i sub(Vector3i a, Vector3i b)
+	{
+		return (new Vector3i(a.x - b.x, a.y - b.y, a.z - b.z));
+	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder(64);
+		
+		sb.append("Vector3f[");
+		sb.append(x);
+		sb.append(", ");
+		sb.append(y);
+		sb.append(", ");
+		sb.append(z);
+		sb.append(']');
+		return (sb.toString());
+	}
 }
