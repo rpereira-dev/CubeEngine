@@ -435,7 +435,7 @@ public class Camera
 	               \         /
 	                \       /	        p: point to test
 	                 \     /
-	                  \   /             imprecision: make field of view larger
+	                  \   /             imprecision: angle in degree: increase fov checks
 	                   \ /
 	                  / e \				e: eye
 	                  \___/				
@@ -450,33 +450,26 @@ public class Camera
 		to_point_vector.normalise(to_point_vector);
 		dot = Vector3f.dot(to_point_vector, this._look_vec);
 		angle = Math.toDegrees(Math.acos(dot));
-		return (angle < this._fov / 2 + imprecision);
+		return (angle < (this._fov + imprecision) / 2);
 	}
 	
-	/** return true if the box of center "center" with dimension x, y, z is in camera frustum */
+	/** return true if the box of center "center" with dimension x, y, z is in camera frustum */	
+	public boolean	isInFrustum(Vector3f center, float x, float y, float z, float imprecision)
+	{
+		return (this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z + z), imprecision)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z + z), imprecision)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z - z), imprecision)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z - z), imprecision)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z + z), imprecision)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y - y, center.z + z), imprecision)
+		|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z - z), imprecision)
+		|| this.isInFrustum(new Vector3f(center.x - x, center.y - y, center.z - z), imprecision)
+		);
+	}
+	
 	public boolean	isInFrustum(Vector3f center, float x, float y, float z)
 	{
-		float	dist;
-		float	diagonal;
-		
-		dist = ((center.x - this._pos.x) * (center.x - this._pos.x)
-				+ (center.y - this._pos.y) * (center.y - this._pos.y)
-				+ (center.z - this._pos.z) * (center.z - this._pos.z));
-		diagonal = (x * x * 4 + y * y * 4 + z * z * 4) / 2;
-		if (dist <= diagonal)
-		{
-			return (true);
-		}
-		return (this.isInFrustum(center, 0)
-		|| this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z + z), 10)
-		|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z + z), 10)
-		|| this.isInFrustum(new Vector3f(center.x + x, center.y + y, center.z - z), 10)
-		|| this.isInFrustum(new Vector3f(center.x - x, center.y + y, center.z - z), 10)
-		|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z + z), 10)
-		|| this.isInFrustum(new Vector3f(center.x - x, center.y - y, center.z + z), 10)
-		|| this.isInFrustum(new Vector3f(center.x + x, center.y - y, center.z - z), 10)
-		|| this.isInFrustum(new Vector3f(center.x - x, center.y - y, center.z - z), 10)
-		);
+		return (this.isInFrustum(center, x, y, z, 0));
 	}
 
 	public float getRenderDistance()

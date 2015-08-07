@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.Camera;
 import com.grillecube.client.world.Terrain;
-import com.grillecube.client.world.TerrainLocation;
 import com.grillecube.client.world.World;
 
 /** this thread is dedicated to rendering calculation, such as:
@@ -15,7 +14,7 @@ import com.grillecube.client.world.World;
  */
 public class TerrainRendererThread extends Thread
 {
-	private static final long SLEEPING_TIME = 1000 / 20;
+	private static final long SLEEPING_TIME = 1000 / 10;
 	
 	/** game instance */
 	private Game	_game;
@@ -44,8 +43,11 @@ public class TerrainRendererThread extends Thread
 		camera = this._game.getRenderer().getCamera();
 		while (this._game.isRunning())
 		{
+			long t = System.currentTimeMillis();
 			this.updateTerrains(world, camera);
-
+			t = (System.currentTimeMillis() - t);
+			if (t > 10)
+				System.out.println("took: " + t);
 			try
 			{
 				Thread.sleep(SLEEPING_TIME);
@@ -60,49 +62,36 @@ public class TerrainRendererThread extends Thread
 	/** called in the RenderCalculatriceThread, (not in the rendering one) */
 	public void updateTerrains(World world, Camera camera)
 	{
-		for (Terrain terrain : world.getTerrains())
-		{
-			TerrainMesh	mesh = terrain.getMesh();
-			
-			if (!mesh.hasState(TerrainMesh.STATE_VERTICES_UP_TO_DATE))
-			{
-				mesh.generateVertices();
-				mesh.updateFacesVisiblity();
-			}
-		}
-		
-		this._terrain_to_render = this.getNewFrustumCullingRendererList(world, camera);
-		
-//		this._game.getLogger().log(Logger.Level.DEBUG, "Terrain rendered: " + buffer.size());
-	}
-
-
-	/** create an arraylist which contains every terrains that are in view frustum */
-	private ArrayList<Terrain> getNewFrustumCullingRendererList(World world, Camera camera)
-	{
 		ArrayList<Terrain> terrains = new ArrayList<Terrain>(128);
 		
 		for (Terrain terrain : world.getTerrains())
 		{
-			if (terrain.isInFrustum(camera))
+			terrain.update(camera);
+
+			if (this.terrainIsVisible(camera, terrain))
 			{
 				terrains.add(terrain);
-			}
+			}			
 		}
-		return (terrains);
+		
+		this._terrain_to_render = terrains;
 	}
-}
-
-class TerrainSearchData
-{
-	public int from_face; //face id where we come from
-	public int to_face; //face id where we come from
-	public TerrainLocation to_visit; //the terrain we are visiting
 	
-	public TerrainSearchData(int from, int to, TerrainLocation to_visit)
+	/** return true if the terrain should be rendered */
+	private boolean terrainIsVisible(Camera camera, Terrain terrain)
 	{
-		this.from_face = from;
-		this.to_face = to;
-		this.to_visit = to_visit;
+		if (terrain.getCameraDistance() < Terrain.SIZE_DIAGONAL)
+		{
+			return (true);
+		}
+		
+		if (terrain.getCameraDistance() > camera.getRenderDistance())
+		{
+			return (false);
+		}
+		
+		//TODO : to fix invisible terrain when rotating fastly, increase imprecision :)
+		float imprecision = -20;
+		return (terrain.isInFrustum(camera, imprecision));
 	}
 }

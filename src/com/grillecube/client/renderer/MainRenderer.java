@@ -1,9 +1,9 @@
 package com.grillecube.client.renderer;
 
 import java.util.LinkedList;
-import java.util.Stack;
 
 import com.grillecube.client.Game;
+import com.grillecube.client.renderer.font.FontRenderer;
 import com.grillecube.client.renderer.model.ModelRenderer;
 import com.grillecube.client.renderer.terrain.TerrainRenderer;
 import com.grillecube.client.window.GLWindow;
@@ -18,6 +18,9 @@ public class MainRenderer
 	private LinkedList<IRenderer> _renderers;
 	
 	/** default renderers */
+	private TerrainRenderer	_terrain_renderer;
+	private ModelRenderer	_model_renderer;
+	private FontRenderer	_font_renderer;
 	
 
 	public MainRenderer(GLWindow window)
@@ -26,6 +29,7 @@ public class MainRenderer
 		this._renderers = new LinkedList<IRenderer>();
 	}
 	
+	/** add a renderer to the rendering list */
 	public void	registerRenderer(IRenderer renderer)
 	{
 		Logger.get().log(Logger.Level.FINE, "Adding renderer: " + renderer.getClass().getName());
@@ -35,10 +39,14 @@ public class MainRenderer
 	/** call on initialization */
 	public void	start(Game game)
 	{
-		//TODO : should default renderer be added like this?
-		this._renderers.addFirst(new TerrainRenderer(game));
-		this._renderers.addFirst(new ModelRenderer(game));
-
+		this._terrain_renderer = new TerrainRenderer(game);
+		this._model_renderer = new ModelRenderer(game);
+		this._font_renderer = new FontRenderer(game);
+		
+		this._renderers.addFirst(this._terrain_renderer);
+		this._renderers.addFirst(this._model_renderer);
+		this._renderers.addFirst(this._font_renderer);
+		
 		for (IRenderer renderer : this._renderers)
 		{
 			renderer.start();
@@ -74,5 +82,11 @@ public class MainRenderer
 	public Camera	getCamera()
 	{
 		return (this._camera);
+	}
+	
+	/** font renderer */
+	public FontRenderer getFontRenderer()
+	{
+		return (this._font_renderer);
 	}
 }

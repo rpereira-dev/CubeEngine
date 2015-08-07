@@ -1,4 +1,4 @@
-package com.grillecube.client.mod.renderer.font;
+package com.grillecube.client.renderer.font;
 
 import java.nio.FloatBuffer;
 
@@ -27,7 +27,7 @@ public class FontModel
 	public static final Vector3f DEFAULT_FONT_SIZE	= new Vector3f(0.04f, 0.1f, 0);
 	
 	public static final long DEFAULT_TIMER			= 5000;	//5sec
-	public static final long INFINITE_TIMER			 = -1;
+	public static final long INFINITE_TIMER			= -1;
 	
 	/** opengl IDs */
 	private int	_vaoID;

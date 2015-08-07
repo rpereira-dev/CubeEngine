@@ -27,6 +27,8 @@ public class Terrain
 	public static final int	SIZE_X = 32;
 	public static final int	SIZE_Y = 32;
 	public static final int	SIZE_Z = 32;
+
+	public static final double SIZE_DIAGONAL = Math.sqrt(Terrain.SIZE_X * Terrain.SIZE_X + Terrain.SIZE_Y * Terrain.SIZE_Y + Terrain.SIZE_Z * Terrain.SIZE_Z);
 	
 	protected TerrainLocation _location;
 	
@@ -44,6 +46,20 @@ public class Terrain
 	
 	private void generateRandomTerrain()
 	{
+//		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
+//		{
+//			for (int y = 0 ; y < 1; y++)
+//			{
+//				for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
+//				{
+//					this._blocks[x][y][z] = ResourceBlocks.DIRT;
+//				}
+//			}
+//		}
+//		this._blocks[Terrain.SIZE_X / 2][1][Terrain.SIZE_Z / 2] = ResourceBlocks.GRASS;
+
+		
+		
 		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
 		{
 			for (int y = 0 ; y < Terrain.SIZE_Y ; y++)
@@ -54,7 +70,7 @@ public class Terrain
 									(this.getWorldLocation().y + y) / 64.0f,
 									(this.getWorldLocation().z + z) / 64.0f) < 0)
 					{
-						this._blocks[x][y][z] = ResourceBlocks.ICE;
+						this._blocks[x][y][z] = ResourceBlocks.DIRT;
 					}
 					else
 					{
@@ -187,8 +203,8 @@ public class Terrain
 		return (this._neighboors[id]);
 	}
 
-	/** return true if this terrain mesh in the given Camera frustum */
-	public boolean	isInFrustum(Camera camera)
+	/** update the camera distance and check if the mesh should be rebuild */
+	public void update(Camera camera)
 	{
 		Vector3f center = this.getLocation().getCenter();
 		float dx = camera.getPosition().getX() - center.x;
@@ -196,12 +212,19 @@ public class Terrain
 		float dz = camera.getPosition().getZ() - center.z;
 		
 		this._camera_dist = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-		
-		if (this._camera_dist >= camera.getRenderDistance())
-		{
-			return (false);
-		}
-		return (camera.isInFrustum(center, Terrain.SIZE_X / 2, Terrain.SIZE_Y / 2, Terrain.SIZE_Z / 2));
+		this._mesh.update();
+	}
+	
+	/** return true if this terrain mesh in the given Camera frustum */
+	public boolean	isInFrustum(Camera camera)
+	{
+		return (camera.isInFrustum(this.getLocation().getCenter(), Terrain.SIZE_X / 2, Terrain.SIZE_Y / 2, Terrain.SIZE_Z / 2));
+	}
+	
+	/** return true if this terrain mesh in the given Camera frustum (+ imprecision) */
+	public boolean	isInFrustum(Camera camera, float imprecision)
+	{
+		return (camera.isInFrustum(this.getLocation().getCenter(), Terrain.SIZE_X / 2, Terrain.SIZE_Y / 2, Terrain.SIZE_Z / 2, imprecision));
 	}
 	
 	/** return distance from camera */

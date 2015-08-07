@@ -3,9 +3,10 @@ package com.grillecube.client;
 
 import java.util.ArrayList;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.grillecube.client.event.IEvent;
 import com.grillecube.client.mod.blocks.ModBlocks;
-import com.grillecube.client.mod.renderer.font.ModFontRenderer;
 import com.grillecube.client.mod.renderer.particles.ModParticles;
 import com.grillecube.client.mod.renderer.sky.ModSkyRenderer;
 import com.grillecube.client.renderer.MainRenderer;
@@ -113,7 +114,6 @@ public class Game
 		this._mod_loader.injectMod(new ModBlocks());
 		this._mod_loader.injectMod(new ModParticles());
 		this._mod_loader.injectMod(new ModSkyRenderer());
-		this._mod_loader.injectMod(new ModFontRenderer());
 	}
 
 	/** main game loop (dedicated to rendering) */
@@ -125,7 +125,7 @@ public class Game
 		{
 			thrd.start();
 		}
-
+		
 		while (this.isRunning())
 		{
 			this._window.prepareScreen();

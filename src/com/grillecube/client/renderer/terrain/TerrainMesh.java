@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector3i;
 
 import com.grillecube.client.ressources.BlockManager;
@@ -15,19 +16,30 @@ import com.grillecube.client.world.Faces;
 import com.grillecube.client.world.Terrain;
 import com.grillecube.client.world.blocks.Block;
 
+
+/*
+	  4-----7
+	 /|    /|		7 4
+	0-----3 |		6 5
+	| 5___|_6 
+	|/    | /
+	1-----2
+*/
+
 public class TerrainMesh
 {
 	/** constants */
-	private static final float S 	= 1;	//block size unit
+	private static final float S = 1;	//block size unit
 	
 	//unit uv for a block
-	public static float UVX 	= 1;
-	public static float UVY 	= 1;
+	public static float UVX = 1;
+	public static float UVY = 1;
 	
 	/** Mesh state */
 	public static final int	STATE_INITIALIZED			= 1;
 	public static final int	STATE_VBO_UP_TO_DATE		= 2;
 	public static final int	STATE_VERTICES_UP_TO_DATE	= 4;
+	
 	private int	_state;
 	
 	/** terrain data */
@@ -53,198 +65,187 @@ public class TerrainMesh
 		// lock the vboUpdate() function, so it is not called before all vertices are generated
 		this.setState(STATE_VBO_UP_TO_DATE);
 
-		Stack<MeshVertex>	stack;
-		MeshVertex			vertex;
-		
-		stack = new Stack<MeshVertex>();
-		
-		this.pushVisibleFaces(stack);
-		
-		this._vertices = new float[stack.size() * 9]; //each vertex is 9 floats (x, y, z, nx, ny, nz, uvx, uvy, ao)
-		int i = 0;
-		while (stack.size() > 0)
-		{
-			vertex = stack.peek();
-			this._vertices[i++] = vertex.posx;
-			this._vertices[i++] = vertex.posy;
-			this._vertices[i++] = vertex.posz;
-			this._vertices[i++] = vertex.normalx;
-			this._vertices[i++] = vertex.normaly;
-			this._vertices[i++] = vertex.normalz;
-			this._vertices[i++] = vertex.uvx;
-			this._vertices[i++] = vertex.uvy;
-			this._vertices[i++] = vertex.ao;
+		Stack<MeshVertex> stack = this.getVisibleVertexStack();
+		this._vertices = new float[stack.size() * 9]; //each vertex is 9 floats
+		this.fillVertices(stack);
 
-			stack.pop();
-		}
-		stack.clear();
-		
 		this.setState(STATE_VERTICES_UP_TO_DATE);
 		this.unsetState(STATE_VBO_UP_TO_DATE);
 	}
 	
-	//the float returned is the ratio of black which will be used for this vertex
-	private static final float _AO_UNIT = 0.2f;
-	private float getVertexAO(int x, int y, int z, int ox, int oy, int oz)
+	/** fill 'this._vertices' with the given block's faces depending on visibility array */
+	private void fillVertices(Stack<MeshVertex> stack)
 	{
-		boolean side1 = this.isBlockVisible(x + ox, y + oy, z);
-		boolean side2 = this.isBlockVisible(x, y + oy, z + oz);
-		boolean corner = this.isBlockVisible(x + ox, y + oy, z + oz);
-		if (side1 && side2)
-		{
-			return (_AO_UNIT * 3);
-		}
-		float ao = 0;
-		if (side1)
-		{
-			ao += _AO_UNIT;
-		}
-		if (side2)
-		{
-			ao += _AO_UNIT;
-		}
-		if (corner)
-		{
-			ao += _AO_UNIT;
-		}
-		return (ao);
-	}
-	 
-/*
-		  4-----7
-		 /|    /|		7 4
-		0-----3 |		6 5
-		| 5___|_6 
-		|/    | /
-		1-----2
-*/
-	//1, 5, 6 ; 1 6 2
-	private void pushBotFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
-	{
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, -1, 0, uvx, uvy, this.getVertexAO(X, Y, Z, -1, -1, -1)));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, -1, 0, uvx, uvy + UVY, this.getVertexAO(X, Y, Z, -1, -1, 1)));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, -1, 0, uvx + UVX, uvy + UVY, this.getVertexAO(X, Y, Z, 1, -1, 1)));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, -1, 0, uvx + UVX, uvy, this.getVertexAO(X, Y, Z, 1, -1, -1)));
-	}
-	
-
-	//4, 0, 3 ; 4, 3, 7
-	private void pushTopFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
-	{
-		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 1, 0, uvx, uvy, this.getVertexAO(X, Y, Z, -1, 1, 1)));
-		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 1, 0, uvx, uvy + UVY, this.getVertexAO(X, Y, Z, -1, 1, -1)));
-		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 1, 0, uvx + UVX, uvy + UVY, this.getVertexAO(X, Y, Z, 1, 1, -1)));
-		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 1, 0, uvx + UVX, uvy, this.getVertexAO(X, Y, Z, 1, 1, 1)));
-	}
-
-	
-	//3, 2, 6 ; 3, 6, 7
-	private void pushRightFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
-	{
-		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 1, 0, 0, uvx, uvy, this.getVertexAO(X, Y, Z, 1, 1, -1)));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 1, 0, 0, uvx, uvy + UVY, this.getVertexAO(X, Y, Z, 1, 0, -1)));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 1, 0, 0, uvx + UVX, uvy + UVY, this.getVertexAO(X, Y, Z, 1, 0, 1)));
-		stack.push(new MeshVertex(X + S, Y + S, Z + S, 1, 0, 0, uvx + UVX, uvy, this.getVertexAO(X, Y, Z, 1, 1, 1)));
-	}
+		int ptr = 0; //'this._vertices' buffer addr for next face's vertices
 		
+		for (MeshVertex vertex : stack)
+		{
+			this._vertices[ptr++] = vertex.posx;
+			this._vertices[ptr++] = vertex.posy;
+			this._vertices[ptr++] = vertex.posz;
+			this._vertices[ptr++] = vertex.normalx;
+			this._vertices[ptr++] = vertex.normaly;
+			this._vertices[ptr++] = vertex.normalz;
+			this._vertices[ptr++] = vertex.uvx;
+			this._vertices[ptr++] = vertex.uvy;
+			this._vertices[ptr++] = vertex.ao;
+		}
+	}
+	
+	private static Vector3i[][] faces_vertices = new Vector3i[6][6];
+	
+	static
+	{
+		faces_vertices[Faces.LEFT][0] = new Vector3i(0, 1, 1);
+		faces_vertices[Faces.LEFT][1] = new Vector3i(0, 0, 1);
+		faces_vertices[Faces.LEFT][2] = new Vector3i(0, 0, 0);
+		faces_vertices[Faces.LEFT][3] = new Vector3i(0, 1, 0);
+
+		faces_vertices[Faces.RIGHT][0] = new Vector3i(1, 1, 0);	
+		faces_vertices[Faces.RIGHT][1] = new Vector3i(1, 0, 0);
+		faces_vertices[Faces.RIGHT][2] = new Vector3i(1, 0, 1);
+		faces_vertices[Faces.RIGHT][3] = new Vector3i(1, 1, 1);
+
+		faces_vertices[Faces.TOP][0] = new Vector3i(0, 1, 1);
+		faces_vertices[Faces.TOP][1] = new Vector3i(0, 1, 0);
+		faces_vertices[Faces.TOP][2] = new Vector3i(1, 1, 0);
+		faces_vertices[Faces.TOP][3] = new Vector3i(1, 1, 1);
+
+		faces_vertices[Faces.BOT][0] = new Vector3i(0, 0, 0);
+		faces_vertices[Faces.BOT][1] = new Vector3i(0, 0, 1);
+		faces_vertices[Faces.BOT][2] = new Vector3i(1, 0, 1);
+		faces_vertices[Faces.BOT][3] = new Vector3i(1, 0, 0);
+	
+		faces_vertices[Faces.FRONT][0] = new Vector3i(0, 1, 0);
+		faces_vertices[Faces.FRONT][1] = new Vector3i(0, 0, 0);
+		faces_vertices[Faces.FRONT][2] = new Vector3i(1, 0, 0);
+		faces_vertices[Faces.FRONT][3] = new Vector3i(1, 1, 0);
+
+		faces_vertices[Faces.BACK][0] = new Vector3i(1, 1, 1);
+		faces_vertices[Faces.BACK][1] = new Vector3i(1, 0, 1);
+		faces_vertices[Faces.BACK][2] = new Vector3i(0, 0, 1);
+		faces_vertices[Faces.BACK][3] = new Vector3i(0, 1, 1);
+	};
+	
+	private static float[][] faces_uv = {
+			{0, 0},
+			{0, 1},
+			{1, 1},
+			{1, 0}
+	};
+
+	/** fill an array of dimension [Terrain.SIZE_X][Terrain.SIZE_Y][Terrain.SIZE_Z][6] of terrain faces visibility */
+	private Stack<MeshVertex> getVisibleVertexStack()
+	{
+		Stack<MeshVertex> stack = new Stack<MeshVertex>();
 		
-	//4, 5, 1 ; 4, 1, 0
-	private void pushLeftFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
-	{
-		stack.push(new MeshVertex(X + 0, Y + S, Z + S, -1, 0, 0, uvx, uvy, this.getVertexAO(X, Y, Z, -1, 1, 1)));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, -1, 0, 0, uvx, uvy + UVY, this.getVertexAO(X, Y, Z, -1, 0, 1)));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, -1, 0, 0, uvx + UVX, uvy + UVY, this.getVertexAO(X, Y, Z, -1, 0, -1)));
-		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, -1, 0, 0, uvx + UVX, uvy, this.getVertexAO(X, Y, Z, -1, 1, -1)));
-	}
-
-	
-
-	//7, 6, 5 ; 7, 5, 4
-	private void pushBackFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
-	{
-		stack.push(new MeshVertex(X + S, Y + S, Z + S, 0, 0, 1, uvx, uvy, this.getVertexAO(X, Y, Z, 1, 1, 1)));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + S, 0, 0, 1, uvx, uvy + UVY, this.getVertexAO(X, Y, Z, 1, 0, 1)));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + S, 0, 0, 1, uvx + UVX, uvy + UVY, this.getVertexAO(X, Y, Z, -1, 0, 1)));
-		stack.push(new MeshVertex(X + 0, Y + S, Z + S, 0, 0, 1, uvx + UVX, uvy, this.getVertexAO(X, Y, Z, -1, 1, 1)));
-	}
-	
-	//0, 1, 2 ; 0, 2, 3
-	private void pushFrontFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
-	{
-		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 0, -1, uvx, uvy, this.getVertexAO(X, Y, Z, -1, 1, -1)));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z	 + 0, 0, 0, -1, uvx, uvy + UVY, this.getVertexAO(X, Y, Z, -1, 0, -1)));
-		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, 0, -1, uvx + UVX, uvy + UVY, this.getVertexAO(X, Y, Z, 1, 0, -1)));
-		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 0, -1, uvx + UVX, uvy, this.getVertexAO(X, Y, Z, 1, 1, -1)));
-	}
-	
-	/**
-	 * this can be optimized:
-	 * 
-	 * instead of calling 'WorldClient.getBlock()' several times,
-	 * just get nearby terrain once, and then get blocks
-	 */
-	private void	pushVisibleFaces(Stack<MeshVertex> stack)
-	{
-		Block block;
-		float uvx;
-		float uvy;
-
+		//for each block
 		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
 		{
 			for (int y = 0 ; y < Terrain.SIZE_Y ; y++)
 			{
 				for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 				{
-					block = this._terrain.getBlock(x, y, z);
-					if (block.isVisible())
+					Block block = this._terrain.getBlock(x, y, z);
+					if (block.isVisible()) //if the block is visible
 					{
-						if (this.isBlockVisible(x - 1, y, z) == false)
+						for (int faceID = 0 ; faceID < 6 ; faceID++) //for each of it face
 						{
-							uvx = 0;
-							uvy = block.getTextureIDForFace(Faces.LEFT) * UVY;
-							this.pushLeftFace(stack, x, y, z, uvx, uvy);
-						}
-						
-						if (this.isBlockVisible(x + 1, y, z) == false)
-						{
-							uvx = 0;
-							uvy = block.getTextureIDForFace(Faces.RIGHT) * UVY;
-							this.pushRightFace(stack, x, y, z, uvx, uvy);
-						}
-						
-						if (this.isBlockVisible(x, y, z - 1) == false)
-						{
-							uvx = 0;
-							uvy = block.getTextureIDForFace(Faces.FRONT) * UVY;
-							this.pushFrontFace(stack, x, y, z, uvx, uvy);
-						}
-
-						if (this.isBlockVisible(x, y, z + 1) == false)
-						{
-							uvx = 0;
-							uvy = block.getTextureIDForFace(Faces.BACK) * UVY;
-							this.pushBackFace(stack, x, y, z, uvx, uvy);
-						}
-						
-						if (this.isBlockVisible(x, y - 1, z) == false)
-						{
-							uvx = 0;
-							uvy = block.getTextureIDForFace(Faces.BOT) * UVY;
-							this.pushBotFace(stack, x, y, z, uvx, uvy);
-						}
-
-						if (this.isBlockVisible(x, y + 1, z) == false)
-						{
-							uvx = 0;
-							uvy = block.getTextureIDForFace(Faces.TOP) * UVY;
-							this.pushTopFace(stack, x, y, z, uvx, uvy);							
+							Vector3i vec = Faces.getFaceVector(faceID);
+							if (this.isBlockVisible(x + vec.x, y + vec.y, z + vec.z) == false) //if the face-neighboor block is invisible
+							{
+								this.pushFaceVertices(stack, x, y, z, faceID); //add the face
+							}
 						}
 					}
 				}
 			}
 		}
+		return (stack);
 	}
 	
+	private void pushFaceVertices(Stack<MeshVertex> stack, int x, int y, int z, int faceID)
+	{
+		Block block = this._terrain.getBlock(x, y, z);
+		float uvx = 0;
+		float uvy = block.getTextureIDForFace(faceID) * UVY;
+
+		Vector3f normal = Faces.getFaceNormal(faceID);
+		
+		MeshVertex v0 = this.getMeshVertex(faceID, 0, x, y, z, normal, uvx, uvy);
+		MeshVertex v1 = this.getMeshVertex(faceID, 1, x, y, z, normal, uvx, uvy);
+		MeshVertex v2 = this.getMeshVertex(faceID, 2, x, y, z, normal, uvx, uvy);
+		MeshVertex v3 = this.getMeshVertex(faceID, 3, x, y, z, normal, uvx, uvy);
+		
+		if (v0.ao + v2.ao > v1.ao + v3.ao)
+		{
+			stack.push(v0);
+			stack.push(v1);
+			stack.push(v2);
+			
+			stack.push(v0);
+			stack.push(v2);
+			stack.push(v3);
+		}
+		else
+		{
+			stack.push(v3);
+			stack.push(v0);
+			stack.push(v1);
+			
+			stack.push(v3);
+			stack.push(v1);
+			stack.push(v2);
+		}
+	}
+	
+	private MeshVertex getMeshVertex(int faceID, int vertexID, int x, int y, int z, Vector3f normal, float uvx, float uvy)
+	{
+		return (new MeshVertex(x + faces_vertices[faceID][vertexID].x * S,
+								y + faces_vertices[faceID][vertexID].y * S,
+								z + faces_vertices[faceID][vertexID].z * S,
+								normal,
+								uvx + faces_uv[vertexID][0] * UVX,
+								uvy + faces_uv[vertexID][1] * UVY,
+								this.getVertexAO(x, y, z, faces_vertices[faceID][vertexID])));
+	}
+	
+	//the float returned is the ratio of black which will be used for this vertex
+	private static final float AO_UNIT	= 0.24f;
+	private static final float AO_MAX	= AO_UNIT * 3;
+	private float getVertexAO(int x, int y, int z, Vector3i vertex)
+	{
+		int ox = (vertex.x == 0) ? -1 : 1;
+		int oy = (vertex.y == 0) ?  0 : 1;
+		int oz = (vertex.z == 0) ? -1 : 1;
+		
+		boolean side1 = this.isBlockVisible(x + ox, y + oy, z);
+		boolean side2 = this.isBlockVisible(x, y + oy, z + oz);
+		boolean corner = this.isBlockVisible(x + ox, y + oy, z + oz);
+		if (side1 && side2)
+		{
+			return (AO_MAX);
+		}
+		
+		float ao = 0;
+		
+		if (side1)
+		{
+			ao += AO_UNIT;
+		}
+		
+		if (side2)
+		{
+			ao += AO_UNIT;
+		}
+		
+		if (corner)
+		{
+			ao += AO_UNIT;
+		}
+		return (ao);
+	}
+
 	/** position are relative to Terrain */
 	private boolean isBlockVisible(int posx, int posy, int posz)
 	{
@@ -324,27 +325,27 @@ public class TerrainMesh
 		GL20.glEnableVertexAttribArray(2);	//uv
 		GL20.glEnableVertexAttribArray(3);	//ao factor
 		
-		GL11.glDrawArrays(GL11.GL_QUADS, 0, this._vertex_count);
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, this._vertex_count);
 								
 		GL30.glBindVertexArray(0);
 	}
 	
-	public boolean	hasState(int state)
+	public boolean hasState(int state)
 	{
 		return ((this._state & state) == state);
 	}
 	
-	public void		setState(int state)
+	public void	setState(int state)
 	{
 		this._state = this._state | state;
 	}
 	
-	public void		unsetState(int state)
+	public void	unsetState(int state)
 	{
 		this._state = this._state & ~(state);
 	}
 	
-	public void		switchState(int state)
+	public void	switchState(int state)
 	{
 		this._state = this._state ^ state;
 	}
@@ -470,5 +471,15 @@ public class TerrainMesh
 	public boolean canBeSeen(int faceA, int faceB)
 	{
 		return (this._faces_visibility[faceA][faceB]);
+	}
+
+	/** update the mesh: rebuild it if needed */
+	public void update()
+	{
+		if (!this.hasState(TerrainMesh.STATE_VERTICES_UP_TO_DATE))
+		{
+			this.generateVertices();
+//			mesh.updateFacesVisiblity();
+		}			
 	}
 }

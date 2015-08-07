@@ -1,5 +1,6 @@
 package com.grillecube.client.world;
 
+import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector3i;
 
 public class Faces
@@ -14,6 +15,7 @@ public class Faces
 	
 	private static final int[] 		_opposite_faces = new int[6];
 	private static final Vector3i[] _face_vector = new Vector3i[6];
+	private static final Vector3f[] _face_normal = new Vector3f[6];
 	private static final String[] 	_faces_name = new String[6];
 
 	static
@@ -31,6 +33,13 @@ public class Faces
 		_face_vector[BOT]	= new Vector3i(0, -1, 0);
 		_face_vector[FRONT]	= new Vector3i(0, 0, -1);
 		_face_vector[BACK] 	= new Vector3i(0, 0, 1);
+		
+		_face_normal[LEFT]	= new Vector3f(-1, 0, 0);
+		_face_normal[RIGHT]	= new Vector3f(1, 0, 0);
+		_face_normal[TOP]	= new Vector3f(0, 1, 0);
+		_face_normal[BOT]	= new Vector3f(0, -1, 0);
+		_face_normal[FRONT]	= new Vector3f(0, 0, -1);
+		_face_normal[BACK] 	= new Vector3f(0, 0, 1);
 		
 		_faces_name[LEFT]	= new String("LEFT");
 		_faces_name[RIGHT]	= new String("RIGHT");
@@ -53,5 +62,10 @@ public class Faces
 	public static String toString(int faceID)
 	{
 		return (_faces_name[faceID]);
+	}
+	
+	public static Vector3f getFaceNormal(int faceID)
+	{
+		return (_face_normal[faceID]);
 	}
 }

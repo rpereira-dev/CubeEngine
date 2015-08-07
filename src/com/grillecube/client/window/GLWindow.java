@@ -247,7 +247,7 @@ public class GLWindow
 			this._fps_counter++;
 		}
 		
-		this._frames++;		
+		this._frames++;
 	}
 
 	public boolean shouldClose()
