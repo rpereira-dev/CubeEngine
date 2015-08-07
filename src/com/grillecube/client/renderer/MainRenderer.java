@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.font.FontRenderer;
@@ -22,11 +23,19 @@ public class MainRenderer
 	private ModelRenderer	_model_renderer;
 	private FontRenderer	_font_renderer;
 	
+	/** random number generator */
+	private Random _rng;
 
 	public MainRenderer(GLWindow window)
 	{
 		this._camera = new Camera(window);
 		this._renderers = new LinkedList<IRenderer>();
+		this._rng = new Random();
+	}
+	
+	public Random getRNG()
+	{
+		return (this._rng);
 	}
 	
 	/** add a renderer to the rendering list */

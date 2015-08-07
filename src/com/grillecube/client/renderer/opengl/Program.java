@@ -79,7 +79,7 @@ public abstract class Program
 		GL20.glUniform3f(location, vec.x, vec.y, vec.z);
 	}
 	
-	public void loadUniformVec4(int location, Vector4f vec)
+	public void loadUniformVec(int location, Vector4f vec)
 	{
 		GL20.glUniform4f(location, vec.x, vec.y, vec.z, vec.w);
 	}

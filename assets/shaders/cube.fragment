@@ -1,0 +1,12 @@
+#version 400 core
+
+uniform vec4 color;
+
+in float pass_face;
+
+out vec4 vertexColor;
+
+void	main(void)
+{
+	vertexColor = vec4(color.x * pass_face, color.y * pass_face, color.z * pass_face, color.w);
+}

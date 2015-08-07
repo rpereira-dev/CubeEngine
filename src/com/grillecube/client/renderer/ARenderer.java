@@ -1,5 +1,7 @@
 package com.grillecube.client.renderer;
 
+import java.util.Random;
+
 import com.grillecube.client.Game;
 import com.grillecube.client.ressources.ResourceManager;
 import com.grillecube.client.window.GLWindow;
@@ -23,6 +25,11 @@ public abstract class ARenderer implements IRenderer
 	protected World getWorld()
 	{
 		return (this._game.getWorld());
+	}
+	
+	protected Random getRNG()
+	{
+		return (this._game.getRenderer().getRNG());
 	}
 	
 	protected MainRenderer	getRenderer()

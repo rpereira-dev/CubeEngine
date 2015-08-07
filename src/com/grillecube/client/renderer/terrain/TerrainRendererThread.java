@@ -91,7 +91,7 @@ public class TerrainRendererThread extends Thread
 		}
 		
 		//TODO : to fix invisible terrain when rotating fastly, increase imprecision :)
-		float imprecision = -20;
+		float imprecision = 0;
 		return (terrain.isInFrustum(camera, imprecision));
 	}
 }
