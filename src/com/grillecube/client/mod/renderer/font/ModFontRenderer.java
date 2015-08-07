@@ -1,10 +1,10 @@
 package com.grillecube.client.mod.renderer.font;
 
 import com.grillecube.client.Game;
+import com.grillecube.client.GameEvent;
+import com.grillecube.common.logger.Logger;
 import com.grillecube.common.mod.IMod;
 import com.grillecube.common.mod.ModInfo;
-
-import fr.toss.lib.Logger;
 
 /**
  * Modding test class
@@ -28,6 +28,7 @@ public class ModFontRenderer implements IMod
 		
 		this._font_renderer = new FontRenderer(game);
 		game.getRenderer().registerRenderer(this._font_renderer);
+		game.registerEventCallback(new EventFontPostStart(), GameEvent.POST_START);
 	}
 
 	@Override

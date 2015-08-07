@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import fr.toss.lib.Logger;
+import com.grillecube.common.logger.Logger;
 
 public class ModelPart
 {

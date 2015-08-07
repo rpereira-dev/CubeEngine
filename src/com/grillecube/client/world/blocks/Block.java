@@ -2,23 +2,18 @@ package com.grillecube.client.world.blocks;
 
 import com.grillecube.client.world.Faces;
 
-public class Block
-{	
-	/** block name */
-	private String	_name;
-	
+public abstract class Block
+{		
 	/** block opengl textureID (see faces indices) */
-	private int[]	_textureID;
+	private int[] _textureID;
 	
 	/** args:
 	 * 
-	 * @param name		: block name
 	 * @param blockID	: block unique ID
 	 */
-	public Block(String name, int textureID)
+	public Block(int textureID)
 	{
 		this._textureID = new int[6];
-		this._name = name;
 		
 		this._textureID[Faces.LEFT] 	= textureID;
 		this._textureID[Faces.RIGHT]	= textureID;
@@ -29,19 +24,14 @@ public class Block
 	}
 	
 	/** @param faces		: special faces (BLOCK_FACE_FRONT, TEXTURE_ID....) */
-	public Block(String name, int textureID, int ... faces)
+	public Block(int textureID, int ... faces)
 	{
-		this(name, textureID);
+		this(textureID);
 		
 		for (int i = 0 ; i < faces.length ; i += 2)
 		{
 			this._textureID[faces[i]] = faces[i + 1];
 		}
-	}
-	
-	public Block(String string)
-	{
-		this(string, 0);
 	}
 
 	public Block setFace(int faceID, int textureID)
@@ -53,6 +43,11 @@ public class Block
 		return (this);
 	}
 	
+	public int	getTextureIDForFace(int face)
+	{
+		return (this._textureID[face]);
+	}
+	
 	/** to string function */
 	public String	toString()
 	{
@@ -60,23 +55,9 @@ public class Block
 	}
 	
 	/** get block name */
-	public String	getName()
-	{
-		return (this._name);
-	}
+	public abstract String getName();
 
-	public boolean isVisible()
-	{
-		return (true);
-	}
+	public abstract boolean isVisible();
 
-	public boolean isOpaque()
-	{
-		return (true);
-	}
-	
-	public int	getTextureIDForFace(int face)
-	{
-		return (this._textureID[face]);
-	}
+	public abstract boolean isOpaque();
 }

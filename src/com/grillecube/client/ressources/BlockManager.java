@@ -10,8 +10,7 @@ import javax.imageio.ImageIO;
 
 import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.world.blocks.Block;
-
-import fr.toss.lib.Logger;
+import com.grillecube.common.logger.Logger;
 
 public class BlockManager
 {

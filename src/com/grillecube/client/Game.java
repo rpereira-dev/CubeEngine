@@ -12,10 +12,9 @@ import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.ressources.ResourceManager;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.client.world.World;
+import com.grillecube.common.logger.Logger;
+import com.grillecube.common.logger.Logger.Level;
 import com.grillecube.common.mod.ModLoader;
-
-import fr.toss.lib.Logger;
-import fr.toss.lib.Logger.Level;
 
 public class Game
 {
@@ -48,10 +47,9 @@ public class Game
 	private ArrayList<Thread> _threads;
 	
 	/** game events */
-	//TODO : events
-	@SuppressWarnings("rawtypes")
-	private ArrayList[] _events;
+	private ArrayList<IEvent>[] _events;
 
+	@SuppressWarnings("unchecked")
 	public Game()
 	{
 		_instance = this;
@@ -71,9 +69,12 @@ public class Game
 		this._mod_loader = new ModLoader();
 	}
 	
+	/** main start function : prepare windows, setGL context, start mods, world, resources ... */
 	public void	start()
-	{		
+	{
 		this.injectMods();
+		
+		this.invokeEvents(GameEvent.PRE_START);
 		
 		this._logger.log(Level.FINE, "Starting game...");
 		this._window.start();
@@ -84,6 +85,23 @@ public class Game
 		this._resources.start();
 		this._world.start();
 		this._logger.log(Level.FINE, "Game started!");
+		
+		this.invokeEvents(GameEvent.POST_START);
+	}
+	
+	/** invoke every events with the given ID */
+	private void invokeEvents(int eventID)
+	{
+		for (IEvent event : this._events[eventID])
+		{
+			event.invoke(this);
+		}
+	}
+	
+	/** add an event callback */
+	public void registerEventCallback(IEvent callback, int eventID)
+	{
+		this._events[eventID].add(callback);
 	}
 
 	/** load every mods */

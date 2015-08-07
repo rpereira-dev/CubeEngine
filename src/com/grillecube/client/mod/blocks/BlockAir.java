@@ -4,10 +4,9 @@ import com.grillecube.client.world.blocks.Block;
 
 public class BlockAir extends Block
 {
-
 	public BlockAir()
 	{
-		super("air");
+		super(0);
 	}
 
 	@Override
@@ -15,11 +14,16 @@ public class BlockAir extends Block
 	{
 		return (false);
 	}
-	
 
 	@Override
 	public boolean isOpaque()
 	{
 		return (false);
+	}
+
+	@Override
+	public String getName()
+	{
+		return ("air");
 	}
 }

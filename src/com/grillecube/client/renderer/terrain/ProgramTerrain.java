@@ -11,11 +11,6 @@ import com.grillecube.client.world.Weather;
 
 public class ProgramTerrain extends Program
 {
-	/** const */
-	private static final Vector3f X_AXIS = new Vector3f(1, 0, 0);
-	private static final Vector3f Y_AXIS = new Vector3f(0, 1, 0);
-	private static final Vector3f Z_AXIS = new Vector3f(0, 0, 1);
-
 	/** Matrix buffer */
 	private Matrix4f	_matrix_buffer;
 	
@@ -82,13 +77,7 @@ public class ProgramTerrain extends Program
 	
 	public void loadInstanceUniforms(Terrain terrain)
 	{
-		this._matrix_buffer.setIdentity();
-		this._matrix_buffer.translate(terrain.getWorldLocation());
-		this._matrix_buffer.rotate(0, X_AXIS);
-		this._matrix_buffer.rotate(0, Y_AXIS);
-		this._matrix_buffer.rotate(0, Z_AXIS);
-		this._matrix_buffer.scale(new Vector3f(1, 1, 1));
-
+		Matrix4f.createTransformationMatrix(this._matrix_buffer, terrain.getWorldLocation(), null, null);
 		this.loadUniformMatrix(this._transf_matrix, this._matrix_buffer);
 	}
 }

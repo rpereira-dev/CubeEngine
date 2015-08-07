@@ -1,4 +1,4 @@
-package com.grillecube.client.mod.renderer.particles;
+package com.grillecube.client.mod.renderer.particles.points;
 
 import java.nio.FloatBuffer;
 import java.util.Random;
@@ -17,9 +17,9 @@ import com.grillecube.client.renderer.ARenderer;
 /**
  * 	Implementation follows: http://web.engr.oregonstate.edu/~mjb/cs557/Handouts/compute.shader.1pp.pdf
  */
-public class ParticleRenderer extends ARenderer
+public class ParticlePointRenderer extends ARenderer
 {	
-	public ParticleRenderer(Game game)
+	public ParticlePointRenderer(Game game)
 	{
 		super(game);
 	}

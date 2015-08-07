@@ -34,11 +34,11 @@ public class World
 	/** called on initiliaztion */
 	public void start()
 	{
-		for (int x = -4 ; x < 4 ; x++)
+		for (int x = -2 ; x < 2 ; x++)
 		{
-			for (int z = -4 ; z < 4 ; z++)
+			for (int z = -2 ; z < 2 ; z++)
 			{
-				for (int y = -1 ; y < 1 ; y++)
+				for (int y = 0 ; y < 1 ; y++)
 				{
 					this.spawnTerrain(new Terrain(new TerrainLocation(x, y, z)));
 				}

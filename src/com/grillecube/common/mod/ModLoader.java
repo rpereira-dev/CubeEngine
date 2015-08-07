@@ -10,8 +10,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import com.grillecube.client.Game;
-
-import fr.toss.lib.Logger;
+import com.grillecube.common.logger.Logger;
 
 public class ModLoader
 {

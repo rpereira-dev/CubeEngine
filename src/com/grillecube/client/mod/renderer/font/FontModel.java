@@ -12,7 +12,7 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 public class FontModel
-{
+{	
 	public static final int FONT_TEXTURE_WIDTH  = 512;
 	public static final int FONT_TEXTURE_HEIGHT	= 512;
 	public static final int FONT_CHAR_WIDTH		= 32;
@@ -24,7 +24,7 @@ public class FontModel
 	public static final float FONT_UV_UNIT_WIDTH	= (FONT_CHAR_WIDTH / (float)FONT_TEXTURE_WIDTH);
 	public static final float FONT_UV_UNIT_HEIGHT	= (FONT_CHAR_HEIGHT / (float)FONT_TEXTURE_HEIGHT);
 	
-	public static final float DEFAULT_FONT_SIZE		= 0.1f;
+	public static final Vector3f DEFAULT_FONT_SIZE	= new Vector3f(0.04f, 0.1f, 0);
 	
 	public static final long DEFAULT_TIMER			= 5000;	//5sec
 	public static final long INFINITE_TIMER			 = -1;
@@ -38,12 +38,12 @@ public class FontModel
 	private Vector3f	_pos;
 	private Vector3f	_scale;
 	private Vector3f	_rot;
-	private Vector4f	_color;
 	private Font 		_font;
 	
 	/** status */
 	private boolean _initialized;
-	
+	private boolean _text_up_to_date;
+
 	/** transf matrix */
 	private Matrix4f 	_matrix;
 	
@@ -58,6 +58,7 @@ public class FontModel
 	public FontModel(Font font, String text, long last_for)
 	{
 		this._initialized = false;
+		this._text_up_to_date = false;
 		this._text = text;
 		this._font = font;
 		this._matrix = new Matrix4f();
@@ -66,14 +67,11 @@ public class FontModel
 		this._last_tick = System.currentTimeMillis();
 		this._pos = new Vector3f(0, 0, 0);
 		this._rot = new Vector3f(0, 0, 0);
-		this._scale = new Vector3f(DEFAULT_FONT_SIZE / 2.0f, DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE);
-		this._color = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+		this._scale = DEFAULT_FONT_SIZE;
 	}
 	
 	private void initialize()
-	{
-		this._initialized = true;
-		
+	{		
 		this._vaoID = GL30.glGenVertexArrays();
 		this._vboID = GL15.glGenBuffers();
 		
@@ -88,6 +86,8 @@ public class FontModel
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		}
 		GL30.glBindVertexArray(0);
+
+		this._initialized = true;
 	}
 
 	/** destroy the model */
@@ -97,15 +97,15 @@ public class FontModel
 		{
 			GL30.glDeleteVertexArrays(this._vaoID);
 			GL15.glDeleteBuffers(this._vboID);
-			this._initialized = false;	
+			this._initialized = false;
 		}
 	}
 	
 	/** rebuild the mesh depending on the given string */
-	public void updateText(String str)
+	public void setText(String str)
 	{
 		this._text = str;
-		this.updateText();
+		this._text_up_to_date = false;
 	}
 	
 	private void updateText()
@@ -128,6 +128,7 @@ public class FontModel
 		GL30.glBindVertexArray(0);
 		
 		this._vertex_count = vertices.length / 5;	
+		this._text_up_to_date = true;
 	}
 
 	/** each char is a quad (4 vertex) of 5 floats (pos + uv) */
@@ -135,27 +136,26 @@ public class FontModel
 	{
 		float[] vertices = new float[str.length() * (4 * (3 + 2 + 4))];
 		
-		int		i;
-		int		charID;
-		int		line;
-		int		col;
-		float	x;
-		float	y;
-		float 	z;
-		int		index;
+		int i;
+		int charID;
+		int line;
+		int col;
+		float x = 0;
+		float y = 0;
+		float z = 0;
+		int index = 0;
+		Vector4f color = new Vector4f(0, 0, 0, 1);
 
-		x = 0;
-		y = 0;
-		z = 0;
-		index = 0;
 		for (i = 0 ; i < str.length() ; i++)
 		{
-			if (str.charAt(i) == '\n')
+			char c = str.charAt(i);
+			if (c == '\n')
 			{
 				y--;
 				x = 0;
 				continue ;
 			}
+						
 			charID = str.charAt(i) - FONT_ASCII_OFFSET;
 			line = charID / FONT_CHAR_PER_LINE;
 			col = charID % FONT_CHAR_PER_LINE;
@@ -165,41 +165,41 @@ public class FontModel
 			vertices[index++] = z;
 			vertices[index++] = FONT_UV_UNIT_WIDTH * col;
 			vertices[index++] = FONT_UV_UNIT_HEIGHT * line;
-			vertices[index++] = this._color.x;
-			vertices[index++] = this._color.y;
-			vertices[index++] = this._color.z;
-			vertices[index++] = this._color.w;
+			vertices[index++] = color.x;
+			vertices[index++] = color.y;
+			vertices[index++] = color.z;
+			vertices[index++] = color.w;
 			
 			vertices[index++] = x;
 			vertices[index++] = y - 1;
 			vertices[index++] = z;
 			vertices[index++] = FONT_UV_UNIT_WIDTH * col;
 			vertices[index++] = FONT_UV_UNIT_HEIGHT * line + FONT_UV_UNIT_HEIGHT;
-			vertices[index++] = this._color.x;
-			vertices[index++] = this._color.y;
-			vertices[index++] = this._color.z;
-			vertices[index++] = this._color.w;
+			vertices[index++] = color.x;
+			vertices[index++] = color.y;
+			vertices[index++] = color.z;
+			vertices[index++] = color.w;
 			
 			vertices[index++] = x + 1;
 			vertices[index++] = y - 1;
 			vertices[index++] = z;
 			vertices[index++] = FONT_UV_UNIT_WIDTH * col + FONT_UV_UNIT_WIDTH;
 			vertices[index++] = FONT_UV_UNIT_HEIGHT * line + FONT_UV_UNIT_HEIGHT;
-			vertices[index++] = this._color.x;
-			vertices[index++] = this._color.y;
-			vertices[index++] = this._color.z;
-			vertices[index++] = this._color.w;
+			vertices[index++] = color.x;
+			vertices[index++] = color.y;
+			vertices[index++] = color.z;
+			vertices[index++] = color.w;
 
 			vertices[index++] = x + 1;
 			vertices[index++] = y;
 			vertices[index++] = z;
 			vertices[index++] = FONT_UV_UNIT_WIDTH * col + FONT_UV_UNIT_WIDTH;
 			vertices[index++] = FONT_UV_UNIT_HEIGHT * line;
-			vertices[index++] = this._color.x;
-			vertices[index++] = this._color.y;
-			vertices[index++] = this._color.z;
-			vertices[index++] = this._color.w;
-		
+			vertices[index++] = color.x;
+			vertices[index++] = color.y;
+			vertices[index++] = color.z;
+			vertices[index++] = color.w;
+
 			x++;
 			x += this._font.getStep();
 		}
@@ -230,14 +230,7 @@ public class FontModel
 		this._scale.z = z;
 		this.updateTransformationMatrix();
 	}
-	
-	public void	setColor(float r, float g, float b)
-	{
-		this._color.x = r;
-		this._color.y = g;
-		this._color.z = b;
-	}
-	
+
 	private void updateTransformationMatrix()
 	{
 		this._matrix.setIdentity();
@@ -250,13 +243,28 @@ public class FontModel
 	
 	public void render()
 	{
+		if (this._initialized == false)
+		{
+			this.initialize();
+		}
+		
+		if (this._text_up_to_date == false)
+		{
+			this.updateText();
+		}
+	
+		if (this._vertex_count == 0)
+		{
+			return ;
+		}
+		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this._font.getTextureID());
 
 		GL30.glBindVertexArray(this._vaoID);
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
-		
+				
 		GL11.glDrawArrays(GL11.GL_QUADS, 0, this._vertex_count);
 		
 	}
@@ -266,22 +274,12 @@ public class FontModel
 		return (this._matrix);
 	}
 
-	public Vector4f	getFontColor()
-	{
-		return (this._color);
-	}
-
 	/** update the timer */
 	public void update()
 	{
 		if (this._timer == FontModel.INFINITE_TIMER)
 		{
 			return ;
-		}
-		
-		if (this._initialized == false)
-		{
-			this.initialize();
 		}
 		
 		long t = System.currentTimeMillis();

@@ -13,8 +13,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.Camera;
-
-import fr.toss.lib.Logger;
+import com.grillecube.common.logger.Logger;
 
 public class GLWindow
 {	
@@ -78,6 +77,8 @@ public class GLWindow
 		
 		GLFW.glfwSetInputMode(this._window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
 		GLFW.glfwSetCursorPos(this._window, (int)(this.getWidth() / 2), (int)(this.getHeight() / 2));
+
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
 		this._mouseX = this.getWidth()/ 2;
 		this._mouseY = this.getHeight() / 2;

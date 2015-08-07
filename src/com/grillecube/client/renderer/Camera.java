@@ -11,32 +11,32 @@ import com.grillecube.client.world.Terrain;
 
 public class Camera
 {
-	public static final float RENDER_DISTANCE = Terrain.SIZE_X * 24;
+	public static final float RENDER_DISTANCE = Terrain.SIZE_X * 12;
 	
 	public static final int STATE_MOVE_FORWARD	= 1;
 	public static final int STATE_MOVE_BACKWARD = 2;
 	public static final int STATE_MOVE_LEFT 	= 4;
 	public static final int STATE_MOVE_RIGHT	= 8;
 				
-	private Vector3f	_pos;
-	private Vector3f	_pos_vec;
-	private Vector3f	_rot_vec;
+	private Vector3f _pos;
+	private Vector3f _pos_vec;
+	private Vector3f _rot_vec;
 	
-	private float		_speed;
-	private float		_rot_speed;
+	private float _speed;
+	private float _rot_speed;
 	
-	private float		_pitch;
-	private float		_yaw;
-	private float		_roll;
-	private float		_aspect;
-	private float		_fov;
-	private float		_near;
-	private float		_far;
+	private float _pitch;
+	private float _yaw;
+	private float _roll;
+	private float _aspect;
+	private float _fov;
+	private float _near;
+	private float _far;
 	
-	private Vector3f	_look_vec;
-	private Vector3f	_look_cube;
-	private Vector3f	_look_face;
-	private int			_state;
+	private Vector3f _look_vec;
+	private Vector3f _look_cube;
+	private Vector3f _look_face;
+	private int	_state;
 
 	private Matrix4f _view_matrix;
 	private Matrix4f _projection_matrix;

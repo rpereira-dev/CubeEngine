@@ -84,6 +84,7 @@ public class TerrainMesh
 	}
 	
 	//the float returned is the ratio of black which will be used for this vertex
+	private static final float _AO_UNIT = 0.2f;
 	private float getVertexAO(int x, int y, int z, int ox, int oy, int oz)
 	{
 		boolean side1 = this.isBlockVisible(x + ox, y + oy, z);
@@ -91,20 +92,20 @@ public class TerrainMesh
 		boolean corner = this.isBlockVisible(x + ox, y + oy, z + oz);
 		if (side1 && side2)
 		{
-			return (0.5f);
+			return (_AO_UNIT * 3);
 		}
 		float ao = 0;
 		if (side1)
 		{
-			ao += 0.2f;
+			ao += _AO_UNIT;
 		}
 		if (side2)
 		{
-			ao += 0.2f;
+			ao += _AO_UNIT;
 		}
 		if (corner)
 		{
-			ao += 0.2f;
+			ao += _AO_UNIT;
 		}
 		return (ao);
 	}
@@ -171,7 +172,7 @@ public class TerrainMesh
 	private void pushFrontFace(Stack<MeshVertex> stack, int X, int Y, int Z, float uvx, float uvy)
 	{
 		stack.push(new MeshVertex(X + 0, Y + S, Z + 0, 0, 0, -1, uvx, uvy, this.getVertexAO(X, Y, Z, -1, 1, -1)));
-		stack.push(new MeshVertex(X + 0, Y + 0, Z + 0, 0, 0, -1, uvx, uvy + UVY, this.getVertexAO(X, Y, Z, -1, 0, -1)));
+		stack.push(new MeshVertex(X + 0, Y + 0, Z	 + 0, 0, 0, -1, uvx, uvy + UVY, this.getVertexAO(X, Y, Z, -1, 0, -1)));
 		stack.push(new MeshVertex(X + S, Y + 0, Z + 0, 0, 0, -1, uvx + UVX, uvy + UVY, this.getVertexAO(X, Y, Z, 1, 0, -1)));
 		stack.push(new MeshVertex(X + S, Y + S, Z + 0, 0, 0, -1, uvx + UVX, uvy, this.getVertexAO(X, Y, Z, 1, 1, -1)));
 	}

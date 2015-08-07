@@ -1,10 +1,9 @@
 package com.grillecube.client.mod.renderer.sky;
 
 import com.grillecube.client.Game;
+import com.grillecube.common.logger.Logger;
 import com.grillecube.common.mod.IMod;
 import com.grillecube.common.mod.ModInfo;
-
-import fr.toss.lib.Logger;
 
 /**
  * Modding test class

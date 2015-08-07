@@ -2,6 +2,8 @@ package com.grillecube.client.mod.renderer.font;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
+
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.ARenderer;
 
@@ -36,6 +38,12 @@ public class FontRenderer extends ARenderer
 		this._program.stop();
 	}
 	
+	/** add the font model to the renderer */
+	public void addFontModel(FontModel model)
+	{
+		this._fonts_model.add(model);
+	}
+	
 	/** add a string to the renderer:
 	 *
 	 * - coordinate system (for posx, posy, posz) is gl one (-1 ; 1)
@@ -45,7 +53,17 @@ public class FontRenderer extends ARenderer
 	{
 		FontModel model = new FontModel(font, str, timer);
 		model.setPosition(posx, posy, posz);
-		this._fonts_model.add(model);
+		this.addFontModel(model);
+	}
+	
+	public void addString(String str, float posx, float posy, float posz, long timer)
+	{
+		this.addString(FontRenderer.DEFAULT_FONT, str, posx, posy, posz, timer);
+	}
+	
+	public void addString(String str, float posx, float posy, float posz)
+	{
+		this.addString(FontRenderer.DEFAULT_FONT, str, posx, posy, posz, FontModel.INFINITE_TIMER);
 	}
 	
 	public void addString(Font font, String str, int posx, int posy, int posz)
@@ -61,6 +79,11 @@ public class FontRenderer extends ARenderer
 	public void addString(Font font, String str)
 	{
 		this.addString(font, str, -1, 1, 0, FontModel.INFINITE_TIMER);
+	}
+	
+	public void addString(String str, long timer)
+	{
+		this.addString(FontRenderer.DEFAULT_FONT, str, -1, 1, 0, timer);
 	}
 	
 	public void addString(String str)
@@ -81,15 +104,14 @@ public class FontRenderer extends ARenderer
 	@Override
 	public void render()
 	{
-		FontModel	model;
-		int 		i;
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
 		this._program.useStart();
 		
-		i = 0;
-		while (i < this._fonts_model.size())
+		for (int i = 0 ; i < this._fonts_model.size() ; i++)
 		{
-			model = this._fonts_model.get(i);
+			FontModel model = this._fonts_model.get(i);
 			model.update();
 			if (model.hasTimerEnded())
 			{

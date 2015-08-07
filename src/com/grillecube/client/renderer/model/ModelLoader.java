@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import fr.toss.lib.Logger;
+import com.grillecube.common.logger.Logger;
 
 public class ModelLoader
 {

@@ -1,4 +1,4 @@
-package fr.toss.lib;
+package com.grillecube.common.logger;
 
 import java.io.PrintStream;
 import java.text.DateFormat;

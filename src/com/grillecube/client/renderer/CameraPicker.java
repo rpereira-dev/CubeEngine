@@ -43,8 +43,10 @@ public class CameraPicker
 		Matrix4f	invertedview;
 		Vector4f	rayworld;
 		
-		mouseX  = (float) ((2 * this.getMouseX()) / this._camera.getWindow().getWidth() - 1);
-		mouseY = (float) (2 - (2 * this.getMouseY()) / this._camera.getWindow().getHeight() - 1);
+//		mouseX  = (float) ((2 * this.getMouseX()) / this._camera.getWindow().getWidth() - 1);
+//		mouseY = (float) (2 - (2 * this.getMouseY()) / this._camera.getWindow().getHeight() - 1);
+		mouseX = this._camera.getWindow().getWidth() / 2;
+		mouseY = this._camera.getWindow().getHeight() / 2;
 		clipcoords = new Vector4f(mouseX, mouseY, -1.0f, 1.0f);
 		invertedprojection = Matrix4f.invert(this._camera.getProjectionMatrix(), null);
 		eyecoords = Matrix4f.transform(invertedprojection, clipcoords, null);

@@ -1,13 +1,13 @@
 package com.grillecube.client.renderer;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Stack;
 
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.model.ModelRenderer;
 import com.grillecube.client.renderer.terrain.TerrainRenderer;
 import com.grillecube.client.window.GLWindow;
-
-import fr.toss.lib.Logger;
+import com.grillecube.common.logger.Logger;
 
 public class MainRenderer
 {
@@ -15,7 +15,7 @@ public class MainRenderer
 	private Camera	_camera;
 	
 	/** renderers list, will be useful for modding*/
-	private ArrayList<IRenderer>	_renderers;
+	private LinkedList<IRenderer> _renderers;
 	
 	/** default renderers */
 	
@@ -23,21 +23,21 @@ public class MainRenderer
 	public MainRenderer(GLWindow window)
 	{
 		this._camera = new Camera(window);
-		this._renderers = new ArrayList<IRenderer>();
+		this._renderers = new LinkedList<IRenderer>();
 	}
 	
 	public void	registerRenderer(IRenderer renderer)
 	{
 		Logger.get().log(Logger.Level.FINE, "Adding renderer: " + renderer.getClass().getName());
-		this._renderers.add(renderer);
+		this._renderers.addLast(renderer);
 	}
 	
 	/** call on initialization */
 	public void	start(Game game)
 	{
 		//TODO : should default renderer be added like this?
-		this.registerRenderer(new TerrainRenderer(game));
-		this.registerRenderer(new ModelRenderer(game));
+		this._renderers.addFirst(new TerrainRenderer(game));
+		this._renderers.addFirst(new ModelRenderer(game));
 
 		for (IRenderer renderer : this._renderers)
 		{

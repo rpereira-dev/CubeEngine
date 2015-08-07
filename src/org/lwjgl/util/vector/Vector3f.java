@@ -45,6 +45,14 @@ import java.nio.ByteBuffer;
 
 public class Vector3f extends Vector implements Serializable, ReadableVector3f, WritableVector3f {
 
+	public static final Vector3f AXIS_X = new Vector3f(1, 0, 0);
+	public static final Vector3f AXIS_Y = new Vector3f(0, 1, 0);
+	public static final Vector3f AXIS_Z = new Vector3f(0, 0, 1);
+	
+	public static final Vector3f DEFAULT_POS = new Vector3f(0, 0, 0);	
+	public static final Vector3f DEFAULT_ROT = new Vector3f(0, 0, 0);
+	public static final Vector3f DEFAULT_SCALE = new Vector3f(1, 1, 1);
+	
 	private static final long serialVersionUID = 1L;
 
 	public float x, y, z;
@@ -354,5 +362,12 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f, 
 		if (x == other.x && y == other.y && z == other.z) return true;
 		
 		return false;
+	}
+
+	public void add(Vector3f vec)
+	{
+		this.x += vec.x;
+		this.y += vec.y;
+		this.z += vec.z;
 	}
 }

@@ -14,10 +14,11 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class Server {
 
 	public static final int MAX_NB_THREADS = 4;
-    private int port;
+    private int _port;
 
-    public Server(int port) {
-        this.port = port;
+    public Server(int port)
+    {
+        this._port = port;
     }
 
     public void run() throws Exception {
@@ -40,7 +41,7 @@ public class Server {
              .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
             // Bind and start to accept incoming connections.
-            ChannelFuture f = b.bind(port).sync(); // (7)
+            ChannelFuture f = b.bind(this._port).sync(); // (7)
 
             // Wait until the server socket is closed.
             // In this example, this does not happen, but you can do that to gracefully

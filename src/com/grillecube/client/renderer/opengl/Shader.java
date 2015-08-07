@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
-import fr.toss.lib.Logger;
+import com.grillecube.common.logger.Logger;
 
 public class Shader
 {

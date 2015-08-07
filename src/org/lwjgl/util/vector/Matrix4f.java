@@ -846,4 +846,27 @@ public class Matrix4f extends Matrix implements Serializable {
 
 		return dest;
 	}
+
+	public static void createTransformationMatrix(Matrix4f dst, Vector3f pos, Vector3f rot, Vector3f scale)
+	{
+		if (pos == null)
+		{
+			pos = Vector3f.DEFAULT_POS;
+		}
+		if (rot == null)
+		{
+			rot = Vector3f.DEFAULT_ROT;
+		}
+		if (scale == null)
+		{
+			scale = Vector3f.DEFAULT_SCALE;
+		}
+		
+		dst.setIdentity();
+		dst.translate(pos);
+		dst.rotate(rot.x, Vector3f.AXIS_X);
+		dst.rotate(rot.y, Vector3f.AXIS_Y);
+		dst.rotate(rot.z, Vector3f.AXIS_Z);
+		dst.scale(scale);
+	}
 }

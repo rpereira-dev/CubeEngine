@@ -7,9 +7,6 @@ public class Font
 	/** step between each char, default is 0 */
 	private float	_step;
 	
-	/** textures filepath */
-	private String	_filepath;
-	
 	/** opengl textureID */
 	private int	_glID;
 	

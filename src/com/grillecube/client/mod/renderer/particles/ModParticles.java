@@ -1,10 +1,9 @@
 package com.grillecube.client.mod.renderer.particles;
 
 import com.grillecube.client.Game;
+import com.grillecube.common.logger.Logger;
 import com.grillecube.common.mod.IMod;
 import com.grillecube.common.mod.ModInfo;
-
-import fr.toss.lib.Logger;
 
 /**
  * Modding test class
@@ -16,7 +15,7 @@ public class ModParticles implements IMod
 	public void initialize(Game game)
 	{
 		Logger.get().log(Logger.Level.DEBUG, "Loading particle mod!");
-//		game.getRenderer().registerRenderer(new ParticleRenderer(game));
+//		game.getRenderer().registerRenderer(new ParticlePointRenderer(game));
 	}
 
 	@Override

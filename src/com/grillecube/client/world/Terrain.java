@@ -24,9 +24,9 @@ public class Terrain
 	private float _camera_dist;
 	
 	/** terrain dimensions */
-	public static final int	SIZE_X = 16;
-	public static final int	SIZE_Y = 16;
-	public static final int	SIZE_Z = 16;
+	public static final int	SIZE_X = 32;
+	public static final int	SIZE_Y = 32;
+	public static final int	SIZE_Z = 32;
 	
 	protected TerrainLocation _location;
 	
@@ -54,21 +54,7 @@ public class Terrain
 									(this.getWorldLocation().y + y) / 64.0f,
 									(this.getWorldLocation().z + z) / 64.0f) < 0)
 					{
-						if (y < Terrain.SIZE_Y - 4 && noise.noise(
-								(this.getWorldLocation().x + x + 1024) / 64.0f,
-								(this.getWorldLocation().y + y + 1024) / 64.0f,
-								(this.getWorldLocation().z + z + 1024) / 64.0f) < 0)
-						{
-							this._blocks[x][y][z] = ResourceBlocks.STONE;
-						}
-						else if (y == Terrain.SIZE_Y - 1)
-						{
-							this._blocks[x][y][z] = ResourceBlocks.GRASS;
-						}
-						else
-						{
-							this._blocks[x][y][z] = ResourceBlocks.DIRT;
-						}
+						this._blocks[x][y][z] = ResourceBlocks.ICE;
 					}
 					else
 					{

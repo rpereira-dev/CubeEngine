@@ -1,4 +1,4 @@
-package com.grillecube.client.mod.renderer.particles;
+package com.grillecube.client.mod.renderer.particles.points;
 
 import com.grillecube.client.renderer.opengl.ProgramCompute;
 

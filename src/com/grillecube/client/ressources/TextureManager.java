@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import fr.toss.lib.Logger;
+import com.grillecube.common.logger.Logger;
 
 public class TextureManager
 {	
