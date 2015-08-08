@@ -22,9 +22,6 @@ public class Terrain
 	/** neighboors */
 	private Terrain[]	_neighboors;
 	
-	/** camera distance */
-	private float _camera_dist;
-	
 	/** which face can see another */
 	private boolean[][]	_faces_visibility;
 	
@@ -209,18 +206,6 @@ public class Terrain
 	{
 		return (this._neighboors[id]);
 	}
-
-	/** update the camera distance and check if the mesh should be rebuild */
-	public void update(Camera camera)
-	{
-		Vector3f center = this.getLocation().getCenter();
-		float dx = camera.getPosition().getX() - center.x;
-		float dy = camera.getPosition().getY() - center.y;
-		float dz = camera.getPosition().getZ() - center.z;
-		
-		this._camera_dist = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-		this._mesh.update();
-	}
 	
 	/** return true if this terrain mesh in the given Camera frustum */
 	public boolean	isInFrustum(Camera camera)
@@ -235,9 +220,15 @@ public class Terrain
 	}
 	
 	/** return distance from camera */
-	public float getCameraDistance()
+	public float getCameraDistance(Camera camera)
 	{
-		return (this._camera_dist);
+		return ((float) (Vector3f.distance(camera.getPosition(), this.getCenter())));
+	}
+	
+	/** return terrain center world position */
+	public Vector3f getCenter()
+	{
+		return (this._location.getCenter());
 	}
 
 	public Terrain[] getNeighboors()

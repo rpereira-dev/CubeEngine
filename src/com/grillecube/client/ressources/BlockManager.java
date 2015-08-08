@@ -8,7 +8,9 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import com.grillecube.client.renderer.terrain.TerrainMesh;
+import com.grillecube.client.renderer.opengl.GLH;
+import com.grillecube.client.renderer.opengl.ImageUtils;
+import com.grillecube.client.renderer.opengl.object.Texture;
 import com.grillecube.client.world.blocks.Block;
 import com.grillecube.common.logger.Logger;
 
@@ -19,25 +21,19 @@ public class BlockManager
 	public static final int TEXTURE_HEIGHT = 16;
 	
 	/** opengl texture id arrays */
-	private static int	_gl_texture_atlas;
+	private static Texture _gl_texture_atlas;
 
-	/** every block textures */
-	private ArrayList<Block>			_blocks_list;
-	private ArrayList<BufferedImage>	_textures_list;
+	/** every blocks and it textures, only used on initialization*/
+	private ArrayList<Block> _blocks_list;
+	private ArrayList<BufferedImage> _textures_list;
 	
-	/** every game's blocks */
+	/** every game's blocks, build on initialization from ('this._blocks_list') */
 	private static Block[]	_blocks;
-	
-	/** number of registered texture */
-	private int _textures_count;
-	private short _blocks_count;
 	
 	public BlockManager(ResourceManager manager)
 	{
 		this._textures_list = new ArrayList<BufferedImage>();
 		this._blocks_list = new ArrayList<Block>();
-		this._textures_count = 0;
-		this._blocks_count = 0;
 	}
 	
 	/** create a texture atlas with all given textures into the array list */
@@ -78,7 +74,7 @@ public class BlockManager
 	}
 
 	/** return the opengl texture map for the given resolution */
-	public int getTextureAtlas()
+	public Texture getTextureAtlas()
 	{
 		return (_gl_texture_atlas);
 	}
@@ -86,16 +82,14 @@ public class BlockManager
 	/** register a block texture , and return it textureID */
 	public int	registerBlockTexture(String filepath)
 	{
-		BufferedImage	img;
-		
-		img = TextureManager.readImage(filepath);
+		BufferedImage img = ImageUtils.readImage(filepath);
+		int textureID = this._textures_list.size();
 		if (img == null)
 		{
 			return (-1);
 		}
 		this._textures_list.add(img);
-		this._textures_count++;
-		return (this._textures_count - 1);
+		return (textureID);
 	}
 	
 	/**
@@ -104,11 +98,8 @@ public class BlockManager
 	 */
 	public short registerBlock(Block block)
 	{
-		short	blockID;
-		
-		blockID = this._blocks_count;
+		short blockID = (short) this._blocks_list.size();
 		this._blocks_list.add(block);
-		this._blocks_count++;
 		Logger.get().log(Logger.Level.FINE, "Adding a block: " + block.toString());
 		return (blockID);
 	}
@@ -116,22 +107,15 @@ public class BlockManager
 	/** load the texture atlas and store every loaded blocks to a static array */
 	public void createBlocks()
 	{
-		BufferedImage	atlas;
-		
-		_gl_texture_atlas = TextureManager.newGLTexture();
-		atlas = this.generateTextureAtlas();
-		TextureManager.setGLTextureData(_gl_texture_atlas, atlas);
-		
-		//set data for the mesher
-		TerrainMesh.UVX = 1;
-		TerrainMesh.UVY = 1 / (float)this._textures_list.size();
-		
+		BufferedImage atlas = this.generateTextureAtlas();
+		_gl_texture_atlas = GLH.glhGenTexture(atlas);
+
 		//no longer need bufferedimages
 		this._textures_list.clear();
 		this._textures_list = null;
 		
 		//create the static block array */
-		_blocks = new Block[this._blocks_count];
+		_blocks = new Block[this._blocks_list.size()];
 		_blocks = this._blocks_list.toArray(_blocks);
 		this._blocks_list.clear();
 		this._blocks_list = null;
@@ -141,5 +125,10 @@ public class BlockManager
 	public static Block getBlockByID(short id)
 	{
 		return (_blocks[id]);
+	}
+
+	public int getBlockCount()
+	{
+		return (this._blocks.length);
 	}
 }

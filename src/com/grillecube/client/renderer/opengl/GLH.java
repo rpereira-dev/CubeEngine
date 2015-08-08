@@ -1,8 +1,14 @@
 package com.grillecube.client.renderer.opengl;
 
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+
 import com.grillecube.client.renderer.opengl.object.GLObject;
+import com.grillecube.client.renderer.opengl.object.Texture;
 import com.grillecube.client.renderer.opengl.object.VertexArray;
 import com.grillecube.client.renderer.opengl.object.VertexBuffer;
 import com.grillecube.common.logger.Logger;
@@ -73,5 +79,42 @@ public class GLH
 	{
 		_gl_objects.remove(object);
 		object.delete();
-	}	
+	}
+	
+	
+	/*************************** TEXTURES HELPER STARTS HERE: ************************************/
+
+	/** create opengl textures ID */
+	public static Texture glhGenTexture()
+	{
+		ByteBuffer buffer = BufferUtils.createByteBuffer(4 * 1);
+		GL11.glGenTextures(1, buffer);
+		Texture texture = new Texture(buffer.getInt());
+		_gl_objects.add(texture);
+		return (texture);			
+	}
+	
+	/** create opengl textures ID and fill it data with the given bufferedimage (rgba format)*/
+	public static Texture glhGenTexture(BufferedImage image)
+	{
+		Texture texture = GLH.glhGenTexture();
+		texture.setData(image);
+		return (texture);
+	}
+	
+	/** create opengl textures ID and fill it data with the given file */
+	public static Texture glhGenTexture(String filepath)
+	{
+		return (GLH.glhGenTexture(ImageUtils.readImage(filepath)));			
+	}
+	
+	/** delete a texture! */
+	public static void glhDeleteTexture(Texture texture)
+	{
+		texture.delete();
+		_gl_objects.remove(texture);
+	}
+	
+	/*************************** TEXTURES HELPER ENDS HERE: ************************************/
+
 }

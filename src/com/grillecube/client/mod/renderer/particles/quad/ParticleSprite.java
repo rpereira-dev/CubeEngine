@@ -7,6 +7,12 @@ public class ParticleSprite
 	private int _lines;
 	private int _glID;
 	
+	/** particle constructor which generate a gl texture name, so it should be call in a gl context!*/
+	public ParticleSprite(String filepath, int cols, int lines)
+	{
+//		this._glID = 
+	}
+	
 	/** return the number of cols for this sprite */
 	public int getCols()
 	{

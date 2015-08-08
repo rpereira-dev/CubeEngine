@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer.font;
 
-import com.grillecube.client.ressources.TextureManager;
+import com.grillecube.client.renderer.opengl.GLH;
+import com.grillecube.client.renderer.opengl.object.Texture;
 
 public class Font
 {
@@ -8,11 +9,11 @@ public class Font
 	private float _step;
 	
 	/** opengl textureID */
-	private int	_glID;
+	private Texture _texture;
 	
 	public Font(String filepath, float step)
 	{
-		this._glID = TextureManager.loadGLTexture(filepath);
+		this._texture = GLH.glhGenTexture(filepath);
 		this._step = step;
 	}
 
@@ -21,8 +22,8 @@ public class Font
 		return (this._step);
 	}
 
-	public int getTextureID()
+	public Texture getTexture()
 	{
-		return (this._glID);
+		return (this._texture);
 	}
 }

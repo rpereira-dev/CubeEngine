@@ -17,10 +17,13 @@ public class TerrainRendererThread extends Thread
 	private static final long SLEEPING_TIME = 1000 / 60;
 	
 	/** game instance */
-	private Game	_game;
+	private Game _game;
 	
 	/** terrain to render list, the renderer get the next ready list before rendering */
 	private ArrayList<Terrain> _terrain_to_render;
+
+	/** mesher to update terrains mesh */
+	private TerrainMesher _mesher;
 
 	public TerrainRendererThread(Game game)
 	{
@@ -28,7 +31,7 @@ public class TerrainRendererThread extends Thread
 		this._terrain_to_render	= new ArrayList<Terrain>();
 	}
 
-	public ArrayList<Terrain>	getRendererList()
+	public ArrayList<Terrain> getRendererList()
 	{
 		return (this._terrain_to_render);
 	}
@@ -41,6 +44,7 @@ public class TerrainRendererThread extends Thread
 		
 		world = this._game.getWorld();
 		camera = this._game.getRenderer().getCamera();
+		this._mesher = new TerrainMesher(this._game.getResourceManager().getBlockManager().getBlockCount());
 		while (this._game.isRunning())
 		{
 			this.updateTerrains(world, camera);
@@ -63,8 +67,11 @@ public class TerrainRendererThread extends Thread
 		
 		for (Terrain terrain : world.getTerrains())
 		{
-			terrain.update(camera);
-
+			if (!terrain.getMesh().hasState(TerrainMesh.STATE_VERTICES_UP_TO_DATE))
+			{
+				terrain.getMesh().updateVertices(this._mesher);
+			}
+						
 			if (this.terrainIsVisible(camera, terrain))
 			{
 				terrains.add(terrain);
@@ -83,12 +90,13 @@ public class TerrainRendererThread extends Thread
 			return (false);
 		}
 		
-		if (terrain.getCameraDistance() < Terrain.SIZE_DIAGONAL)
+		float camera_dist = terrain.getCameraDistance(camera);
+		if (camera_dist < Terrain.SIZE_DIAGONAL) //if terrain is nearby, always render it
 		{
 			return (true);
 		}
 		
-		if (terrain.getCameraDistance() > camera.getRenderDistance())
+		if (camera_dist > camera.getRenderDistance()) //if terrain is too far, dont render it
 		{
 			return (false);
 		}

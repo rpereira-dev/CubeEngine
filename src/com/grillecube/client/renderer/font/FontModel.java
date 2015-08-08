@@ -246,20 +246,22 @@ public class FontModel
 			return ;
 		}
 		
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this._font.getTextureID());
 
 		this._vao.bind();
 		this._vao.enableAttribute(0);
 		this._vao.enableAttribute(1);
 		this._vao.enableAttribute(2);
 
+		this._font.getTexture().bind(GL11.GL_TEXTURE_2D);
 		this._vao.draw(GL11.GL_QUADS, 0, this._vertex_count);
-		
+		this._font.getTexture().unbind(GL11.GL_TEXTURE_2D);
+
 		this._vao.disableAttribute(0);
 		this._vao.disableAttribute(1);
 		this._vao.disableAttribute(2);
 		this._vao.unbind();
 
+		
 	}
 
 	public Matrix4f getTransformationMatrix()
