@@ -13,7 +13,7 @@ import com.grillecube.client.world.Terrain;
 public class TerrainRenderer extends ARenderer
 {
 	/** rendering program */
-	private ProgramTerrain			_terrain_program;
+	private ProgramTerrain _terrain_program;
 	
 	/** calculation thread (meshing + visibility) */
 	private TerrainRendererThread	_calculation_thread;
@@ -24,6 +24,7 @@ public class TerrainRenderer extends ARenderer
 	}
 	
 	/** render the given world */
+	@Override
 	public void	render()
 	{
 		GL11.glEnable(GL11.GL_BLEND);
@@ -65,18 +66,12 @@ public class TerrainRenderer extends ARenderer
 	}
 
 	/** start the renderer */
+	@Override
 	public void start()
 	{
 		this._terrain_program = new ProgramTerrain();
 		this._calculation_thread = new TerrainRendererThread(this.getGame());
 		this.getGame().registerThread(this._calculation_thread);
 		
-	}
-
-	/** stop the renderer */
-	public void stop()
-	{
-		this._terrain_program.stop();
-		this._terrain_program = null;
 	}
 }

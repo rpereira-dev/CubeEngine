@@ -4,18 +4,18 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class MeshVertex
 {
-	public float	posx;
-	public float	posy;
-	public float	posz;
+	public float posx;
+	public float posy;
+	public float posz;
 	
-	public float	normalx;
-	public float	normaly;
-	public float	normalz;
+	public float normalx;
+	public float normaly;
+	public float normalz;
 	
-	public float	uvx;
-	public float	uvy;
+	public float uvx;
+	public float uvy;
 	
-	public float	ao;
+	public float ao;
 
 	public MeshVertex(float px, float py, float pz, float nx, float ny, float nz, float ux, float uy, float ao)
 	{

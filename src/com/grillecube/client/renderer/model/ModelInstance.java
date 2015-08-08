@@ -3,7 +3,7 @@ package com.grillecube.client.renderer.model;
 public class ModelInstance
 {
 	/** model reference */
-	private Model	_model;
+	private Model _model;
 	
 	/** model parts instances */
 	private ModelPartInstance[]	_parts_instances;

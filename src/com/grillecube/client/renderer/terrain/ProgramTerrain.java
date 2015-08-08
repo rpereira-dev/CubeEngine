@@ -5,7 +5,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.opengl.Program;
+import com.grillecube.client.renderer.opengl.object.Program;
 import com.grillecube.client.world.Terrain;
 import com.grillecube.client.world.Weather;
 
@@ -57,6 +57,7 @@ public class ProgramTerrain extends Program
 		this._use_ao = super.getUniform("use_ao");
 	}
 
+	/** load global terrain uniform */
 	public void	loadUniforms(Weather weather, Camera camera)
 	{
 		this.loadUniformMatrix(this._proj_matrix, camera.getProjectionMatrix());
@@ -74,7 +75,8 @@ public class ProgramTerrain extends Program
 		
 		this.loadUniformInteger(this._use_ao, GLFW.glfwGetKey(camera.getWindow().getPointer(), GLFW.GLFW_KEY_R) == GLFW.GLFW_PRESS? 0 : 1);
 	}
-	
+
+	/** load terrain instance uniforms variable */
 	public void loadInstanceUniforms(Terrain terrain)
 	{
 		Matrix4f.createTransformationMatrix(this._matrix_buffer, terrain.getWorldLocation(), null, null);

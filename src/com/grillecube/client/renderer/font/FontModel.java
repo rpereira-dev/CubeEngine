@@ -1,15 +1,14 @@
 package com.grillecube.client.renderer.font;
 
-import java.nio.FloatBuffer;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
+
+import com.grillecube.client.renderer.opengl.GLH;
+import com.grillecube.client.renderer.opengl.object.VertexArray;
+import com.grillecube.client.renderer.opengl.object.VertexBuffer;
 
 public class FontModel
 {	
@@ -26,19 +25,19 @@ public class FontModel
 	
 	public static final Vector3f DEFAULT_FONT_SIZE	= new Vector3f(0.04f, 0.1f, 0);
 	
-	public static final long DEFAULT_TIMER			= 5000;	//5sec
-	public static final long INFINITE_TIMER			= -1;
+	public static final long DEFAULT_TIMER	= 5000;	//5sec
+	public static final long INFINITE_TIMER	= Long.MAX_VALUE;
 	
 	/** opengl IDs */
-	private int	_vaoID;
-	private int	_vboID;
+	private VertexArray _vao;
+	private VertexBuffer _vbo;
 	private int	_vertex_count;
 	
 	/** model data */
-	private Vector3f	_pos;
-	private Vector3f	_scale;
-	private Vector3f	_rot;
-	private Font 		_font;
+	private Vector3f _pos;
+	private Vector3f _scale;
+	private Vector3f _rot;
+	private Font _font;
 	
 	/** status */
 	private boolean _initialized;
@@ -51,9 +50,9 @@ public class FontModel
 	private String _text;
 	
 	/** timers */
-	private long	_timer;
-	private long	_last_for;
-	private long	_last_tick;
+	private long _timer;
+	private long _last_for;
+	private long _last_tick;
 	
 	public FontModel(Font font, String text, long last_for)
 	{
@@ -72,22 +71,24 @@ public class FontModel
 	
 	private void initialize()
 	{		
-		this._vaoID = GL30.glGenVertexArrays();
-		this._vboID = GL15.glGenBuffers();
+		this._vao = GLH.glhGenVAO();
+		this._vbo = GLH.glhGenVBO();
 		
-		GL30.glBindVertexArray(this._vaoID);
+		this._vao.bind();
 		{
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this._vboID);
+			this._vbo.bind(GL15.GL_ARRAY_BUFFER);
 
-			GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, (3 + 2 + 4) * 4, 0);
-			GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, (3 + 2 + 4) * 4, 3 * 4);
-			GL20.glVertexAttribPointer(2, 4, GL11.GL_FLOAT, false, (3 + 2 + 4) * 4, (3 + 2) * 4);
+			this._vao.setAttribute(0, 3, GL11.GL_FLOAT, false, (3 + 2 + 4) * 4, 0);
+			this._vao.setAttribute(1, 2, GL11.GL_FLOAT, false, (3 + 2 + 4) * 4, 3 * 4);
+			this._vao.setAttribute(2, 4, GL11.GL_FLOAT, false, (3 + 2 + 4) * 4, (3 + 2) * 4);
 
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+			this._vbo.unbind(GL15.GL_ARRAY_BUFFER);
 		}
-		GL30.glBindVertexArray(0);
+		this._vao.unbind();
 
 		this._initialized = true;
+		
+		System.out.println("INITIALIZED");
 	}
 
 	/** destroy the model */
@@ -95,8 +96,8 @@ public class FontModel
 	{
 		if (this._initialized)
 		{
-			GL30.glDeleteVertexArrays(this._vaoID);
-			GL15.glDeleteBuffers(this._vboID);
+			GLH.glhDeleteObject(this._vao);
+			GLH.glhDeleteObject(this._vbo);
 			this._initialized = false;
 		}
 	}
@@ -108,25 +109,11 @@ public class FontModel
 		this._text_up_to_date = false;
 	}
 	
+	/** update FontModel VertexBuffer vertices depending on 'this._text' */
 	private void updateText()
 	{
-		FloatBuffer	buffer;
-		float[]		vertices;
-				
-		vertices = this.generateFontBuffer(this._text);
-
-		buffer = BufferUtils.createFloatBuffer(vertices.length);
-		buffer.put(vertices);
-		buffer.flip();
-		
-		GL30.glBindVertexArray(this._vaoID);
-		{
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this._vboID);
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		}
-		GL30.glBindVertexArray(0);
-		
+		float[] vertices = this.generateFontBuffer(this._text);
+		this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
 		this._vertex_count = vertices.length / 5;	
 		this._text_up_to_date = true;
 	}
@@ -241,6 +228,7 @@ public class FontModel
 		this._matrix.scale(this._scale);
 	}
 	
+	/** render this font model */
 	public void render()
 	{
 		if (this._initialized == false)
@@ -260,13 +248,18 @@ public class FontModel
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this._font.getTextureID());
 
-		GL30.glBindVertexArray(this._vaoID);
-		GL20.glEnableVertexAttribArray(0);
-		GL20.glEnableVertexAttribArray(1);
-		GL20.glEnableVertexAttribArray(2);
-				
-		GL11.glDrawArrays(GL11.GL_QUADS, 0, this._vertex_count);
+		this._vao.bind();
+		this._vao.enableAttribute(0);
+		this._vao.enableAttribute(1);
+		this._vao.enableAttribute(2);
+
+		this._vao.draw(GL11.GL_QUADS, 0, this._vertex_count);
 		
+		this._vao.disableAttribute(0);
+		this._vao.disableAttribute(1);
+		this._vao.disableAttribute(2);
+		this._vao.unbind();
+
 	}
 
 	public Matrix4f getTransformationMatrix()
@@ -277,16 +270,13 @@ public class FontModel
 	/** update the timer */
 	public void update()
 	{
-		if (this._timer == FontModel.INFINITE_TIMER)
+		if (this._timer != FontModel.INFINITE_TIMER)
 		{
-			return ;
+			long t = System.currentTimeMillis();
+			
+			this._timer += (System.currentTimeMillis() - this._last_tick);
+			this._last_tick = t;
 		}
-		
-		long t = System.currentTimeMillis();
-		
-		this._timer += (System.currentTimeMillis() - this._last_tick);
-		
-		this._last_tick = t;
 	}
 	
 	/** return true if the timer has ended */

@@ -1,17 +1,16 @@
 package com.grillecube.client.mod.renderer.particles.cube;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.Random;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.ARenderer;
+import com.grillecube.client.renderer.opengl.GLH;
+import com.grillecube.client.renderer.opengl.geometry.GLGeometry;
+import com.grillecube.client.renderer.opengl.object.VertexArray;
+import com.grillecube.client.renderer.opengl.object.VertexBuffer;
 
 /**
  * 	Implementation follows: http://web.engr.oregonstate.edu/~mjb/cs557/Handouts/compute.shader.1pp.pdf
@@ -27,8 +26,8 @@ public class ParticleCubeRenderer extends ARenderer
 	private ProgramCubeParticles _program;
 	
 	/** cube data */
-	private int	_vaoID;
-	private int	_vboID;
+	private VertexArray _vao;
+	private VertexBuffer _vbo;
 
 	private ArrayList<CubeParticle> _particles;
 	
@@ -59,83 +58,26 @@ public class ParticleCubeRenderer extends ARenderer
 		float vely = this.getRNG().nextInt(2) == 0 ? -this.getRNG().nextFloat() : this.getRNG().nextFloat();
 		float velz = this.getRNG().nextInt(2) == 0 ? -this.getRNG().nextFloat() : this.getRNG().nextFloat();
 		
+		float scalex = this.getRNG().nextInt(2) == 0 ? -this.getRNG().nextFloat() : this.getRNG().nextFloat() * 2;
+		
 		particle.setPosition(x, y, z);
 		particle.setPositionVel(velx / 16, vely  / 16, velz / 16);
 		particle.setRotationVel(rotx / 16, roty  / 16, rotz  / 16);
+		particle.setScale(scalex, scalex, scalex);
 		this._particles.add(particle);
 	}
 
 	/** prepare opengl stuff */
 	private void initOpenGLBuffers()
 	{
-		
-		this._vaoID = GL30.glGenVertexArrays();
-		this._vboID = GL15.glGenBuffers();
-		
-		GL30.glBindVertexArray(this._vaoID);
-		{
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this._vboID);
-			GL20.glVertexAttribPointer(0, 4, GL11.GL_FLOAT, false, 4 * 4, 0);
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.generateCubeFloatBuffer(), GL15.GL_STATIC_DRAW);
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		}
-		GL30.glBindVertexArray(0);
-	}
+		this._vao = GLH.glhGenVAO();
+		this._vbo = GLH.glhGenVBO();
 
-	/** generate cube vertices */
-	private FloatBuffer generateCubeFloatBuffer()
-	{
-		float[] vertices = {
-			    
-			    //left
-				0, 1, 0, 0.84f,
-			    0, 0, 0, 0.84f,
-			    0, 0, 1, 0.84f,
-			    0, 1, 1, 0.84f,
-			    
-			    //right
-				1, 1, 0, 0.84f,
-			    1, 0, 0, 0.84f,
-			    1, 0, 1, 0.84f,
-			    1, 1, 1, 0.84f,
-			    
-			    //top
-				0, 1, 0, 1.0f,
-			    1, 1, 0, 1.0f,
-			    1, 1, 1, 1.0f,
-			    0, 1, 1, 1.0f,
-			    
-			    //bot
-				0, 0, 0, 1.0f,
-			    1, 0, 0, 1.0f,
-			    1, 0, 1, 1.0f,
-			    0, 0, 1, 1.0f,
-			    
-				//front
-				0, 1, 0, 0.7f,
-			    0, 0, 0, 0.7f,
-			    1, 0, 0, 0.7f,
-			    1, 1, 0, 0.7f,
-			    
-			    //back
-				0, 1, 1, 0.7f,
-			    0, 0, 1, 0.7f,
-			    1, 0, 1, 0.7f,
-			    1, 1, 1, 0.7f
-		};
-		
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(vertices.length);
-		buffer.put(vertices);
-		buffer.flip();
-		return (buffer);
-	}
+		this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, GLGeometry.generateCube(1), GL15.GL_STATIC_DRAW);
 
-	@Override
-	public void stop()
-	{
-		this._program.stop();
-		GL15.glDeleteBuffers(this._vboID);
-		GL30.glDeleteVertexArrays(this._vaoID);
+		this._vao.bind();
+		this._vao.setAttribute(this._vbo, 0, 4, GL11.GL_FLOAT, false, 4 * 4, 0);
+		this._vao.unbind();
 	}
 
 	@Override
@@ -143,9 +85,9 @@ public class ParticleCubeRenderer extends ARenderer
 	{
 		this._program.useStart();
 
-		GL30.glBindVertexArray(this._vaoID);
-		GL20.glEnableVertexAttribArray(0);
-		
+		this._vao.bind();
+		this._vao.enableAttribute(0);
+
 		this._program.loadGlobalUniforms(this.getCamera());
 		
 		int i = 0;
@@ -161,14 +103,13 @@ public class ParticleCubeRenderer extends ARenderer
 			if (this.getCamera().isInFrustum(particle.getPosition(), 0))
 			{
 				this._program.loadInstanceUniforms(particle);
-				GL11.glDrawArrays(GL11.GL_QUADS, 0, 24);
+				this._vao.draw(GL11.GL_QUADS, 0, 24);
 			}
 			++i;
 		}
 		
-		GL30.glBindVertexArray(0);
-
-		this._program.useStop();
+		this._vao.disableAttribute(0);
+		this._vao.unbind();
 	}
 
 }

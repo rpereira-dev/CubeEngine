@@ -1,6 +1,6 @@
 package com.grillecube.client.renderer.font;
 
-import com.grillecube.client.renderer.opengl.Program;
+import com.grillecube.client.renderer.opengl.object.Program;
 
 public class ProgramFont extends Program
 {

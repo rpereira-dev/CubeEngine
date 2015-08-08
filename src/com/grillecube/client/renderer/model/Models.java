@@ -1,9 +1,10 @@
 package com.grillecube.client.renderer.model;
 
+//TODO : change this with a dynamic way
 public class Models
 {
 	/** every models array */
-	private static Model[]	_models = null;
+	private static Model[] _models = null;
 	
 	/** every models ID */
 	public static final int	PIG		= 0;

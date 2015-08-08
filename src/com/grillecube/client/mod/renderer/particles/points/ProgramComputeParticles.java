@@ -1,6 +1,6 @@
 package com.grillecube.client.mod.renderer.particles.points;
 
-import com.grillecube.client.renderer.opengl.ProgramCompute;
+import com.grillecube.client.renderer.opengl.object.ProgramCompute;
 
 public class ProgramComputeParticles extends ProgramCompute
 {	

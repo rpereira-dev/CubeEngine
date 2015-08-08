@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.opengl;
+package com.grillecube.client.renderer.opengl.object;
 
 import java.nio.FloatBuffer;
 
@@ -8,8 +8,10 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import com.grillecube.client.renderer.opengl.GLH;
+
 /** openGL program */
-public abstract class Program
+public abstract class Program implements GLObject
 {
 	private FloatBuffer	_matrix_buffer;
 
@@ -17,6 +19,7 @@ public abstract class Program
 	private int	_vertexID;
 	private int	_fragmentID;
 	
+	/** standart program class with a vertex + fragment shader */
 	public Program(String vertex, String fragment)
 	{
 		vertex = "./assets/shaders/" + vertex + ".vertex";
@@ -33,6 +36,7 @@ public abstract class Program
 		GL20.glLinkProgram(this._programID);
 		GL20.glValidateProgram(this._programID);
 		this.linkUniforms();
+		GLH.glhAddObject(this);
 	}
 	
 	public abstract void	bindAttributes();
@@ -40,7 +44,9 @@ public abstract class Program
 	/** set every uniforms variables */
 	public abstract void	linkUniforms();
 	
-	public void stop()
+	/** GLObject implementation, do not call it, this will be called automatically when program exit */
+	@Override
+	public void delete()
 	{
 		GL20.glDetachShader(this._programID, this._vertexID);
 		GL20.glDetachShader(this._programID, this._fragmentID);
@@ -90,8 +96,7 @@ public abstract class Program
 		_matrix_buffer.flip();
 		GL20.glUniformMatrix4fv(location, false, _matrix_buffer);
 	}
-	
-	
+
 	public static void loadTransformationMatrix(Program program, int location, Vector3f pos, Vector3f rot, Vector3f scale)
 	{
 		Matrix4f matrix;

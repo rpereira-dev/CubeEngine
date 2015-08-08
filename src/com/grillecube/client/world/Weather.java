@@ -17,11 +17,11 @@ public class Weather
 	private static final float NIGHT_START	= 0.6f;
 	
 	/** weather state */
-	public static final int STATE_DAY			= 1;
-	public static final int STATE_NIGHT			= 2;
-	public static final int STATE_DAY_ENDING	= 4;
-	public static final int STATE_NIGHT_ENDING	= 8;
-	public static final int STATE_RAINING		= 16;
+	public static final int STATE_DAY			= 0;
+	public static final int STATE_NIGHT			= 1;
+	public static final int STATE_DAY_ENDING	= 2;
+	public static final int STATE_NIGHT_ENDING	= 3;
+	public static final int STATE_RAINING		= 4;
 	
 	/** state */
 	private int	_state;
@@ -40,9 +40,12 @@ public class Weather
 	private Vector3f	_sky_color;
 	
 	/** sun position */
-	public static final float		SUN_DIST		= Camera.RENDER_DISTANCE;
-	private static final Vector3f	SUN_RISE_COLOR 	= new Vector3f(1.2f, 1.0f, 0.8f);
-	private static final Vector3f	SUN_COLOR 		= new Vector3f(1.0f, 1.0f, 1.0f);
+	public static final float		SUN_DIST = Camera.RENDER_DISTANCE;
+	
+	/** sun color */
+	private static final Vector3f	SUN_RISE_COLOR 		= new Vector3f(1.2f, 1.0f, 0.8f);
+	private static final Vector3f	SUN_DEFAULT_COLOR	= new Vector3f(1.0f, 1.0f, 1.0f);
+	
 	private Vector3f	_sun_pos;
 	private Vector3f	_sun_color;
 	private float		_sun_intensity;
@@ -71,7 +74,7 @@ public class Weather
 		this._fog_gradient = 2.5f;
 	}
 	
-	private void	setCycleRatio(float f)
+	private void setCycleRatio(float f)
 	{
 		this._cycle_ratio = f;
 		this._prev_millis = System.currentTimeMillis();
@@ -131,6 +134,12 @@ public class Weather
 		this._sun_pos.x = (float) Math.cos(this._cycle_ratio * Math.PI * 2) * Weather.SUN_DIST;
 		this._sun_pos.y = (float) Math.sin(this._cycle_ratio * Math.PI * 2) * Weather.SUN_DIST;
 		this._sun_pos.z = 0;
+	}
+	
+	/** return the current state */
+	public int getState()
+	{
+		return (this._state);
 	}
 	
 	private void setState(int state)

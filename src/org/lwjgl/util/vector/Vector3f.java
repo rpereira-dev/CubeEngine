@@ -52,7 +52,8 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f, 
 	public static final Vector3f DEFAULT_POS = new Vector3f(0, 0, 0);	
 	public static final Vector3f DEFAULT_ROT = new Vector3f(0, 0, 0);
 	public static final Vector3f DEFAULT_SCALE = new Vector3f(1, 1, 1);
-	
+	public static final Vector3f DEFAULT_OFFSET = new Vector3f(0, 0, 0);
+
 	private static final long serialVersionUID = 1L;
 
 	public float x, y, z;

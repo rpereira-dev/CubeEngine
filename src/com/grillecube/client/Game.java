@@ -3,8 +3,6 @@ package com.grillecube.client;
 
 import java.util.ArrayList;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.grillecube.client.event.IEvent;
 import com.grillecube.client.mod.blocks.ModBlocks;
 import com.grillecube.client.mod.renderer.particles.ModParticles;
@@ -23,19 +21,19 @@ public class Game
 	private static Game	_instance;
 	
 	/** Mod loaded */
-	private ModLoader	_mod_loader;
+	private ModLoader _mod_loader;
 	
 	/** Logger */
-	private Logger	_logger;
+	private Logger _logger;
 	
 	/** Game window */
-	private GLWindow	_window;
+	private GLWindow _window;
 	
 	/** World */
-	private World	_world;
+	private World _world;
 	
 	/** Renderer */
-	private MainRenderer	_renderer;
+	private MainRenderer _renderer;
 	
 	/** Resource manager */
 	private ResourceManager	_resources;
@@ -64,7 +62,7 @@ public class Game
 		this._state_factory = new GameStateFactory();
 		this._state = this._state_factory.registerNewState();
 		this._window = new GLWindow();
-		this._renderer = new MainRenderer(this._window);
+		this._renderer = new MainRenderer(this);
 		this._world = new World();
 		this._resources = new ResourceManager();
 		this._mod_loader = new ModLoader();
@@ -87,7 +85,7 @@ public class Game
 		this._world.start();
 		this._logger.log(Level.FINE, "Game started!");
 		
-		this.invokeEvents(GameEvent.POST_START);
+		this.invokeEvents(GameEvent.POST_START);		
 	}
 	
 	/** invoke every events with the given ID */
@@ -111,9 +109,9 @@ public class Game
 		this._mod_loader.loadMods("./mods");
 		
 		//TODO : default mods are injected here
+		this._mod_loader.injectMod(new ModSkyRenderer());
 		this._mod_loader.injectMod(new ModBlocks());
 		this._mod_loader.injectMod(new ModParticles());
-		this._mod_loader.injectMod(new ModSkyRenderer());
 	}
 
 	/** main game loop (dedicated to rendering) */
@@ -171,6 +169,11 @@ public class Game
 		this._window.stop();
 		this._renderer.stop();
 		this._logger.log(Level.FINE, "Stopped");
+		
+		for (IEvent event : this._events[GameEvent.STOP])
+		{
+			event.invoke(this);
+		}
 	}
 	
 	/** register a thread which will be launch when the game will be launched, and stopped when the game ends*/

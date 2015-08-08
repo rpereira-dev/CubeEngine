@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.opengl;
+package com.grillecube.client.renderer.opengl.object;
 
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL42;

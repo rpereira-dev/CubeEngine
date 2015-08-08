@@ -13,9 +13,10 @@ public class ModelRenderer extends ARenderer
 		super(game);
 	}
 
-	private ProgramModel	_program_model;
+	private ProgramModel _program_model;
 	
 	/** render world terrains */
+	@Override
 	public void render()
 	{
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -50,16 +51,10 @@ public class ModelRenderer extends ARenderer
 	}
 
 	/** start the renderer */
+	@Override
 	public void start()
 	{
 		this._program_model = new ProgramModel();
 		Models.initializeModels();
-	}
-	
-	/** stop the renderer */
-	public void stop()
-	{
-		this._program_model.stop();
-		this._program_model = null;
 	}
 }

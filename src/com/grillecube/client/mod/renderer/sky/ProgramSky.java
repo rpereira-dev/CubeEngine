@@ -3,7 +3,7 @@ package com.grillecube.client.mod.renderer.sky;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.opengl.Program;
+import com.grillecube.client.renderer.opengl.object.Program;
 import com.grillecube.client.world.Weather;
 
 public class ProgramSky extends Program

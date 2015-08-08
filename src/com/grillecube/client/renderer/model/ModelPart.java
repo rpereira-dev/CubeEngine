@@ -1,13 +1,11 @@
 package com.grillecube.client.renderer.model;
 
-import java.nio.FloatBuffer;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
+import com.grillecube.client.renderer.opengl.GLH;
+import com.grillecube.client.renderer.opengl.object.VertexArray;
+import com.grillecube.client.renderer.opengl.object.VertexBuffer;
 import com.grillecube.common.logger.Logger;
 
 public class ModelPart
@@ -16,8 +14,8 @@ public class ModelPart
 	private String	_name;
 	
 	/** opengl */
-	private int	_vaoID;
-	private int	_vboID;
+	private VertexArray _vao;
+	private VertexBuffer _vbo;
 	private int	_vertex_count;
 
 	/** animations */
@@ -30,8 +28,8 @@ public class ModelPart
 	public ModelPart()
 	{
 		this._state = 0;
-		this._vaoID = 0;
-		this._vboID = 0;
+		this._vao = null;
+		this._vbo = null;
 		this._vertex_count = 0;
 		this._animations = null;
 	}
@@ -45,34 +43,25 @@ public class ModelPart
 	private void prepareMesh()
 	{
 		this._vertex_count = 0;
-		this._vaoID = GL30.glGenVertexArrays();
-		this._vboID	= GL15.glGenBuffers();
+		this._vao = GLH.glhGenVAO();
+		this._vbo = GLH.glhGenVBO();
 		
-		GL30.glBindVertexArray(this._vaoID);
+		this._vao.bind();
+		this._vbo.bind(GL15.GL_ARRAY_BUFFER);
 		
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this._vboID);
-		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 3 * 4 + 4 * 4, 0);		//xyz
-		GL20.glVertexAttribPointer(1, 4, GL11.GL_FLOAT, false, 3 * 4 + 4 * 4, 3 * 4);	//rgba
+		this._vao.setAttribute(0, 3, GL11.GL_FLOAT, false, 3 * 4 + 4 * 4, 0); //xyz
+		this._vao.setAttribute(1, 4, GL11.GL_FLOAT, false, 3 * 4 + 4 * 4, 3 * 4); //rgba
+		
+		this._vbo.unbind(GL15.GL_ARRAY_BUFFER);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		
-		GL30.glBindVertexArray(0);
+		this._vao.unbind();
 	}
 	
 	/** send vertices to opengl */
-	private void	setMeshData(float[] vertices)
+	private void setMeshData(float[] vertices)
 	{
-		FloatBuffer	buffer;
-
-		buffer = BufferUtils.createFloatBuffer(vertices.length);
-		buffer.put(vertices);
-		buffer.flip();
-			
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this._vboID);
-		{
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
-		}
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		
+		this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
 		this._vertex_count = vertices.length / 7;
 	}
 	
@@ -142,16 +131,18 @@ public class ModelPart
 		return ((this._state & state) == state);
 	}
 
+	/** render the model part */
 	public void render()
 	{
-		GL30.glBindVertexArray(this._vaoID);
+		this._vao.bind();
+		this._vao.enableAttribute(0);
+		this._vao.enableAttribute(1);
 		
-		GL20.glEnableVertexAttribArray(0);
-		GL20.glEnableVertexAttribArray(1);
-		
-		GL11.glDrawArrays(GL11.GL_QUADS, 0, this._vertex_count);
+		this._vao.draw(GL11.GL_QUADS, 0, this._vertex_count);
 
-		GL30.glBindVertexArray(0);		
+		this._vao.disableAttribute(0);
+		this._vao.disableAttribute(1);
+		this._vao.unbind();	
 	}
 
 	public String	getName()

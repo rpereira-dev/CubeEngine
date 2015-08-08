@@ -61,9 +61,6 @@ public abstract class ARenderer implements IRenderer
 	public abstract void start();
 
 	@Override
-	public abstract void stop();
-
-	@Override
 	public abstract void render();
 
 }

@@ -99,15 +99,16 @@ public class ParticlePointRenderer extends ARenderer
 		GL15.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
-	@Override
-	public void stop()
-	{
-		this._compute_program.delete();
-		GL15.glDeleteBuffers(this._ssboPos);
-		GL15.glDeleteBuffers(this._ssboVel);
-		GL15.glDeleteBuffers(this._ssboColor);
-		GL30.glDeleteVertexArrays(this._vaoID);
-	}
+	//TODO
+//	@Override
+//	public void stop()
+//	{
+//		this._compute_program.delete();
+//		GL15.glDeleteBuffers(this._ssboPos);
+//		GL15.glDeleteBuffers(this._ssboVel);
+//		GL15.glDeleteBuffers(this._ssboColor);
+//		GL30.glDeleteVertexArrays(this._vaoID);
+//	}
 
 	@Override
 	public void render()

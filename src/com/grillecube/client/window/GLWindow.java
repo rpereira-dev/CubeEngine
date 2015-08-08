@@ -250,34 +250,44 @@ public class GLWindow
 		this._frames++;
 	}
 
+	/** return true if glfw was close-requested */
 	public boolean shouldClose()
 	{
 		return (GLFW.glfwWindowShouldClose(this._window) != 0);
 	}
 
+	/** get window GLFW pointer */
 	public long getPointer()
 	{
 		return (this._window);
 	}
 	
-	public double	getMouseX()
+	/** get mouse X coordinate */
+	public double getMouseX()
 	{
 		return (this._mouseX);
 	}
 	
-	public double	getMouseY()
+	/** get mouse Y coordinate */
+	public double getMouseY()
 	{
 		return (this._mouseY);
 	}
 	
-	public double	getPrevMouseX()
+	public double getPrevMouseX()
 	{
 		return (this._prev_mouseX);
 	}
 	
-	public double	getPrevMouseY()
+	public double getPrevMouseY()
 	{
 		return (this._prev_mouseY);
+	}
+	
+	/** get total frames flushed */
+	public long getTotalFramesFlushed()
+	{
+		return (this._frames);
 	}
 }
 

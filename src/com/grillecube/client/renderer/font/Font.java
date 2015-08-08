@@ -5,7 +5,7 @@ import com.grillecube.client.ressources.TextureManager;
 public class Font
 {
 	/** step between each char, default is 0 */
-	private float	_step;
+	private float _step;
 	
 	/** opengl textureID */
 	private int	_glID;

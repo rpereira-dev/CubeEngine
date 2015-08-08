@@ -8,16 +8,20 @@ public class ResourceManager
 	private ArrayList<IResource> _resources;
 	
 	/** texture loader */
-	private TextureManager	_texture_loader;
+	private TextureManager _texture_loader;
 	
 	/** Block resources */
-	private BlockManager	_block_manager;
+	private BlockManager _block_manager;
+	
+	/** Font resources */
+	private FontManager _font_manager;
 
 	public ResourceManager()
 	{
 		this._resources = new ArrayList<IResource>();
 		this._texture_loader = new TextureManager();
 		this._block_manager = new BlockManager(this);
+		this._font_manager = new FontManager();
 	}
 	
 	/** inject resources */
@@ -44,7 +48,7 @@ public class ResourceManager
 			res.unload(this);
 		}
 	}
-	
+
 	public BlockManager getBlockManager()
 	{
 		return (this._block_manager);

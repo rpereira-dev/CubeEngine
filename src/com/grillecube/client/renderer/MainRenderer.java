@@ -6,6 +6,7 @@ import java.util.Random;
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.font.FontRenderer;
 import com.grillecube.client.renderer.model.ModelRenderer;
+import com.grillecube.client.renderer.opengl.GLH;
 import com.grillecube.client.renderer.terrain.TerrainRenderer;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.common.logger.Logger;
@@ -20,17 +21,21 @@ public class MainRenderer
 	
 	/** default renderers */
 	private TerrainRenderer	_terrain_renderer;
-	private ModelRenderer	_model_renderer;
-	private FontRenderer	_font_renderer;
+	private ModelRenderer _model_renderer;
+	private FontRenderer _font_renderer;
 	
 	/** random number generator */
 	private Random _rng;
 
-	public MainRenderer(GLWindow window)
+	public MainRenderer(Game game)
 	{
-		this._camera = new Camera(window);
+		this._camera = new Camera(game.getGLWindow());
 		this._renderers = new LinkedList<IRenderer>();
 		this._rng = new Random();
+		
+		this._terrain_renderer = new TerrainRenderer(game);
+		this._model_renderer = new ModelRenderer(game);
+		this._font_renderer = new FontRenderer(game);
 	}
 	
 	public Random getRNG()
@@ -48,36 +53,38 @@ public class MainRenderer
 	/** call on initialization */
 	public void	start(Game game)
 	{
-		this._terrain_renderer = new TerrainRenderer(game);
-		this._model_renderer = new ModelRenderer(game);
-		this._font_renderer = new FontRenderer(game);
-		
-		this._renderers.addFirst(this._terrain_renderer);
-		this._renderers.addFirst(this._model_renderer);
-		this._renderers.addFirst(this._font_renderer);
-		
+		GLH.start();
+
+		this._terrain_renderer.start();
+		this._model_renderer.start();
+		this._font_renderer.start();
+
 		for (IRenderer renderer : this._renderers)
 		{
 			renderer.start();
 		}
 	}
 	
+	/** stop the renderer */
 	public void	stop()
 	{
-		for (IRenderer renderer : this._renderers)
-		{
-			renderer.stop();
-		}
+		Logger.get().log(Logger.Level.FINE, "Stopping Main renderer...");
+		GLH.clean(); //clean every GLObject created
 	}
 
 	/** main rendering function (screen is already cleared, and frame buffer will be swapped after this render */
 	public void render()
 	{
+		this._terrain_renderer.render();
+		this._model_renderer.render();
+		
 		for (IRenderer renderer : this._renderers)
 		{
 			renderer.render();
 		}
-		
+
+		this._font_renderer.render();
+
 		GLWindow.glCheckError("MainRenderer.render()");
 	}
 

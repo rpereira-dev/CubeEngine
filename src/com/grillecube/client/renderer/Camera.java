@@ -11,7 +11,7 @@ import com.grillecube.client.world.Terrain;
 
 public class Camera
 {
-	public static final float RENDER_DISTANCE = Terrain.SIZE_X * 12;
+	public static final float RENDER_DISTANCE = (float) (Terrain.SIZE_DIAGONAL * 20);
 	
 	public static final int STATE_MOVE_FORWARD	= 1;
 	public static final int STATE_MOVE_BACKWARD = 2;

@@ -58,6 +58,12 @@ public abstract class Entity
 		return (this._rot);
 	}
 	
+	/** get entity world */
+	public World getWorld()
+	{
+		return (this._world);
+	}
+	
 	/** get entity position */
 	public Vector3f	getPositionVelocity()
 	{

@@ -2,8 +2,6 @@ package com.grillecube.client.renderer.font;
 
 import java.util.ArrayList;
 
-import org.lwjgl.opengl.GL11;
-
 import com.grillecube.client.Game;
 import com.grillecube.client.renderer.ARenderer;
 
@@ -21,21 +19,16 @@ public class FontRenderer extends ARenderer
 	public static Font DEFAULT_FONT;
 	
 	/** font models */
-	private ArrayList<FontModel>	_fonts_model;
+	private ArrayList<FontModel> _fonts_model;
 	
 	@Override
 	public void start()
 	{
+		FontRenderer.DEFAULT_FONT = new Font("./assets/textures/font/font.png", -0.2f);
+
 		this._program = new ProgramFont();
 		this._fonts_model = new ArrayList<FontModel>();
-		
-		FontRenderer.DEFAULT_FONT = new Font("./assets/textures/font/font.png", -0.2f);
-	}
-
-	@Override
-	public void stop()
-	{
-		this._program.stop();
+		this.addString("Hello world", 5000);
 	}
 	
 	/** add the font model to the renderer */
@@ -104,9 +97,6 @@ public class FontRenderer extends ARenderer
 	@Override
 	public void render()
 	{
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
 		this._program.useStart();
 		
 		for (int i = 0 ; i < this._fonts_model.size() ; i++)

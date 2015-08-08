@@ -14,7 +14,7 @@ import com.grillecube.client.world.World;
  */
 public class TerrainRendererThread extends Thread
 {
-	private static final long SLEEPING_TIME = 1000 / 10;
+	private static final long SLEEPING_TIME = 1000 / 60;
 	
 	/** game instance */
 	private Game	_game;
@@ -43,11 +43,8 @@ public class TerrainRendererThread extends Thread
 		camera = this._game.getRenderer().getCamera();
 		while (this._game.isRunning())
 		{
-			long t = System.currentTimeMillis();
 			this.updateTerrains(world, camera);
-			t = (System.currentTimeMillis() - t);
-			if (t > 10)
-				System.out.println("took: " + t);
+
 			try
 			{
 				Thread.sleep(SLEEPING_TIME);
@@ -75,11 +72,17 @@ public class TerrainRendererThread extends Thread
 		}
 		
 		this._terrain_to_render = terrains;
+//		Logger.get().log(Logger.Level.DEBUG, "Terrain rendered: " + terrains.size());
 	}
 	
 	/** return true if the terrain should be rendered */
 	private boolean terrainIsVisible(Camera camera, Terrain terrain)
 	{
+		if (terrain.getMesh().getVertexCount() == 0 && terrain.getMesh().hasState(TerrainMesh.STATE_VBO_UP_TO_DATE))
+		{
+			return (false);
+		}
+		
 		if (terrain.getCameraDistance() < Terrain.SIZE_DIAGONAL)
 		{
 			return (true);
@@ -89,9 +92,10 @@ public class TerrainRendererThread extends Thread
 		{
 			return (false);
 		}
-		
-		//TODO : to fix invisible terrain when rotating fastly, increase imprecision :)
-		float imprecision = 0;
+			
+		//TODO : to fix invisible terrain when rotating fastly
+		//		increase imprecision (this is the angle in degree to increase FOV at rendering time):)
+		float imprecision = 10;
 		return (terrain.isInFrustum(camera, imprecision));
 	}
 }

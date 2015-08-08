@@ -1,6 +1,7 @@
 #version 400 core
 
 uniform vec4 color;
+uniform float health;
 
 in float pass_face;
 
@@ -8,5 +9,19 @@ out vec4 vertexColor;
 
 void	main(void)
 {
-	vertexColor = vec4(color.x * pass_face, color.y * pass_face, color.z * pass_face, color.w);
+	float r = color.x * pass_face;
+	float g = color.y * pass_face;
+	float b = color.z * pass_face;
+	float a = color.w;
+	vec4 color = vec4(r, g, b, a);
+	
+	if (health > 0.2)
+	{
+		vertexColor = color;
+	}
+	else
+	{
+		float ratio = 1 - (health / 0.2);
+		vertexColor = mix(color, vec4(0.5, 0.5, 0.5, 0.0), ratio);
+	}
 }
