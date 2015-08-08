@@ -48,6 +48,7 @@ public class PacketString extends Packet
 		super.writeInt(this._str.length());
 		super.writeBytes(this._str.getBytes());
 	}
+	
 
 	@Override
 	public int getPacketSize()
@@ -70,6 +71,7 @@ public class PacketString extends Packet
 		length = super.readInt();
 		chars = super.readBytes(length);
 		this._str = new String(chars);
+		
 	}
 	
 	public String	getString()

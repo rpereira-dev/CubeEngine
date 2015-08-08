@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.lwjgl.util.vector.Vector3f;
 
@@ -39,15 +40,15 @@ public class ModelLoader
 
 	private static void	loadModelParts(DataInputStream dis, Model model) throws IOException
 	{
-		ModelPart[]	parts;
+		ArrayList<ModelPart>	parts;
 		int	nb_parts;
 		int	i;
 		
 		nb_parts = dis.readInt();
-		parts = new ModelPart[nb_parts];
+		parts = new ArrayList<ModelPart>(nb_parts);
 		for (i = 0 ; i < nb_parts ; i++)
 		{
-			parts[i] = loadModelPart(dis);
+			parts.add(i, loadModelPart(dis));
 		}
 		model.setParts(parts);
 	}

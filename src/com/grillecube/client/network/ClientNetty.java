@@ -2,6 +2,8 @@ package com.grillecube.client.network;
 
 import java.util.Date;
 
+import com.grillecube.server.network.packet.PacketString;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
@@ -35,8 +37,6 @@ public class ClientNetty {
             // Start the client.
             ChannelFuture f = b.connect(host, port).sync(); // (5)
             
-            
-            
             // Wait until the connection is closed.
             f.channel().closeFuture().sync();
         } finally {
@@ -48,15 +48,9 @@ public class ClientNetty {
 class TimeClientHandler extends ChannelInboundHandlerAdapter
 {
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        ByteBuf m = (ByteBuf) msg; // (1)
-        try {
-            long currentTimeMillis = (m.readUnsignedInt() - 2208988800L) * 1000L;
-            System.out.println(new Date(currentTimeMillis));
-            ctx.close();
-        } finally {
-            m.release();
-        }
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    	//onConnect
+    	new PacketString("Hello World").send(ctx.channel());
     }
 
     @Override

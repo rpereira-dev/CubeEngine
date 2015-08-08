@@ -6,6 +6,8 @@ import java.util.Map;
 
 import com.grillecube.common.network.NoSuchPacketException;
 import com.grillecube.common.network.Packet;
+import com.grillecube.common.network.PacketListener;
+import com.grillecube.common.network.Packets;
 import com.grillecube.common.network.WrongPacketFormatException;
 import com.grillecube.server.RunnableMessageHandler.PacketClientDataWrapper;
 
@@ -56,7 +58,8 @@ public class UserRegister
 			
 			/** Do whatever you want with Packet and Client :D **/
 			RunnableMessageHandler lch = getLeastChargedHandler();
-			lch.add(lch.new PacketClientDataWrapper(packet, clt));			
+			lch.add(lch.new PacketClientDataWrapper(packet, clt));
+			Packets.onReceive(packet);
 		}
 		catch (NoSuchPacketException e)
 		{
