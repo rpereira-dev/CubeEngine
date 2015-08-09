@@ -9,16 +9,25 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
-import org.lwjgl.util.vector.Vector3f;
 
-import com.grillecube.client.Game;
-import com.grillecube.client.renderer.Camera;
 import com.grillecube.common.logger.Logger;
 
+/**
+ * 
+ * HOW TO USE:
+ * 
+ * create a new instance (GLWindow window = new GLWindow())
+ * 
+ * call 'window.start()' to set GLContext + resize and error callback
+ * 
+ * 	window.prepareScreen(); //clear screen
+ * 	...                     // rendering stuff goes here
+ *	window.flushScreen(); //swap buffer + update fps counter
+ */
 public class GLWindow
 {	
 	/** window pointer */
-	private long	_window;
+	private long _window;
 	
 	/** window size (in pixels) */
 	private int	_width;
@@ -49,8 +58,6 @@ public class GLWindow
 	
 	public void start()
 	{
-		Dimension	screensize;
-
 		GLFW.glfwSetErrorCallback(new GlfwErrorCallback());
 		if (GLFW.glfwInit() == 0)
 		{
@@ -58,7 +65,7 @@ public class GLWindow
 			return ;
 		}
 		
-		screensize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
 		this._width = screensize.width / 2;
 		this._height = screensize.height / 2;
 		this._window = GLFW.glfwCreateWindow(this._width, this._height, "VoxelEngine", 0, 0);
@@ -95,11 +102,13 @@ public class GLWindow
 		this._fps = 0;
 	}
 	
+	/** enable or disable vsync (0 == disable, 1 == enable) */
 	public void	useVSync(int v)
 	{
 		GLFW.glfwSwapInterval(v);
 	}
 
+	/** call it to check openGL error after a gl call */
 	public static void  glCheckError(String label)
 	{
 		String str[] = {
@@ -132,7 +141,8 @@ public class GLWindow
 	    	}
 	    }
 	}
-	
+
+	/** stop the window */
 	public void stop()
 	{
 		GLFW.glfwDestroyWindow(this._window);
@@ -158,46 +168,6 @@ public class GLWindow
 	public int	getHeight()
 	{
 		return (this._height);
-	}
-	
-	private void	updateWindowTitle()
-	{
-		Camera cam = Game.instance().getRenderer().getCamera();
-
-		StringBuilder	title;
-		Vector3f		pos;
-		Vector3f		look;
-		String			x;
-		String			y;
-		String			z;
-		
-		title = new StringBuilder();
-		pos = cam.getPosition();
-		look = cam.getLookVec();
-		
-		x = String.valueOf(pos.x).substring(0, 3);
-		y = String.valueOf(pos.y).substring(0, 3);
-		z = String.valueOf(pos.z).substring(0, 3);
-		title.append("position:");
-		title.append(" x:");
-		title.append(x);
-		title.append(" y:");
-		title.append(y);
-		title.append(" z:");
-		title.append(z);
-
-		x = String.valueOf(look.x).substring(0, 3);
-		y = String.valueOf(look.y).substring(0, 3);
-		z = String.valueOf(look.z).substring(0, 3);
-		title.append("   |   looking at:");
-		title.append(" x:");
-		title.append(x);
-		title.append(" y:");
-		title.append(y);
-		title.append(" z:");
-		title.append(z);
-		
-		GLFW.glfwSetWindowTitle(this._window, title.toString());
 	}
 
 	/** should be call before rendering */
@@ -226,7 +196,6 @@ public class GLWindow
 	
 		this._prev_mouseX = this._mouseX;
 		this._prev_mouseY = this._mouseY;
-		this.updateWindowTitle();
 	
 		this.updateFpsCounter();
 		

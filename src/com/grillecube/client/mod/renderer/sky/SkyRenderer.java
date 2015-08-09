@@ -53,7 +53,8 @@ public class SkyRenderer extends ARenderer
 		
 		this._sky_program.useStop();
 		
-		this.doSnow();
+//		this.doSnow();
+		this.ambientParticle();
 	}
 
 	/** testing particles system :D */
@@ -66,7 +67,7 @@ public class SkyRenderer extends ARenderer
 			ParticleCube cube = new ParticleCube();
 			
 			float x = (this.getRNG().nextInt(2) == 0) ? -this.getRNG().nextFloat() : this.getRNG().nextFloat();
-			float y = (this.getRNG().nextInt(2) == 0) ? -this.getRNG().nextFloat() : this.getRNG().nextFloat();
+			float y = this.getRNG().nextFloat();
 			float z = (this.getRNG().nextInt(2) == 0) ? -this.getRNG().nextFloat() : this.getRNG().nextFloat();
 			cube.setPosition(this.getCamera().getPosition().x + x * 16,
 							this.getCamera().getPosition().y + y * 16,
@@ -83,5 +84,32 @@ public class SkyRenderer extends ARenderer
 			renderer.spawnParticle(cube);
 		}
 	}
+	
+	
+	/** testing particles system :D */
+	private void ambientParticle()
+	{
+		ParticleRenderer renderer = this.getRenderer().getParticleRenderer();
+
+		ParticleCube cube = new ParticleCube();
+		
+		float x = (this.getRNG().nextInt(2) == 0) ? -this.getRNG().nextFloat() : this.getRNG().nextFloat();
+		float y = this.getRNG().nextFloat();
+		float z = (this.getRNG().nextInt(2) == 0) ? -this.getRNG().nextFloat() : this.getRNG().nextFloat();
+		cube.setPosition(this.getCamera().getPosition().x + x * 16,
+						this.getCamera().getPosition().y + y * 16,
+						this.getCamera().getPosition().z + z * 16);
+		float size = this.getRNG().nextFloat() * 0.1f;
+		cube.setScale(size, size, size);
+		cube.setHealth(120);
+		cube.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+		
+		float velx = (this.getRNG().nextInt(2) == 0) ? -this.getRNG().nextFloat() : this.getRNG().nextFloat();
+		float vely = -this.getRNG().nextFloat();
+		float velz = (this.getRNG().nextInt(2) == 0) ? -this.getRNG().nextFloat() : this.getRNG().nextFloat();
+		cube.setPositionVel(velx / 32.0f, vely / 32.0f, velz / 32.0f);
+		renderer.spawnParticle(cube);
+	}
+
 
 }
