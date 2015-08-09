@@ -1,19 +1,19 @@
-package com.grillecube.client.mod.renderer.particles.cube;
+package com.grillecube.client.renderer.particles;
 
 import com.grillecube.client.renderer.Camera;
 import com.grillecube.client.renderer.opengl.object.Program;
 
-public class ProgramCubeParticles extends Program
+public class ProgramParticle extends Program
 {
-	private int _proj_matrix;
-	private int _view_matrix;
-	private int _transf_matrix;
-	private int _color;
-	private int _health;
+	protected int _proj_matrix;
+	protected int _view_matrix;
+	protected int _transf_matrix;
+	protected int _color;
+	protected int _health;
 
-	public ProgramCubeParticles()
+	public ProgramParticle(String vertex, String fragment)
 	{
-		super("cube", "cube");
+		super(vertex, fragment);
 	}
 
 	@Override
@@ -40,13 +40,10 @@ public class ProgramCubeParticles extends Program
 	}
 	
 	/** load instance uniforms */
-	public void	loadInstanceUniforms(CubeParticle particle)
+	public void	loadInstanceUniforms(Particle particle)
 	{
 		super.loadUniformMatrix(this._transf_matrix, particle.getTransfMatrix());
 		super.loadUniformVec(this._color, particle.getColor());
 		super.loadUniformFloat(this._health, particle.getHealthRatio());		
 	}
-	
-
-
 }

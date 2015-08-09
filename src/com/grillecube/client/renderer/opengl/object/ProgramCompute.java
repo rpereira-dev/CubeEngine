@@ -4,7 +4,10 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL42;
 import org.lwjgl.opengl.GL43;
 
-public abstract class ProgramCompute
+import com.grillecube.client.renderer.opengl.GLH;
+import com.grillecube.client.renderer.opengl.Shader;
+
+public abstract class ProgramCompute implements GLObject
 {	
 	private int	_programID;
 
@@ -18,9 +21,11 @@ public abstract class ProgramCompute
 		GL20.glAttachShader(this._programID, this._compute_shaderID);
 		GL20.glLinkProgram(this._programID);
 		GL20.glValidateProgram(this._programID);
+		GLH.glhAddObject(this);
 	}
 	
 	/** delete the program */
+	@Override
 	public void delete()
 	{
 		GL20.glDetachShader(this._programID, this._compute_shaderID);

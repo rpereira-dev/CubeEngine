@@ -129,6 +129,6 @@ public class BlockManager
 
 	public int getBlockCount()
 	{
-		return (this._blocks.length);
+		return (_blocks.length);
 	}
 }

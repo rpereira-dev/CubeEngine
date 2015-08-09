@@ -10,7 +10,7 @@ public class ProgramRenderParticles extends Program
 	
 	public ProgramRenderParticles()
 	{
-		super("particle", "particle");
+		super("particle_point", "particle_point");
 	}
 
 	@Override

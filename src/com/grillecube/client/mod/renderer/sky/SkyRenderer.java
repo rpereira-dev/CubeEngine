@@ -21,9 +21,8 @@ public class SkyRenderer extends ARenderer
 	/** program */
 	private ProgramSky	_sky_program;
 	
-	/** vao / vbo for icosphere */
+	/** vao for icosphere */
 	private VertexArray _vao;
-	private VertexBuffer _vbo;
 
 	@Override
 	public void start()
@@ -31,11 +30,11 @@ public class SkyRenderer extends ARenderer
 		this._sky_program = new ProgramSky();
 		
 		this._vao = GLH.glhGenVAO();
-		this._vbo = GLH.glhGenVBO();
+		VertexBuffer buffer = GLH.glhGenVBO();
 		
-		this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, GLGeometry.generateSphere(3), GL15.GL_STATIC_DRAW);
+		buffer.bufferData(GL15.GL_ARRAY_BUFFER, GLGeometry.generateSphere(3), GL15.GL_STATIC_DRAW);
 		this._vao.bind();
-		this._vao.setAttribute(this._vbo, 0, 3, GL11.GL_FLOAT, false, 4 * 3, 0);
+		this._vao.setAttribute(buffer, 0, 3, GL11.GL_FLOAT, false, 4 * 3, 0);
 		this._vao.unbind();
 	}
 

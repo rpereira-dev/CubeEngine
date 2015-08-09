@@ -7,7 +7,7 @@ public class Models
 	private static Model[] _models = null;
 	
 	/** every models ID */
-	public static final int	PIG		= 0;
+	public static final int	PIG	= 0;
 	
 	private static final int MAX_ID = 1;
 	

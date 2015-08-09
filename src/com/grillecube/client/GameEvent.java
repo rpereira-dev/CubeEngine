@@ -12,6 +12,9 @@ public class GameEvent
 	/** called when the game stop: free ressources? */
 	public static final int STOP = 2;
 	
+	/** called after the renderer is called (use it for opengl initialization!) */
+	public static int POST_RENDERER_START = 3;
+	
 	/** unused */
-	public static final int MAX_ID = 3;
+	public static final int MAX_ID = 4;
 }

@@ -229,4 +229,10 @@ public class Game
 	{
 		return (this.getState().has(GameState.RUNNING));
 	}
+
+	/** return the given events lists */
+	public ArrayList<IEvent> getEvents(int eventID)
+	{
+		return (this._events[eventID]);
+	}
 }

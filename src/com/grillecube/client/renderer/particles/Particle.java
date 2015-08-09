@@ -1,10 +1,12 @@
-package com.grillecube.client.mod.renderer.particles;
+package com.grillecube.client.renderer.particles;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-public abstract class Particle
+import com.grillecube.client.renderer.Camera;
+
+public class Particle
 {
 	protected Matrix4f _transf_matrix;
 	
@@ -21,6 +23,8 @@ public abstract class Particle
 	protected int _max_health;
 	protected int _health;
 	protected float _health_ratio;
+
+	private double _camera_square_distance;
 	
 	public Particle(int health)
 	{
@@ -37,6 +41,8 @@ public abstract class Particle
 		this._scale_vel = new Vector3f(0, 0, 0);
 		
 		this._color = new Vector4f(0.8f, 0.5f, 0.3f, 1.0f);
+		
+		this._camera_square_distance = 0;
 	}
 	
 	public Particle()
@@ -87,7 +93,7 @@ public abstract class Particle
 	}
 	
 	/** update the particle (move it) */
-	public void update()
+	public void update(Camera camera)
 	{
 		this._pos.add(this._pos_vel);
 		this._rot.add(this._rot_vel);
@@ -96,6 +102,13 @@ public abstract class Particle
 		
 		this._health_ratio = this._health / (float)this._max_health;
 		Matrix4f.createTransformationMatrix(this._transf_matrix, this._pos, this._rot, this._scale);
+		
+		this._camera_square_distance = Vector3f.distanceSquare(camera.getPosition(), this.getPosition());
+	}
+	
+	public double getCameraSquareDistance()
+	{
+		return (this._camera_square_distance);
 	}
 	
 	public Matrix4f getTransfMatrix()

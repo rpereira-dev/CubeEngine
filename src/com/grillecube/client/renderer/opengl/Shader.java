@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.opengl.object;
+package com.grillecube.client.renderer.opengl;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

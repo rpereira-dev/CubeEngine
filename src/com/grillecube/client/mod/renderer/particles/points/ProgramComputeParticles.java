@@ -6,6 +6,6 @@ public class ProgramComputeParticles extends ProgramCompute
 {	
 	public ProgramComputeParticles()
 	{
-		super("./assets/shaders/particle.compute");
+		super("./assets/shaders/particle_point.compute");
 	}
 }

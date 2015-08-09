@@ -86,9 +86,7 @@ public class FontModel
 		}
 		this._vao.unbind();
 
-		this._initialized = true;
-		
-		System.out.println("INITIALIZED");
+		this._initialized = true;		
 	}
 
 	/** destroy the model */

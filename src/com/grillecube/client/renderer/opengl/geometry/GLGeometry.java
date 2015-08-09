@@ -10,18 +10,36 @@ import com.grillecube.client.world.Weather;
 public class GLGeometry
 {
 	/** generate cube vertices */
-	public static FloatBuffer generateCube(int size)
+	public static FloatBuffer generateCube(float size)
 	{
-		float[] vertices = Cube.makeWithFace(size);
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(vertices.length);
-		buffer.put(vertices);
-		buffer.flip();
-		return (buffer);
+		return (toFloatBuffer(Cube.makeWithFace(size)));
 	}
 
 	public static FloatBuffer generateSphere(int detail)
 	{
-		float[]	vertices = Sphere.make(detail, Weather.SUN_DIST);
+		return (toFloatBuffer(Sphere.make(detail, Weather.SUN_DIST)));
+	}
+
+	/** generate a new quad FloatBuffer (4 * xyz) */
+	public static FloatBuffer generateQuad(float size)
+	{
+		return (toFloatBuffer(Quad.make(size)));
+	}
+	
+	/** generate a new quad FloatBuffer (made with triangles) (6 * xyz) */
+	public static FloatBuffer generateQuadTriangles(float size)
+	{
+		return (toFloatBuffer(Quad.makeWithTriangle(size)));
+	}
+
+	/** generate a new quad FloatBuffer (made with triangles with uv) (6 * xyzuv) */
+	public static FloatBuffer generateQuadTrianglesUV(float size) 
+	{
+		return (toFloatBuffer(Quad.makeWithTriangleUV(size)));
+	}
+	
+	private static FloatBuffer toFloatBuffer(float[] vertices)
+	{
 		FloatBuffer	buffer = BufferUtils.createFloatBuffer(vertices.length);
 		buffer.put(vertices);
 		buffer.flip();

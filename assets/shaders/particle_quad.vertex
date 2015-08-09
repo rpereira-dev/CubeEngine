@@ -1,0 +1,30 @@
+#version 400 core
+
+in vec3 position;
+in vec2 uv;
+
+out vec2 pass_uv;
+
+uniform mat4 proj_matrix;
+uniform mat4 view_matrix;
+uniform mat4 transf_matrix;
+
+uniform int cols;
+uniform int lines;
+uniform int spriteID;
+
+void	main(void)
+{
+	// position calculation
+	vec4 transf_position = transf_matrix * vec4(position, 1.0);
+	vec4 relative_position_to_camera = view_matrix * transf_position;
+	gl_Position = proj_matrix * relative_position_to_camera;
+
+	//texture atlas calculation
+	float texx = spriteID % cols;	// x texture to use in texture atlases
+	float texy = spriteID / lines;	// y texture to use in texture atlases
+	float textunitx = 1.0 / cols;
+	float textunity = 1.0 / lines;
+	pass_uv.x = uv.x / cols + texx * textunitx;
+	pass_uv.y = uv.y / lines + texy * textunity;
+}

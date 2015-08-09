@@ -1,0 +1,25 @@
+#version 400 core
+
+in vec2 pass_uv;
+
+out vec4 vertexColor;
+
+uniform sampler2D texture_sampler;
+uniform float health;
+
+uniform vec4 color;
+
+void	main(void)
+{
+	vec4 texture_color = texture(texture_sampler, pass_uv) * color;
+	
+	if (health > 0.2)
+	{
+		vertexColor = texture_color;
+	}
+	else
+	{
+		float ratio = 1 - (health / 0.2);
+		vertexColor = mix(texture_color, vec4(0.5, 0.5, 0.5, 0.0), ratio);
+	}
+}

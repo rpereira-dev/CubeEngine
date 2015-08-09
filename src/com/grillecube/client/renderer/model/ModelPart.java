@@ -145,13 +145,23 @@ public class ModelPart
 		this._vao.unbind();	
 	}
 
-	public String	getName()
+	/** get model part name */
+	public String getName()
 	{
 		return (this._name);
 	}
 
+	/** return the number of vertex for this model part */
 	public int	getVertexCount() 
 	{
 		return (this._vertex_count);
+	}
+	
+	/** delete the model */
+	@SuppressWarnings("unused")
+	private void delete()
+	{
+		GLH.glhDeleteVAO(this._vao);
+		GLH.glhDeleteVBO(this._vbo);
 	}
 }

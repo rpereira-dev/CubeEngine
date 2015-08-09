@@ -7,6 +7,7 @@ import com.grillecube.client.Game;
 import com.grillecube.client.renderer.font.FontRenderer;
 import com.grillecube.client.renderer.model.ModelRenderer;
 import com.grillecube.client.renderer.opengl.GLH;
+import com.grillecube.client.renderer.particles.ParticleRenderer;
 import com.grillecube.client.renderer.terrain.TerrainRenderer;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.common.logger.Logger;
@@ -23,10 +24,11 @@ public class MainRenderer
 	private TerrainRenderer	_terrain_renderer;
 	private ModelRenderer _model_renderer;
 	private FontRenderer _font_renderer;
+	private ParticleRenderer _particle_renderer;
 	
 	/** random number generator */
 	private Random _rng;
-
+	
 	public MainRenderer(Game game)
 	{
 		this._camera = new Camera(game.getGLWindow());
@@ -36,6 +38,7 @@ public class MainRenderer
 		this._terrain_renderer = new TerrainRenderer(game);
 		this._model_renderer = new ModelRenderer(game);
 		this._font_renderer = new FontRenderer(game);
+		this._particle_renderer = new ParticleRenderer(game);
 	}
 	
 	public Random getRNG()
@@ -58,13 +61,14 @@ public class MainRenderer
 		this._terrain_renderer.start();
 		this._model_renderer.start();
 		this._font_renderer.start();
-
+		this._particle_renderer.start();
+		
 		for (IRenderer renderer : this._renderers)
 		{
 			renderer.start();
 		}
 	}
-	
+
 	/** stop the renderer */
 	public void	stop()
 	{
@@ -82,7 +86,8 @@ public class MainRenderer
 		{
 			renderer.render();
 		}
-
+		
+		this._particle_renderer.render();
 		this._font_renderer.render();
 
 		GLWindow.glCheckError("MainRenderer.render()");
@@ -104,5 +109,11 @@ public class MainRenderer
 	public FontRenderer getFontRenderer()
 	{
 		return (this._font_renderer);
+	}
+	
+	/** return the default particle renderer */
+	public ParticleRenderer getParticleRenderer()
+	{
+		return (this._particle_renderer);
 	}
 }

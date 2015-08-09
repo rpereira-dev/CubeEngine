@@ -9,6 +9,7 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import com.grillecube.client.renderer.opengl.GLH;
+import com.grillecube.client.renderer.opengl.Shader;
 
 /** openGL program */
 public abstract class Program implements GLObject

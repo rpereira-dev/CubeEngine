@@ -14,7 +14,7 @@ import com.grillecube.client.world.World;
  */
 public class TerrainRendererThread extends Thread
 {
-	private static final long SLEEPING_TIME = 1000 / 60;
+	private static final long SLEEPING_TIME = 1000 / 120;
 	
 	/** game instance */
 	private Game _game;
