@@ -57,6 +57,13 @@ public class Particle
 		this._pos.set(x, y, z);
 	}
 	
+
+	public void setHealth(int health)
+	{
+		this._health = health;
+		this._max_health = health;
+	}
+	
 	/** set particle world location */
 	public void setPositionVel(float x, float y, float z)
 	{
@@ -101,11 +108,16 @@ public class Particle
 		this._health--;
 		
 		this._health_ratio = this._health / (float)this._max_health;
-		Matrix4f.createTransformationMatrix(this._transf_matrix, this._pos, this._rot, this._scale);
 		
+		this.calculateTransformationMatrix(camera);
 		this._camera_square_distance = Vector3f.distanceSquare(camera.getPosition(), this.getPosition());
 	}
 	
+	protected void calculateTransformationMatrix(Camera camera)
+	{
+		Matrix4f.createTransformationMatrix(this._transf_matrix, this._pos, this._rot, this._scale);		
+	}
+
 	public double getCameraSquareDistance()
 	{
 		return (this._camera_square_distance);

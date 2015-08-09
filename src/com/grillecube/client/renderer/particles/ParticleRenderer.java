@@ -127,6 +127,9 @@ public class ParticleRenderer extends ARenderer
 		
 		this._quad_particles.sort(this._particle_comparator);
 
+		float max_dist = this.getCamera().getRenderDistanceSquared() / 2;
+		
+		long t = System.currentTimeMillis();
 		int i = 0;
 		while (i < this._quad_particles.size())
 		{
@@ -137,16 +140,16 @@ public class ParticleRenderer extends ARenderer
 				this._quad_particles.remove(i);
 				continue ;
 			}
-			
-			this._program_quad.loadSpriteUniform(particle.getSprite());
-			if (this.getCamera().isInFrustum(particle.getPosition(), 0))
+
+			if (particle.getCameraSquareDistance() < max_dist && this.getCamera().isInFrustum(particle.getPosition(), 10))
 			{
+				this._program_quad.loadSpriteUniform(particle.getSprite());
 				this._program_quad.loadInstanceUniforms(particle);
 				this._vao_quad.draw(GL11.GL_TRIANGLES, 0, 6);
 			}
 			++i;
 		}
-		
+		System.out.println("took : " + (System.currentTimeMillis() - t));
 		this._vao_cube.disableAttribute(0);
 		this._vao_cube.disableAttribute(1);
 		this._vao_cube.unbind();		

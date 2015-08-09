@@ -847,8 +847,12 @@ public class Matrix4f extends Matrix implements Serializable {
 		return dest;
 	}
 
-	public static void createTransformationMatrix(Matrix4f dst, Vector3f pos, Vector3f rot, Vector3f scale)
+	public static Matrix4f createTransformationMatrix(Matrix4f dst, Vector3f pos, Vector3f rot, Vector3f scale)
 	{
+		if (dst == null)
+		{
+			dst = new Matrix4f();
+		}
 		if (pos == null)
 		{
 			pos = Vector3f.DEFAULT_POS;
@@ -868,6 +872,7 @@ public class Matrix4f extends Matrix implements Serializable {
 		dst.rotate(rot.y, Vector3f.AXIS_Y);
 		dst.rotate(rot.z, Vector3f.AXIS_Z);
 		dst.scale(scale);
+		return (dst);
 	}
 
 	public static void createTransformationMatrixWithOffset(Matrix4f dst, Vector3f pos, Vector3f rot, Vector3f scale, Vector3f offset)

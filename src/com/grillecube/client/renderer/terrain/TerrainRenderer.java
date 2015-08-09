@@ -28,6 +28,8 @@ public class TerrainRenderer extends ARenderer
 	@Override
 	public void	render()
 	{
+		this.getWeather().update();
+		
 		this.prepareRendering();
 		
 		this._terrain_program.useStart();

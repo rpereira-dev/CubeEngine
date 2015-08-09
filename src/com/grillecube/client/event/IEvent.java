@@ -5,5 +5,5 @@ import com.grillecube.client.Game;
 public interface IEvent
 {
 	/** invocation of this event */
-	public void invoke(Game game);
+	public void invoke(Game game, int eventID);
 }

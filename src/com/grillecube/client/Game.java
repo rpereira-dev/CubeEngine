@@ -93,7 +93,7 @@ public class Game
 	{
 		for (IEvent event : this._events[eventID])
 		{
-			event.invoke(this);
+			event.invoke(this, eventID);
 		}
 	}
 	
@@ -170,10 +170,7 @@ public class Game
 		this._renderer.stop();
 		this._logger.log(Level.FINE, "Stopped");
 		
-		for (IEvent event : this._events[GameEvent.STOP])
-		{
-			event.invoke(this);
-		}
+		this.invokeEvents(GameEvent.STOP);
 	}
 	
 	/** register a thread which will be launch when the game will be launched, and stopped when the game ends*/

@@ -82,6 +82,7 @@ public class Weather
 	}
 	
 	/** update the weather (mb use a 1D noise for rains, storm ...) */
+	/** ACUALLY CALLED IN TERRAIN RENDERER! */
 	public void	update()
 	{
 		this.updateTime();
