@@ -3,10 +3,10 @@ package com.grillecube.client.renderer.model;
 import org.lwjgl.opengl.GL11;
 
 import com.grillecube.client.Game;
-import com.grillecube.client.renderer.ARenderer;
+import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.world.entity.EntityModeled;
 
-public class ModelRenderer extends ARenderer
+public class ModelRenderer extends Renderer
 {	
 	public ModelRenderer(Game game)
 	{

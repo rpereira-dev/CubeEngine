@@ -27,19 +27,19 @@ public class Faces
 		_opposite_faces[FRONT]	= BACK;
 		_opposite_faces[BACK] 	= FRONT;
 		
-		_face_vector[LEFT]	= new Vector3i(-1, 0, 0);
-		_face_vector[RIGHT]	= new Vector3i(1, 0, 0);
-		_face_vector[TOP]	= new Vector3i(0, 1, 0);
+		_face_vector[LEFT]	= new Vector3i(0, 0, -1);
+		_face_vector[RIGHT]	= new Vector3i(0, 0, 1);
 		_face_vector[BOT]	= new Vector3i(0, -1, 0);
-		_face_vector[FRONT]	= new Vector3i(0, 0, -1);
-		_face_vector[BACK] 	= new Vector3i(0, 0, 1);
-		
-		_face_normal[LEFT]	= new Vector3f(-1, 0, 0);
-		_face_normal[RIGHT]	= new Vector3f(1, 0, 0);
+		_face_vector[TOP]	= new Vector3i(0, 1, 0);
+		_face_vector[FRONT]	= new Vector3i(-1, 0, 0);
+		_face_vector[BACK]	= new Vector3i(1, 0, 0);
+
+		_face_normal[LEFT]	= new Vector3f(0, 0, -1);
+		_face_normal[RIGHT]	= new Vector3f(0, 0, 1);
 		_face_normal[TOP]	= new Vector3f(0, 1, 0);
 		_face_normal[BOT]	= new Vector3f(0, -1, 0);
-		_face_normal[FRONT]	= new Vector3f(0, 0, -1);
-		_face_normal[BACK] 	= new Vector3f(0, 0, 1);
+		_face_normal[FRONT]	= new Vector3f(-1, 0, 0);
+		_face_normal[BACK] 	= new Vector3f(1, 0, 0);
 		
 		_faces_name[LEFT]	= new String("LEFT");
 		_faces_name[RIGHT]	= new String("RIGHT");

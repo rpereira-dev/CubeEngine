@@ -3,8 +3,8 @@ package com.grillecube.client;
 public class GameState
 {
 	/** default game state */
-	public static final GameState NONE		= new GameState(0);
-	public static final GameState RUNNING	= new GameState(1);
+	public static final GameState DEFAULT = new GameState(0);
+	public static final GameState RUNNING = new GameState(1);
 	public static final int DEFAULT_GAME_STATE_MAX_ID = 2;
 	
 	private int _id;

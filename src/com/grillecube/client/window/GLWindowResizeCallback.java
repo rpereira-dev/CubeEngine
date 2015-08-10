@@ -16,6 +16,4 @@ public class GLWindowResizeCallback extends GLFWWindowSizeCallback
 	{
 		this._window.resize(width, height);
 	}
-
-
 }

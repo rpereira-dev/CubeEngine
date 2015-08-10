@@ -1,9 +1,7 @@
-package com.grillecube.client.renderer.particles;
+	package com.grillecube.client.renderer.particles;
 
-import org.lwjgl.util.vector.Matrix4f;
-
-import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.opengl.object.Program;
+import com.grillecube.client.opengl.object.Program;
+import com.grillecube.client.renderer.camera.Camera;
 
 public class ProgramParticle extends Program
 {

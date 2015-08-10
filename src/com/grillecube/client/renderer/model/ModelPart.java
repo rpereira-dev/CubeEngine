@@ -3,9 +3,9 @@ package com.grillecube.client.renderer.model;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
-import com.grillecube.client.renderer.opengl.GLH;
-import com.grillecube.client.renderer.opengl.object.VertexArray;
-import com.grillecube.client.renderer.opengl.object.VertexBuffer;
+import com.grillecube.client.opengl.GLH;
+import com.grillecube.client.opengl.object.VertexArray;
+import com.grillecube.client.opengl.object.VertexBuffer;
 import com.grillecube.common.logger.Logger;
 
 public class ModelPart

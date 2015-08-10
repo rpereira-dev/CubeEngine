@@ -3,9 +3,9 @@ package com.grillecube.client.renderer.font;
 import java.util.ArrayList;
 
 import com.grillecube.client.Game;
-import com.grillecube.client.renderer.ARenderer;
+import com.grillecube.client.renderer.Renderer;
 
-public class FontRenderer extends ARenderer
+public class FontRenderer extends Renderer
 {
 	public FontRenderer(Game game)
 	{
@@ -21,6 +21,8 @@ public class FontRenderer extends ARenderer
 	/** font models */
 	private ArrayList<FontModel> _fonts_model;
 	
+	private FontModel _debug_font_model;
+	
 	@Override
 	public void start()
 	{
@@ -28,7 +30,9 @@ public class FontRenderer extends ARenderer
 
 		this._program = new ProgramFont();
 		this._fonts_model = new ArrayList<FontModel>();
-		this.addString("Hello world", 5000);
+		_debug_font_model = new FontModel(DEFAULT_FONT, "", FontModel.INFINITE_TIMER);
+		_debug_font_model.setPosition(-1, 1, 0);
+		this.addFontModel(_debug_font_model);
 	}
 	
 	/** add the font model to the renderer */
@@ -42,46 +46,47 @@ public class FontRenderer extends ARenderer
 	 * - coordinate system (for posx, posy, posz) is gl one (-1 ; 1)
 	 * - time is in MS, and is how long the string should be rendered (FontModel.INFINITE_TIMER if infinite)
 	 **/
-	public void addString(Font font, String str, float posx, float posy, float posz, long timer)
+	public FontModel addString(Font font, String str, float posx, float posy, float posz, long timer)
 	{
 		FontModel model = new FontModel(font, str, timer);
 		model.setPosition(posx, posy, posz);
 		this.addFontModel(model);
+		return (model);
 	}
 	
-	public void addString(String str, float posx, float posy, float posz, long timer)
+	public FontModel addString(String str, float posx, float posy, float posz, long timer)
 	{
-		this.addString(FontRenderer.DEFAULT_FONT, str, posx, posy, posz, timer);
+		return (this.addString(FontRenderer.DEFAULT_FONT, str, posx, posy, posz, timer));
 	}
 	
-	public void addString(String str, float posx, float posy, float posz)
+	public FontModel addString(String str, float posx, float posy, float posz)
 	{
-		this.addString(FontRenderer.DEFAULT_FONT, str, posx, posy, posz, FontModel.INFINITE_TIMER);
+		return (this.addString(FontRenderer.DEFAULT_FONT, str, posx, posy, posz, FontModel.INFINITE_TIMER));
 	}
 	
-	public void addString(Font font, String str, int posx, int posy, int posz)
+	public FontModel addString(Font font, String str, int posx, int posy, int posz)
 	{
-		this.addString(font, str, posx, posy, posz);
+		return (this.addString(font, str, posx, posy, posz));
 	}
 
-	public void addString(Font font, String str, int time)
+	public FontModel addString(Font font, String str, int time)
 	{
-		this.addString(font, str, -1, 1, 0, time);
+		return (this.addString(font, str, -1, 1, 0, time));
 	}
 	
-	public void addString(Font font, String str)
+	public FontModel addString(Font font, String str)
 	{
-		this.addString(font, str, -1, 1, 0, FontModel.INFINITE_TIMER);
+		return (this.addString(font, str, -1, 1, 0, FontModel.INFINITE_TIMER));
 	}
 	
-	public void addString(String str, long timer)
+	public FontModel addString(String str, long timer)
 	{
-		this.addString(FontRenderer.DEFAULT_FONT, str, -1, 1, 0, timer);
+		return (this.addString(FontRenderer.DEFAULT_FONT, str, -1, 1, 0, timer));
 	}
 	
-	public void addString(String str)
+	public FontModel addString(String str)
 	{
-		this.addString(FontRenderer.DEFAULT_FONT, str, -1, 1, 0, FontModel.INFINITE_TIMER);
+		return (this.addString(FontRenderer.DEFAULT_FONT, str, -1, 1, 0, FontModel.INFINITE_TIMER));
 	}
 	
 	/** remove every string from the renderer */
@@ -98,7 +103,7 @@ public class FontRenderer extends ARenderer
 	public void render()
 	{
 		this._program.useStart();
-		
+		this._debug_font_model.setText("pos: " + this.getCamera().getPosition() + "\n" + "look: " + this.getCamera().getLookVec());
 		for (int i = 0 ; i < this._fonts_model.size() ; i++)
 		{
 			FontModel model = this._fonts_model.get(i);

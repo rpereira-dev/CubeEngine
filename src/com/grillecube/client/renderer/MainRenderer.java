@@ -4,11 +4,12 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import com.grillecube.client.Game;
+import com.grillecube.client.opengl.GLH;
+import com.grillecube.client.renderer.camera.Camera;
 import com.grillecube.client.renderer.font.FontRenderer;
 import com.grillecube.client.renderer.model.ModelRenderer;
-import com.grillecube.client.renderer.opengl.GLH;
 import com.grillecube.client.renderer.particles.ParticleRenderer;
-import com.grillecube.client.renderer.terrain.TerrainRenderer;
+import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.common.logger.Logger;
 
@@ -21,7 +22,7 @@ public class MainRenderer
 	private LinkedList<IRenderer> _renderers;
 	
 	/** default renderers */
-	private TerrainRenderer	_terrain_renderer;
+	private WorldRenderer _world_renderer;
 	private ModelRenderer _model_renderer;
 	private FontRenderer _font_renderer;
 	private ParticleRenderer _particle_renderer;
@@ -35,7 +36,7 @@ public class MainRenderer
 		this._renderers = new LinkedList<IRenderer>();
 		this._rng = new Random();
 		
-		this._terrain_renderer = new TerrainRenderer(game);
+		this._world_renderer = new WorldRenderer(game);
 		this._model_renderer = new ModelRenderer(game);
 		this._font_renderer = new FontRenderer(game);
 		this._particle_renderer = new ParticleRenderer(game);
@@ -57,11 +58,11 @@ public class MainRenderer
 	public void	start(Game game)
 	{
 		GLH.start();
-
-		this._terrain_renderer.start();
-		this._model_renderer.start();
-		this._font_renderer.start();
-		this._particle_renderer.start();
+		
+		this.registerRenderer(this._world_renderer);
+		this.registerRenderer(this._model_renderer);
+		this.registerRenderer(this._particle_renderer);
+		this.registerRenderer(this._font_renderer);
 		
 		for (IRenderer renderer : this._renderers)
 		{
@@ -78,18 +79,12 @@ public class MainRenderer
 
 	/** main rendering function (screen is already cleared, and frame buffer will be swapped after this render */
 	public void render()
-	{
-		this._terrain_renderer.render();
-		this._model_renderer.render();
-		
+	{		
 		for (IRenderer renderer : this._renderers)
 		{
 			renderer.render();
 		}
 		
-		this._particle_renderer.render();
-		this._font_renderer.render();
-
 		GLWindow.glCheckError("MainRenderer.render()");
 	}
 
@@ -100,7 +95,7 @@ public class MainRenderer
 	}
 	
 	/** get the camera */
-	public Camera	getCamera()
+	public Camera getCamera()
 	{
 		return (this._camera);
 	}
@@ -115,5 +110,11 @@ public class MainRenderer
 	public ParticleRenderer getParticleRenderer()
 	{
 		return (this._particle_renderer);
+	}
+	
+	/** get the world renderer */
+	public WorldRenderer getWorldRenderer()
+	{
+		return (this._world_renderer);
 	}
 }

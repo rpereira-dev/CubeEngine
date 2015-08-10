@@ -2,12 +2,12 @@ package com.grillecube.client.world;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.grillecube.client.renderer.Camera;
+import com.grillecube.client.renderer.camera.Camera;
 
 public class Weather
 {
 	/** minutes for a full day / night cycle */
-	private static final float MINUTE_PER_CYCLE = 1f;
+	private static final float MINUTE_PER_CYCLE = 0.2f;
 	private static final long MILLIS_PER_CYCLE = (long) (1000 * 60 * MINUTE_PER_CYCLE);
 	
 	/** time constants */
@@ -27,33 +27,32 @@ public class Weather
 	private int	_state;
 	
 	/** time [0.0 ; 1.0] */
-	private float	_cycle_ratio;
-	private int		_cycle_count;
+	private float _cycle_ratio;
+	private int _cycle_count;
 	
 	/** time in millis [0.0 ; MILLIS_PER_CYCLE] */
-	private long	_cycle_millis;
-	private long	_prev_millis;
+	private long _cycle_millis;
+	private long _prev_millis;
 	
 	/** sky data */
 	private static final Vector3f	SKY_DEFAULT_COLOR	= new Vector3f(0.46f, 0.71f, 0.99f);
 	private static final Vector3f	SKY_NIGHT_COLOR		= new Vector3f(0.06f, 0.11f, 0.16f);
-	private Vector3f	_sky_color;
-	
-	/** sun position */
-	public static final float		SUN_DIST = Camera.RENDER_DISTANCE;
+	private Vector3f _sky_color;
 	
 	/** sun color */
-	private static final Vector3f	SUN_RISE_COLOR 		= new Vector3f(1.2f, 1.0f, 0.8f);
-	private static final Vector3f	SUN_DEFAULT_COLOR	= new Vector3f(1.0f, 1.0f, 1.0f);
+	private static final Vector3f SUN_RISE_COLOR 		= new Vector3f(1.2f, 1.0f, 0.8f);
+	private static final Vector3f SUN_DEFAULT_COLOR	= new Vector3f(1.0f, 1.0f, 1.0f);
 	
-	private Vector3f	_sun_pos;
-	private Vector3f	_sun_color;
-	private float		_sun_intensity;
+	public static final float SUN_DISTANCE = 256.0f; //distance from earth to sun (used in ProgramTerrain.java)
+	
+	private Vector3f _sun_pos;
+	private Vector3f _sun_color;
+	private float _sun_intensity;
 	
 	/** fog data */
-	private Vector3f	_fog_color;
-	private float		_fog_density;
-	private float		_fog_gradient;
+	private Vector3f _fog_color;
+	private float _fog_density;
+	private float _fog_gradient;
 	
 	/** Weather constructor */
 	public Weather()
@@ -67,7 +66,7 @@ public class Weather
 
 		this._sun_pos = new Vector3f();
 		this._sun_color = SUN_RISE_COLOR;
-		this._sun_intensity = 1.1f;
+		this._sun_intensity = 1.0f;
 		
 		this._fog_color = new Vector3f(1.0f, 1.0f, 1.0f);
 		this._fog_density = 0.004f;
@@ -132,8 +131,8 @@ public class Weather
 
 	private void calculateSun()
 	{
-		this._sun_pos.x = (float) Math.cos(this._cycle_ratio * Math.PI * 2) * Weather.SUN_DIST;
-		this._sun_pos.y = (float) Math.sin(this._cycle_ratio * Math.PI * 2) * Weather.SUN_DIST;
+		this._sun_pos.x = (float) Math.cos(this._cycle_ratio * Math.PI * 2);
+		this._sun_pos.y = (float) Math.sin(this._cycle_ratio * Math.PI * 2);
 		this._sun_pos.z = 0;
 	}
 	
@@ -188,7 +187,7 @@ public class Weather
 		return (this._sun_color);
 	}
 	
-	public float	getSunIntensity()
+	public float getSunIntensity()
 	{
 		return (this._sun_intensity);
 	}

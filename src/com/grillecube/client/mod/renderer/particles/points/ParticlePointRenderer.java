@@ -12,12 +12,12 @@ import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GL43;
 
 import com.grillecube.client.Game;
-import com.grillecube.client.renderer.ARenderer;
+import com.grillecube.client.renderer.Renderer;
 
 /**
  * 	Implementation follows: http://web.engr.oregonstate.edu/~mjb/cs557/Handouts/compute.shader.1pp.pdf
  */
-public class ParticlePointRenderer extends ARenderer
+public class ParticlePointRenderer extends Renderer
 {	
 	public ParticlePointRenderer(Game game)
 	{

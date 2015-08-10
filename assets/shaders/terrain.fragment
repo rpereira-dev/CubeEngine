@@ -22,7 +22,6 @@ void	main(void)
 	float n = dot(normal, light);
 	float brightness = max(n, 0.4);
 	
-	
 	vec3 diffuse = brightness * sun_color;
 
 	vec4 texture_color = texture(texture_sampler, pass_uv) * vec4(diffuse, 1.0);
@@ -39,5 +38,5 @@ void	main(void)
 
 
 	//gamma correction
-	vertexColor *= 1.2f;
+	vertexColor *= 1.5f;
 }

@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import com.grillecube.client.event.IEvent;
 import com.grillecube.client.mod.blocks.ModBlocks;
 import com.grillecube.client.mod.renderer.particles.ModParticles;
-import com.grillecube.client.mod.renderer.sky.ModSkyRenderer;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.ressources.ResourceManager;
 import com.grillecube.client.window.GLWindow;
 import com.grillecube.client.world.World;
+import com.grillecube.client.world.WorldManager;
 import com.grillecube.common.logger.Logger;
 import com.grillecube.common.logger.Logger.Level;
 import com.grillecube.common.mod.ModLoader;
@@ -30,7 +30,7 @@ public class Game
 	private GLWindow _window;
 	
 	/** World */
-	private World _world;
+	private WorldManager _world_manager;
 	
 	/** Renderer */
 	private MainRenderer _renderer;
@@ -60,10 +60,10 @@ public class Game
 			this._events[i] = new ArrayList<IEvent>();
 		}
 		this._state_factory = new GameStateFactory();
-		this._state = this._state_factory.registerNewState();
+		this._state = GameState.DEFAULT;
 		this._window = new GLWindow();
+		this._world_manager = new WorldManager();
 		this._renderer = new MainRenderer(this);
-		this._world = new World();
 		this._resources = new ResourceManager();
 		this._mod_loader = new ModLoader();
 	}
@@ -76,13 +76,13 @@ public class Game
 		this.invokeEvents(GameEvent.PRE_START);
 		
 		this._logger.log(Level.FINE, "Starting game...");
+		
 		this._window.start();
-		
 		this._mod_loader.initializeAll(this);
-		
 		this._renderer.start(this);
 		this._resources.start();
-		this._world.start();
+		this._world_manager.start();
+		
 		this._logger.log(Level.FINE, "Game started!");
 		
 		this.invokeEvents(GameEvent.POST_START);		
@@ -108,8 +108,6 @@ public class Game
 	{
 		this._mod_loader.loadMods("./mods");
 		
-		//TODO : default mods are injected here
-		this._mod_loader.injectMod(new ModSkyRenderer());
 		this._mod_loader.injectMod(new ModBlocks());
 		this._mod_loader.injectMod(new ModParticles());
 	}
@@ -198,11 +196,17 @@ public class Game
 	}
 
 	/** return the world */
-	public World getWorld()
+	public WorldManager getWorldManager()
 	{
-		return (this._world);
+		return (this._world_manager);
 	}
 
+	/** return the current world the player is in */
+	public World getCurrentWorld()
+	{
+		return (this._world_manager.getWorld(WorldManager.WORLD_DEFAULT));
+	}
+	
 	/** return the main renderer */
 	public MainRenderer	getRenderer()
 	{

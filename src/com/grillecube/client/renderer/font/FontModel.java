@@ -6,9 +6,9 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import com.grillecube.client.renderer.opengl.GLH;
-import com.grillecube.client.renderer.opengl.object.VertexArray;
-import com.grillecube.client.renderer.opengl.object.VertexBuffer;
+import com.grillecube.client.opengl.GLH;
+import com.grillecube.client.opengl.object.VertexArray;
+import com.grillecube.client.opengl.object.VertexBuffer;
 
 public class FontModel
 {	

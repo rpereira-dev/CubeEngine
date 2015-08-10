@@ -6,11 +6,12 @@ uniform mat4 proj_matrix;
 uniform mat4 view_matrix;
 
 uniform vec3 sun_pos;
+uniform float skydome_size;
 
 out float sun_dist;
 out float fog_factor;
 
-#define SKYDOME_SIZE 256
+#define SKYDOME_SIZE 1.0
 
 const float fog_begin = -SKYDOME_SIZE;
 const float fog_end = SKYDOME_SIZE / 4.0 * 3.0;

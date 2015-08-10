@@ -3,7 +3,7 @@ package com.grillecube.client.renderer.particles;
 import org.lwjgl.util.vector.FastMath;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.grillecube.client.renderer.Camera;
+import com.grillecube.client.renderer.camera.Camera;
 
 /** particles made with a quad, 1 particle = 1 quad instance (more CPU (billboarding); less GPU */
 public class ParticleQuad extends Particle

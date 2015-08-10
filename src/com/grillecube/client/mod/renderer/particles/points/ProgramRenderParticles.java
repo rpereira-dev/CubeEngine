@@ -1,7 +1,7 @@
 package com.grillecube.client.mod.renderer.particles.points;
 
-import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.opengl.object.Program;
+import com.grillecube.client.opengl.object.Program;
+import com.grillecube.client.renderer.camera.Camera;
 
 public class ProgramRenderParticles extends Program
 {

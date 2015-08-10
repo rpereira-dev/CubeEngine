@@ -1,4 +1,4 @@
-package com.grillecube.client.window;
+	package com.grillecube.client.window;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -43,7 +43,7 @@ public class GLWindow
 	private double	_prev_mouseY;
 
 	/** window event instances */
-	private GLWindowResizeCallback		_callback_window_size;
+	private GLWindowResizeCallback _callback_window_size;
 	
 	/** frames data */
 	private long _prev_frame; //previous frame timer
@@ -101,6 +101,8 @@ public class GLWindow
 		this._fps_counter = 0;
 		this._fps = 0;
 	}
+	
+	
 	
 	/** enable or disable vsync (0 == disable, 1 == enable) */
 	public void	useVSync(int v)

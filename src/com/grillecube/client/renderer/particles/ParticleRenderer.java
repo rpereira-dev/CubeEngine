@@ -7,14 +7,14 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 import com.grillecube.client.Game;
-import com.grillecube.client.renderer.ARenderer;
-import com.grillecube.client.renderer.opengl.GLH;
-import com.grillecube.client.renderer.opengl.geometry.GLGeometry;
-import com.grillecube.client.renderer.opengl.object.VertexArray;
-import com.grillecube.client.renderer.opengl.object.VertexBuffer;
+import com.grillecube.client.opengl.GLH;
+import com.grillecube.client.opengl.geometry.GLGeometry;
+import com.grillecube.client.opengl.object.VertexArray;
+import com.grillecube.client.opengl.object.VertexBuffer;
+import com.grillecube.client.renderer.Renderer;
 
 /** a simple cube rendering system for particles */
-public class ParticleRenderer extends ARenderer
+public class ParticleRenderer extends Renderer
 {
 	/** program */
 	private ProgramParticleQuad _program_quad;

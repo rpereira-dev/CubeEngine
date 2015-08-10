@@ -4,7 +4,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import com.grillecube.client.renderer.Camera;
+import com.grillecube.client.renderer.camera.Camera;
 
 public class Particle
 {

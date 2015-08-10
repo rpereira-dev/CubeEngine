@@ -12,50 +12,26 @@ import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.world.blocks.Block;
 import com.grillecube.client.world.entity.EntityModeled;
 
-public class World
+public abstract class World
 {
 	/** every loaded terrain are in */
 	private HashMap<Vector3i, Terrain> _terrains;
 	
 	/** every world entities */
-	private ArrayList<EntityModeled>	_entities;
+	private ArrayList<EntityModeled> _entities;
 	
 	/** world weather */
 	private Weather	_weather;
 	
 	public World()
 	{
-		super();
-		this._terrains = new HashMap<Vector3i, Terrain>();
-		this._entities = new ArrayList<EntityModeled>();
+		this._terrains = new HashMap<Vector3i, Terrain>(4096);
+		this._entities = new ArrayList<EntityModeled>(512);
 		this._weather = new Weather();
 	}
 
 	/** called on initiliaztion */
-	public void start()
-	{
-		for (int x = -4 ; x < 4 ; x++)
-		{
-			for (int z = -4 ; z < 4 ; z++)
-			{
-				for (int y = -4 ; y < 4 ; y++)
-				{
-					this.spawnTerrain(new Terrain(new TerrainLocation(x, y, z)));
-				}
-			}
-		}
-		
-//		this.addTerrain(new Terrain(this, new TerrainLocation(0, 0, 0)));
-
-
-//		this._entities.add(new EntityModeled(Models.getModel(Models.PIG))
-//		{
-//
-//			@Override
-//			protected void updateEntity() {}
-//		});
-		
-	}
+	public abstract void start();
 	
 	/** get the terrain location (x, y, z) for the given world location */
 	public Vector3i getTerrainIndex(float x, float y, float z)
@@ -177,4 +153,13 @@ public class World
 		Vector3i vec = this.getTerrainRelativePos(pos);
 		terrain.setBlock(vec, blockID);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return ("World: " + this.getName());
+	}
+	
+	/** return world name */
+	public abstract String getName();
 }

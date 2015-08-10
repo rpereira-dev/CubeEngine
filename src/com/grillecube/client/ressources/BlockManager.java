@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import com.grillecube.client.renderer.opengl.GLH;
-import com.grillecube.client.renderer.opengl.ImageUtils;
-import com.grillecube.client.renderer.opengl.object.Texture;
+import com.grillecube.client.opengl.GLH;
+import com.grillecube.client.opengl.ImageUtils;
+import com.grillecube.client.opengl.object.Texture;
 import com.grillecube.client.world.blocks.Block;
 import com.grillecube.common.logger.Logger;
 

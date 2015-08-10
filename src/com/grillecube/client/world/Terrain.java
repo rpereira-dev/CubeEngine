@@ -6,8 +6,8 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector3i;
 
 import com.grillecube.client.mod.blocks.ResourceBlocks;
-import com.grillecube.client.renderer.Camera;
-import com.grillecube.client.renderer.terrain.TerrainMesh;
+import com.grillecube.client.renderer.camera.Camera;
+import com.grillecube.client.renderer.world.terrain.TerrainMesh;
 import com.grillecube.client.ressources.BlockManager;
 import com.grillecube.client.world.blocks.Block;
 
@@ -52,7 +52,7 @@ public class Terrain
 	{
 //		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
 //		{
-//			for (int y = 0 ; y < 1; y++)
+//			for (int y = 0 ; y < Terrain.SIZE_Y ; y++)
 //			{
 //				for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 //				{
@@ -60,19 +60,18 @@ public class Terrain
 //				}
 //			}
 //		}
-//		this._blocks[Terrain.SIZE_X / 2][1][Terrain.SIZE_Z / 2] = ResourceBlocks.GRASS;
 
-		
-		
+
 		for (int x = 0 ; x < Terrain.SIZE_X ; x++)
 		{
 			for (int y = 0 ; y < Terrain.SIZE_Y ; y++)
 			{
 				for (int z = 0 ; z < Terrain.SIZE_Z ; z++)
 				{
+
 					if (noise.noise((this.getWorldLocation().x + x) / 128.0f,
-									(this.getWorldLocation().y + y) / 128.0f,
-									(this.getWorldLocation().z + z) / 128.0f) < 0)
+							(this.getWorldLocation().y + y) / 128.0f,
+							(this.getWorldLocation().z + z) / 128.0f) < 0)
 					{
 						this._blocks[x][y][z] = ResourceBlocks.DIRT;
 					}
@@ -82,9 +81,9 @@ public class Terrain
 					}
 				}
 			}
-		}		
+		}
 	}
-	
+
 	/** return block at given coordinates (terrain-relative)
 	 * 
 	 *	if coordinates are negative or superior to the terrain dimension,
@@ -97,8 +96,10 @@ public class Terrain
 		//x test
 		if (x < 0)
 		{
-			x = x % Terrain.SIZE_X + Terrain.SIZE_X;
-			terrain = terrain.getNeighbor(Faces.LEFT);
+			do {
+				x += Terrain.SIZE_X;
+			} while (x < 0);
+			terrain = terrain.getNeighbor(Faces.FRONT);
 			if (terrain == null)
 			{
 				return (BlockManager.getBlockByID(ResourceBlocks.AIR));
@@ -106,8 +107,10 @@ public class Terrain
 		}
 		else if (x >= Terrain.SIZE_X)
 		{
-			x = x % Terrain.SIZE_X;
-			terrain = terrain.getNeighbor(Faces.RIGHT);
+			do {
+				x -= Terrain.SIZE_X;
+			} while (x >= Terrain.SIZE_X);
+			terrain = terrain.getNeighbor(Faces.BACK);
 			if (terrain == null)
 			{
 				return (BlockManager.getBlockByID(ResourceBlocks.AIR));
@@ -118,7 +121,9 @@ public class Terrain
 		//y test
 		if (y < 0)
 		{
-			y = y % Terrain.SIZE_Y + Terrain.SIZE_Y;
+			do {
+				y += Terrain.SIZE_Y;
+			} while (y < 0);
 			terrain = terrain.getNeighbor(Faces.BOT);
 			if (terrain == null)
 			{
@@ -139,8 +144,10 @@ public class Terrain
 		//z test
 		if (z < 0)
 		{
-			z = z % Terrain.SIZE_Z + Terrain.SIZE_Z;
-			terrain = terrain.getNeighbor(Faces.FRONT);
+			do {
+				z += Terrain.SIZE_X;
+			} while (z < 0);
+			terrain = terrain.getNeighbor(Faces.LEFT);
 			if (terrain == null)
 			{
 				return (BlockManager.getBlockByID(ResourceBlocks.AIR));
@@ -149,7 +156,7 @@ public class Terrain
 		else if (z >= Terrain.SIZE_Z)
 		{
 			z = z % Terrain.SIZE_Z;
-			terrain = terrain.getNeighbor(Faces.BACK);
+			terrain = terrain.getNeighbor(Faces.RIGHT);
 			if (terrain == null)
 			{
 				return (BlockManager.getBlockByID(ResourceBlocks.AIR));
@@ -157,10 +164,15 @@ public class Terrain
 		}
 		return (BlockManager.getBlockByID(terrain._blocks[x][y][z]));
 	}
-	
+
 	public Block getBlock(Vector3i pos)
 	{
 		return (this.getBlock(pos.x, pos.y, pos.z));
+	}
+	
+	public Block getBlockUnsafe(int x, int y, int z)
+	{
+		return (BlockManager.getBlockByID(this._blocks[x][y][z]));
 	}
 	
 	/** return terrain location */
@@ -262,7 +274,7 @@ public class Terrain
 			{
 				terrain.setNeighboor(this, Faces.getOppositeFace(faceID));
 			}
-			this._neighboors[faceID] = terrain;		
+			this.setNeighboor(terrain, faceID);
 		}
 	}
 
@@ -314,7 +326,7 @@ public class Terrain
 							
 							if (pos.x < 0)
 							{
-								touched_by_flood[Faces.LEFT] = true;
+								touched_by_flood[Faces.FRONT] = true;
 								continue ;
 							}
 			
@@ -326,13 +338,13 @@ public class Terrain
 							
 							if (pos.z < 0)
 							{
-								touched_by_flood[Faces.FRONT] = true;
+								touched_by_flood[Faces.LEFT] = true;
 								continue ;
 							}
 							
 							if (pos.x >= Terrain.SIZE_X)
 							{
-								touched_by_flood[Faces.RIGHT] = true;
+								touched_by_flood[Faces.BACK] = true;
 								continue ;
 							}
 			
@@ -344,7 +356,7 @@ public class Terrain
 							
 							if (pos.z >= Terrain.SIZE_Z)
 							{
-								touched_by_flood[Faces.BACK] = true;
+								touched_by_flood[Faces.RIGHT] = true;
 								continue ;
 							}
 							
