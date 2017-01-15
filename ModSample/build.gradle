@@ -1,0 +1,12 @@
+dependencies {
+	compile project(':VoxelEngine')
+}
+
+// configure  the source folders
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}

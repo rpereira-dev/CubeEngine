@@ -1,0 +1,46 @@
+project.ext.lwjglVersion = "3.1.1"
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+
+    repositories {
+       mavenCentral()
+       maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+
+    dependencies {
+		testCompile 'junit:junit:4.8.2'
+		
+        compile "org.lwjgl:lwjgl:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl:${lwjglVersion}:natives-windows"
+		compile "org.lwjgl:lwjgl:${lwjglVersion}:natives-linux"
+		compile "org.lwjgl:lwjgl:${lwjglVersion}:natives-osx"
+		
+        compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-windows"
+        compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-linux"
+        compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-osx"
+        
+        compile "org.lwjgl:lwjgl-openal:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-windows"
+        compile "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-linux"
+        compile "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-osx"
+                
+        compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-windows"
+        compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-linux"
+        compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-osx"
+
+		compile "io.netty:netty-all:4.0.30.Final"
+		
+		compile "org.json:json:20141113"
+	}
+
+
+    version = '1.0'
+
+    jar {
+        manifest.attributes provider: 'Voxel Engine'
+    }
+}
