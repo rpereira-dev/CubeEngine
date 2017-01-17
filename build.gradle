@@ -10,31 +10,33 @@ subprojects {
     }
 
     dependencies {
-		testCompile 'junit:junit:4.8.2'
+	
+	testCompile 'junit:junit:4.8.2'
 		
         compile "org.lwjgl:lwjgl:${lwjglVersion}"
         compile "org.lwjgl:lwjgl:${lwjglVersion}:natives-windows"
-		compile "org.lwjgl:lwjgl:${lwjglVersion}:natives-linux"
-		compile "org.lwjgl:lwjgl:${lwjglVersion}:natives-osx"
+	compile "org.lwjgl:lwjgl:${lwjglVersion}:natives-linux"
+	compile "org.lwjgl:lwjgl:${lwjglVersion}:natives-osx"
 		
         compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
         compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-windows"
         compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-linux"
-        compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-osx"
+        compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-macos"
         
         compile "org.lwjgl:lwjgl-openal:${lwjglVersion}"
         compile "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-windows"
         compile "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-linux"
-        compile "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-osx"
+        compile "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-macos"
                 
         compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
         compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-windows"
         compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-linux"
-        compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-osx"
+        compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-macos"
 
-		compile "io.netty:netty-all:4.0.30.Final"
+	compile "io.netty:netty-all:4.0.30.Final"
 		
-		compile "org.json:json:20141113"
+	compile "org.json:json:20141113'
+	
 	}
 
 
