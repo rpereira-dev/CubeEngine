@@ -14,7 +14,7 @@
 
 package com.grillecube.engine.renderer.model;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
@@ -108,7 +108,7 @@ public class ModelPart {
 	}
 
 	/** set modelaprt vertices, should only be called once ! */
-	public void setVertices(FloatBuffer buffer) {
+	public void setVertices(ByteBuffer buffer) {
 		this._vbo.bind(GL15.GL_ARRAY_BUFFER);
 		this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 		this._vertex_count = buffer.capacity() / ModelPart.FLOAT_PER_MODEL_VERTEX;

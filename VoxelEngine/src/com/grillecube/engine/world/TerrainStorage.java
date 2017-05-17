@@ -8,6 +8,7 @@ import com.grillecube.engine.Logger;
 import com.grillecube.engine.Logger.Level;
 import com.grillecube.engine.Taskable;
 import com.grillecube.engine.VoxelEngine;
+import com.grillecube.engine.VoxelEngine.Callable;
 import com.grillecube.engine.event.world.EventWorldSpawnTerrain;
 import com.grillecube.engine.maths.Maths;
 import com.grillecube.engine.maths.Vector3f;
@@ -19,8 +20,8 @@ import com.grillecube.engine.world.entity.Entity;
 
 public class TerrainStorage extends WorldStorage {
 
-	private HashMap<Vector3i, Terrain> _terrains;
-	private ArrayList<Terrain> _loaded_terrains;
+	private HashMap<Vector3i, Terrain> terrains;
+	private ArrayList<Terrain> loadedTerrains;
 
 	/**
 	 * the maximum and minimum terrain y coordinates to make a terrain valid for
@@ -31,8 +32,8 @@ public class TerrainStorage extends WorldStorage {
 
 	public TerrainStorage(World world) {
 		super(world);
-		this._terrains = new HashMap<Vector3i, Terrain>(4096);
-		this._loaded_terrains = new ArrayList<Terrain>(128);
+		this.terrains = new HashMap<Vector3i, Terrain>(4096);
+		this.loadedTerrains = new ArrayList<Terrain>(128);
 		this.setMinHeightIndex(-4);
 		this.setMaxHeightIndex(4);
 	}
@@ -41,19 +42,22 @@ public class TerrainStorage extends WorldStorage {
 	public static final int TERRAIN_PER_TASK = 8;
 
 	@Override
-	public void getTasks(VoxelEngine engine, ArrayList<com.grillecube.engine.VoxelEngine.Callable<Taskable>> tasks) {
-		// Terrain[] loaded = this.getLoaded();
+	public void getTasks(VoxelEngine engine, ArrayList<Callable<Taskable>> tasks) {
+		Terrain[] loaded = this.getLoaded();
+		for (Terrain terrain : loaded) {
+			terrain.update();
+		}
 		// for (int i = 0; i < loaded.length; i += TERRAIN_PER_TASK) {
 		//
 		// final int begin = i;
-		// final int end = Maths.max(i + TERRAIN_PER_TASK, loaded.length);
+		// final int end = Maths.min(i + TERRAIN_PER_TASK, loaded.length);
 		//
 		// tasks.add(engine.new Callable<Taskable>() {
 		//
 		// @Override
 		// public TerrainStorage call() throws Exception {
-		// for (int i = begin; i < end; i++) {
-		// Terrain terrain = loaded[i];
+		// for (int j = begin; j < end; j++) {
+		// Terrain terrain = loaded[j];
 		// terrain.update();
 		// }
 		// return (TerrainStorage.this);
@@ -66,46 +70,38 @@ public class TerrainStorage extends WorldStorage {
 		// }
 		// });
 		// }
-
-		Collection<Terrain> terrains = this._terrains.values();
-		for (Terrain terrain : terrains) {
-			terrain.update();
-			// if (terrain.getLocation().getWorldIndex().equals(new Vector3i(-5,
-			// -1, 3))) {
-			// Logger.get().log(Logger.Level.DEBUG, "updated" + terrain);
-			// }
-		}
 	}
 
 	/**
 	 * add the terrain to the world, return true it if added sucessfully, return
 	 * false else way
 	 */
-	public boolean spawn(Terrain terrain) {
-		if (this.get(terrain.getLocation().getWorldIndex()) != null) {
+	public Terrain spawn(Terrain terrain) {
+		Terrain previous = this.get(terrain.getLocation().getWorldIndex());
+		if (previous != null) {
 			Logger.get().log(Level.WARNING, "Tried to spawn a terrain on an already existed terrain at: "
 					+ terrain.getLocation().getWorldIndex());
-			return (false);
+			return (previous);
 		}
 
 		int height = terrain.getLocation().getWorldIndex().y;
 		if (height > this.getMaxHeightIndex()) {
 			Logger.get().log(Level.WARNING, "Tried to spawn a terrain above the current maximum height! " + height
 					+ " / " + this.getMaxHeightIndex());
-			return (false);
+			return (null);
 		}
 
 		if (height < this.getMinHeightIndex()) {
 			Logger.get().log(Level.WARNING, "Tried to spawn a terrain under the current minimum height! " + height
 					+ " / " + this.getMinHeightIndex());
-			return (false);
+			return (null);
 		}
 
-		this._terrains.put(terrain.getLocation().getWorldIndex(), terrain);
-		this._loaded_terrains.add(terrain);
+		this.terrains.put(terrain.getLocation().getWorldIndex(), terrain);
+		this.loadedTerrains.add(terrain);
 		terrain.onSpawned(this.getWorld());
 		this.invokeEvent(new EventWorldSpawnTerrain(this.getWorld(), terrain));
-		return (true);
+		return (terrain);
 	}
 
 	/** remove the terrain */
@@ -116,8 +112,8 @@ public class TerrainStorage extends WorldStorage {
 		}
 
 		terrain.destroy();
-		this._terrains.remove(terrain);
-		this._loaded_terrains.remove(terrain);
+		this.terrains.remove(terrain);
+		this.loadedTerrains.remove(terrain);
 	}
 
 	/** remove the terrain */
@@ -145,14 +141,14 @@ public class TerrainStorage extends WorldStorage {
 
 	/** return the terrain hashmap */
 	public Terrain[] get() {
-		Collection<Terrain> collection = this._terrains.values();
+		Collection<Terrain> collection = this.terrains.values();
 		Terrain[] terrains = new Terrain[collection.size()];
 		return (collection.toArray(terrains));
 	}
 
 	/** get every loaded terrains */
 	public Terrain[] getLoaded() {
-		return (this._loaded_terrains.toArray(new Terrain[this._loaded_terrains.size()]));
+		return (this.loadedTerrains.toArray(new Terrain[this.loadedTerrains.size()]));
 	}
 
 	/**
@@ -160,7 +156,7 @@ public class TerrainStorage extends WorldStorage {
 	 * exists / is empty
 	 */
 	public Terrain get(Vector3i index) {
-		return (this._terrains.get(index));
+		return (this.terrains.get(index));
 	}
 
 	/** get the terrain location (x, y, z) for the given world location */
@@ -235,7 +231,7 @@ public class TerrainStorage extends WorldStorage {
 	}
 
 	public boolean hasTerrain(Terrain terrain) {
-		return (this._terrains.containsValue(terrain));
+		return (this.terrains.containsValue(terrain));
 	}
 
 	/** get the block at the given world relative position */
@@ -276,7 +272,7 @@ public class TerrainStorage extends WorldStorage {
 	}
 
 	public int getTerrainCount() {
-		return (this._terrains.size());
+		return (this.terrains.size());
 	}
 
 	/** world location */
@@ -323,7 +319,7 @@ public class TerrainStorage extends WorldStorage {
 
 	/** return true if the given terrain is loaded */
 	public boolean isLoaded(Terrain terrain) {
-		return (this._loaded_terrains.contains(terrain));
+		return (this.loadedTerrains.contains(terrain));
 	}
 
 }

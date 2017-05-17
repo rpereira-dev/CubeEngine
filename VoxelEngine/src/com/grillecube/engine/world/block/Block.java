@@ -23,17 +23,17 @@ import com.grillecube.engine.world.Terrain;
 import com.grillecube.engine.world.block.instances.BlockInstance;
 
 public abstract class Block {
-	public static final byte MAX_LIGHT_VALUE = Byte.MAX_VALUE;
+	public static final byte MAX_LIGHT_VALUE = 16;
 	public static final byte MIN_LIGHT_VALUE = 0;
 
 	/** block opengl textureID (see faces indices) */
-	private final int[] _textureID;
+	private final int[] textureID;
 
 	/** unique block id, set when the block is registered */
-	private final short _id;
+	private final short id;
 
 	/** block density */
-	private float _density;
+	private float density;
 
 	/**
 	 * private final Vector3f _color;
@@ -53,28 +53,28 @@ public abstract class Block {
 	 *            : special faces (BLOCK_FACE_FRONT, TEXTURE_ID....)
 	 */
 	public Block(int blockID, int... faces) {
-		this._id = (short) blockID;
-		this._textureID = new int[6];
+		this.id = (short) blockID;
+		this.textureID = new int[6];
 		for (int i = 0; i < faces.length; i += 2) {
-			this._textureID[faces[i]] = faces[i + 1];
+			this.textureID[faces[i]] = faces[i + 1];
 		}
 		this.setDensity(1.0f);
 	}
 
 	public Block setDensity(float density) {
-		this._density = density;
+		this.density = density;
 		return (this);
 	}
 
 	public Block setFace(int faceID, int textureID) {
 		if (faceID >= 0 && faceID < 6) {
-			this._textureID[faceID] = textureID;
+			this.textureID[faceID] = textureID;
 		}
 		return (this);
 	}
 
 	public int getTextureIDForFace(Face face) {
-		return (this._textureID[face.getID()]);
+		return (this.textureID[face.getID()]);
 	}
 
 	/** to string function */
@@ -101,12 +101,12 @@ public abstract class Block {
 	 * WARNING : this update every block of this type. If you want one special
 	 * block to act a certain way, you should have a look at BlockInstance
 	 * 
-	 * @see createBlockInstance(Terrain terrain, int x, int y, int z)
+	 * @see createBlockInstance(Terrain terrain, short index)
 	 */
 	public abstract void update(Terrain terrain, int x, int y, int z);
 
 	public final short getID() {
-		return (this._id);
+		return (this.id);
 	}
 
 	/**
@@ -114,17 +114,13 @@ public abstract class Block {
 	 *
 	 * @param terrain
 	 *            : the terrain where a block of this type as been set
-	 * @param x
-	 *            : x coordinate (relative to the terrain)
-	 * @param y
-	 *            : y coordinate (relative to the terrain)
-	 * @param z
-	 *            : z coordinate (relative to the terrain)
+	 * @param index
+	 *            : index coordinate (relative to the terrain)
 	 *
 	 * @return a BlockInstance for this block, or null if the block should be
 	 *         instanced (i.e, if the block is a static cube)
 	 */
-	public BlockInstance createBlockInstance(Terrain terrain, int x, int y, int z) {
+	public BlockInstance createBlockInstance(Terrain terrain, short index) {
 		return (null);
 	}
 

@@ -15,25 +15,25 @@ import com.grillecube.engine.mod.Mod;
 public class AssetsPack implements IModResource {
 
 	/** the zip file */
-	private String _pack;
-	private String _modid;
+	private String pack;
+	private String modid;
 	
 	public AssetsPack(String modid, String packpath) {
-		this._modid = modid.replaceAll("\\s+","");
-		this._pack = packpath;
+		this.modid = modid.replaceAll("\\s+","");
+		this.pack = packpath;
 	}
 	
 	public String getModID() {
-		return (this._modid);
+		return (this.modid);
 	}
 	
 	public String getPack() {
-		return (this._pack);
+		return (this.pack);
 	}
 	
 	@Override
 	public String toString() {
-		return (this._modid + " ; " + this._pack);
+		return (this.modid + " ; " + this.pack);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class AssetsPack implements IModResource {
 			}
 
 			// save current file states to the hashmap
-			String mappath = dstdir + ".assets_" + this._modid.hashCode();
+			String mappath = dstdir + ".assets_" + this.modid.hashCode();
 			HashMap<String, String> map = ResourceManager.getConfigFile(mappath, 1024);
 			boolean changed = false;
 

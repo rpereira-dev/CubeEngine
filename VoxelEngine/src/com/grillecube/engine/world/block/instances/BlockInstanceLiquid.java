@@ -36,8 +36,8 @@ public class BlockInstanceLiquid extends BlockInstance {
 	public static final float LIQUID_HEIGHT_UNIT = MIN_LIQUID_AMOUNT / (float) MAX_LIQUID_AMOUNT;
 	private static final int DEFAULT_WATER_AMOUNT = MAX_LIQUID_AMOUNT;
 
-	public BlockInstanceLiquid(Terrain terrain, Block block, int x, int y, int z) {
-		super(terrain, block, x, y, z);
+	public BlockInstanceLiquid(Terrain terrain, Block block, short index) {
+		super(terrain, block, index);
 		this.setAmount(DEFAULT_WATER_AMOUNT);
 	}
 
@@ -104,7 +104,7 @@ public class BlockInstanceLiquid extends BlockInstance {
 	/** flow the water around */
 	private void flow() {
 
-		this._blockunder = super.getTerrain().getBlock(super.getX(), super.getY() - 1, super.getZ());
+		this._blockunder = super.getTerrain().getBlock(super.getIndex());
 
 		// if the block under is air
 		if (this._blockunder == Blocks.AIR) {
@@ -126,7 +126,7 @@ public class BlockInstanceLiquid extends BlockInstance {
 
 	/** the block try to give some amount of water to the block under */
 	private void flowUnder() {
-		BlockInstance under = super.getTerrain().getBlockInstance(super.getX(), super.getY() - 1, super.getZ());
+		BlockInstance under = super.getNeighborInstance(0, -1, 0);
 		if (under != null && under instanceof BlockInstanceLiquid) {
 
 			// get the liquid under
@@ -141,10 +141,7 @@ public class BlockInstanceLiquid extends BlockInstance {
 	private void fall() {
 		super.removeBlock();
 
-		int x = super.getX();
-		int y = super.getY() - 1;
-		int z = super.getZ();
-		BlockInstanceLiquid instance = (BlockInstanceLiquid) super.getTerrain().setBlock(super.getBlock(), x, y, z);
+		BlockInstanceLiquid instance = (BlockInstanceLiquid) super.getNeighborInstance(0, -1, 0);
 		if (instance != null) {
 			instance._last_tick = this._last_tick;
 			instance.setAmount(0);
@@ -160,11 +157,16 @@ public class BlockInstanceLiquid extends BlockInstance {
 
 		// iterate though the neighbor array
 		for (int i = 0; i < 4; i++) {
-			int bx = super.getX() + NEIGHBOR[i].x;
-			int by = super.getY() + NEIGHBOR[i].y;
-			int bz = super.getZ() + NEIGHBOR[i].z;
 
-			Block block = super.getTerrain().getBlock(bx, by, bz);
+			int z = this.getTerrain().getZFromIndex(this.getIndex());
+			int y = this.getTerrain().getYFromIndex(this.getIndex(), z);
+			int x = this.getTerrain().getXFromIndex(this.getIndex(), y, z);
+
+			int bx = x + NEIGHBOR[i].x;
+			int by = y + NEIGHBOR[i].y;
+			int bz = z + NEIGHBOR[i].z;
+
+			Block block = super.getTerrain().getBlock(x, y, z);
 
 			// if the neighbor is air
 			if (block == Blocks.AIR) {

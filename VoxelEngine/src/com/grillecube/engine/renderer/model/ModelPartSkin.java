@@ -14,7 +14,7 @@
 
 package com.grillecube.engine.renderer.model;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 
 import org.lwjgl.opengl.GL15;
 
@@ -38,7 +38,7 @@ public class ModelPartSkin {
 		this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
 	}
 
-	public void setVertices(FloatBuffer buffer) {
+	public void setVertices(ByteBuffer buffer) {
 		if (this._vbo == null) {
 			this._vbo = GLH.glhGenVBO();
 		}

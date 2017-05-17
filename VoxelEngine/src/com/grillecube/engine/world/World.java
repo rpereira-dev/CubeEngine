@@ -36,28 +36,28 @@ public abstract class World implements Taskable {
 	public static final SimplexNoiseOctave NOISE_OCTAVE = new SimplexNoiseOctave(seed);
 
 	/** the world generator */
-	private WorldGenerator _generator;
+	private WorldGenerator generator;
 
 	/** every loaded terrain are in */
-	private TerrainStorage _terrains;
+	private TerrainStorage terrains;
 
 	/** every world entities. */
-	private EntityStorage _entities;
+	private EntityStorage entities;
 
 	/** world weather */
-	private Weather _weather;
+	private Weather weather;
 
-	private Random _rng;
+	private Random rng;
 
 	/** number of updates which was made for the world */
-	private long _tick;
+	private long tick;
 
 	public World() {
-		this._terrains = new TerrainStorage(this);
-		this._entities = new EntityStorage(this);
-		this._weather = new Weather();
-		this._rng = new Random();
-		this._tick = 0;
+		this.terrains = new TerrainStorage(this);
+		this.entities = new EntityStorage(this);
+		this.weather = new Weather();
+		this.rng = new Random();
+		this.tick = 0;
 		this.setWorldGenerator(new WorldGeneratorEmpty());
 	}
 
@@ -65,9 +65,9 @@ public abstract class World implements Taskable {
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<com.grillecube.engine.VoxelEngine.Callable<Taskable>> tasks) {
 
-		this._weather.getTasks(engine, tasks);
-		this._entities.getTasks(engine, tasks);
-		this._terrains.getTasks(engine, tasks);
+		this.weather.getTasks(engine, tasks);
+		this.entities.getTasks(engine, tasks);
+		this.terrains.getTasks(engine, tasks);
 		this.onTasksGet(engine, tasks);
 		this.tick();
 	}
@@ -78,21 +78,21 @@ public abstract class World implements Taskable {
 
 	/** set the world generator */
 	public void setWorldGenerator(WorldGenerator worldgen) {
-		this._generator = worldgen;
+		this.generator = worldgen;
 	}
 
 	public Random getRNG() {
-		return (this._rng);
+		return (this.rng);
 	}
 
 	public void setWeather(Weather weather) {
-		this._weather = weather;
+		this.weather = weather;
 	}
 
 	/** delete the world : de-allocate every allocated memory */
 	public void delete() {
-		this._entities.delete();
-		this._terrains.delete();
+		this.entities.delete();
+		this.terrains.delete();
 	}
 
 	/**
@@ -100,51 +100,51 @@ public abstract class World implements Taskable {
 	 * exists / is empty
 	 */
 	public TerrainStorage getTerrainStorage() {
-		return (this._terrains);
+		return (this.terrains);
 	}
 
 	public EntityStorage getEntityStorage() {
-		return (this._entities);
+		return (this.entities);
 	}
 
 	/** return world weather */
 	public Weather getWeather() {
-		return (this._weather);
+		return (this.weather);
 	}
 
 	/** get the block at the given world relative position */
 	public Block getBlock(float x, float y, float z) {
-		return (this._terrains.getBlock(x, y, z));
+		return (this.terrains.getBlock(x, y, z));
 	}
 
 	/** world position */
 	public Block getBlock(Vector3f pos) {
-		return (this._terrains.getBlock(pos.x, pos.y, pos.z));
+		return (this.terrains.getBlock(pos.x, pos.y, pos.z));
 	}
 
 	/** set the block at the given world coordinates */
 	public Terrain setBlock(Block block, float x, float y, float z) {
-		return (this._terrains.setBlock(block, x, y, z));
+		return (this.terrains.setBlock(block, x, y, z));
 	}
 
 	/** return the terrain at the given index */
 	public Terrain getTerrain(int x, int y, int z) {
-		return (this._terrains.get(x, y, z));
+		return (this.terrains.get(x, y, z));
 	}
 
 	/** return the terrain at the given index */
 	public Terrain getTerrain(Vector3i pos) {
-		return (this._terrains.get(pos));
+		return (this.terrains.get(pos));
 	}
 
 	/** return true if the given terrain is loaded */
 	public boolean isTerrainLoaded(Terrain terrain) {
-		return (this._terrains.isLoaded(terrain));
+		return (this.terrains.isLoaded(terrain));
 	}
 
 	/** get every loaded terrains */
 	public Terrain[] getLoadedTerrains() {
-		return (this._terrains.getLoaded());
+		return (this.terrains.getLoaded());
 	}
 
 	/** get the terrain index for the given world position */
@@ -153,26 +153,26 @@ public abstract class World implements Taskable {
 	}
 
 	public Vector3i getTerrainIndex(Vector3f position, Vector3i world_index) {
-		return (this._terrains.getIndex(position, world_index));
+		return (this.terrains.getIndex(position, world_index));
 	}
 
 	/** return true if this world can hold this terrain */
 	public boolean canHoldTerrain(Terrain terrain) {
-		return (this._terrains.canHold(terrain));
+		return (this.terrains.canHold(terrain));
 	}
 
 	/** spawn a terrain */
-	public boolean spawnTerrain(Terrain terrain) {
-		return (this._terrains.spawn(terrain));
+	public Terrain spawnTerrain(Terrain terrain) {
+		return (this.terrains.spawn(terrain));
 	}
 
 	/** tick the world once */
 	public void tick() {
-		this._tick++;
+		this.tick++;
 	}
 
 	public long getTick() {
-		return (this._tick);
+		return (this.tick);
 	}
 
 	@Override
@@ -289,7 +289,7 @@ public abstract class World implements Taskable {
 
 	/** world location */
 	public BlockInstance getBlockInstance(float x, float y, float z) {
-		return (this._terrains.getBlockInstance(x, y, z));
+		return (this.terrains.getBlockInstance(x, y, z));
 	}
 
 	/**
@@ -297,7 +297,7 @@ public abstract class World implements Taskable {
 	 * block along the Y axis at most
 	 */
 	public int getGroundHeight(Entity entity, int height) {
-		return (this._terrains.getGroundHeight(entity, height));
+		return (this.terrains.getGroundHeight(entity, height));
 	}
 
 	/** called whenever this world is set as the current one */

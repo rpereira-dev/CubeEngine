@@ -2,6 +2,7 @@ package com.grillecube.engine.renderer.camera;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.grillecube.engine.Logger;
 import com.grillecube.engine.maths.Vector3f;
 import com.grillecube.engine.opengl.GLFWWindow;
 import com.grillecube.engine.world.block.Blocks;
@@ -92,10 +93,17 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 			// }
 
 			// super.setBlock(Blocks.LIQUID_WATER, this.getLookCoords());
-			super.setBlock(Blocks.LIGHT_TEST, this.getLookCoords());
+			if (i++ % 2 == 0) {
+				pos.set(this.getLookCoords());
+				super.setBlock(Blocks.LIGHT_TEST, pos);
+			} else {
+				super.setBlock(Blocks.AIR, pos);
+			}
 		}
 	}
 
+	static int i = 0;
+	static Vector3f pos = new Vector3f();
 	private double _prevx = 200;
 	private double _prevy = 200;
 

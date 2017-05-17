@@ -61,8 +61,13 @@ public class GLVertexArray implements GLObject {
 	}
 
 	/** set VertexArray attribute depending on bounded VertexBuffer */
-	public void setAttribute(int attributeID, int length, int type, boolean normalized, int stride, int offset) {
-		GL20.glVertexAttribPointer(attributeID, length, type, normalized, stride, offset);
+	public void setAttribute(int index, int size, int type, boolean normalized, int stride, long pointer) {
+		GL20.glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+	}
+
+	/** set VertexArray attribute depending on bounded VertexBuffer */
+	public void setAttributei(int index, int size, int type, int stride, long pointer) {
+		GL30.glVertexAttribIPointer(index, size, type, stride, pointer);
 	}
 
 	/** bind the given VertexBuffer and set the attribute in the VertexArray */
@@ -83,7 +88,10 @@ public class GLVertexArray implements GLObject {
 		vbo.unbind(GL15.GL_ARRAY_BUFFER);
 	}
 
-	/** bind the given vertex buffer, and set it as an instanced attribute to the vertex array */
+	/**
+	 * bind the given vertex buffer, and set it as an instanced attribute to the
+	 * vertex array
+	 */
 	public void setAttributeInstanced(GLVertexBuffer vbo, int attributeID, int length, int type, boolean normalized,
 			int stride, int offset) {
 
@@ -101,19 +109,21 @@ public class GLVertexArray implements GLObject {
 
 	/** GL11.glDrawArrays binding */
 	public void draw(int dst, int begin, int vertex_count) {
-//		if (GLH.glhGetBoundVertexArray() != this._id) {
-//			Logger.get().log(Level.WARNING, "Tried to draw a GLVertexArray which wasnt bound!");
-//			return;
-//		}
+		// if (GLH.glhGetBoundVertexArray() != this._id) {
+		// Logger.get().log(Level.WARNING, "Tried to draw a GLVertexArray which
+		// wasnt bound!");
+		// return;
+		// }
 		GLH.glhDrawArrays(dst, begin, vertex_count);
 	}
 
 	public void drawInstanced(int mode, int first, int count, int primcount) {
 
-//		if (GLH.glhGetBoundVertexArray() != this._id) {
-//			Logger.get().log(Level.WARNING, "Tried to draw a GLVertexArray which wasnt bound!");
-//			return;
-//		}
+		// if (GLH.glhGetBoundVertexArray() != this._id) {
+		// Logger.get().log(Level.WARNING, "Tried to draw a GLVertexArray which
+		// wasnt bound!");
+		// return;
+		// }
 
 		GLH.glhDrawArraysInstanced(mode, first, count, primcount);
 	}

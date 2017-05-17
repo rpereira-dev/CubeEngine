@@ -14,7 +14,7 @@
 
 package com.grillecube.engine.renderer.world.terrain;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -43,16 +43,16 @@ public class TerrainMesh {
 	private GLVertexBuffer _vbo;
 
 	private int _state;
-	private Terrain _terrain;
+	private Terrain terrain;
 
 	private Vector3f _rotation;
 	private Vector3f _scale;
 
 	private Matrix4f _transf_matrix;
-	private FloatBuffer _vertices;
+	private ByteBuffer vertices;
 
 	public TerrainMesh(Terrain terrain) {
-		this._terrain = terrain;
+		this.terrain = terrain;
 		this._transf_matrix = new Matrix4f();
 		this._rotation = new Vector3f();
 		this._scale = new Vector3f(1.0f, 1.0f, 1.0f);
@@ -73,7 +73,7 @@ public class TerrainMesh {
 		this._vao.setAttribute(0, 3, GL11.GL_FLOAT, false, step, 0); // x, y, z
 		this._vao.setAttribute(1, 3, GL11.GL_FLOAT, false, step, 3 * 4); // normal
 		this._vao.setAttribute(2, 4, GL11.GL_FLOAT, false, step, (3 + 3) * 4); // tx
-		this._vao.setAttribute(3, 1, GL11.GL_FLOAT, false, step, (3 + 3 + 4) * 4); // color
+		this._vao.setAttributei(3, 1, GL11.GL_INT, step, (3 + 3 + 4) * 4); // color
 		this._vao.setAttribute(4, 1, GL11.GL_FLOAT, false, step, (3 + 3 + 4 + 1) * 4); // brightness
 
 		this._vbo.unbind(GL15.GL_ARRAY_BUFFER);
@@ -98,7 +98,7 @@ public class TerrainMesh {
 	}
 
 	public Terrain getTerrain() {
-		return (this._terrain);
+		return (this.terrain);
 	}
 
 	public boolean hasState(int state) {
@@ -125,8 +125,8 @@ public class TerrainMesh {
 
 	public void preRender() {
 
-		if (!this.hasState(TerrainMesh.STATE_VBO_UP_TO_DATE) && this._vertices != null
-				&& this._terrain.hasState(Terrain.STATE_VERTICES_UP_TO_DATE)) {
+		if (!this.hasState(TerrainMesh.STATE_VBO_UP_TO_DATE) && this.vertices != null
+				&& this.terrain.hasState(Terrain.STATE_VERTICES_UP_TO_DATE)) {
 
 			if (!this.hasState(TerrainMesh.STATE_INITIALIZED)) {
 				this.initializeMesh();
@@ -134,9 +134,9 @@ public class TerrainMesh {
 
 			this.setState(TerrainMesh.STATE_VBO_UP_TO_DATE);
 			this._vbo.bind(GL15.GL_ARRAY_BUFFER);
-			this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, this._vertices, GL15.GL_STATIC_DRAW);
-			this._vertex_count = this._vertices.capacity() / TerrainMesh.FLOAT_PER_VERTEX;
-			this._vertices = null; // no longerneed it
+			this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, this.vertices, GL15.GL_STATIC_DRAW);
+			this._vertex_count = this.vertices.capacity() / TerrainMesh.FLOAT_PER_VERTEX;
+			this.vertices = null; // no longerneed it
 		}
 	}
 
@@ -148,16 +148,15 @@ public class TerrainMesh {
 	public boolean update(TerrainMesher mesher, Camera camera) {
 
 		// if vertices need to be update, and lights are calculated
-		if (!this._terrain.hasState(Terrain.STATE_VERTICES_UP_TO_DATE)
-				&& this._terrain.hasState(Terrain.STATE_LIGHT_UP_TO_DATE)) {
+		if (!this.terrain.hasState(Terrain.STATE_VERTICES_UP_TO_DATE)) {
 
 			// lock the update
-			this._terrain.setState(Terrain.STATE_VERTICES_UP_TO_DATE);
+			this.terrain.setState(Terrain.STATE_VERTICES_UP_TO_DATE);
 			// lock the vbo update
 			this.setState(TerrainMesh.STATE_VBO_UP_TO_DATE);
 
 			// generate vertices
-			this._vertices = mesher.generateVertices(this.getTerrain());
+			this.vertices = mesher.generateVertices(this.getTerrain());
 
 			// unlock vbo update
 			this.unsetState(TerrainMesh.STATE_VBO_UP_TO_DATE);

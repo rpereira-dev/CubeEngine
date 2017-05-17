@@ -14,6 +14,7 @@
 
 package com.grillecube.engine.opengl.object;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
@@ -50,7 +51,7 @@ public class GLVertexBuffer implements GLObject {
 	}
 
 	/** set the vbo data */
-	public void bufferData(int target, FloatBuffer data, int usage) {
+	public void bufferData(int target, ByteBuffer data, int usage) {
 		if (data == null) {
 			this.bufferSize(target, 0, GL15.GL_STREAM_DRAW);
 			this._float_count = 0;
@@ -62,13 +63,13 @@ public class GLVertexBuffer implements GLObject {
 	}
 
 	/** update the whole vbo data, using stream draw */
-	public void bufferDataUpdate(int target, FloatBuffer data) {
+	public void bufferDataUpdate(int target, ByteBuffer data) {
 		int capacity = data == null ? 0 : data.capacity() * 4;
 		this.bufferDataUpdate(target, data, capacity);
 	}
 
 	/** update the whole vbo data, using stream draw */
-	public void bufferDataUpdate(int target, FloatBuffer data, int capacity) {
+	public void bufferDataUpdate(int target, ByteBuffer data, int capacity) {
 		this.bufferData(target, data, GL15.GL_STREAM_DRAW);
 	}
 
@@ -79,10 +80,12 @@ public class GLVertexBuffer implements GLObject {
 
 	public void bufferData(int target, float[] data, int usage) {
 		if (data == null) {
-			this.bufferData(target, (FloatBuffer) null, usage);
+			this.bufferData(target, (ByteBuffer) null, usage);
 		} else {
-			FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
-			buffer.put(data);
+			ByteBuffer buffer = BufferUtils.createByteBuffer(data.length * 4);
+			for (float f : data) {
+				buffer.putFloat(f);
+			}
 			buffer.flip();
 			this.bufferData(target, buffer, usage);
 		}

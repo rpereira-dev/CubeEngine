@@ -14,12 +14,11 @@
 
 package com.grillecube.engine.renderer.model;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 import java.util.Stack;
 
 import org.lwjgl.BufferUtils;
 
-import com.grillecube.engine.Logger;
 import com.grillecube.engine.faces.Face;
 import com.grillecube.engine.maths.Vector3i;
 import com.grillecube.engine.renderer.model.builder.ColorInt;
@@ -198,28 +197,28 @@ public abstract class ModelMesher {
 	}
 
 	/** generate the position vertices for the given model part */
-	public final FloatBuffer generateModelPartVertices() {
+	public final ByteBuffer generateModelPartVertices() {
 
 		int length = this._vertex_stack.size() * ModelPartBuilder.FLOAT_PER_MODEL_VERTEX;
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(length);
+		ByteBuffer buffer = BufferUtils.createByteBuffer(length * 4);
 
 		for (ModelMeshVertex vertex : this._vertex_stack) {
-			buffer.put(vertex.posx);
-			buffer.put(vertex.posy);
-			buffer.put(vertex.posz);
-			buffer.put(vertex.normalx);
-			buffer.put(vertex.normaly);
-			buffer.put(vertex.normalz);
+			buffer.putFloat(vertex.posx);
+			buffer.putFloat(vertex.posy);
+			buffer.putFloat(vertex.posz);
+			buffer.putFloat(vertex.normalx);
+			buffer.putFloat(vertex.normaly);
+			buffer.putFloat(vertex.normalz);
 		}
 		buffer.flip();
 		return (buffer);
 	}
 
 	/** generate the vertices for the given skin */
-	public final FloatBuffer generateSkinPartVertices(ModelPartSkinBuilder skin) {
+	public final ByteBuffer generateSkinPartVertices(ModelPartSkinBuilder skin) {
 
 		int length = this._vertex_stack.size() * ModelPartBuilder.FLOAT_PER_SKIN_VERTEX;
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(length);
+		ByteBuffer buffer = BufferUtils.createByteBuffer(length * 4);
 
 		for (ModelMeshVertex vertex : this._vertex_stack) {
 
@@ -233,10 +232,10 @@ public abstract class ModelMesher {
 			float b = ColorInt.getBlue(color) / 255.0f * vertex.face.getFaceFactor() - vertex.ao;
 			float a = ColorInt.getAlpha(color) / 255.0f;
 
-			buffer.put(r);
-			buffer.put(g);
-			buffer.put(b);
-			buffer.put(a);
+			buffer.putFloat(r);
+			buffer.putFloat(g);
+			buffer.putFloat(b);
+			buffer.putFloat(a);
 
 		}
 		buffer.flip();
@@ -386,7 +385,7 @@ public abstract class ModelMesher {
 			ModelMeshVertex v1 = this.vertices[1];
 			ModelMeshVertex v2 = this.vertices[2];
 			ModelMeshVertex v3 = this.vertices[3];
-			
+
 			if (v0.ao + v2.ao > v1.ao + v3.ao) {
 				stack.push(v0);
 				stack.push(v1);

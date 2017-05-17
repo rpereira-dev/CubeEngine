@@ -157,7 +157,7 @@ class ViewMainMenuWorld extends World {
 					this.spawnTerrain(new Terrain(x, y, z) {
 
 						@Override
-						public void onGenerated(World world) {
+						public void onGenerated() {
 
 							final SimplexNoiseOctave octave = new SimplexNoiseOctave();
 

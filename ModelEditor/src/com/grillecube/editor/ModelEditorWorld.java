@@ -81,7 +81,7 @@ public class ModelEditorWorld extends World {
 					Terrain terrain = new Terrain(i, j, k) {
 
 						@Override
-						public void onGenerated(World world) {
+						public void onGenerated() {
 
 							if (this.getLocation().getWorldIndex().y == -1) {
 								for (int x = 0; x < Terrain.DIM; x++) {

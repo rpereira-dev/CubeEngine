@@ -14,7 +14,7 @@
 
 package com.grillecube.engine.renderer.world.sky;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -65,7 +65,7 @@ public class SkyRenderer extends RendererWorld {
 
 		this._vao.bind();
 		this._vbo.bind(GL15.GL_ARRAY_BUFFER);
-		FloatBuffer floats = GLGeometry.generateSphere(SKYDOME_PRECISION, SKYDOME_SIZE);
+		ByteBuffer floats = GLGeometry.generateSphere(SKYDOME_PRECISION, SKYDOME_SIZE);
 		this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, floats, GL15.GL_STATIC_DRAW);
 		this._vao.setAttribute(0, 3, GL11.GL_FLOAT, false, 4 * 3, 0);
 		this._vao.enableAttribute(0);

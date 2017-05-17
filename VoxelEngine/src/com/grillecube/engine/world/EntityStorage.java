@@ -24,41 +24,41 @@ import com.grillecube.engine.world.entity.EntityModeled;
  **/
 public class EntityStorage extends WorldStorage {
 
-	private HashMap<Integer, Entity> _entities;
-	private HashMap<Class<? extends Entity>, ArrayList<Entity>> _entities_by_type;
-	private HashMap<Model, ArrayList<Entity>> _entities_by_model;
+	private HashMap<Integer, Entity> entities;
+	private HashMap<Class<? extends Entity>, ArrayList<Entity>> entitiesByClass;
+	private HashMap<Model, ArrayList<Entity>> entityByModel;
 
 	public EntityStorage(World world) {
 		super(world);
-		this._entities = new HashMap<Integer, Entity>();
-		this._entities_by_type = new HashMap<Class<? extends Entity>, ArrayList<Entity>>();
-		this._entities_by_model = new HashMap<Model, ArrayList<Entity>>();
+		this.entities = new HashMap<Integer, Entity>();
+		this.entitiesByClass = new HashMap<Class<? extends Entity>, ArrayList<Entity>>();
+		this.entityByModel = new HashMap<Model, ArrayList<Entity>>();
 	}
 
 	/** get all entities */
 	public Collection<Entity> getEntities() {
-		return (this._entities.values());
+		return (this.entities.values());
 	}
 
 	public Entity getEntity(Integer worldID) {
-		return (this._entities.get(worldID));
+		return (this.entities.get(worldID));
 	}
 
 	/** return a list of entities using the same class */
-	public ArrayList<Entity> getEntitiesByType(Class<? extends Entity> clazz) {
-		return (this._entities_by_type.get(clazz));
+	public ArrayList<Entity> getentitiesByClass(Class<? extends Entity> clazz) {
+		return (this.entitiesByClass.get(clazz));
 	}
 
-	public ArrayList<Entity> getEntitiesByType(Entity entity) {
-		return (this.getEntitiesByType(entity.getClass()));
+	public ArrayList<Entity> getentitiesByClass(Entity entity) {
+		return (this.getentitiesByClass(entity.getClass()));
 	}
 
 	/**
 	 * return a collection of array list of entities, where each array list
 	 * holds entities of the same class
 	 */
-	public Collection<ArrayList<Entity>> getEntitiesByType() {
-		return (this._entities_by_type.values());
+	public Collection<ArrayList<Entity>> getentitiesByClass() {
+		return (this.entitiesByClass.values());
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class EntityStorage extends WorldStorage {
 	 * (you can cast them safely)
 	 */
 	public ArrayList<Entity> getEntitiesByModel(Model model) {
-		return (this._entities_by_model.get(model));
+		return (this.entityByModel.get(model));
 	}
 
 	public ArrayList<Entity> getEntitiesByModel(Entity entity) {
@@ -79,21 +79,21 @@ public class EntityStorage extends WorldStorage {
 	 * contains all entities using the same model
 	 */
 	public Collection<ArrayList<Entity>> getEntitiesByModel() {
-		return (this._entities_by_model.values());
+		return (this.entityByModel.values());
 	}
 
 	/** return the entity with the given world id */
 	public Entity getEntityByID(Integer id) {
-		return (this._entities.get(id));
+		return (this.entities.get(id));
 	}
 
 	/** return true if the entity is already stored, false else way */
 	public boolean contains(Entity entity) {
-		return (this._entities.containsValue(entity));
+		return (this.entities.containsValue(entity));
 	}
 
 	public boolean contains(Integer entityID) {
-		return (this._entities.containsKey(entityID));
+		return (this.entities.containsKey(entityID));
 	}
 
 	/** add an entity to the storage */
@@ -110,7 +110,7 @@ public class EntityStorage extends WorldStorage {
 		entity.setWorldID(id);
 
 		// add it to the list
-		this._entities.put(id, entity);
+		this.entities.put(id, entity);
 
 		// spawn the entity
 		entity.setWorld(this.getWorld());
@@ -134,7 +134,7 @@ public class EntityStorage extends WorldStorage {
 
 		if (model_list == null) {
 			model_list = new ArrayList<Entity>(1);
-			this._entities_by_model.put(model, model_list);
+			this.entityByModel.put(model, model_list);
 		}
 		model_list.add(entity);
 	}
@@ -144,10 +144,10 @@ public class EntityStorage extends WorldStorage {
 	}
 
 	private void addEntityToTypeList(Entity entity) {
-		ArrayList<Entity> type_list = this.getEntitiesByType(entity.getClass());
+		ArrayList<Entity> type_list = this.getentitiesByClass(entity.getClass());
 		if (type_list == null) {
 			type_list = new ArrayList<Entity>(1);
-			this._entities_by_type.put(entity.getClass(), type_list);
+			this.entitiesByClass.put(entity.getClass(), type_list);
 		}
 		type_list.add(entity);
 	}
@@ -190,14 +190,14 @@ public class EntityStorage extends WorldStorage {
 		}
 
 		// remove from global list
-		this._entities.remove(entity.getWorldID());
+		this.entities.remove(entity.getWorldID());
 
 		// remove from type list
-		ArrayList<Entity> type_list = this.getEntitiesByType(entity);
+		ArrayList<Entity> type_list = this.getentitiesByClass(entity);
 		if (type_list != null) {
 			type_list.remove(entity);
 			if (type_list.size() == 0) {
-				this._entities_by_type.remove(entity.getClass());
+				this.entitiesByClass.remove(entity.getClass());
 			}
 		}
 
@@ -207,7 +207,7 @@ public class EntityStorage extends WorldStorage {
 		if (model_list != null) {
 			model_list.remove(entity);
 			if (model_list.size() == 0) {
-				this._entities_by_model.remove(model);
+				this.entityByModel.remove(model);
 			}
 		}
 
@@ -226,20 +226,20 @@ public class EntityStorage extends WorldStorage {
 		}
 
 		for (Entity entity : entities) {
-			this._entities.remove(entity.getWorldID());
-			this._entities_by_type.remove(entity.getClass());
+			this.entities.remove(entity.getWorldID());
+			this.entitiesByClass.remove(entity.getClass());
 		}
 
-		this._entities_by_model.remove(model);
+		this.entityByModel.remove(model);
 
 		return (entities);
 	}
 
 	/** clean the entity storage, remove every entities */
 	public void removeAll() {
-		this._entities.clear();
-		this._entities_by_model.clear();
-		this._entities_by_type.clear();
+		this.entities.clear();
+		this.entityByModel.clear();
+		this.entitiesByClass.clear();
 	}
 
 	/** the number of entity to be updated per tasks */

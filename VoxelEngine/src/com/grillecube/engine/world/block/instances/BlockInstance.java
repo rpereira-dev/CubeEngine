@@ -1,6 +1,5 @@
 package com.grillecube.engine.world.block.instances;
 
-import com.grillecube.engine.maths.Vector3i;
 import com.grillecube.engine.world.Terrain;
 import com.grillecube.engine.world.block.Block;
 import com.grillecube.engine.world.block.Blocks;
@@ -8,22 +7,18 @@ import com.grillecube.engine.world.block.Blocks;
 /** a class which represent an unique block instance in the world */
 public abstract class BlockInstance {
 
-	private final Terrain _terrain;
-	private Block _block;
-	private final int _x;
-	private final int _y;
-	private final int _z;
+	private final Terrain terrain;
+	private final Block block;
+	private final short index;
 
 	/**
 	 * this constructor should be call with given argument inside function:
 	 * Block.createBlockInstance(terrain, x, y, z)
 	 */
-	public BlockInstance(Terrain terrain, Block block, int x, int y, int z) {
-		this._terrain = terrain;
-		this._block = block;
-		this._x = x;
-		this._y = y;
-		this._z = z;
+	public BlockInstance(Terrain terrain, Block block, short index) {
+		this.terrain = terrain;
+		this.block = block;
+		this.index = index;
 	}
 
 	/** update function, called every ticks */
@@ -37,46 +32,50 @@ public abstract class BlockInstance {
 
 	/** get the terrain where this block instance is */
 	public Terrain getTerrain() {
-		return (this._terrain);
-	}
-
-	/** get the x coordinate relative to the block instance terrain */
-	public int getX() {
-		return (this._x);
-	}
-
-	/** get the y coordinate relative to the block instance terrain */
-	public int getY() {
-		return (this._y);
-	}
-
-	/** get the z coordinate relative to the block instance terrain */
-	public int getZ() {
-		return (this._z);
+		return (this.terrain);
 	}
 
 	/**
 	 * return the block at the given neighbor location
 	 * 
-	 *	@param x : x offset
-	 *	@param y : y offset
-	 *	@param z : z offset
+	 * @param dx
+	 *            : dx offset
+	 * @param dy
+	 *            : dy offset
+	 * @param dz
+	 *            : dz offset
 	 */
-	protected Block getNeighbor(int x, int y, int z) {
-		return (this.getTerrain().getBlock(this.getX() + x, this.getY() + y, this.getZ() + z));
+	protected Block getNeighborBlock(int dx, int dy, int dz) {
+		int z = this.getTerrain().getZFromIndex(this.getIndex());
+		int y = this.getTerrain().getYFromIndex(this.getIndex(), z);
+		int x = this.getTerrain().getXFromIndex(this.getIndex(), y, z);
+		return (this.getTerrain().getBlock(x + dx, y + dy, z + dz));
 	}
-	
-	protected Block getNeighbor(Vector3i offset) {
-		return (this.getTerrain().getBlock(offset.x, offset.y, offset.z));
+
+	protected BlockInstance getNeighborInstance(int dx, int dy, int dz) {
+		int z = this.getTerrain().getZFromIndex(this.getIndex());
+		int y = this.getTerrain().getYFromIndex(this.getIndex(), z);
+		int x = this.getTerrain().getXFromIndex(this.getIndex(), y, z);
+		return (this.getTerrain().getBlockInstance(x + dx, y + dy, z + dz));
 	}
 
 	/** remove this block from the terrain (and the instance) */
 	public void removeBlock() {
-		this.getTerrain().setBlock(Blocks.AIR, this.getX(), this.getY(), this.getZ());
+		this.getTerrain().setBlock(Blocks.AIR, this.getIndex());
 	}
 
 	/** return the block type of this instance */
 	public Block getBlock() {
-		return (this._block);
+		return (this.block);
+	}
+
+	/** get the position of this block instance relative to the terrain */
+	public final short getIndex() {
+		return (this.index);
+	}
+
+	public int getX() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

@@ -53,8 +53,8 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	private VoxelEngineClient _engine;
 
 	/** post processing shaders programs */
-	private GLProgramPostProcessing _final_process_program;
-	private GLProgramPostProcessing _post_processing_program;
+	private GLProgramPostProcessing finalProcessProgram;
+	private GLProgramPostProcessing postProcessingProgram;
 
 	/** camera */
 	private CameraProjectiveWorld _camera;
@@ -63,19 +63,19 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	private WorldRenderer _world_renderer;
 	private GuiRenderer _gui_renderer;
 
-	private ArrayList<GLTask> _gl_tasks;
+	private ArrayList<GLTask> glTasks;
 
 	/** random number generator */
-	private Random _rng;
+	private Random rng;
 
 	/** event instances (so we do not realloc them every frames */
-	private EventPreRender _pre_render_event;
-	private EventPostRender _post_render_event;
+	private EventPreRender preRenderEvent;
+	private EventPostRender postRenderEvent;
 
 	/** main fbo */
-	private GLFrameBuffer _fbo;
-	private GLTexture _fbo_texture;
-	private GLRenderBuffer _fbo_depth_buffer;
+	private GLFrameBuffer fbo;
+	private GLTexture fboTexture;
+	private GLRenderBuffer fboDepthBuffer;
 
 	/** values */
 	private int _vertices_drawn;
@@ -97,10 +97,10 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		GLH.glhCheckError("Pre mainrenderer initialization");
 		Logger.get().log(Level.FINE, "Initializing " + this.getClass().getSimpleName());
 
-		this._gl_tasks = new ArrayList<GLTask>();
-		this._rng = new Random();
-		this._pre_render_event = new EventPreRender(this);
-		this._post_render_event = new EventPostRender(this);
+		this.glTasks = new ArrayList<GLTask>();
+		this.rng = new Random();
+		this.preRenderEvent = new EventPreRender(this);
+		this.postRenderEvent = new EventPostRender(this);
 
 		this.initialiseDefaultVAO();
 		this.initializeMainFBO(this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
@@ -118,8 +118,7 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		// this._gui_renderer.addView(new GuiViewDefault());
 		GLH.glhCheckError("post guirenderer starts");
 
-		this._final_process_program = new GLProgramPostProcessing(
-				R.getResPath("shaders/post_process/post_processing.fs"));
+		this.finalProcessProgram = new GLProgramPostProcessing(R.getResPath("shaders/post_process/post_processing.fs"));
 		this.setPostProcessingProgram(null);
 		// this.setPostProcessingProgram(new
 		// GLProgramPostProcessing(R.getResPath("shaders/post_process/blurv.fs")));
@@ -139,21 +138,21 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 
 		GLH.glhCheckError("pre mainrenderer fbo creation");
 
-		this._fbo = GLH.glhGenFBO();
-		this._fbo.bind();
-		this._fbo.createDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
+		this.fbo = GLH.glhGenFBO();
+		this.fbo.bind();
+		this.fbo.createDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
 
-		this._fbo_texture = GLH.glhGenTexture();
-		this._fbo_texture.bind(GL11.GL_TEXTURE_2D);
-		this._fbo_texture.image2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height, 0, GL11.GL_RGB,
+		this.fboTexture = GLH.glhGenTexture();
+		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
+		this.fboTexture.image2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height, 0, GL11.GL_RGB,
 				GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
-		this._fbo_texture.parameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		this._fbo_texture.parameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		this._fbo.createTextureAttachment(this._fbo_texture, GL30.GL_COLOR_ATTACHMENT0);
+		this.fboTexture.parameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		this.fboTexture.parameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		this.fbo.createTextureAttachment(this.fboTexture, GL30.GL_COLOR_ATTACHMENT0);
 
-		this._fbo_depth_buffer = this._fbo.createRenderBuffer(width, height, GL30.GL_DEPTH_ATTACHMENT);
+		this.fboDepthBuffer = this.fbo.createRenderBuffer(width, height, GL30.GL_DEPTH_ATTACHMENT);
 
-		this._fbo.unbind();
+		this.fbo.unbind();
 		GLH.glhCheckError("post mainrenderer fbo creation");
 	}
 
@@ -195,9 +194,9 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	}
 
 	private void deleteMainVBO() {
-		GLH.glhDeleteObject(this._fbo);
-		GLH.glhDeleteObject(this._fbo_texture);
-		GLH.glhDeleteObject(this._fbo_depth_buffer);
+		GLH.glhDeleteObject(this.fbo);
+		GLH.glhDeleteObject(this.fboTexture);
+		GLH.glhDeleteObject(this.fboDepthBuffer);
 	}
 
 	/**
@@ -207,8 +206,8 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	public void render() {
 
 		// run tasks
-		while (!this._gl_tasks.isEmpty()) {
-			GLTask task = this._gl_tasks.remove(0);
+		while (!this.glTasks.isEmpty()) {
+			GLTask task = this.glTasks.remove(0);
 			task.run();
 		}
 
@@ -223,7 +222,7 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 			this._engine.getResourceManager().getSoundManager().update(this.getCamera());
 		}
 
-		this.getResourceManager().getEventManager().invokeEvent(this._pre_render_event);
+		this.getResourceManager().getEventManager().invokeEvent(this.preRenderEvent);
 
 		// reset these values before next rendering
 		this._draw_calls = GLH.glhGetContext().resetDrawCalls();
@@ -253,7 +252,7 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		this._gui_renderer.render();
 		this._gui_renderer.postRender();
 
-		this.getResourceManager().getEventManager().invokeEvent(this._post_render_event);
+		this.getResourceManager().getEventManager().invokeEvent(this.postRenderEvent);
 	}
 
 	private void renderFinalImage() {
@@ -261,25 +260,25 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		// bind the fbo texture to texture attachment 0
 		this.getFBOTexture().bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
 
-		this._final_process_program.useStart();
-		this._final_process_program.loadUniforms(this);
+		this.finalProcessProgram.useStart();
+		this.finalProcessProgram.loadUniforms(this);
 		this._default_vao.bind();
 		GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
-		this._final_process_program.useStop();
+		this.finalProcessProgram.useStop();
 	}
 
 	private void renderPostProcessingEffects() {
 
-		if (this._post_processing_program != null) {
+		if (this.postProcessingProgram != null) {
 
 			// bind the fbo texture to texture attachment 0
 			this.getFBOTexture().bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
 
-			this._post_processing_program.useStart();
-			this._post_processing_program.loadUniforms(this);
+			this.postProcessingProgram.useStart();
+			this.postProcessingProgram.loadUniforms(this);
 			this._default_vao.bind();
 			GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
-			this._post_processing_program.useStop();
+			this.postProcessingProgram.useStop();
 		}
 	}
 
@@ -349,23 +348,23 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	}
 
 	public void setPostProcessingProgram(GLProgramPostProcessing program) {
-		this._post_processing_program = program;
+		this.postProcessingProgram = program;
 	}
 
 	public GLFrameBuffer getFBO() {
-		return (this._fbo);
+		return (this.fbo);
 	}
 
 	public GLTexture getFBOTexture() {
-		return (this._fbo_texture);
+		return (this.fboTexture);
 	}
 
 	public Random getRNG() {
-		return (this._rng);
+		return (this.rng);
 	}
 
 	public void addGLTask(GLTask task) {
-		this._gl_tasks.add(task);
+		this.glTasks.add(task);
 	}
 
 	@Override

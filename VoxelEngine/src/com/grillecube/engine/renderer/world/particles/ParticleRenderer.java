@@ -14,7 +14,7 @@
 
 package com.grillecube.engine.renderer.world.particles;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -231,7 +231,7 @@ public class ParticleRenderer extends RendererWorld {
 		}
 
 		// create a buffer to hold them all
-		FloatBuffer floats = BufferUtils.createFloatBuffer(cube_count * ParticleRenderer.FLOATS_PER_CUBE_INSTANCE);
+		ByteBuffer floats = BufferUtils.createByteBuffer(cube_count * ParticleRenderer.FLOATS_PER_CUBE_INSTANCE * 4);
 		this._cubes_in_buffer = 0;
 		for (int i = 0; i < cube_count; i++) {
 			ParticleCube particle = this._cube_particles.get(i);
@@ -245,32 +245,32 @@ public class ParticleRenderer extends RendererWorld {
 			Vector4f color = particle.getColor();
 			float health = particle.getHealthRatio();
 
-			floats.put(mat.m00);
-			floats.put(mat.m01);
-			floats.put(mat.m02);
-			floats.put(mat.m03);
+			floats.putFloat(mat.m00);
+			floats.putFloat(mat.m01);
+			floats.putFloat(mat.m02);
+			floats.putFloat(mat.m03);
 
-			floats.put(mat.m10);
-			floats.put(mat.m11);
-			floats.put(mat.m12);
-			floats.put(mat.m13);
+			floats.putFloat(mat.m10);
+			floats.putFloat(mat.m11);
+			floats.putFloat(mat.m12);
+			floats.putFloat(mat.m13);
 
-			floats.put(mat.m20);
-			floats.put(mat.m21);
-			floats.put(mat.m22);
-			floats.put(mat.m23);
+			floats.putFloat(mat.m20);
+			floats.putFloat(mat.m21);
+			floats.putFloat(mat.m22);
+			floats.putFloat(mat.m23);
 
-			floats.put(mat.m30);
-			floats.put(mat.m31);
-			floats.put(mat.m32);
-			floats.put(mat.m33);
+			floats.putFloat(mat.m30);
+			floats.putFloat(mat.m31);
+			floats.putFloat(mat.m32);
+			floats.putFloat(mat.m33);
 
-			floats.put(color.x);
-			floats.put(color.y);
-			floats.put(color.z);
-			floats.put(color.w);
+			floats.putFloat(color.x);
+			floats.putFloat(color.y);
+			floats.putFloat(color.z);
+			floats.putFloat(color.w);
 
-			floats.put(health);
+			floats.putFloat(health);
 
 			++this._cubes_in_buffer;
 		}

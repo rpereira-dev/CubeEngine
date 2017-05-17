@@ -396,7 +396,7 @@ public class Model {
 	}
 
 	private static final ModelMesher mesher = new ModelMesherCull();
-//	private static final ModelMesher mesher = new ModelMesherGreedy();
+	// private static final ModelMesher mesher = new ModelMesherGreedy();
 
 	/** should only be called on editor */
 	public void refreshVertices() {

@@ -14,45 +14,43 @@
 
 package com.grillecube.engine.geometry;
 
-import org.lwjgl.BufferUtils;
-
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-/** generate float buffer for opengl*/
-public class GLGeometry
-{
-	public static FloatBuffer generateSphere(int detail, float size)
-	{
-		return (toFloatBuffer(Sphere.make(detail, size)));
+import org.lwjgl.BufferUtils;
+
+/** generate float buffer for opengl */
+public class GLGeometry {
+	public static ByteBuffer generateSphere(int detail, float size) {
+		return (toByteBuffer(Sphere.make(detail, size)));
 	}
-	
-	public static FloatBuffer generateSphere(int detail)
-	{
+
+	public static ByteBuffer generateSphere(int detail) {
 		return (GLGeometry.generateSphere(detail, 1));
 	}
 
 	/** generate a new quad FloatBuffer (4 * xyz) */
-	public static FloatBuffer generateQuad(float size)
-	{
-		return (toFloatBuffer(Quad.make(size)));
-	}
-	
-	/** generate a new quad FloatBuffer (made with triangles) (6 * xyz) */
-	public static FloatBuffer generateQuadTriangles(float size)
-	{
-		return (toFloatBuffer(Quad.makeWithTriangle(size)));
+	public static ByteBuffer generateQuad(float size) {
+		return (toByteBuffer(Quad.make(size)));
 	}
 
-	/** generate a new quad FloatBuffer (made with triangles with uv) (6 * xyzuv) */
-	public static FloatBuffer generateQuadTrianglesUV(float size) 
-	{
-		return (toFloatBuffer(Quad.makeWithTriangleUV(size)));
+	/** generate a new quad FloatBuffer (made with triangles) (6 * xyz) */
+	public static ByteBuffer generateQuadTriangles(float size) {
+		return (toByteBuffer(Quad.makeWithTriangle(size)));
 	}
-	
-	private static FloatBuffer toFloatBuffer(float[] vertices)
-	{
-		FloatBuffer	buffer = BufferUtils.createFloatBuffer(vertices.length);
-		buffer.put(vertices);
+
+	/**
+	 * generate a new quad FloatBuffer (made with triangles with uv) (6 * xyzuv)
+	 */
+	public static ByteBuffer generateQuadTrianglesUV(float size) {
+		return (toByteBuffer(Quad.makeWithTriangleUV(size)));
+	}
+
+	private static ByteBuffer toByteBuffer(float[] vertices) {
+		ByteBuffer buffer = BufferUtils.createByteBuffer(vertices.length * 4);
+		for (float f : vertices) {
+			buffer.putFloat(f);
+		}
 		buffer.flip();
 		return (buffer);
 	}

@@ -18,22 +18,22 @@ import com.grillecube.engine.maths.Vector3f;
 import com.grillecube.engine.maths.Vector3i;
 
 public interface Face {
-	
+
 	/** z - */
 	public static final int LEFT = 0;
-	
+
 	/** z + */
 	public static final int RIGHT = 1;
-	
+
 	/** y + */
 	public static final int TOP = 2;
-	
+
 	/** y - */
 	public static final int BOT = 3;
-	
+
 	/** x - */
 	public static final int FRONT = 4;
-	
+
 	/** x + */
 	public static final int BACK = 5;
 
@@ -46,7 +46,7 @@ public interface Face {
 	public static final Face F_BOT = Face.get(BOT);
 	public static final Face F_FRONT = Face.get(FRONT);
 	public static final Face F_BACK = Face.get(BACK);
-	
+
 	public static Face get(int index) {
 		return (faces[index]);
 	}

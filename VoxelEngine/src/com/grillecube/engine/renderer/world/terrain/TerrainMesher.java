@@ -14,7 +14,7 @@
 
 package com.grillecube.engine.renderer.world.terrain;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 import java.util.Stack;
 
 import org.lwjgl.BufferUtils;
@@ -25,6 +25,7 @@ import com.grillecube.engine.renderer.model.builder.ColorInt;
 import com.grillecube.engine.resources.BlockManager;
 import com.grillecube.engine.world.Terrain;
 import com.grillecube.engine.world.block.Block;
+import com.grillecube.engine.world.block.BlockLight;
 
 /** an object which is used to generate terrain meshes dynamically */
 public abstract class TerrainMesher {
@@ -191,24 +192,24 @@ public abstract class TerrainMesher {
 	public TerrainMesher() {
 	}
 
-	public final FloatBuffer generateVertices(Terrain terrain) {
+	public final ByteBuffer generateVertices(Terrain terrain) {
 
 		Stack<MeshVertex> stack = this.getVertexStack(terrain);
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(stack.size() * TerrainMesh.FLOAT_PER_VERTEX);
+		ByteBuffer buffer = BufferUtils.createByteBuffer(stack.size() * TerrainMesh.FLOAT_PER_VERTEX * 4);
 
 		for (MeshVertex vertex : stack) {
-			buffer.put(vertex.posx);
-			buffer.put(vertex.posy);
-			buffer.put(vertex.posz);
-			buffer.put(vertex.normalx);
-			buffer.put(vertex.normaly);
-			buffer.put(vertex.normalz);
-			buffer.put(vertex.atlasX);
-			buffer.put(vertex.atlasY);
-			buffer.put(vertex.uvx);
-			buffer.put(vertex.uvy);
-			buffer.put(vertex.color);
-			buffer.put(vertex.brightness);
+			buffer.putFloat(vertex.posx);
+			buffer.putFloat(vertex.posy);
+			buffer.putFloat(vertex.posz);
+			buffer.putFloat(vertex.normalx);
+			buffer.putFloat(vertex.normaly);
+			buffer.putFloat(vertex.normalz);
+			buffer.putFloat(vertex.atlasX);
+			buffer.putFloat(vertex.atlasY);
+			buffer.putFloat(vertex.uvx);
+			buffer.putFloat(vertex.uvy);
+			buffer.putInt(vertex.color);
+			buffer.putFloat(vertex.brightness);
 		}
 		buffer.flip();
 		return (buffer);
@@ -330,20 +331,30 @@ public abstract class TerrainMesher {
 		float atlasY = this.getAtlasY(textureID);
 
 		// get light value
-		// get neighbors
+
+		// the ambiant occlusion
 		Block side1 = terrain.getBlock(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
 		Block side2 = terrain.getBlock(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
 		Block corner = terrain.getBlock(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
-
-		byte light1 = terrain.getLight(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
-		byte light2 = terrain.getLight(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
-		byte light3 = terrain.getLight(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
-		int totallight = light1 + light2 + light3;
-		float light = totallight / (3.0f * Block.MAX_LIGHT_VALUE);
 		float ao = this.getVertexAO(terrain, side1, side2, corner);
+
+		// the light
+		byte lightValue = terrain.getBlockLight(x, y, z);
+		float light;
+		if (lightValue != BlockLight.MIN_LIGHT_VALUE) {
+			light = lightValue / (float) BlockLight.MAX_LIGHT_VALUE;
+		} else {
+			float l1 = terrain.getBlockLight(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
+			float l2 = terrain.getBlockLight(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
+			float l3 = terrain.getBlockLight(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
+			light = (l1 + l2 + l3) / (3.0F * BlockLight.MAX_LIGHT_VALUE);
+		}
+
+		// final brightness
 		float brightness = 1 + light - ao;
 
-		int color = ColorInt.get(255, 255, 255, 255);
+		// light color
+		int color = 0xFFFFFFFF;//ColorInt.get(255, 255, 255, 255);
 		return (new MeshVertex(px, py, pz, face.getNormal(), atlasX, atlasY, uvx, uvy, color, brightness, ao));
 	}
 

@@ -1,6 +1,6 @@
 package com.grillecube.engine.renderer.world.lines;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -40,7 +40,7 @@ public class LineRenderer extends RendererWorld {
 
 	private boolean _up_to_date;
 
-	private FloatBuffer _buffer;
+	private ByteBuffer _buffer;
 
 	public LineRenderer(MainRenderer renderer) {
 		super(renderer);
@@ -132,29 +132,29 @@ public class LineRenderer extends RendererWorld {
 		// 0.0f, 0.0f, 1.0f);
 		// this.addBox(this.getParent().getWorldRenderer().getShadowBox().box);
 
-		int size_required = this._lines.size() * 2 * LineRenderer.FLOAT_PER_LINE_VERTEX;
+		int size_required = this._lines.size() * 2 * LineRenderer.FLOAT_PER_LINE_VERTEX * 4;
 		if (this._buffer != null && this._buffer.capacity() == size_required) {
 			this._buffer.rewind();
 		} else {
-			this._buffer = BufferUtils.createFloatBuffer(size_required);
+			this._buffer = BufferUtils.createByteBuffer(size_required);
 		}
 
 		for (Line line : this._lines) {
-			this._buffer.put(line.posa.x);
-			this._buffer.put(line.posa.y);
-			this._buffer.put(line.posa.z);
-			this._buffer.put(line.colora.x);
-			this._buffer.put(line.colora.y);
-			this._buffer.put(line.colora.z);
-			this._buffer.put(line.colora.w);
+			this._buffer.putFloat(line.posa.x);
+			this._buffer.putFloat(line.posa.y);
+			this._buffer.putFloat(line.posa.z);
+			this._buffer.putFloat(line.colora.x);
+			this._buffer.putFloat(line.colora.y);
+			this._buffer.putFloat(line.colora.z);
+			this._buffer.putFloat(line.colora.w);
 
-			this._buffer.put(line.posb.x);
-			this._buffer.put(line.posb.y);
-			this._buffer.put(line.posb.z);
-			this._buffer.put(line.colorb.x);
-			this._buffer.put(line.colorb.y);
-			this._buffer.put(line.colorb.z);
-			this._buffer.put(line.colorb.w);
+			this._buffer.putFloat(line.posb.x);
+			this._buffer.putFloat(line.posb.y);
+			this._buffer.putFloat(line.posb.z);
+			this._buffer.putFloat(line.colorb.x);
+			this._buffer.putFloat(line.colorb.y);
+			this._buffer.putFloat(line.colorb.z);
+			this._buffer.putFloat(line.colorb.w);
 		}
 		this._buffer.flip();
 	}
