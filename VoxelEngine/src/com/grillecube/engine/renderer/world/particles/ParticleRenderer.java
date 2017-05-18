@@ -46,8 +46,8 @@ public class ParticleRenderer extends RendererWorld {
 	private ProgramParticleCube _program_cube;
 
 	// one array list is an array list of particles (one list for each sprite)
-	private ArrayList<ParticleBillboarded> _billboarded_particles;
-	private ArrayList<ParticleCube> _cube_particles;
+	private ArrayList<ParticleBillboarded> billboardedParticles;
+	private ArrayList<ParticleCube> cubeParticles;
 
 	/** cube and quads vaos */
 	private GLVertexArray _vao_cube;
@@ -88,8 +88,8 @@ public class ParticleRenderer extends RendererWorld {
 		this._program_billboarded_particle = new ProgramParticleBillboarded();
 		this._program_cube = new ProgramParticleCube();
 
-		this._billboarded_particles = new ArrayList<ParticleBillboarded>();
-		this._cube_particles = new ArrayList<ParticleCube>();
+		this.billboardedParticles = new ArrayList<ParticleBillboarded>();
+		this.cubeParticles = new ArrayList<ParticleCube>();
 
 		this.initializeVAO();
 	}
@@ -142,8 +142,8 @@ public class ParticleRenderer extends RendererWorld {
 		GLH.glhDeleteObject(this._vbo_cube_instances);
 		this._vbo_cube_instances = null;
 
-		this._billboarded_particles = null;
-		this._cube_particles = null;
+		this.billboardedParticles = null;
+		this.cubeParticles = null;
 	}
 
 	@Override
@@ -177,8 +177,8 @@ public class ParticleRenderer extends RendererWorld {
 	}
 
 	private void clearParticles() {
-		this._billboarded_particles.clear();
-		this._cube_particles.clear();
+		this.billboardedParticles.clear();
+		this.cubeParticles.clear();
 	}
 
 	private void updateParticles(World world, CameraProjectiveWorld camera) {
@@ -187,11 +187,11 @@ public class ParticleRenderer extends RendererWorld {
 
 		// update billboarded particles
 		i = 0;
-		while (i < this._billboarded_particles.size()) {
-			ParticleBillboarded particle = this._billboarded_particles.get(i);
+		while (i < this.billboardedParticles.size()) {
+			ParticleBillboarded particle = this.billboardedParticles.get(i);
 
 			if (particle == null || particle.isDead()) {
-				this._billboarded_particles.remove(i);
+				this.billboardedParticles.remove(i);
 				continue;
 			}
 
@@ -201,11 +201,11 @@ public class ParticleRenderer extends RendererWorld {
 
 		// update cube particles
 		i = 0;
-		while (i < this._cube_particles.size()) {
-			ParticleCube particle = this._cube_particles.get(i);
+		while (i < this.cubeParticles.size()) {
+			ParticleCube particle = this.cubeParticles.get(i);
 
 			if (particle == null || particle.isDead()) {
-				this._cube_particles.remove(i);
+				this.cubeParticles.remove(i);
 				continue;
 			}
 
@@ -218,15 +218,15 @@ public class ParticleRenderer extends RendererWorld {
 	/** update the cube instances vbo data */
 	private void updateVBO(CameraProjectiveWorld camera) {
 
-		if (this._cube_particles.size() == 0) {
+		if (this.cubeParticles.size() == 0) {
 			return;
 		}
 
 		// get the number of cube particle alive
-		int cube_count = Maths.min(this._cube_particles.size(), ParticleRenderer.MAX_CUBE_PARTICLES);
+		int cube_count = Maths.min(this.cubeParticles.size(), ParticleRenderer.MAX_CUBE_PARTICLES);
 
 		if (cube_count == ParticleRenderer.MAX_CUBE_PARTICLES) {
-			Logger.get().log(Logger.Level.WARNING, "Max number of cube particle reached! " + this._cube_particles.size()
+			Logger.get().log(Logger.Level.WARNING, "Max number of cube particle reached! " + this.cubeParticles.size()
 					+ "/" + ParticleRenderer.MAX_CUBE_PARTICLES);
 		}
 
@@ -234,7 +234,7 @@ public class ParticleRenderer extends RendererWorld {
 		ByteBuffer floats = BufferUtils.createByteBuffer(cube_count * ParticleRenderer.FLOATS_PER_CUBE_INSTANCE * 4);
 		this._cubes_in_buffer = 0;
 		for (int i = 0; i < cube_count; i++) {
-			ParticleCube particle = this._cube_particles.get(i);
+			ParticleCube particle = this.cubeParticles.get(i);
 
 			// if not in frustum, do not render it
 			if (!camera.isBoxInFrustum(particle.getPosition(), particle.getScale())) {
@@ -304,7 +304,7 @@ public class ParticleRenderer extends RendererWorld {
 
 	/** render every quad particles */
 	private void renderBillboardedParticles(World world, CameraProjectiveWorld camera) {
-		if (this._billboarded_particles.size() == 0) {
+		if (this.billboardedParticles.size() == 0) {
 			return;
 		}
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + 0); // Texture unit 0
@@ -317,12 +317,12 @@ public class ParticleRenderer extends RendererWorld {
 		this.getParent().getDefaultVAO().bind();
 
 		this._program_billboarded_particle.loadGlobalUniforms(camera);
-		this._billboarded_particles.sort(this._particle_comparator);
+		this.billboardedParticles.sort(this._particle_comparator);
 
 		int i = 0;
-		while (i < this._billboarded_particles.size()) {
+		while (i < this.billboardedParticles.size()) {
 
-			ParticleBillboarded particle = this._billboarded_particles.get(i);
+			ParticleBillboarded particle = this.billboardedParticles.get(i);
 			float radius = Maths.max(particle.getScale().x, particle.getScale().y);
 			if (particle != null && particle.getCameraSquareDistance() < camera.getSquaredRenderDistance()
 					&& camera.isSphereInFrustum(particle.getPosition(), radius)) {
@@ -335,7 +335,7 @@ public class ParticleRenderer extends RendererWorld {
 
 	/** render every cube particles */
 	private void renderCubeParticles(World world, CameraProjectiveWorld camera) {
-		if (this._cube_particles.size() == 0) {
+		if (this.cubeParticles.size() == 0) {
 			return;
 		}
 
@@ -363,11 +363,11 @@ public class ParticleRenderer extends RendererWorld {
 
 	/** add a particule to the update functions */
 	public void spawnParticle(ParticleBillboarded particle) {
-		this._billboarded_particles.add(particle);
+		this.billboardedParticles.add(particle);
 	}
 
 	/** add a particule to the update functions */
 	public void spawnParticle(ParticleCube particle) {
-		this._cube_particles.add(particle);
+		this.cubeParticles.add(particle);
 	}
 }

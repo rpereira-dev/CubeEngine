@@ -75,22 +75,22 @@ public class WorldRenderer extends Renderer {
 	public static final Vector4f NO_CLIPPING = new Vector4f(0, 0, 0, 0);
 
 	/** sky renderer */
-	private SkyRenderer _sky_renderer;
+	private SkyRenderer skyRenderer;
 
 	/** line renderer */
-	private LineRenderer _line_renderer;
+	private LineRenderer lineRenderer;
 
 	/** main terrain renderer */
-	private TerrainRenderer _terrain_renderer;
+	private TerrainRenderer terrainRenderer;
 
 	/** model view projection renderer */
-	private MVPRenderer _mvp_renderer;
+	private MVPRenderer mvpRenderer;
 
 	/** model renderer */
-	private ModelRenderer _model_renderer;
+	private ModelRenderer modelRenderer;
 
 	/** particles renderer */
-	private ParticleRenderer _particle_renderer;
+	private ParticleRenderer particleRenderer;
 
 	/** shadows */
 	private ShadowCamera _shadow_camera;
@@ -99,7 +99,7 @@ public class WorldRenderer extends Renderer {
 	private World _world;
 
 	/** renderers */
-	private ArrayList<RendererWorld> _renderers;
+	private ArrayList<RendererWorld> renderers;
 
 	public WorldRenderer(MainRenderer main_renderer) {
 		super(main_renderer);
@@ -110,21 +110,21 @@ public class WorldRenderer extends Renderer {
 
 		Logger.get().log(Logger.Level.DEBUG, "Initializing " + this.getClass().getSimpleName());
 
-		this._renderers = new ArrayList<RendererWorld>();
+		this.renderers = new ArrayList<RendererWorld>();
 
-		this._sky_renderer = new SkyRenderer(this.getParent());
-		this._line_renderer = new LineRenderer(this.getParent());
-		this._terrain_renderer = new TerrainRenderer(this.getParent());
-		this._model_renderer = new ModelRenderer(this.getParent());
-		this._mvp_renderer = new MVPRenderer(this.getParent());
-		this._particle_renderer = new ParticleRenderer(this.getParent());
+		this.skyRenderer = new SkyRenderer(this.getParent());
+		this.lineRenderer = new LineRenderer(this.getParent());
+		this.terrainRenderer = new TerrainRenderer(this.getParent());
+		this.modelRenderer = new ModelRenderer(this.getParent());
+		this.mvpRenderer = new MVPRenderer(this.getParent());
+		this.particleRenderer = new ParticleRenderer(this.getParent());
 
-		this._renderers.add(this._sky_renderer);
-		this._renderers.add(this._line_renderer);
-		this._renderers.add(this._terrain_renderer);
-		this._renderers.add(this._model_renderer);
-		this._renderers.add(this._mvp_renderer);
-		this._renderers.add(this._particle_renderer);
+		this.renderers.add(this.skyRenderer);
+		this.renderers.add(this.lineRenderer);
+		this.renderers.add(this.terrainRenderer); // TODO : fix artifacts
+		this.renderers.add(this.modelRenderer);
+		this.renderers.add(this.mvpRenderer);
+		this.renderers.add(this.particleRenderer);
 
 		this.createReflectionFBO();
 		this.createRefractionFBO();
@@ -132,13 +132,13 @@ public class WorldRenderer extends Renderer {
 
 		this._shadow_camera = new ShadowCamera(this.getParent().getGLFWWindow());
 
-		for (RendererWorld renderer : this._renderers) {
+		for (RendererWorld renderer : this.renderers) {
 			Logger.get().log(Logger.Level.DEBUG, "Initializing " + renderer.getClass().getSimpleName());
 			renderer.initialize();
 		}
-		// this._renderers.clear();
-		// this._renderers.add(this._terrain_renderer);
-		// this._renderers.add(this._particle_renderer);
+		// this.renderers.clear();
+		// this.renderers.add(this.terrainRenderer);
+		// this.renderers.add(this.particleRenderer);
 	}
 
 	@Override
@@ -150,21 +150,21 @@ public class WorldRenderer extends Renderer {
 		this.deleteRefractionFBO();
 		this.deleteShadowFBO();
 
-		for (RendererWorld renderer : this._renderers) {
+		for (RendererWorld renderer : this.renderers) {
 			Logger.get().log(Logger.Level.DEBUG, "Deinitializing " + renderer.getClass().getSimpleName());
 			renderer.deinitialize();
 		}
 	}
 
 	private void onWorldSet(World world) {
-		for (RendererWorld renderer : this._renderers) {
+		for (RendererWorld renderer : this.renderers) {
 			renderer.onWorldSet(world);
 		}
 
 	}
 
 	private void onWorldUnset(World world) {
-		for (RendererWorld renderer : this._renderers) {
+		for (RendererWorld renderer : this.renderers) {
 			renderer.onWorldUnset(world);
 		}
 	}
@@ -173,7 +173,7 @@ public class WorldRenderer extends Renderer {
 	public void preRender() {
 
 		// pre render every renderer
-		for (RendererWorld renderer : this._renderers) {
+		for (RendererWorld renderer : this.renderers) {
 			renderer.preRender();
 			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + ".preRender()");
 		}
@@ -195,7 +195,7 @@ public class WorldRenderer extends Renderer {
 
 	@Override
 	public void postRender() {
-		for (RendererWorld renderer : this._renderers) {
+		for (RendererWorld renderer : this.renderers) {
 			renderer.postRender();
 			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + ".postRender()");
 		}
@@ -211,12 +211,12 @@ public class WorldRenderer extends Renderer {
 		GLH.glhCheckError("pre world renderer");
 
 		// long total = 0;
-		// long times[] = new long[this._renderers.size()];
+		// long times[] = new long[this.renderers.size()];
 		//
 		// final world renderer
-		for (int i = 0; i < this._renderers.size(); i++) {
+		for (int i = 0; i < this.renderers.size(); i++) {
 
-			RendererWorld renderer = this._renderers.get(i);
+			RendererWorld renderer = this.renderers.get(i);
 			//
 			// long time = System.nanoTime();
 			renderer.render();
@@ -228,9 +228,9 @@ public class WorldRenderer extends Renderer {
 		}
 
 		// float ftotal = 0;
-		// for (int i = 0 ; i < this._renderers.size() ; i++) {
+		// for (int i = 0 ; i < this.renderers.size() ; i++) {
 		//
-		// RendererWorld renderer = this._renderers.get(i);
+		// RendererWorld renderer = this.renderers.get(i);
 		// float ftime = times[i] / (float)total;
 		// ftotal += ftime;
 		// Logger.get().log(Logger.Level.DEBUG,
@@ -255,7 +255,7 @@ public class WorldRenderer extends Renderer {
 		this.getShadowMapFBO().viewport(0, 0, SHADOW_FBO_WIDTH, SHADOW_FBO_HEIGHT);
 
 		// render shadows
-		for (RendererWorld renderer : this._renderers) {
+		for (RendererWorld renderer : this.renderers) {
 			renderer.renderShadow(this._shadow_camera);
 			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + ".renderShadow(ShadowBox shadowbox)");
 		}
@@ -292,11 +292,11 @@ public class WorldRenderer extends Renderer {
 
 	/** return the default particle renderer */
 	public ParticleRenderer getParticleRenderer() {
-		return (this._particle_renderer);
+		return (this.particleRenderer);
 	}
 
 	public MVPRenderer getMVPRenderer() {
-		return (this._mvp_renderer);
+		return (this.mvpRenderer);
 	}
 
 	public CameraProjectiveWorld getCamera() {
@@ -304,11 +304,11 @@ public class WorldRenderer extends Renderer {
 	}
 
 	public TerrainRenderer getTerrainRenderer() {
-		return (this._terrain_renderer);
+		return (this.terrainRenderer);
 	}
 
 	public LineRenderer getLineRenderer() {
-		return (this._line_renderer);
+		return (this.lineRenderer);
 	}
 
 	private void createReflectionFBO() {
@@ -419,7 +419,7 @@ public class WorldRenderer extends Renderer {
 	}
 
 	public Collection<RendererWorld> getRenderers() {
-		return (this._renderers);
+		return (this.renderers);
 	}
 
 	@Override

@@ -78,4 +78,12 @@ public abstract class BlockInstance {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	/**
+	 * 
+	 * @return true if this instance should be removed, false else
+	 */
+	public boolean shouldBeRemoved() {
+		return (false);
+	}
 }

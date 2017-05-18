@@ -24,10 +24,10 @@ public class BlockInstanceLiquid extends BlockInstance {
 	 * amount of water for this block instance. ( [MIN_LIQUID_AMOUNT,
 	 * MAX_LIQUID_AMOUNT] )
 	 */
-	private int _amount;
-	private long _last_tick;
+	private int amount;
+	private long lastUpdate;
 
-	private Block _blockunder;
+	private Block blockUnder;
 
 	/** minimum amount of water before dispersion */
 	private static final int TICK_TO_UPDATE = 4;
@@ -47,7 +47,7 @@ public class BlockInstanceLiquid extends BlockInstance {
 	 * @param amount
 	 */
 	public void setAmount(int amount) {
-		this._amount = amount;
+		this.amount = amount;
 	}
 
 	/**
@@ -73,45 +73,34 @@ public class BlockInstanceLiquid extends BlockInstance {
 	}
 
 	public int getAmount() {
-		return (this._amount);
+		return (this.amount);
 	}
 
 	@Override
 	public void update() {
 
 		long tick = this.getTerrain().getWorld().getTick();
-		if (tick - this._last_tick < TICK_TO_UPDATE) {
+		if (tick - this.lastUpdate < TICK_TO_UPDATE) {
 			return;
 		}
-		this._last_tick = tick;
+		this.lastUpdate = tick;
 
-		if (this._amount < MIN_LIQUID_AMOUNT) {
-			this.disperse();
-		} else {
+		if (this.amount > MIN_LIQUID_AMOUNT) {
 			this.flow();
 		}
-	}
-
-	/**
-	 * the liquid voxel should now disperse (not enough liquid available) (i.e,
-	 * soil absorption, evaporation)
-	 */
-	private void disperse() {
-		super.removeBlock();
-		super.getTerrain().requestMeshUpdate();
 	}
 
 	/** flow the water around */
 	private void flow() {
 
-		this._blockunder = super.getTerrain().getBlock(super.getIndex());
+		this.blockUnder = super.getTerrain().getBlockAt(super.getIndex());
 
 		// if the block under is air
-		if (this._blockunder == Blocks.AIR) {
+		if (this.blockUnder == Blocks.AIR) {
 			this.fall();
 		} else {
 			// if there is a liquid under
-			if (this._blockunder instanceof BlockLiquid) {
+			if (this.blockUnder instanceof BlockLiquid) {
 				// transfer liquid to it
 				this.flowUnder();
 			}
@@ -143,7 +132,7 @@ public class BlockInstanceLiquid extends BlockInstance {
 
 		BlockInstanceLiquid instance = (BlockInstanceLiquid) super.getNeighborInstance(0, -1, 0);
 		if (instance != null) {
-			instance._last_tick = this._last_tick;
+			instance.lastUpdate = this.lastUpdate;
 			instance.setAmount(0);
 			this.transferLiquid(instance, this.getAmount());
 		}
@@ -155,28 +144,30 @@ public class BlockInstanceLiquid extends BlockInstance {
 	/** flow the water in surrounding voxels */
 	private void flowAround() {
 
+		int z = this.getTerrain().getZFromIndex(this.getIndex());
+		int y = this.getTerrain().getYFromIndex(this.getIndex(), z);
+		int x = this.getTerrain().getXFromIndex(this.getIndex(), y, z);
+
 		// iterate though the neighbor array
 		for (int i = 0; i < 4; i++) {
-
-			int z = this.getTerrain().getZFromIndex(this.getIndex());
-			int y = this.getTerrain().getYFromIndex(this.getIndex(), z);
-			int x = this.getTerrain().getXFromIndex(this.getIndex(), y, z);
 
 			int bx = x + NEIGHBOR[i].x;
 			int by = y + NEIGHBOR[i].y;
 			int bz = z + NEIGHBOR[i].z;
 
-			Block block = super.getTerrain().getBlock(x, y, z);
+			short index = super.getTerrain().getIndex(bx, by, bz);
+
+			Block block = super.getTerrain().getBlockAt(index);
 
 			// if the neighbor is air
 			if (block == Blocks.AIR) {
 				// then set it to liquid and transfer some liquid to it
-				BlockInstance instance = super.getTerrain().setBlock(super.getBlock(), bx, by, bz);
+				BlockInstance instance = super.getTerrain().setBlock(super.getBlock(), index, x, y, z);
 				if (instance != null && instance instanceof BlockInstanceLiquid) {
 
 					BlockInstanceLiquid liquid = ((BlockInstanceLiquid) instance);
 					liquid.setAmount(0);
-					liquid._last_tick = this._last_tick;
+					liquid.lastUpdate = this.lastUpdate;
 
 					// note we only transfer the min liquid amount here to
 					// create the flowing effect
@@ -187,11 +178,9 @@ public class BlockInstanceLiquid extends BlockInstance {
 
 				// get the block
 				BlockInstance instance = super.getTerrain().getBlockInstance(bx, by, bz);
-
 				// if it does have an instance and it is a liquid instance
 				if (instance != null && instance instanceof BlockInstanceLiquid) {
 					BlockInstanceLiquid liquid = (BlockInstanceLiquid) instance;
-
 					// if it is the same liquid type and it has less liquid
 					if (liquid.getBlock() == this.getBlock()
 							&& liquid.getAmount() + MIN_LIQUID_AMOUNT < this.getAmount()) {
@@ -212,6 +201,11 @@ public class BlockInstanceLiquid extends BlockInstance {
 	}
 
 	public Block getBlockUnder() {
-		return (this._blockunder);
+		return (this.blockUnder);
+	}
+
+	@Override
+	public boolean shouldBeRemoved() {
+		return (this.amount <= MIN_LIQUID_AMOUNT);
 	}
 }

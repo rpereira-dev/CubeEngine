@@ -50,8 +50,9 @@ public abstract class BlockLiquid extends Block {
 
 	@Override
 	public void pushVertices(TerrainMesher mesher, Terrain terrain, Stack<MeshVertex> stack, int x, int y, int z) {
-		for (Face face : Face.values()) // for each of it face
-		{
+
+		// for each of it face
+		for (Face face : Face.values()) {
 			Vector3i vec = face.getVector();
 			// get the neighbor of this face
 			Block neighbor = terrain.getBlock(x + vec.x, y + vec.y, z + vec.z);

@@ -23,8 +23,6 @@ import com.grillecube.engine.world.Terrain;
 import com.grillecube.engine.world.block.instances.BlockInstance;
 
 public abstract class Block {
-	public static final byte MAX_LIGHT_VALUE = 16;
-	public static final byte MIN_LIGHT_VALUE = 0;
 
 	/** block opengl textureID (see faces indices) */
 	private final int[] textureID;

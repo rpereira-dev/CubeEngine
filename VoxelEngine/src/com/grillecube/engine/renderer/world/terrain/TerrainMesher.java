@@ -21,11 +21,9 @@ import org.lwjgl.BufferUtils;
 
 import com.grillecube.engine.faces.Face;
 import com.grillecube.engine.maths.Vector3i;
-import com.grillecube.engine.renderer.model.builder.ColorInt;
 import com.grillecube.engine.resources.BlockManager;
 import com.grillecube.engine.world.Terrain;
 import com.grillecube.engine.world.block.Block;
-import com.grillecube.engine.world.block.BlockLight;
 
 /** an object which is used to generate terrain meshes dynamically */
 public abstract class TerrainMesher {
@@ -341,20 +339,20 @@ public abstract class TerrainMesher {
 		// the light
 		byte lightValue = terrain.getBlockLight(x, y, z);
 		float light;
-		if (lightValue != BlockLight.MIN_LIGHT_VALUE) {
-			light = lightValue / (float) BlockLight.MAX_LIGHT_VALUE;
+		if (lightValue != 0) {
+			light = lightValue / 16.0F;
 		} else {
 			float l1 = terrain.getBlockLight(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
 			float l2 = terrain.getBlockLight(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
 			float l3 = terrain.getBlockLight(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
-			light = (l1 + l2 + l3) / (3.0F * BlockLight.MAX_LIGHT_VALUE);
+			light = (l1 + l2 + l3) / (3 * 16.0F);
 		}
 
 		// final brightness
 		float brightness = 1 + light - ao;
 
 		// light color
-		int color = 0xFFFFFFFF;//ColorInt.get(255, 255, 255, 255);
+		int color = 0xFFFFFFFF;// ColorInt.get(255, 255, 255, 255);
 		return (new MeshVertex(px, py, pz, face.getNormal(), atlasX, atlasY, uvx, uvy, color, brightness, ao));
 	}
 

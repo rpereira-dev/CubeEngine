@@ -44,7 +44,7 @@ public class Blocks implements IModResource {
 		Blocks.STONE = manager.registerBlock(new BlockStone(manager.getNextID()));
 		Blocks.LIGHT_TEST = manager.registerBlock(new BlockLight(manager.getNextID()) {
 			public byte getLightValue() {
-				return (BlockLight.MAX_LIGHT_VALUE);
+				return (15);
 			}
 		});
 		Blocks.LOG = manager.registerBlock(new BlockLog(manager.getNextID()));

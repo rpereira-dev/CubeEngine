@@ -92,13 +92,13 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 			// }
 			// }
 
-			// super.setBlock(Blocks.LIQUID_WATER, this.getLookCoords());
-			if (i++ % 2 == 0) {
-				pos.set(this.getLookCoords());
-				super.setBlock(Blocks.LIGHT_TEST, pos);
-			} else {
-				super.setBlock(Blocks.AIR, pos);
-			}
+			super.setBlock(Blocks.LIQUID_WATER, this.getLookCoords());
+			//			if (i++ % 4 != 0) {
+//				pos.set(this.getLookCoords());
+//				super.setBlock(Blocks.LIGHT_TEST, pos);
+//			} else {
+//				super.setBlock(Blocks.AIR, pos);
+//			}
 		}
 	}
 

@@ -17,15 +17,18 @@ package com.grillecube.engine.world;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.Stack;
 
+import com.grillecube.engine.Logger;
 import com.grillecube.engine.faces.Face;
 import com.grillecube.engine.maths.Maths;
 import com.grillecube.engine.maths.Vector3f;
 import com.grillecube.engine.maths.Vector3i;
 import com.grillecube.engine.resources.Compress;
 import com.grillecube.engine.world.block.Block;
-import com.grillecube.engine.world.block.BlockLight;
 import com.grillecube.engine.world.block.Blocks;
 import com.grillecube.engine.world.block.instances.BlockInstance;
 
@@ -84,6 +87,9 @@ public class Terrain {
 
 	/** which face can see another */
 	private boolean[][] facesVisibility;
+	private boolean blockInstanceLock;
+	private LinkedList<BlockInstance> blockInstanceToAdd; // TODO
+	private LinkedList<BlockInstance> blockInstanceToRemove; // TODO
 
 	public Terrain(int x, int y, int z) {
 		this(new Vector3i(x, y, z));
@@ -156,9 +162,17 @@ public class Terrain {
 			return;
 		}
 
-		for (BlockInstance blockInstance : this.blockInstances.values()) {
+		this.blockInstanceLock = true;
+		Iterator<Entry<Short, BlockInstance>> it = this.blockInstances.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<Short, BlockInstance> entry = it.next();
+			BlockInstance blockInstance = entry.getValue();
 			blockInstance.update();
+			if (blockInstance.shouldBeRemoved()) {
+				it.remove();
+			}
 		}
+		this.blockInstanceLock = false;
 	}
 
 	/** tick once a random block of this terrain */
@@ -273,12 +287,12 @@ public class Terrain {
 		if (terrain == null) {
 			return (Blocks.AIR);
 		}
-		return (terrain.getBlockAt(xyz));
+		return (terrain.getBlockAt(xyz[0], xyz[1], xyz[2]));
 	}
 
-	/** this function isnt protected against overflow / underflow */
-	public Block getBlockAt(int... xyz) {
-		return (this.getBlockAt(this.getIndex(xyz)));
+	/** this function doesnt check bounds */
+	public Block getBlockAt(int x, int y, int z) {
+		return (this.getBlockAt(this.getIndex(x, y, z)));
 	}
 
 	public Block getBlockAt(short index) {
@@ -296,7 +310,8 @@ public class Terrain {
 		if (terrain == null) {
 			return (null);
 		}
-		return (terrain.setBlockAt(block, xyz));
+		short index = this.getIndex(xyz[0], xyz[1], xyz[2]);
+		return (terrain.setBlock(block, index, xyz[0], xyz[1], xyz[2]));
 	}
 
 	/** secure function to set a block relative to this terrain */
@@ -304,8 +319,28 @@ public class Terrain {
 		this.setBlock(block, pos.x, pos.y, pos.z);
 	}
 
+	public BlockInstance setBlock(Block block, short index) {
+		int z = this.getZFromIndex(index);
+		int y = this.getYFromIndex(index, z);
+		int x = this.getXFromIndex(index, y, z);
+		return (this.setBlock(block, index, x, y, z));
+	}
+
+	/**
+	 * WARNING : this function doest check bound, only use if you know what
+	 * you're doing
+	 * 
+	 * @param block
+	 * @param xyz
+	 * @return
+	 */
+	public BlockInstance setBlockAt(Block block, int x, int y, int z) {
+		return (this.setBlock(block, this.getIndex(x, y, z), x, y, z));
+	}
+
 	/** function to set a block to this terrain */
-	public BlockInstance setBlockAt(Block block, int... xyz) {
+	public BlockInstance setBlock(Block block, short index, int... xyz) {
+
 		int x = xyz[0];
 		int y = xyz[1];
 		int z = xyz[2];
@@ -317,8 +352,6 @@ public class Terrain {
 			Arrays.fill(this.blocks, (byte) Blocks.AIR_ID);
 		}
 
-		// get the index for the 1D block array
-		short index = this.getIndex(x, y, z);
 		// get the previous block in this location
 		Block prevblock = Blocks.getBlockByID(this.blocks[index]);
 
@@ -326,7 +359,7 @@ public class Terrain {
 		prevblock.onUnset(this, x, y, z);
 
 		// get the previous instance at this location, and remove it
-		BlockInstance previnstance = this.popBlockInstance(x, y, z);
+		BlockInstance previnstance = this.removeBlockInstance(index);
 
 		// if there was a block instance
 		if (previnstance != null) {
@@ -352,13 +385,15 @@ public class Terrain {
 		// if this block actually have (need) an instance
 		if (instance != null) {
 
+			Logger.get().log(Logger.Level.DEBUG, "new instance", index);
+
 			// initialiaze the instance list if needed. (i.e if it is the first
 			// block instance for this terrain)
 			if (this.blockInstances == null) {
 				this.blockInstances = new HashMap<Short, BlockInstance>();
 			}
 			// add the instance to the list
-			this.blockInstances.put(instance.getIndex(), instance);
+			this.blockInstances.put(index, instance);
 			// instance set calback
 			instance.onSet();
 		}
@@ -367,11 +402,11 @@ public class Terrain {
 	}
 
 	/** remove and return the block instance at the given location */
-	private BlockInstance popBlockInstance(int x, int y, int z) {
+	private BlockInstance removeBlockInstance(int index) {
 		if (this.blockInstances == null) {
 			return (null);
 		}
-		BlockInstance blockInstance = this.blockInstances.remove(new Vector3i(x, y, z));
+		BlockInstance blockInstance = this.blockInstances.remove(index);
 
 		// if there is no longer block instances, delete the hashmap
 		if (this.blockInstances.size() == 0) {
@@ -383,18 +418,18 @@ public class Terrain {
 	/**
 	 * get the block instance at the given location (relative to the terrain)
 	 */
-	public BlockInstance getBlockInstance(Vector3i pos) {
+	public BlockInstance getBlockInstance(Short index) {
 		if (this.blockInstances == null) {
 			return (null);
 		}
-		return (this.blockInstances.get(pos));
+		return (this.blockInstances.get(index));
 	}
 
 	/**
 	 * get the block instance at the given location (relative to the terrain)
 	 */
 	public BlockInstance getBlockInstance(int x, int y, int z) {
-		return (this.getBlockInstance(new Vector3i(x, y, z)));
+		return (this.getBlockInstance(this.getIndex(x, y, z)));
 	}
 
 	/**
@@ -406,12 +441,22 @@ public class Terrain {
 	 * SPECIAL THANK TO SOA TEAM FOR THEIR SHARING
 	 */
 
-	public class LightValue {
+	public class LightNodeAdd {
+		public final Terrain terrain;
+		public final short index;
+
+		public LightNodeAdd(Terrain terrain, short index) {
+			this.terrain = terrain;
+			this.index = index;
+		}
+	}
+
+	public class LightNodeRemoval {
 		public final Terrain terrain;
 		public final short index;
 		public final byte value;
 
-		public LightValue(Terrain terrain, short index, byte value) {
+		public LightNodeRemoval(Terrain terrain, short index, byte value) {
 			this.terrain = terrain;
 			this.index = index;
 			this.value = value;
@@ -442,17 +487,17 @@ public class Terrain {
 	public final byte getBlockLight(int... xyz) {
 		Terrain terrain = this.getRelativeTerrain(xyz);
 		if (terrain == null) {
-			return (BlockLight.MIN_LIGHT_VALUE);
+			return (0);
 		}
-		return (terrain.getBlockLight(terrain.getIndex(xyz)));
+		return (terrain.getBlockLight(terrain.getIndex(xyz[0], xyz[1], xyz[2])));
 	}
 
 	private byte getBlockLight(short index) {
 		if (this.lights == null) {
-			return (BlockLight.MIN_LIGHT_VALUE);
+			return (0);
 		}
-		// return ((byte) (this.lights[index] & 0xF));
-		return ((byte) (this.lights[index]));
+		return ((byte) (this.lights[index] & 0xF));
+		// return ((byte) (this.lights[index]));
 	}
 
 	// Set the bits 0000XXXX
@@ -462,8 +507,8 @@ public class Terrain {
 			this.lights = new byte[Terrain.MAX_BLOCK_INDEX];
 			Arrays.fill(this.lights, (byte) 0);
 		}
-		// this.lights[index] = (byte) ((this.lights[index] & 0xF0) | val);
-		this.lights[index] = val;
+		this.lights[index] = (byte) ((this.lights[index] & 0xF0) | val);
+		// this.lights[index] = val;
 	}
 
 	public void addLight(byte lightValue, int x, int y, int z) {
@@ -477,10 +522,11 @@ public class Terrain {
 		}
 
 		// the light bfs queue
-		Stack<LightValue> lightAddQueue = new Stack<LightValue>();
+		Stack<LightNodeAdd> lightAddQueue = new Stack<LightNodeAdd>();
 
 		// initialize with all the light of this terrain
-		lightAddQueue.add(new LightValue(this, index, lightValue));
+		lightAddQueue.add(new LightNodeAdd(this, index));
+		this.setBlockLight(lightValue, index);
 
 		// propagate lights
 		ArrayList<Terrain> processedTerrains = new ArrayList<Terrain>(4);
@@ -492,51 +538,46 @@ public class Terrain {
 		}
 	}
 
-	private void propagateLightAddQueue(Stack<LightValue> lightAddQueue, ArrayList<Terrain> processedTerrains) {
+	private void propagateLightAddQueue(Stack<LightNodeAdd> lightAddQueue, ArrayList<Terrain> processedTerrains) {
 
 		// do the algorithm
 		while (!lightAddQueue.isEmpty()) {
 
 			// get the light value
-			LightValue lightValue = lightAddQueue.pop();
+			LightNodeAdd lightNode = lightAddQueue.pop();
 
-			if (!processedTerrains.contains(lightValue.terrain)) {
-				processedTerrains.add(lightValue.terrain);
+			Terrain nodeTerrain = lightNode.terrain;
+
+			if (!processedTerrains.contains(nodeTerrain)) {
+				processedTerrains.add(nodeTerrain);
 			}
 
 			// get the index
-			short index = lightValue.index;
-
-			if (lightValue.terrain.getBlockLight(index) >= lightValue.value) {
-				continue;
-			}
-
-			// set the light
-			lightValue.terrain.setBlockLight(lightValue.value, index);
+			short index = lightNode.index;
+			byte lightValue = nodeTerrain.getBlockLight(index);
 
 			// next value
-			byte nextLightValue = (byte) (lightValue.value - 1);
+			byte nextLightValue = (byte) (lightValue - 1);
 
 			// if reached the end; stop propagation
 			if (nextLightValue == 0) {
 				continue;
 			}
 
-			int z = lightValue.terrain.getZFromIndex(index);
-			int y = lightValue.terrain.getYFromIndex(index, z);
-			int x = lightValue.terrain.getXFromIndex(index, y, z);
+			int z = nodeTerrain.getZFromIndex(index);
+			int y = nodeTerrain.getYFromIndex(index, z);
+			int x = nodeTerrain.getXFromIndex(index, y, z);
 
 			// terrain world index
-			int tx = lightValue.terrain.terrainLocation.getWorldIndex().x;
-			int ty = lightValue.terrain.terrainLocation.getWorldIndex().y;
-			int tz = lightValue.terrain.terrainLocation.getWorldIndex().z;
+			int tx = nodeTerrain.terrainLocation.getWorldIndex().x;
+			int ty = nodeTerrain.terrainLocation.getWorldIndex().y;
+			int tz = nodeTerrain.terrainLocation.getWorldIndex().z;
 
 			// propagate thought x negative
 			if (x > 0) {
-				lightValue.terrain.floodFillLightAdd(lightAddQueue, lightValue.terrain.getIndex(x - 1, y, z),
-						nextLightValue);
+				nodeTerrain.floodFillLightAdd(lightAddQueue, nodeTerrain.getIndex(x - 1, y, z), nextLightValue);
 			} else {
-				Terrain terrain = lightValue.terrain.getNeighbor(Face.FRONT);
+				Terrain terrain = nodeTerrain.getNeighbor(Face.FRONT);
 				if (terrain == null) {
 					terrain = this.getWorld().spawnTerrain(new Terrain(tx - 1, ty, tz));
 				}
@@ -547,10 +588,9 @@ public class Terrain {
 
 			// propagate thought y negative
 			if (y > 0) {
-				lightValue.terrain.floodFillLightAdd(lightAddQueue, lightValue.terrain.getIndex(x, y - 1, z),
-						nextLightValue);
+				nodeTerrain.floodFillLightAdd(lightAddQueue, nodeTerrain.getIndex(x, y - 1, z), nextLightValue);
 			} else {
-				Terrain terrain = lightValue.terrain.getNeighbor(Face.BOT);
+				Terrain terrain = nodeTerrain.getNeighbor(Face.BOT);
 				if (terrain == null) {
 					terrain = this.getWorld().spawnTerrain(new Terrain(tx, ty - 1, tz));
 				}
@@ -561,10 +601,9 @@ public class Terrain {
 
 			// propagate thought z negative
 			if (z > 0) {
-				lightValue.terrain.floodFillLightAdd(lightAddQueue, lightValue.terrain.getIndex(x, y, z - 1),
-						nextLightValue);
+				nodeTerrain.floodFillLightAdd(lightAddQueue, nodeTerrain.getIndex(x, y, z - 1), nextLightValue);
 			} else {
-				Terrain terrain = lightValue.terrain.getNeighbor(Face.LEFT);
+				Terrain terrain = nodeTerrain.getNeighbor(Face.LEFT);
 				if (terrain == null) {
 					terrain = this.getWorld().spawnTerrain(new Terrain(tx, ty, tz - 1));
 				}
@@ -575,10 +614,9 @@ public class Terrain {
 
 			// propagate thought x positive
 			if (x < Terrain.DIM - 1) {
-				lightValue.terrain.floodFillLightAdd(lightAddQueue, lightValue.terrain.getIndex(x + 1, y, z),
-						nextLightValue);
+				nodeTerrain.floodFillLightAdd(lightAddQueue, nodeTerrain.getIndex(x + 1, y, z), nextLightValue);
 			} else {
-				Terrain terrain = lightValue.terrain.getNeighbor(Face.BACK);
+				Terrain terrain = nodeTerrain.getNeighbor(Face.BACK);
 				if (terrain == null) {
 					terrain = this.getWorld().spawnTerrain(new Terrain(tx + 1, ty, tz));
 				}
@@ -589,10 +627,9 @@ public class Terrain {
 
 			// propagate thought y positive
 			if (y < Terrain.DIM - 1) {
-				lightValue.terrain.floodFillLightAdd(lightAddQueue, lightValue.terrain.getIndex(x, y + 1, z),
-						nextLightValue);
+				nodeTerrain.floodFillLightAdd(lightAddQueue, nodeTerrain.getIndex(x, y + 1, z), nextLightValue);
 			} else {
-				Terrain terrain = lightValue.terrain.getNeighbor(Face.TOP);
+				Terrain terrain = nodeTerrain.getNeighbor(Face.TOP);
 				if (terrain == null) {
 					terrain = this.getWorld().spawnTerrain(new Terrain(tx, ty + 1, tz));
 				}
@@ -603,10 +640,9 @@ public class Terrain {
 
 			// propagate thought z positive
 			if (z < Terrain.DIM - 1) {
-				lightValue.terrain.floodFillLightAdd(lightAddQueue, lightValue.terrain.getIndex(x, y, z + 1),
-						nextLightValue);
+				nodeTerrain.floodFillLightAdd(lightAddQueue, nodeTerrain.getIndex(x, y, z + 1), nextLightValue);
 			} else {
-				Terrain terrain = lightValue.terrain.getNeighbor(Face.RIGHT);
+				Terrain terrain = nodeTerrain.getNeighbor(Face.RIGHT);
 				if (terrain == null) {
 					terrain = this.getWorld().spawnTerrain(new Terrain(tx, ty, tz + 1));
 				}
@@ -617,10 +653,13 @@ public class Terrain {
 		}
 	}
 
-	private void floodFillLightAdd(Stack<LightValue> lightAddQueue, short index, byte nextLightValue) {
+	private void floodFillLightAdd(Stack<LightNodeAdd> lightAddQueue, short index, byte nextLightValue) {
 		Block next = this.getBlockAt(index);
 		if (!next.isOpaque()) {
-			lightAddQueue.push(new LightValue(this, index, nextLightValue));
+			if (this.getBlockLight(index) < nextLightValue) {
+				lightAddQueue.push(new LightNodeAdd(this, index));
+				this.setBlockLight(nextLightValue, index);
+			}
 		}
 	}
 
@@ -632,16 +671,17 @@ public class Terrain {
 	public void removeLight(short index) {
 
 		byte value = this.getBlockLight(index);
-		if (value <= BlockLight.MIN_LIGHT_VALUE) {
+		if (value <= 0) {
 			return;
 		}
-		Stack<LightValue> lightRemovalQueue = new Stack<LightValue>();
-		lightRemovalQueue.push(new LightValue(this, index, value));
+		Stack<LightNodeRemoval> lightRemovalQueue = new Stack<LightNodeRemoval>();
+		lightRemovalQueue.push(new LightNodeRemoval(this, index, value));
+		this.setBlockLight((byte) 0, index);
 
 		this.propagateLightRemovalQueue(lightRemovalQueue);
 	}
 
-	private void propagateLightRemovalQueue(Stack<LightValue> lightRemovalQueue) {
+	private void propagateLightRemovalQueue(Stack<LightNodeRemoval> lightRemovalQueue) {
 		// init
 		ArrayList<Terrain> processedTerrains = new ArrayList<Terrain>();
 		this.propagateLightRemovalQueue(lightRemovalQueue, processedTerrains);
@@ -650,141 +690,139 @@ public class Terrain {
 		}
 	}
 
-	private void propagateLightRemovalQueue(Stack<LightValue> lightRemovalQueue, ArrayList<Terrain> processedTerrains) {
+	private void propagateLightRemovalQueue(Stack<LightNodeRemoval> lightRemovalQueue,
+			ArrayList<Terrain> processedTerrains) {
 
-		Stack<LightValue> lightAddQueue = new Stack<LightValue>();
+		Stack<LightNodeAdd> lightAddQueue = new Stack<LightNodeAdd>();
 
 		// bfs algorithm
-		Terrain terrain;
 		int x, y, z;
 		int tx, ty, tz;
 
 		while (!lightRemovalQueue.isEmpty()) {
 
 			// get the light value
-			LightValue lightValue = lightRemovalQueue.pop();
+			LightNodeRemoval lightValueNode = lightRemovalQueue.pop();
+			Terrain nodeTerrain = lightValueNode.terrain;
 
-			if (!processedTerrains.contains(lightValue.terrain)) {
-				processedTerrains.add(lightValue.terrain);
+			if (!processedTerrains.contains(nodeTerrain)) {
+				processedTerrains.add(nodeTerrain);
 			}
 
 			// clear the light value
-			lightValue.terrain.setBlockLight(BlockLight.MIN_LIGHT_VALUE, lightValue.index);
+			short nodeIndex = lightValueNode.index;
+			byte lightLevel = lightValueNode.value;
 
-			byte lightLevel = lightValue.value;
-
-			z = lightValue.terrain.getZFromIndex(lightValue.index);
-			y = lightValue.terrain.getYFromIndex(lightValue.index, z);
-			x = lightValue.terrain.getXFromIndex(lightValue.index, y, z);
+			z = nodeTerrain.getZFromIndex(nodeIndex);
+			y = nodeTerrain.getYFromIndex(nodeIndex, z);
+			x = nodeTerrain.getXFromIndex(nodeIndex, y, z);
 
 			// terrain world index
-			tx = lightValue.terrain.terrainLocation.getWorldIndex().x;
-			ty = lightValue.terrain.terrainLocation.getWorldIndex().y;
-			tz = lightValue.terrain.terrainLocation.getWorldIndex().z;
+			tx = nodeTerrain.terrainLocation.getWorldIndex().x;
+			ty = nodeTerrain.terrainLocation.getWorldIndex().y;
+			tz = nodeTerrain.terrainLocation.getWorldIndex().z;
 
 			// propagate thought x negative
 			if (x > 0) {
-				lightValue.terrain.removeLightAtIndex(lightAddQueue, lightRemovalQueue,
-						lightValue.terrain.getIndex(x - 1, y, z), lightLevel);
+				nodeTerrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue, nodeTerrain.getIndex(x - 1, y, z),
+						lightLevel);
 			} else {
-				terrain = lightValue.terrain.getNeighbor(Face.FRONT);
+				Terrain terrain = nodeTerrain.getNeighbor(Face.FRONT);
 				if (terrain == null) {
 					terrain = this.getWorld().spawnTerrain(new Terrain(tx - 1, ty, tz));
 				}
 				if (terrain != null) {
-					terrain.removeLightAtIndex(lightAddQueue, lightRemovalQueue,
+					terrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue,
 							terrain.getIndex(Terrain.DIM - 1, y, z), lightLevel);
 				}
 			}
 
 			// propagate thought y negative
 			if (y > 0) {
-				lightValue.terrain.removeLightAtIndex(lightAddQueue, lightRemovalQueue,
-						lightValue.terrain.getIndex(x, y - 1, z), lightLevel);
+				nodeTerrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue, nodeTerrain.getIndex(x, y - 1, z),
+						lightLevel);
 			} else {
-				terrain = lightValue.terrain.getNeighbor(Face.BOT);
+				Terrain terrain = nodeTerrain.getNeighbor(Face.BOT);
 				if (terrain == null) {
 					terrain = this.getWorld().spawnTerrain(new Terrain(tx, ty - 1, tz));
 				}
 				if (terrain != null) {
-					terrain.removeLightAtIndex(lightAddQueue, lightRemovalQueue,
+					terrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue,
 							terrain.getIndex(x, Terrain.DIM - 1, z), lightLevel);
 				}
 			}
 
 			// propagate thought z negative
 			if (z > 0) {
-				lightValue.terrain.removeLightAtIndex(lightAddQueue, lightRemovalQueue,
-						lightValue.terrain.getIndex(x, y, z - 1), lightLevel);
+				nodeTerrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue, nodeTerrain.getIndex(x, y, z - 1),
+						lightLevel);
 			} else {
-				terrain = lightValue.terrain.getNeighbor(Face.LEFT);
+				Terrain terrain = nodeTerrain.getNeighbor(Face.LEFT);
 				if (terrain == null) {
 					terrain = this.getWorld().spawnTerrain(new Terrain(tx, ty, tz - 1));
 				}
 				if (terrain != null) {
-					terrain.removeLightAtIndex(lightAddQueue, lightRemovalQueue,
+					terrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue,
 							terrain.getIndex(x, y, Terrain.DIM - 1), lightLevel);
 				}
 			}
-			//
-			// // propagate thought x positive
-//			if (x < Terrain.DIM - 1) {
-//				lightValue.terrain.removeLightAtIndex(lightAddQueue, lightRemovalQueue,
-//						lightValue.terrain.getIndex(x + 1, y, z), lightLevel);
-//			} else {
-//				terrain = lightValue.terrain.getNeighbor(Face.BACK);
-//				if (terrain == null) {
-//					terrain = this.getWorld().spawnTerrain(new Terrain(tx + 1, ty, tz));
-//				}
-//				if (terrain != null) {
-//					terrain.removeLightAtIndex(lightAddQueue, lightRemovalQueue, terrain.getIndex(0, y, z), lightLevel);
-//				}
-//			}
-			//
-			// // propagate thought y positive
-			// if (y < Terrain.DIM - 1) {
-			// lightValue.terrain.removeLightAtIndex(lightAddQueue,
-			// lightRemovalQueue,
-			// lightValue.terrain.getIndex(x, y + 1, z), lightLevel);
-			// } else {
-			// terrain = lightValue.terrain.getNeighbor(Face.TOP);
-			// if (terrain == null) {
-			// terrain = this.getWorld().spawnTerrain(new Terrain(tx, ty + 1,
-			// tz));
-			// }
-			// if (terrain != null) {
-			// terrain.removeLightAtIndex(lightAddQueue, lightRemovalQueue,
-			// terrain.getIndex(x, 0, z), lightLevel);
-			// }
-			// }
-			//
-			// // propagate thought z positive
-			// if (z < Terrain.DIM - 1) {
-			// lightValue.terrain.removeLightAtIndex(lightAddQueue,
-			// lightRemovalQueue,
-			// lightValue.terrain.getIndex(x, y, z + 1), lightLevel);
-			// } else {
-			// terrain = lightValue.terrain.getNeighbor(Face.RIGHT);
-			// if (terrain == null) {
-			// terrain = this.getWorld().spawnTerrain(new Terrain(tx, ty, tz +
-			// 1));
-			// }
-			// if (terrain != null) {
-			// terrain.removeLightAtIndex(lightAddQueue, lightRemovalQueue,
-			// terrain.getIndex(x, y, 0), lightLevel);
-			// }
-			// }
+
+			// propagate thought x positive
+			if (x < Terrain.DIM - 1) {
+				nodeTerrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue, nodeTerrain.getIndex(x + 1, y, z),
+						lightLevel);
+			} else {
+				Terrain terrain = nodeTerrain.getNeighbor(Face.BACK);
+				if (terrain == null) {
+					terrain = this.getWorld().spawnTerrain(new Terrain(tx + 1, ty, tz));
+				}
+				if (terrain != null) {
+					terrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue, terrain.getIndex(0, y, z),
+							lightLevel);
+				}
+			}
+
+			// propagate thought x positive
+			if (y < Terrain.DIM - 1) {
+				nodeTerrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue, nodeTerrain.getIndex(x, y + 1, z),
+						lightLevel);
+			} else {
+				Terrain terrain = nodeTerrain.getNeighbor(Face.TOP);
+				if (terrain == null) {
+					terrain = this.getWorld().spawnTerrain(new Terrain(tx, ty + 1, tz));
+				}
+				if (terrain != null) {
+					terrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue, terrain.getIndex(x, 0, z),
+							lightLevel);
+				}
+			}
+
+			// propagate thought x positive
+			if (z < Terrain.DIM - 1) {
+				nodeTerrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue, nodeTerrain.getIndex(x, y, z + 1),
+						lightLevel);
+			} else {
+				Terrain terrain = nodeTerrain.getNeighbor(Face.RIGHT);
+				if (terrain == null) {
+					terrain = this.getWorld().spawnTerrain(new Terrain(tx, ty, tz + 1));
+				}
+				if (terrain != null) {
+					terrain.floodFillLightRemove(lightAddQueue, lightRemovalQueue, terrain.getIndex(x, y, 0),
+							lightLevel);
+				}
+			}
 		}
 		this.propagateLightAddQueue(lightAddQueue, processedTerrains);
 	}
 
-	private void removeLightAtIndex(Stack<LightValue> lightAddQueue, Stack<LightValue> lightRemovalQueue, short index,
-			byte lightLevel) {
-		byte neighborLight = this.getBlockLight(index);
-		if (neighborLight != BlockLight.MIN_LIGHT_VALUE && neighborLight < lightLevel) {
-			lightRemovalQueue.push(new LightValue(this, index, neighborLight));
-		} else {
-			lightAddQueue.add(new LightValue(this, index, neighborLight));
+	private void floodFillLightRemove(Stack<LightNodeAdd> lightAddQueue, Stack<LightNodeRemoval> lightRemovalQueue,
+			short index, byte lightLevel) {
+		byte neighborLevel = this.getBlockLight(index);
+		if (neighborLevel != 0 && neighborLevel < lightLevel) {
+			this.setBlockLight((byte) 0, index);
+			lightRemovalQueue.push(new LightNodeRemoval(this, index, neighborLevel));
+		} else if (neighborLevel >= lightLevel) {
+			lightAddQueue.push(new LightNodeAdd(this, index));
 		}
 	}
 
@@ -846,8 +884,8 @@ public class Terrain {
 	 *
 	 * (x, y, z) are unique for a given index, and we found their value.
 	 */
-	public short getIndex(int... xyz) {
-		return (short) (xyz[0] + Terrain.DIM * (xyz[1] + Terrain.DIM * xyz[2]));
+	public short getIndex(int x, int y, int z) {
+		return (short) (x + Terrain.DIM * (y + Terrain.DIM * z));
 	}
 
 	public int getXFromIndex(short index) {
