@@ -129,7 +129,7 @@ public abstract class ResourceManager {
 		if (!gamepath.endsWith("/")) {
 			gamepath = gamepath + "/";
 		}
-		this.gameDir = new File(gamepath + "VoxelEngineAssets");
+		this.gameDir = new File(gamepath + "VoxelEngine");
 
 		Logger.get().log(Logger.Level.FINE, "Game directory is: " + this.gameDir.getAbsolutePath());
 		if (!this.gameDir.exists()) {
@@ -222,8 +222,8 @@ public abstract class ResourceManager {
 	/** get the resource filepath */
 	public String getResourcePath(String modid, String path) {
 		String assetsdir = "assets" + File.separator;
-		StringBuilder builder = new StringBuilder(
-				this.gameDir.getAbsolutePath().length() + assetsdir.length() + modid.length() + path.length() + 1);
+		int length = this.gameDir.getAbsolutePath().length() + assetsdir.length() + modid.length() + path.length() + 1;
+		StringBuilder builder = new StringBuilder(length);
 		String respath = this.gameDir.getAbsolutePath();
 		builder.append(respath);
 		if (!respath.endsWith(File.separator)) {
