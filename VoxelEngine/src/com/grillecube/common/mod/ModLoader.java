@@ -90,6 +90,7 @@ public class ModLoader {
 	 *            : the mod class, which should implement the interface
 	 *            "IMod.class" and the annotation "ModInfo.class"
 	 * @return true if the mod could be injected
+	 * @throws ClassNotFoundException
 	 */
 	public boolean injectMod(Class<?> modClass) {
 
@@ -116,13 +117,22 @@ public class ModLoader {
 
 		ModInfo modInfo = modClass.getAnnotation(ModInfo.class);
 		Side engineSide = VoxelEngine.instance().getSide();
-		boolean hasClientProxy = !modInfo.clientProxy().equals(com.grillecube.common.mod.IMod.class);
-		boolean hasServerProxy = !modInfo.serverProxy().equals(com.grillecube.common.mod.IMod.class);
-		if (hasClientProxy && engineSide.match(Side.CLIENT)) {
-			modClass = modInfo.clientProxy();
-		} else if (hasServerProxy && engineSide.match(Side.SERVER)) {
+
+		if (!modInfo.clientProxy().isEmpty() && engineSide.match(Side.CLIENT)) {
+			try {
+				modClass = Class.forName(modInfo.clientProxy());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace(Logger.get().getPrintStream());
+				Logger.get().log(Logger.Level.ERROR, "Couldn't find client proxy class file", modInfo.clientProxy());
+			}
+		} else if (!modInfo.serverProxy().isEmpty() && engineSide.match(Side.SERVER)) {
 			// LOAD IT SERVER SIDE
-			modClass = modInfo.serverProxy();
+			try {
+				modClass = Class.forName(modInfo.serverProxy());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace(Logger.get().getPrintStream());
+				Logger.get().log(Logger.Level.ERROR, "Couldn't find server proxy class file", modInfo.serverProxy());
+			}
 		}
 
 		try {

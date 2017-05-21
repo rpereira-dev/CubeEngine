@@ -15,16 +15,20 @@ public class BlockFace {
 	public Face face;
 
 	// the texture
-	public int texture;
+	public Block block;
 
-	public BlockFace(Block block, Face face, MeshVertex... vertices) {
+	// the texture id
+	public int textureID;
+
+	public BlockFace(Block block, Face face, int textureID, MeshVertex... vertices) {
+		this.block = block;
 		this.face = face;
-		this.texture = block.getTextureIDForFace(face);
+		this.textureID = textureID;
 		this.vertices = vertices;
 	}
 
 	public boolean hasSameTexture(BlockFace other) {
-		return (other.texture == this.texture);
+		return (this.textureID == other.textureID);
 	}
 
 	public boolean hasSameBrightness(BlockFace other) {

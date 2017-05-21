@@ -14,12 +14,11 @@
 
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 public abstract class BlockLight extends Block {
 	public BlockLight(int blockID) {
-		super(blockID, Blocks.T_DIRT);
+		super(blockID);
 	}
 
 	@Override

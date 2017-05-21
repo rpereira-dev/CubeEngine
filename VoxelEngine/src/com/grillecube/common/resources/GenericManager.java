@@ -17,11 +17,11 @@ public abstract class GenericManager<T> {
 	private final ResourceManager _resource_manager;
 
 	/** objects */
-	private final ArrayList<T> _objects;
+	private final ArrayList<T> objects;
 
 	public GenericManager(final ResourceManager resource_manager) {
 		this._resource_manager = resource_manager;
-		this._objects = new ArrayList<T>();
+		this.objects = new ArrayList<T>();
 	}
 
 	public final ResourceManager getResourceManager() {
@@ -34,15 +34,15 @@ public abstract class GenericManager<T> {
 
 	/** register an object to the manager and return it id */
 	protected int registerObject(T object) {
-		int id = this._objects.size();
-		this._objects.add(object);
+		int id = this.objects.size();
+		this.objects.add(object);
 		this.onObjectRegistered(object);
 		return (id);
 	}
 
 	/** return the next ID available for this manager */
 	public int getNextID() {
-		return (this._objects.size());
+		return (this.objects.size());
 	}
 
 	/** a callback when an object is registered */
@@ -55,13 +55,13 @@ public abstract class GenericManager<T> {
 
 	/** called once when program is stopped */
 	public void stop() {
-		this._objects.clear();
+		this.objects.clear();
 		this.onStopped();
 	}
 
 	/** called when resources should be cleaned */
 	public void clean() {
-		this._objects.clear();
+		this.objects.clear();
 		this.onCleaned();
 	}
 
@@ -85,25 +85,25 @@ public abstract class GenericManager<T> {
 
 	/** return the number of object registered */
 	public int getObjectCount() {
-		return (this._objects.size());
+		return (this.objects.size());
 	}
 
 	/** return the object with the given id */
 	public T getObjectByID(int id) {
-		if (id < 0 || id >= this._objects.size()) {
+		if (id < 0 || id >= this.objects.size()) {
 			return (null);
 		}
-		return (this._objects.get(id));
+		return (this.objects.get(id));
 	}
 
 	/** return true if the manager already have registered the given object */
 	public boolean hasObject(T object) {
-		return (this._objects.contains(object));
+		return (this.objects.contains(object));
 	}
 
 	/** return every registered objects */
 	public Collection<T> getObjects() {
-		return (this._objects);
+		return (this.objects);
 	}
 
 	public void update() {

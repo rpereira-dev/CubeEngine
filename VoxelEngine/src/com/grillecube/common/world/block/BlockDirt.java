@@ -14,18 +14,13 @@
 
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.defaultmod.Blocks;
-
-public class BlockDirt extends BlockCubeOpaque
-{
-	public BlockDirt(int blockID)
-	{
-		super(blockID, Blocks.T_DIRT);
+public class BlockDirt extends BlockCubeOpaque {
+	public BlockDirt(int blockID) {
+		super(blockID);
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return ("dirt");
 	}
 }

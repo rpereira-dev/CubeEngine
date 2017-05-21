@@ -17,7 +17,6 @@ package com.grillecube.common.world;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.grillecube.client.renderer.light.PointLight;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Vector3f;
@@ -72,7 +71,7 @@ public class Weather implements Taskable {
 	public static final int MAX_RAIN_STRENGTH = 128;
 	public static final int MIN_RAIN_STRENGTH = 8;
 	public static final int MID_RAIN_STRENGTH = (MAX_RAIN_STRENGTH + MIN_RAIN_STRENGTH) / 2;
-	
+
 	/** weather factors */
 	private float _humidity;
 	private float _temperature;

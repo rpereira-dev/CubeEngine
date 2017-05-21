@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.renderer.light;
+package com.grillecube.common.world;
 
 import com.grillecube.common.maths.Vector3f;
 

@@ -19,9 +19,9 @@ import java.util.Stack;
 
 import org.lwjgl.BufferUtils;
 
+import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.resources.BlockManager;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.terrain.Terrain;
 
@@ -234,11 +234,12 @@ public abstract class TerrainMesher {
 		}
 
 		// else the face is visible, create it!
-		MeshVertex v0 = this.createBlockFaceVertex(terrain, block, face, 0, x, y, z);
-		MeshVertex v1 = this.createBlockFaceVertex(terrain, block, face, 1, x, y, z);
-		MeshVertex v2 = this.createBlockFaceVertex(terrain, block, face, 2, x, y, z);
-		MeshVertex v3 = this.createBlockFaceVertex(terrain, block, face, 3, x, y, z);
-		BlockFace blockface = new BlockFace(block, face, v0, v1, v2, v3);
+		int textureID = BlockRendererManager.instance().getTextureIDForFace(block, face);
+		MeshVertex v0 = this.createBlockFaceVertex(terrain, block, face, textureID, 0, x, y, z);
+		MeshVertex v1 = this.createBlockFaceVertex(terrain, block, face, textureID, 1, x, y, z);
+		MeshVertex v2 = this.createBlockFaceVertex(terrain, block, face, textureID, 2, x, y, z);
+		MeshVertex v3 = this.createBlockFaceVertex(terrain, block, face, textureID, 3, x, y, z);
+		BlockFace blockface = new BlockFace(block, face, textureID, v0, v1, v2, v3);
 		return (blockface);
 	}
 
@@ -246,8 +247,8 @@ public abstract class TerrainMesher {
 	 * return the vertex for the given face at the given coordinates, for it
 	 * given id
 	 */
-	public MeshVertex createBlockFaceVertex(Terrain terrain, Block block, Face face, int vertexID, int x, int y,
-			int z) {
+	public MeshVertex createBlockFaceVertex(Terrain terrain, Block block, Face face, int textureID, int vertexID, int x,
+			int y, int z) {
 		Vector3i[] neighboors = FACES_NEIGHBORS[face.getID()][vertexID];
 
 		// position
@@ -258,7 +259,6 @@ public abstract class TerrainMesher {
 		// uv
 		float uvx = FACES_UV[vertexID][0];
 		float uvy = FACES_UV[vertexID][1];
-		int textureID = block.getTextureIDForFace(face);
 		float atlasX = this.getAtlasX(textureID);
 		float atlasY = this.getAtlasY(textureID);
 
@@ -308,11 +308,11 @@ public abstract class TerrainMesher {
 
 	/** return the x texture coodinates for this textureID */
 	public int getAtlasX(int textureID) {
-		return (textureID % BlockManager.TEXTURE_PER_LINE);
+		return (textureID % BlockRendererManager.TEXTURE_PER_LINE);
 	}
 
 	/** return the y texture coodinates for this textureID */
 	public int getAtlasY(int textureID) {
-		return (textureID / BlockManager.TEXTURE_PER_LINE);
+		return (textureID / BlockRendererManager.TEXTURE_PER_LINE);
 	}
 }

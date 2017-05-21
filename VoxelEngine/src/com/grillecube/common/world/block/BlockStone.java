@@ -14,11 +14,9 @@
 
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.defaultmod.Blocks;
-
 public class BlockStone extends BlockCubeOpaque {
 	public BlockStone(int blockID) {
-		super(blockID, Blocks.T_STONE);
+		super(blockID);
 	}
 
 	@Override

@@ -3,10 +3,10 @@ package com.grillecube.common.world.entity.physic;
 import com.grillecube.common.world.entity.Entity;
 
 public abstract class EntityPhysic {
-	
+
 	/** number of physic update per second for each entity */
 	public static final int UPS = 120;
-	
+
 	public static final int MOVE_FORWARD = 0;
 	public static final int MOVE_BACKWARD = 1;
 	public static final int STRAFE_LEFT = 2;
@@ -17,15 +17,15 @@ public abstract class EntityPhysic {
 	public static final int AIR_FRICTION = 7;
 	public static final int JUMPING = 8;
 
-	private boolean _is_set;
+	private boolean isSet;
 
 	public void enable(Entity entity) {
-		this._is_set = true;
+		this.isSet = true;
 		this.onEnable(entity);
 	}
 
 	public void disable(Entity entity) {
-		this._is_set = false;
+		this.isSet = false;
 		this.onDisable(entity);
 	}
 
@@ -34,7 +34,7 @@ public abstract class EntityPhysic {
 	}
 
 	public boolean isSet() {
-		return (this._is_set);
+		return (this.isSet);
 	}
 
 	/** called when the state is set */

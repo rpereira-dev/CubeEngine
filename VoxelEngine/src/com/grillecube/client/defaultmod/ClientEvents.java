@@ -1,5 +1,8 @@
-package com.grillecube.client.renderer.event;
+package com.grillecube.client.defaultmod;
 
+import com.grillecube.client.renderer.event.EventPostRender;
+import com.grillecube.client.renderer.event.EventPostRendererInitialisation;
+import com.grillecube.client.renderer.event.EventPreRender;
 import com.grillecube.common.mod.IModResource;
 import com.grillecube.common.mod.Mod;
 import com.grillecube.common.resources.EventManager;

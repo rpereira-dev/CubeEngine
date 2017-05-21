@@ -14,18 +14,13 @@
 
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.defaultmod.Blocks;
-
-public class BlockLeaves extends BlockCubeOpaque
-{
-	public BlockLeaves(int blockID)
-	{
-		super(blockID, Blocks.T_LEAVES);
+public class BlockLeaves extends BlockCubeOpaque {
+	public BlockLeaves(int blockID) {
+		super(blockID);
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return ("Leaves");
 	}
 }

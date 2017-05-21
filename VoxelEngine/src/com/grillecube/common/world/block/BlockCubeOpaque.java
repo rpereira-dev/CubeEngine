@@ -15,12 +15,8 @@
 package com.grillecube.common.world.block;
 
 public abstract class BlockCubeOpaque extends BlockCube {
-	public BlockCubeOpaque(int blockID, int textureID) {
-		super(blockID, textureID);
-	}
-
-	public BlockCubeOpaque(int blockID, int... faces) {
-		super(blockID, faces);
+	public BlockCubeOpaque(int blockID) {
+		super(blockID);
 	}
 
 	@Override

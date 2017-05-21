@@ -9,12 +9,12 @@ import com.grillecube.client.opengl.GLFWContext;
 import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.MainRenderer;
+import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.client.sound.ALH;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.resources.ResourceManager;
-import com.grillecube.common.resources.ResourceManagerClient;
 import com.grillecube.common.world.World;
 
 public class VoxelEngineClient extends VoxelEngine {

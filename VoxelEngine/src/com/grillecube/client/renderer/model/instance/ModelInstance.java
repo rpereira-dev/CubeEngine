@@ -14,11 +14,11 @@
 
 package com.grillecube.client.renderer.model.instance;
 
-import com.grillecube.client.renderer.model.BoundingBox;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.animation.ModelAnimation;
 import com.grillecube.client.renderer.model.animation.ModelAnimationInstance;
 import com.grillecube.common.Logger;
+import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.world.entity.Entity;
 import com.grillecube.common.world.entity.EntityModeled;

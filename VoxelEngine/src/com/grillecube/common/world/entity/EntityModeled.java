@@ -16,12 +16,12 @@ package com.grillecube.common.world.entity;
 
 import java.util.ArrayList;
 
-import com.grillecube.client.renderer.model.BoundingBox;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
 import com.grillecube.common.Logger;
+import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.SoundManager;

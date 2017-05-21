@@ -1,8 +1,8 @@
 package com.grillecube.client.renderer.camera;
 
 import com.grillecube.client.opengl.GLFWWindow;
-import com.grillecube.client.renderer.model.BoundingBox;
 import com.grillecube.common.Logger;
+import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.maths.Vector4f;

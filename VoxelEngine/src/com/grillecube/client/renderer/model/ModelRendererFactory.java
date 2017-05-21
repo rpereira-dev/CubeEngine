@@ -7,6 +7,7 @@ import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.world.lines.LineRenderer;
+import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.resources.ModelManager;

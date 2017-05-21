@@ -1,12 +1,11 @@
 package com.grillecube.common.defaultmod;
 
-import com.grillecube.client.defaultmod.VoxelEngineDefaultModClient;
 import com.grillecube.common.mod.IMod;
 import com.grillecube.common.mod.Mod;
 import com.grillecube.common.mod.ModInfo;
 import com.grillecube.common.resources.AssetsPack;
 
-@ModInfo(name = "Default Voxel engine mod package", author = "toss-dev", version = "1.0.0.a", clientProxy = VoxelEngineDefaultModClient.class)
+@ModInfo(name = "Default Voxel engine mod package", author = "toss-dev", version = "1.0.0.a", clientProxy = "com.grillecube.client.defaultmod.VoxelEngineDefaultModClient")
 public class VoxelEngineDefaultMod implements IMod {
 
 	@Override

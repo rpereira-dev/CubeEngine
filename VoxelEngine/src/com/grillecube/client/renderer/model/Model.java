@@ -23,6 +23,7 @@ import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
 import com.grillecube.client.renderer.model.builder.ModelPartSkinBuilder;
 import com.grillecube.client.renderer.model.items.ModelItem;
 import com.grillecube.common.Logger;
+import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.GenericManager;
 import com.grillecube.common.resources.R;

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.resources.ResourceManager;
-import com.grillecube.common.resources.ResourceManagerServer;
+import com.grillecube.server.resources.ResourceManagerServer;
 
 public class VoxelEngineServer extends VoxelEngine {
 

@@ -17,12 +17,9 @@ package com.grillecube.common.world.block;
 import com.grillecube.common.world.terrain.Terrain;
 
 public abstract class BlockCube extends Block {
-	public BlockCube(int blockID, int textureID) {
-		super(blockID, textureID);
-	}
 
-	public BlockCube(int blockID, int... faces) {
-		super(blockID, faces);
+	public BlockCube(int blockID) {
+		super(blockID);
 	}
 
 	@Override
@@ -38,7 +35,7 @@ public abstract class BlockCube extends Block {
 	public boolean influenceAO() {
 		return (true);
 	}
-	
+
 	public boolean isCube() {
 		return (true);
 	}

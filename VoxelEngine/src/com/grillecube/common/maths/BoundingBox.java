@@ -12,13 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.renderer.model;
-
-import com.grillecube.client.renderer.model.animation.ModelPartAnimationInstance;
-import com.grillecube.common.maths.Matrix4f;
-import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.maths.Vector4f;
+package com.grillecube.common.maths;
 
 /*
    o-----------------MAX
@@ -327,10 +321,6 @@ public class BoundingBox {
 		this._size.set(box.getSize());
 		this._color.set(box.getColor());
 		this._center.set(box.getCenter());
-	}
-
-	public void set(BoundingBox original, ModelPartAnimationInstance animation) {
-		this.translate(animation.getInterpolatedTranslation());
 	}
 
 	public void join(BoundingBox box) {

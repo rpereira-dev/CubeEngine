@@ -5,7 +5,7 @@ import com.grillecube.client.opengl.GLFWListenerKeyPress;
 import com.grillecube.client.opengl.GLFWListenerKeyRelease;
 import com.grillecube.client.opengl.GLFWListenerMouseScroll;
 import com.grillecube.client.opengl.GLFWWindow;
-import com.grillecube.client.renderer.model.BoundingBox;
+import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 

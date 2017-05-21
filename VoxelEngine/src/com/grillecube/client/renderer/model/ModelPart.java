@@ -25,6 +25,7 @@ import com.grillecube.client.opengl.object.GLVertexArray;
 import com.grillecube.client.opengl.object.GLVertexBuffer;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
+import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.terrain.Terrain;
 

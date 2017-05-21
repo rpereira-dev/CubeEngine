@@ -4,6 +4,7 @@ import java.util.Stack;
 
 import com.grillecube.client.renderer.world.terrain.MeshVertex;
 import com.grillecube.client.renderer.world.terrain.TerrainMesher;
+import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
@@ -13,7 +14,7 @@ import com.grillecube.common.world.terrain.Terrain;
 
 public abstract class BlockLiquid extends Block {
 	public BlockLiquid(int blockID) {
-		super(blockID, Blocks.T_LIQUID);
+		super(blockID);
 	}
 
 	@Override
@@ -89,10 +90,12 @@ public abstract class BlockLiquid extends Block {
 		}
 
 		// get every vertices as a standart cube
-		MeshVertex v0 = mesher.createBlockFaceVertex(terrain, this, face, 0, x, y, z);
-		MeshVertex v1 = mesher.createBlockFaceVertex(terrain, this, face, 1, x, y, z);
-		MeshVertex v2 = mesher.createBlockFaceVertex(terrain, this, face, 2, x, y, z);
-		MeshVertex v3 = mesher.createBlockFaceVertex(terrain, this, face, 3, x, y, z);
+		// TODO: move this so it is client side only (Block Renderer?)
+		int textureID = BlockRendererManager.instance().getTextureIDForFace(this, face);
+		MeshVertex v0 = mesher.createBlockFaceVertex(terrain, this, face, textureID, 0, x, y, z);
+		MeshVertex v1 = mesher.createBlockFaceVertex(terrain, this, face, textureID, 1, x, y, z);
+		MeshVertex v2 = mesher.createBlockFaceVertex(terrain, this, face, textureID, 2, x, y, z);
+		MeshVertex v3 = mesher.createBlockFaceVertex(terrain, this, face, textureID, 3, x, y, z);
 
 		// offset the standart vertices to create flowing effect
 

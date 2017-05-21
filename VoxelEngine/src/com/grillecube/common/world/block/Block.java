@@ -18,14 +18,10 @@ import java.util.Stack;
 
 import com.grillecube.client.renderer.world.terrain.MeshVertex;
 import com.grillecube.client.renderer.world.terrain.TerrainMesher;
-import com.grillecube.common.faces.Face;
 import com.grillecube.common.world.block.instances.BlockInstance;
 import com.grillecube.common.world.terrain.Terrain;
 
 public abstract class Block {
-
-	/** block opengl textureID (see faces indices) */
-	private final int[] textureID;
 
 	/** unique block id, set when the block is registered */
 	private final short id;
@@ -41,21 +37,8 @@ public abstract class Block {
 	 * @param blockID
 	 *            : block unique ID
 	 */
-	public Block(int blockID, int textureID) {
-		this(blockID, Face.LEFT, textureID, Face.RIGHT, textureID, Face.TOP, textureID, Face.BOT, textureID, Face.FRONT,
-				textureID, Face.BACK, textureID);
-	}
-
-	/**
-	 * @param faces
-	 *            : special faces (BLOCK_FACE_FRONT, TEXTURE_ID....)
-	 */
-	public Block(int blockID, int... faces) {
+	public Block(int blockID) {
 		this.id = (short) blockID;
-		this.textureID = new int[6];
-		for (int i = 0; i < faces.length; i += 2) {
-			this.textureID[faces[i]] = faces[i + 1];
-		}
 		this.setDensity(1.0f);
 	}
 
@@ -64,15 +47,8 @@ public abstract class Block {
 		return (this);
 	}
 
-	public Block setFace(int faceID, int textureID) {
-		if (faceID >= 0 && faceID < 6) {
-			this.textureID[faceID] = textureID;
-		}
-		return (this);
-	}
-
-	public int getTextureIDForFace(Face face) {
-		return (this.textureID[face.getID()]);
+	public float getDensity() {
+		return (this.density);
 	}
 
 	/** to string function */
@@ -144,7 +120,7 @@ public abstract class Block {
 	 * 'hasSpecialRendering()' method overriden to return true
 	 */
 	public void pushVertices(TerrainMesher mesher, Terrain terrain, Stack<MeshVertex> stack, int x, int y, int z) {
-
+		// TODO move this to client side only
 	}
 
 	public boolean influenceCollisions() {
@@ -158,7 +134,7 @@ public abstract class Block {
 	public boolean hasSpecialRendering() {
 		return (false);
 	}
-	
+
 	/** return true if this block bypass raycast */
 	public boolean bypassRaycast() {
 		return (false);

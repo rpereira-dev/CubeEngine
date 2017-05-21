@@ -39,12 +39,12 @@ import com.grillecube.client.renderer.event.EventPostRender;
 import com.grillecube.client.renderer.event.EventPreRender;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.world.WorldRenderer;
+import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.Logger.Level;
 import com.grillecube.common.resources.R;
-import com.grillecube.common.resources.ResourceManagerClient;
 import com.grillecube.common.world.World;
 
 public class MainRenderer implements Taskable, GLFWListenerResize {

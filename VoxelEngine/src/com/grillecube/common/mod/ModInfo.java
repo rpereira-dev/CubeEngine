@@ -35,19 +35,18 @@ public @interface ModInfo {
 	/**
 	 * HOW PROXIES WORKS:
 	 * 
-	 * IF clientProxy() AND serverProxy() are empty, then the mod is loaded on
-	 * both side
+	 * IF clientProxy() is not empty and we are client-side, then load the proxy
+	 * client side only
 	 * 
-	 * ELSE IF clientProxy() is not empty, and serverProxy() is empty, the mod
-	 * is loaded client-side only
+	 * ELSE IF serverProxy() is not empty and we are server-side, then load the
+	 * proxy server side only
 	 * 
-	 * ELSE (so, IF clientProxy() is empty AND serverProxy() is not empty), the
-	 * mod is loaded server-side only
+	 * ELSE there is no proxy, load the mod on each sides
 	 */
 
 	/** the classpath of the client proxy. */
-	Class<? extends IMod> clientProxy() default com.grillecube.common.mod.IMod.class;
+	String clientProxy() default "";
 
 	/** the classpath of the server proxy */
-	Class<? extends IMod> serverProxy() default com.grillecube.common.mod.IMod.class;
+	String serverProxy() default "";
 }

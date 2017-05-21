@@ -14,16 +14,12 @@
 
 package com.grillecube.common.world.block;
 
-import java.util.Stack;
-
-import com.grillecube.client.renderer.world.terrain.MeshVertex;
-import com.grillecube.client.renderer.world.terrain.TerrainMesher;
 import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class BlockAir extends Block {
 	public BlockAir() {
-		super((short) Blocks.AIR_ID, 0);
+		super((short) Blocks.AIR_ID);
 	}
 
 	@Override
@@ -61,11 +57,11 @@ public class BlockAir extends Block {
 	public boolean influenceCollisions() {
 		return (false);
 	}
-	
-	public void pushVertices(TerrainMesher mesher, Terrain terrain, Stack<MeshVertex> stack, int x, int y, int z) {
-	}
-	
-	/** this method should be overriden for every block having a special rendering (liquid, chair...) */
+
+	/**
+	 * this method should be overriden for every block having a special
+	 * rendering (liquid, chair...)
+	 */
 	public boolean hasSpecialRendering() {
 		return (false);
 	}

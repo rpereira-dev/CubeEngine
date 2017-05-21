@@ -12,13 +12,30 @@
 **                                     1-----2
 */
 
-package com.grillecube.common.resources;
+package com.grillecube.client.resources;
+
+import java.util.ArrayList;
 
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.common.resources.GenericManager;
+import com.grillecube.common.resources.ResourceManager;
 
 public class ResourceManagerClient extends ResourceManager {
 
+	private BlockRendererManager blockTextureManager;
+
 	public ResourceManagerClient(VoxelEngineClient engine) {
 		super(engine);
+	}
+
+	@Override
+	protected void addResources(ArrayList<GenericManager<?>> managers) {
+		super.addResources(managers);
+		this.blockTextureManager = new BlockRendererManager(this);
+		managers.add(this.blockTextureManager);
+	}
+
+	public BlockRendererManager getBlockTextureManager() {
+		return (this.blockTextureManager);
 	}
 }

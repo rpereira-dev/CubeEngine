@@ -34,8 +34,6 @@ package com.grillecube.common.maths;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import com.grillecube.client.renderer.model.BoundingBox;
-
 /**
  *
  * Holds a 3-tuple vector.

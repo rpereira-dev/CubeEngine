@@ -1,6 +1,5 @@
 package com.grillecube.client.defaultmod;
 
-import com.grillecube.client.renderer.event.ClientEvents;
 import com.grillecube.common.defaultmod.VoxelEngineDefaultMod;
 import com.grillecube.common.mod.Mod;
 
@@ -10,6 +9,7 @@ public class VoxelEngineDefaultModClient extends VoxelEngineDefaultMod {
 	public void initialize(Mod mod) {
 		super.initialize(mod);
 		mod.addResource(new ClientEvents());
+		mod.addResource(new ClientBlockTextures());
 	}
 
 	@Override
