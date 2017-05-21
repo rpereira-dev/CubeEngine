@@ -20,61 +20,66 @@ import java.util.Queue;
 import com.grillecube.common.network.Packet;
 
 public class RunnableMessageHandler implements Runnable {
+
 	public class PacketClientDataWrapper {
-		private Packet _packet;
-		private ClientData _clientData;
-		
-		public PacketClientDataWrapper(Packet _packet, ClientData _clientData) {
+		private Packet packet;
+		private ClientData clientData;
+
+		public PacketClientDataWrapper(Packet packet, ClientData clientData) {
 			super();
-			this._packet = _packet;
-			this._clientData = _clientData;
+			this.packet = packet;
+			this.clientData = clientData;
 		}
-		public Packet get_packet() {
-			return _packet;
+
+		public Packet getpacket() {
+			return packet;
 		}
-		public void set_packet(Packet _packet) {
-			this._packet = _packet;
+
+		public void setpacket(Packet packet) {
+			this.packet = packet;
 		}
-		public ClientData get_clientData() {
-			return _clientData;
+
+		public ClientData getclientData() {
+			return clientData;
 		}
-		public void set_clientData(ClientData _clientData) {
-			this._clientData = _clientData;
-		}		
+
+		public void setclientData(ClientData clientData) {
+			this.clientData = clientData;
+		}
 	}
-	
-	private Queue<PacketClientDataWrapper> _messageQueue;
-	private Boolean _shouldStop;
-	
+
+	private Queue<PacketClientDataWrapper> messageQueue;
+	private boolean shouldStop;
+
 	public RunnableMessageHandler() {
-		_messageQueue = new LinkedList<RunnableMessageHandler.PacketClientDataWrapper>();
-		_shouldStop = false;
-	} 
-	
+		this.messageQueue = new LinkedList<RunnableMessageHandler.PacketClientDataWrapper>();
+		this.shouldStop = false;
+	}
+
 	public int queueLength() {
-		return _messageQueue.size();
+		return messageQueue.size();
 	}
 
 	public void add(PacketClientDataWrapper packetClientDataWrapper) {
-		_messageQueue.add(packetClientDataWrapper);
+		messageQueue.add(packetClientDataWrapper);
 	}
-	
+
 	public void stop() {
-		this._shouldStop = true;
+		this.shouldStop = true;
 	}
-	
-	public Boolean shouldStop() {
-		return _shouldStop;
+
+	public boolean shouldStop() {
+		return (this.shouldStop);
 	}
-	
+
 	@Override
 	public void run() {
-		while(!shouldStop()) {
-			PacketClientDataWrapper packet = _messageQueue.poll();
-			if(packet != null) {
+		while (!shouldStop()) {
+			PacketClientDataWrapper packet = this.messageQueue.poll();
+			if (packet != null) {
 				/** do something with packet **/
 			}
 		}
 	}
-	
+
 }

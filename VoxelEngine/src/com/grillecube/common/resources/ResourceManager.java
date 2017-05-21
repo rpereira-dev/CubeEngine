@@ -51,9 +51,6 @@ public abstract class ResourceManager {
 	/** Models manager */
 	private final ModelManager modelManager;
 
-	/** Sound manager */
-	private final SoundManager soundManager;
-
 	/** events */
 	private final EventManager eventManager;
 
@@ -81,7 +78,6 @@ public abstract class ResourceManager {
 		this.blockManager = new BlockManager(this);
 		this.itemManager = new ItemManager(this);
 		this.entityManager = new EntityManager(this);
-		this.soundManager = new SoundManager(this);
 		this.modelManager = new ModelManager(this);
 		this.packetManager = new PacketManager(this);
 		this.eventManager = new EventManager(this);
@@ -89,7 +85,6 @@ public abstract class ResourceManager {
 
 		this.managers.add(this.blockManager);
 		this.managers.add(this.itemManager);
-		this.managers.add(this.soundManager);
 		this.managers.add(this.modelManager);
 		this.managers.add(this.entityManager);
 		this.managers.add(this.packetManager);
@@ -202,11 +197,6 @@ public abstract class ResourceManager {
 	/** get the entity manager */
 	public final EntityManager getEntityManager() {
 		return (this.entityManager);
-	}
-
-	/** get the sound manager */
-	public final SoundManager getSoundManager() {
-		return (this.soundManager);
 	}
 
 	/** get the event manager */

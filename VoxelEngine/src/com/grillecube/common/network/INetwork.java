@@ -2,8 +2,7 @@ package com.grillecube.common.network;
 
 import com.grillecube.common.VoxelEngine;
 
-public interface Network
-{
+public interface INetwork {
 	/** stop the network */
 	public void stop();
 

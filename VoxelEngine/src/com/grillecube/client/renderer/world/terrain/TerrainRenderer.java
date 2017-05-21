@@ -24,29 +24,26 @@ import org.lwjgl.opengl.GL13;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.renderer.MainRenderer;
+import com.grillecube.client.renderer.blocks.BlockRendererManager;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.camera.CameraView;
 import com.grillecube.client.renderer.world.RendererWorld;
-import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.resources.BlockManager;
 import com.grillecube.common.world.World;
 
 public class TerrainRenderer extends RendererWorld {
 	/** rendering program */
 	private ProgramTerrain terrainProgram;
-	private ProgramTerrainReflectionRefraction _terrain_reflection_refraction_program;
-	private ProgramTerrainShadow _terrain_shadow_program;
 
 	/** terrains */
-	private TerrainRendererFactory _factory;
+	private TerrainRendererFactory factory;
 
-	private ArrayList<TerrainMesh> _meshes_camera;
+	private ArrayList<TerrainMesh> meshes;
 
 	/** texture atlas (blocks) */
-	private boolean _can_render;
+	private boolean canRender;
 
 	public TerrainRenderer(MainRenderer main_renderer) {
 		super(main_renderer);
@@ -55,10 +52,8 @@ public class TerrainRenderer extends RendererWorld {
 	@Override
 	public void initialize() {
 		this.terrainProgram = new ProgramTerrain();
-		this._terrain_reflection_refraction_program = new ProgramTerrainReflectionRefraction();
-		this._terrain_shadow_program = new ProgramTerrainShadow();
-		this._factory = new TerrainRendererFactory();
-		this._factory.initialize();
+		this.factory = new TerrainRendererFactory();
+		this.factory.initialize();
 	}
 
 	@Override
@@ -67,29 +62,23 @@ public class TerrainRenderer extends RendererWorld {
 		GLH.glhDeleteObject(this.terrainProgram);
 		this.terrainProgram = null;
 
-		GLH.glhDeleteObject(this._terrain_reflection_refraction_program);
-		this._terrain_reflection_refraction_program = null;
-
-		GLH.glhDeleteObject(this._terrain_shadow_program);
-		this._terrain_shadow_program = null;
-
-		this._factory.deinitialize();
+		this.factory.deinitialize();
 	}
 
 	@Override
 	public void onWorldSet(World world) {
-		this._factory.onWorldSet(world);
+		this.factory.onWorldSet(world);
 	}
 
 	@Override
 	public void onWorldUnset(World world) {
-		this._factory.onWorldUnset(world);
+		this.factory.onWorldUnset(world);
 	}
 
 	@Override
 	public void preRender() {
-		this._meshes_camera = this._factory.getCameraRenderingList();
-		this._meshes_camera.sort(new Comparator<TerrainMesh>() {
+		this.meshes = this.factory.getCameraRenderingList();
+		this.meshes.sort(new Comparator<TerrainMesh>() {
 
 			@Override
 			public int compare(TerrainMesh t1, TerrainMesh t2) {
@@ -99,13 +88,13 @@ public class TerrainRenderer extends RendererWorld {
 			}
 
 		});
-		this._can_render = this._meshes_camera != null && this._meshes_camera.size() > 0;
+		this.canRender = this.meshes != null && this.meshes.size() > 0;
 	}
 
 	@Override
 	public void render() {
 
-		if (!this._can_render) {
+		if (!this.canRender) {
 			return;
 		}
 
@@ -153,7 +142,7 @@ public class TerrainRenderer extends RendererWorld {
 
 	public void render(CameraView camera) {
 
-		if (!this._can_render) {
+		if (!this.canRender) {
 			return;
 		}
 
@@ -166,7 +155,7 @@ public class TerrainRenderer extends RendererWorld {
 			this.terrainProgram.loadUniforms(this.getCamera(), this.getWorld());
 
 			// bind textures
-			for (TerrainMesh mesh : this._meshes_camera) {
+			for (TerrainMesh mesh : this.meshes) {
 				mesh.preRender();
 
 				if (mesh.getVertexCount() <= 0) {
@@ -188,7 +177,7 @@ public class TerrainRenderer extends RendererWorld {
 
 			@Override
 			public Taskable call() {
-				_factory.update(TerrainRenderer.this);
+				factory.update(TerrainRenderer.this);
 				return (TerrainRenderer.this);
 			}
 
@@ -200,6 +189,6 @@ public class TerrainRenderer extends RendererWorld {
 	}
 
 	public TerrainRendererFactory getTerrainFactory() {
-		return (this._factory);
+		return (this.factory);
 	}
 }

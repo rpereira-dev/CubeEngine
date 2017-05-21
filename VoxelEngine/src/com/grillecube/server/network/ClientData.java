@@ -19,20 +19,18 @@ import io.netty.channel.ChannelHandlerContext;
 
 /**
  * This should contain all the data needed from clients
+ * 
  * @author Primate
  *
  */
-public class ClientData
-{
-	private Channel _channel;
-	
-	public ClientData(ChannelHandlerContext ctx)
-	{
-		this._channel = ctx.channel();
+public class ClientData {
+	private Channel channel;
+
+	public ClientData(ChannelHandlerContext ctx) {
+		this.channel = ctx.channel();
 	}
 
-	public Channel getChannel()
-	{
-		return (this._channel);
-	}	
+	public Channel getChannel() {
+		return (this.channel);
+	}
 }

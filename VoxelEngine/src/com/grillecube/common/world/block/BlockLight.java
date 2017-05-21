@@ -40,11 +40,6 @@ public abstract class BlockLight extends Block {
 	public void update(Terrain terrain, int x, int y, int z) {
 	}
 
-	@Override
-	public boolean influenceAO() {
-		return (false);
-	}
-
 	public abstract byte getLightValue();
 
 	@Override

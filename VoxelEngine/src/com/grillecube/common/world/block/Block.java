@@ -14,10 +14,6 @@
 
 package com.grillecube.common.world.block;
 
-import java.util.Stack;
-
-import com.grillecube.client.renderer.world.terrain.MeshVertex;
-import com.grillecube.client.renderer.world.terrain.TerrainMesher;
 import com.grillecube.common.world.block.instances.BlockInstance;
 import com.grillecube.common.world.terrain.Terrain;
 
@@ -64,9 +60,6 @@ public abstract class Block {
 
 	/** return true if this block is opaque */
 	public abstract boolean isOpaque();
-
-	/** return true if this block influence neighbors block ambiant occlusion */
-	public abstract boolean influenceAO();
 
 	/**
 	 * update this block for this terrain at given coordinates (relative to the
@@ -115,24 +108,8 @@ public abstract class Block {
 	/** @see onSet */
 	public abstract void onUnset(Terrain terrain, int x, int y, int z);
 
-	/**
-	 * a function which is called when meshing the terrain, if this block has
-	 * 'hasSpecialRendering()' method overriden to return true
-	 */
-	public void pushVertices(TerrainMesher mesher, Terrain terrain, Stack<MeshVertex> stack, int x, int y, int z) {
-		// TODO move this to client side only
-	}
-
 	public boolean influenceCollisions() {
 		return (true);
-	}
-
-	/**
-	 * this method should be overriden for every block having a special
-	 * rendering (liquid, chair...)
-	 */
-	public boolean hasSpecialRendering() {
-		return (false);
 	}
 
 	/** return true if this block bypass raycast */

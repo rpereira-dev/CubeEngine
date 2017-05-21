@@ -15,10 +15,9 @@
 package com.grillecube.server.network;
 
 import com.grillecube.common.Logger;
-import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.Logger.Level;
 import com.grillecube.common.VoxelEngine.Side;
-import com.grillecube.common.network.Network;
+import com.grillecube.common.network.INetwork;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -29,38 +28,38 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-public class ServerNetwork extends ChannelInitializer<SocketChannel> implements Network// ,
-																						// PacketListener<PacketString>
-{
+//,
+// PacketListener<PacketString>
+public class ServerNetwork extends ChannelInitializer<SocketChannel> implements INetwork {
 	public static final int MAX_NB_THREADS = 4;
-	private int _port;
+	private int port;
 
-	private EventLoopGroup _bossgroup;
-	private EventLoopGroup _workergroup;
-	private ServerBootstrap _bootstrap;
-	private ChannelFuture _channel;
+	private EventLoopGroup bossgroup;
+	private EventLoopGroup workergroup;
+	private ServerBootstrap bootstrap;
+	private ChannelFuture channel;
 
 	public ServerNetwork() {
 		this(4242);
 	}
 
 	public ServerNetwork(int port) {
-		this._port = port;
+		this.port = port;
 	}
 
 	public void start() throws Exception {
-		this._bossgroup = new NioEventLoopGroup();
-		this._workergroup = new NioEventLoopGroup();
-		this._bootstrap = new ServerBootstrap();
-		this._bootstrap.group(this._bossgroup, this._workergroup);
-		this._bootstrap.channel(NioServerSocketChannel.class);
-		this._bootstrap.childHandler(this);
-		this._bootstrap.option(ChannelOption.SO_BACKLOG, 128);
-		this._bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
+		this.bossgroup = new NioEventLoopGroup();
+		this.workergroup = new NioEventLoopGroup();
+		this.bootstrap = new ServerBootstrap();
+		this.bootstrap.group(this.bossgroup, this.workergroup);
+		this.bootstrap.channel(NioServerSocketChannel.class);
+		this.bootstrap.childHandler(this);
+		this.bootstrap.option(ChannelOption.SO_BACKLOG, 128);
+		this.bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
 
 		// Bind and start to accept incoming connections.
-		this._channel = this._bootstrap.bind(this._port).sync(); // (7)
-		Logger.get().log(Level.FINE, "Listening on " + this._port);
+		this.channel = this.bootstrap.bind(this.port).sync(); // (7)
+		Logger.get().log(Level.FINE, "Listening on " + this.port);
 		this.stop();
 	}
 
@@ -81,17 +80,17 @@ public class ServerNetwork extends ChannelInitializer<SocketChannel> implements 
 		// gracefully
 		// shut down your server.
 		try {
-			this._channel.channel().closeFuture().sync();
+			this.channel.channel().closeFuture().sync();
 		} catch (InterruptedException e) {
 			Logger.get().log(Level.WARNING, "Interupted while synchronizing server threads...");
 		}
 		Logger.get().log(Level.FINE, "Stopping server");
-		this._workergroup.shutdownGracefully();
-		this._bossgroup.shutdownGracefully();
+		this.workergroup.shutdownGracefully();
+		this.bossgroup.shutdownGracefully();
 	}
 
 	@Override
 	public Side getSide() {
-		return (VoxelEngine.Side.SERVER);
+		return (Side.SERVER);
 	}
 }

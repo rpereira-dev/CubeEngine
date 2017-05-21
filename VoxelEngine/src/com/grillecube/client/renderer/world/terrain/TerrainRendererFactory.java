@@ -9,7 +9,6 @@ import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.camera.Camera;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
-import com.grillecube.client.renderer.world.ShadowCamera;
 import com.grillecube.client.renderer.world.particles.ParticleCube;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
@@ -55,7 +54,7 @@ public class TerrainRendererFactory {
 	public void initialize() {
 		this._meshes = new HashMap<Terrain, TerrainMesh>(8192);
 		this._mesher = new TerrainMesherGreedy();
-		// this._mesher = new TerrainMesherCull();
+		//		this._mesher = new TerrainMesherCull();
 		this._rendering_list_camera = new ArrayList<TerrainMesh>();
 	}
 

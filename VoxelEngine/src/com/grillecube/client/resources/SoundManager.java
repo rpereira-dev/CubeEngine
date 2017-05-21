@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.common.resources;
+package com.grillecube.client.resources;
 
 import com.grillecube.client.renderer.camera.CameraView;
 import com.grillecube.client.sound.ALH;
@@ -21,6 +21,8 @@ import com.grillecube.client.sound.ALSourcePool;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Side;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.resources.GenericManager;
+import com.grillecube.common.resources.ResourceManager;
 
 /** sound manager register only file sound name */
 public class SoundManager extends GenericManager<String> {

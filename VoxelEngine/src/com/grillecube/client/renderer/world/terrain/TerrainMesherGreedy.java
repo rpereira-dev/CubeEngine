@@ -16,6 +16,8 @@ package com.grillecube.client.renderer.world.terrain;
 
 import java.util.Stack;
 
+import com.grillecube.client.renderer.blocks.BlockRenderer;
+import com.grillecube.client.renderer.blocks.BlockRendererManager;
 import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.world.block.Block;
@@ -87,9 +89,9 @@ public class TerrainMesherGreedy extends TerrainMesher {
 								MeshVertex vertex = face.vertices[i];
 
 								vertex.posx = x * Terrain.BLOCK_SIZE
-										+ FACES_VERTICES[faceID][i].x * Terrain.BLOCK_SIZE * width;
+										+ BlockRenderer.FACES_VERTICES[faceID][i].x * Terrain.BLOCK_SIZE * width;
 								vertex.posz = z * Terrain.BLOCK_SIZE
-										+ FACES_VERTICES[faceID][i].z * Terrain.BLOCK_SIZE * depth;
+										+ BlockRenderer.FACES_VERTICES[faceID][i].z * Terrain.BLOCK_SIZE * depth;
 
 								vertex.uvx *= depth;
 								vertex.uvy *= width;
@@ -131,9 +133,9 @@ public class TerrainMesherGreedy extends TerrainMesher {
 								MeshVertex vertex = face.vertices[i];
 
 								vertex.posx = x * Terrain.BLOCK_SIZE
-										+ FACES_VERTICES[faceID][i].x * Terrain.BLOCK_SIZE * width;
+										+ BlockRenderer.FACES_VERTICES[faceID][i].x * Terrain.BLOCK_SIZE * width;
 								vertex.posy = y * Terrain.BLOCK_SIZE
-										+ FACES_VERTICES[faceID][i].y * Terrain.BLOCK_SIZE * height;
+										+ BlockRenderer.FACES_VERTICES[faceID][i].y * Terrain.BLOCK_SIZE * height;
 
 								vertex.uvx *= width;
 								vertex.uvy *= height;
@@ -176,9 +178,9 @@ public class TerrainMesherGreedy extends TerrainMesher {
 								MeshVertex vertex = face.vertices[i];
 
 								vertex.posz = z * Terrain.BLOCK_SIZE
-										+ FACES_VERTICES[faceID][i].z * Terrain.BLOCK_SIZE * depth;
+										+ BlockRenderer.FACES_VERTICES[faceID][i].z * Terrain.BLOCK_SIZE * depth;
 								vertex.posy = y * Terrain.BLOCK_SIZE
-										+ FACES_VERTICES[faceID][i].y * Terrain.BLOCK_SIZE * height;
+										+ BlockRenderer.FACES_VERTICES[faceID][i].y * Terrain.BLOCK_SIZE * height;
 
 								vertex.uvx *= depth;
 								vertex.uvy *= height;
@@ -236,27 +238,13 @@ public class TerrainMesherGreedy extends TerrainMesher {
 
 					// if the block is visible
 					if (block.isVisible()) {
-						if (block.hasSpecialRendering()) {
-							block.pushVertices(this, terrain, stack, x, y, z);
-						} else {
-							// create the block faces for this block index
-							this.createBlockFaces(terrain, faces, block, x, y, z);
-						}
+						BlockRenderer blockRenderer = BlockRendererManager.instance().getBlockRenderer(block);
+						blockRenderer.generateBlockVertices(this, terrain, block, x, y, z, faces, stack);
 					}
 					++index;
 				}
 			}
 		}
 		return (faces);
-	}
-
-	private void createBlockFaces(Terrain terrain, BlockFace[][][][] faces, Block block, int x, int y, int z) {
-		// generate every faces
-		faces[Face.BACK][x][y][z] = super.createBlockFace(terrain, block, x, y, z, Face.F_BACK);
-		faces[Face.FRONT][x][y][z] = super.createBlockFace(terrain, block, x, y, z, Face.F_FRONT);
-		faces[Face.BOT][x][y][z] = super.createBlockFace(terrain, block, x, y, z, Face.F_BOT);
-		faces[Face.TOP][x][y][z] = super.createBlockFace(terrain, block, x, y, z, Face.F_TOP);
-		faces[Face.LEFT][x][y][z] = super.createBlockFace(terrain, block, x, y, z, Face.F_LEFT);
-		faces[Face.RIGHT][x][y][z] = super.createBlockFace(terrain, block, x, y, z, Face.F_RIGHT);
 	}
 }

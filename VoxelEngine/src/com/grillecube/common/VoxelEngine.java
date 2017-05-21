@@ -13,7 +13,7 @@ import com.grillecube.common.defaultmod.VoxelEngineDefaultMod;
 import com.grillecube.common.event.EventPostLoop;
 import com.grillecube.common.event.EventPreLoop;
 import com.grillecube.common.mod.ModLoader;
-import com.grillecube.common.network.Network;
+import com.grillecube.common.network.INetwork;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.Timer;
 
@@ -60,7 +60,7 @@ public abstract class VoxelEngine {
 	protected ResourceManager resources;
 
 	/** networking */
-	private Network network;
+	private INetwork network;
 
 	/** random number generator */
 	private Random rng;
@@ -70,13 +70,12 @@ public abstract class VoxelEngine {
 
 	public VoxelEngine(Side side) {
 
-		this.side = side;
-
-		this.debug(true);
-
 		Logger.get().log(Level.FINE, "Starting common Engine!");
 
-		setInstance(this);
+		VOXEL_ENGINE_INSTANCE = this;
+
+		this.side = side;
+		this.debug(true);
 
 		this.timer = new Timer();
 		this.rng = new Random();
@@ -88,13 +87,7 @@ public abstract class VoxelEngine {
 		// inject default mod
 		this.modLoader.injectMod(VoxelEngineDefaultMod.class);
 
-		Logger.get().log(Level.FINE, "common Engine started!");
-	}
-
-	/** set the singleton instance to use */
-	public static final VoxelEngine setInstance(VoxelEngine instance) {
-		VOXEL_ENGINE_INSTANCE = instance;
-		return (VOXEL_ENGINE_INSTANCE);
+		Logger.get().log(Level.FINE, "Common Engine started!");
 	}
 
 	protected abstract ResourceManager instanciateResourceManager();
@@ -238,16 +231,18 @@ public abstract class VoxelEngine {
 
 		this.stopExecutor();
 		this.resources.stop();
-		this.modLoader.stop(this.resources);
+		this.resources = null;
 
-		if (network != null) {
-			network.stop();
+		this.modLoader.stop(this.resources);
+		this.modLoader = null;
+
+		if (this.network != null) {
+			this.network.stop();
+			this.network = null;
 		}
 		Logger.get().log(Level.FINE, "Stopped");
 
 		this.onStopped();
-
-		this.resources = null;
 	}
 
 	protected abstract void onStopped();

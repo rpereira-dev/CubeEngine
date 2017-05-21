@@ -42,15 +42,15 @@ public class VoxelEngineServer extends VoxelEngine {
 	protected void onStopped() {
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public ResourceManager getResourceManager() {
-		return (super.resources);
-	}
-
 	@Override
 	protected void getTasks(ArrayList<Callable<Taskable>> tasks) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ResourceManager getResourceManager() {
+		return (super.resources);
 	}
 }

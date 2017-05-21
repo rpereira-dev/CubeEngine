@@ -2,27 +2,16 @@ package com.grillecube.client.renderer.world.terrain;
 
 import java.util.Stack;
 
-import com.grillecube.common.faces.Face;
-import com.grillecube.common.world.block.Block;
-
 /** represent a block face */
 public class BlockFace {
 
 	// the vertices
 	public MeshVertex[] vertices;
 
-	// allowed movement for this face
-	public Face face;
-
-	// the texture
-	public Block block;
-
 	// the texture id
 	public int textureID;
 
-	public BlockFace(Block block, Face face, int textureID, MeshVertex... vertices) {
-		this.block = block;
-		this.face = face;
+	public BlockFace(int textureID, MeshVertex... vertices) {
 		this.textureID = textureID;
 		this.vertices = vertices;
 	}

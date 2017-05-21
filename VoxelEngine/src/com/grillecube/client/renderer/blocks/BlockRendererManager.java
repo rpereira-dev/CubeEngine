@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.resources;
+package com.grillecube.client.renderer.blocks;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -29,7 +29,6 @@ import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.opengl.object.ImageUtils;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
-import com.grillecube.common.faces.Face;
 import com.grillecube.common.resources.GenericManager;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
@@ -57,7 +56,7 @@ public class BlockRendererManager extends GenericManager<String> {
 	private static BlockRendererManager BLOCK_TEXTURE_MANAGER_INSTANCE;
 
 	/** the hashmap of blocks and texture links */
-	private HashMap<Block, Integer[]> blockTextureLink;
+	private HashMap<Block, BlockRenderer> blockRenderers;
 
 	/**
 	 * every game's blocks, build on initialization from ('this._blocks_list')
@@ -155,14 +154,26 @@ public class BlockRendererManager extends GenericManager<String> {
 		return (super.getObjectByID(id));
 	}
 
+	/** get the number of block textures */
 	public int getBlockTextureCount() {
 		return (super.getObjectCount());
+	}
+
+	/** set the BlockRenderer for the given block */
+	public BlockRenderer setBlockRenderer(Block block, BlockRenderer blockRenderer) {
+		this.blockRenderers.put(block, blockRenderer);
+		return (blockRenderer);
+	}
+
+	/** get the BlockRenderer for the given block */
+	public BlockRenderer getBlockRenderer(Block block) {
+		return (this.blockRenderers.get(block));
 	}
 
 	@Override
 	public void onInitialized() {
 		this.glTextureAtlas = new GLTexture[BlockRendererManager.RESOLUTION_MAX];
-		this.blockTextureLink = new HashMap<Block, Integer[]>();
+		this.blockRenderers = new HashMap<Block, BlockRenderer>();
 	}
 
 	@Override
@@ -185,76 +196,5 @@ public class BlockRendererManager extends GenericManager<String> {
 
 	@Override
 	protected void onObjectRegistered(String object) {
-	}
-
-	/**
-	 * set the texture of the given block, for the given faces
-	 * 
-	 * @param block
-	 *            : the block
-	 * @param ids
-	 *            : the face and texture ID's
-	 * 
-	 *            e.g: setBlockTextureFaces(Blocks.GRASS, Face.LEFT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.RIGHT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.FRONT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.BACK,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.TOP, ClientBlocks.T_GRASS_TOP,
-	 *            Face.BOT, ClientBlocks.T_DIRT);
-	 */
-	public void setBlockTextureFaces(Block block, int... ids) {
-
-		if (ids.length == 0) {
-			Logger.get().log(Logger.Level.DEBUG,
-					"Called setBlockFaceTextures() but no texture where given... cancelling");
-			return;
-		}
-
-		if (ids.length % 2 != 0) {
-			Logger.get().log(Logger.Level.DEBUG,
-					"Called setBlockFaceTextures() with an impair number of arguments: missing a Face or a Texture");
-			return;
-		}
-
-		Integer[] textureIDs = this.getTextureIDs(block);
-		if (textureIDs == null) {
-			textureIDs = new Integer[Face.faces.length];
-			this.blockTextureLink.put(block, textureIDs);
-		}
-		for (int i = 0; i < ids.length; i += 2) {
-			int faceID = ids[i];
-			int textureID = ids[i + 1];
-			if (faceID >= 0 && faceID < Face.faces.length) {
-				textureIDs[faceID] = textureID;
-			}
-		}
-	}
-
-	/** set the texture for all the face of the given block */
-	public void setBlockTexture(Block block, int textureID) {
-		Logger.get().log(Logger.Level.DEBUG, "in");
-
-		Integer[] textureIDs = this.getTextureIDs(block);
-		if (textureIDs == null) {
-			textureIDs = new Integer[Face.faces.length];
-			this.blockTextureLink.put(block, textureIDs);
-		}
-
-		for (Face face : Face.faces) {
-			textureIDs[face.getID()] = textureID;
-		}
-	}
-
-	/** return the array of texture for the given block */
-	public Integer[] getTextureIDs(Block block) {
-		return (this.blockTextureLink.get(block));
-	}
-
-	public int getTextureIDForFace(Block block, Face face) {
-		Integer[] faces = this.blockTextureLink.get(block);
-		if (faces == null) {
-			return (0); // TODO return 0 or something else? default texture?
-		}
-		return (faces[face.getID()]);
 	}
 }

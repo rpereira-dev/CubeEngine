@@ -9,7 +9,7 @@ public class VoxelEngineDefaultModClient extends VoxelEngineDefaultMod {
 	public void initialize(Mod mod) {
 		super.initialize(mod);
 		mod.addResource(new ClientEvents());
-		mod.addResource(new ClientBlockTextures());
+		mod.addResource(new ClientBlockRenderers());
 	}
 
 	@Override

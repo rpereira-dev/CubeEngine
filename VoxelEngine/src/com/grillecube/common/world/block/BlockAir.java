@@ -38,11 +38,6 @@ public class BlockAir extends Block {
 	}
 
 	@Override
-	public boolean influenceAO() {
-		return (false);
-	}
-
-	@Override
 	public void update(Terrain terrain, int x, int y, int z) {
 	}
 

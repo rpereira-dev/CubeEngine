@@ -16,6 +16,7 @@ package com.grillecube.common.world.entity;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.resources.SoundManager;
 import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
 import com.grillecube.common.VoxelEngine;
@@ -23,7 +24,6 @@ import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.event.world.EventEntityJump;
 import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.resources.SoundManager;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.entity.ai.EntityAI;

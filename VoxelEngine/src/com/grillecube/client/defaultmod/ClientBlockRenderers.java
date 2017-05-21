@@ -1,6 +1,8 @@
 package com.grillecube.client.defaultmod;
 
-import com.grillecube.client.resources.BlockRendererManager;
+import com.grillecube.client.renderer.blocks.BlockRendererCube;
+import com.grillecube.client.renderer.blocks.BlockRendererLiquid;
+import com.grillecube.client.renderer.blocks.BlockRendererManager;
 import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.faces.Face;
@@ -11,7 +13,7 @@ import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.block.Block;
 
-public class ClientBlockTextures implements IModResource {
+public class ClientBlockRenderers implements IModResource {
 	public static final int AIR_ID = 0;
 
 	// texture id
@@ -42,23 +44,26 @@ public class ClientBlockTextures implements IModResource {
 		T_LOG_INSIDE = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/log_inside.png"));
 		T_LEAVES = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/leaves.png"));
 
-		blockTextureManager.setBlockTexture(Blocks.DIRT, ClientBlockTextures.T_DIRT);
+		blockTextureManager.setBlockRenderer(Blocks.DIRT, new BlockRendererCube(ClientBlockRenderers.T_DIRT));
 
-		blockTextureManager.setBlockTextureFaces(Blocks.GRASS, Face.LEFT, ClientBlockTextures.T_GRASS_SIDE, Face.RIGHT,
-				ClientBlockTextures.T_GRASS_SIDE, Face.FRONT, ClientBlockTextures.T_GRASS_SIDE, Face.BACK, ClientBlockTextures.T_GRASS_SIDE,
-				Face.TOP, ClientBlockTextures.T_GRASS_TOP, Face.BOT, ClientBlockTextures.T_DIRT);
+		blockTextureManager.setBlockRenderer(Blocks.GRASS,
+				new BlockRendererCube(Face.LEFT, ClientBlockRenderers.T_GRASS_SIDE, Face.RIGHT,
+						ClientBlockRenderers.T_GRASS_SIDE, Face.FRONT, ClientBlockRenderers.T_GRASS_SIDE, Face.BACK,
+						ClientBlockRenderers.T_GRASS_SIDE, Face.TOP, ClientBlockRenderers.T_GRASS_TOP, Face.BOT,
+						ClientBlockRenderers.T_DIRT));
 
-		blockTextureManager.setBlockTexture(Blocks.LEAVES, ClientBlockTextures.T_LEAVES);
+		blockTextureManager.setBlockRenderer(Blocks.LEAVES, new BlockRendererCube(ClientBlockRenderers.T_LEAVES));
+		blockTextureManager.setBlockRenderer(Blocks.LIGHT_TEST, new BlockRendererCube(ClientBlockRenderers.T_LEAVES));
 
-		blockTextureManager.setBlockTexture(Blocks.LIGHT_TEST, ClientBlockTextures.T_LEAVES);
-		blockTextureManager.setBlockTextureFaces(Blocks.LOG, Face.LEFT, ClientBlockTextures.T_LOG_SIDE, Face.RIGHT,
-				ClientBlockTextures.T_LOG_SIDE, Face.FRONT, ClientBlockTextures.T_LOG_SIDE, Face.BACK, ClientBlockTextures.T_LOG_SIDE,
-				Face.TOP, ClientBlockTextures.T_LOG_INSIDE, Face.BOT, ClientBlockTextures.T_LOG_INSIDE);
+		blockTextureManager.setBlockRenderer(Blocks.LOG,
+				new BlockRendererCube(Face.LEFT, ClientBlockRenderers.T_LOG_SIDE, Face.RIGHT,
+						ClientBlockRenderers.T_LOG_SIDE, Face.FRONT, ClientBlockRenderers.T_LOG_SIDE, Face.BACK,
+						ClientBlockRenderers.T_LOG_SIDE, Face.TOP, ClientBlockRenderers.T_LOG_INSIDE, Face.BOT,
+						ClientBlockRenderers.T_LOG_INSIDE));
 
-		blockTextureManager.setBlockTexture(Blocks.STONE, ClientBlockTextures.T_STONE);
-
-		blockTextureManager.setBlockTexture(Blocks.LIQUID_WATER, ClientBlockTextures.T_LIQUID);
-
+		blockTextureManager.setBlockRenderer(Blocks.STONE, new BlockRendererCube(ClientBlockRenderers.T_STONE));
+		blockTextureManager.setBlockRenderer(Blocks.LIQUID_WATER,
+				new BlockRendererLiquid(ClientBlockRenderers.T_LIQUID));
 	}
 
 	@Override
