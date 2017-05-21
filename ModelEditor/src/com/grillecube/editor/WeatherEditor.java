@@ -1,6 +1,6 @@
 package com.grillecube.editor;
 
-import com.grillecube.engine.world.Weather;
+import com.grillecube.common.world.Weather;
 
 public class WeatherEditor extends Weather {
 	public WeatherEditor() {

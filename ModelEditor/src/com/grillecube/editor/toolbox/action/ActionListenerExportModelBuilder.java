@@ -21,9 +21,9 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.grillecube.client.renderer.MainRenderer.GLTask;
+import com.grillecube.client.renderer.model.json.ModelBuilderExporter;
 import com.grillecube.editor.ModelEditor;
-import com.grillecube.engine.renderer.MainRenderer.GLTask;
-import com.grillecube.engine.renderer.model.json.ModelBuilderExporter;
 
 public class ActionListenerExportModelBuilder implements ActionListener {
 	private ModelEditor _editor;

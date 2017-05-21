@@ -5,9 +5,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
-import com.grillecube.engine.maths.Vector3f;
-import com.grillecube.engine.renderer.model.animation.ModelAnimationFrame;
-import com.grillecube.engine.renderer.model.animation.ModelAnimationInstance;
+import com.grillecube.client.renderer.model.animation.ModelAnimationFrame;
+import com.grillecube.client.renderer.model.animation.ModelAnimationInstance;
+import com.grillecube.common.maths.Vector3f;
 
 public class ToolboxPanelModelAnimationFrame extends ToolboxPanel {
 	private static final long serialVersionUID = 1L;

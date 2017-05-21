@@ -9,11 +9,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.renderer.model.ModelPart;
-import com.grillecube.engine.renderer.model.animation.ModelAnimation;
-import com.grillecube.engine.renderer.model.animation.ModelAnimationFrame;
-import com.grillecube.engine.renderer.model.animation.ModelPartAnimation;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.ModelPart;
+import com.grillecube.client.renderer.model.animation.ModelAnimation;
+import com.grillecube.client.renderer.model.animation.ModelAnimationFrame;
+import com.grillecube.client.renderer.model.animation.ModelPartAnimation;
 
 public class ToolboxPanelAnimationPart extends ToolboxPanel {
 	private static final long serialVersionUID = 1L;

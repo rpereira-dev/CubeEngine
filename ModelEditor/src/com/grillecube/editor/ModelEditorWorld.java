@@ -16,21 +16,21 @@ package com.grillecube.editor;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
+import com.grillecube.client.renderer.world.MVPRenderer;
+import com.grillecube.common.Taskable;
+import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.defaultmod.Blocks;
+import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.mod.ModInfo;
+import com.grillecube.common.world.World;
+import com.grillecube.common.world.terrain.Terrain;
 import com.grillecube.editor.model.ModelGrid;
 import com.grillecube.editor.model.ModelPoint;
 import com.grillecube.editor.toolbox.Toolbox;
 import com.grillecube.editor.toolbox.ToolboxPanelModel;
-import com.grillecube.engine.Taskable;
-import com.grillecube.engine.VoxelEngine;
-import com.grillecube.engine.VoxelEngineClient;
-import com.grillecube.engine.maths.Vector3f;
-import com.grillecube.engine.maths.Vector4f;
-import com.grillecube.engine.mod.ModInfo;
-import com.grillecube.engine.renderer.model.builder.ModelPartBuilder;
-import com.grillecube.engine.renderer.world.MVPRenderer;
-import com.grillecube.engine.world.Terrain;
-import com.grillecube.engine.world.World;
-import com.grillecube.engine.world.block.Blocks;
 
 @ModInfo(name = "Model Editor", author = "toss-dev", version = "1.0.0")
 public class ModelEditorWorld extends World {

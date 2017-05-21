@@ -16,24 +16,24 @@ package com.grillecube.editor.window.camera;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.grillecube.client.opengl.GLFWListenerMousePress;
+import com.grillecube.client.opengl.GLFWListenerMouseRelease;
+import com.grillecube.client.opengl.GLFWWindow;
+import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.ModelSkin;
+import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
+import com.grillecube.client.renderer.model.builder.ModelPartSkinBuilder;
+import com.grillecube.client.renderer.world.lines.Line;
+import com.grillecube.client.renderer.world.lines.LineRenderer;
+import com.grillecube.common.Logger;
+import com.grillecube.common.maths.Maths;
+import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.maths.Vector3i;
+import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.world.terrain.Terrain;
 import com.grillecube.editor.ModelEditor;
-import com.grillecube.engine.Logger;
-import com.grillecube.engine.maths.Maths;
-import com.grillecube.engine.maths.Matrix4f;
-import com.grillecube.engine.maths.Vector3f;
-import com.grillecube.engine.maths.Vector3i;
-import com.grillecube.engine.maths.Vector4f;
-import com.grillecube.engine.opengl.GLFWListenerMousePress;
-import com.grillecube.engine.opengl.GLFWListenerMouseRelease;
-import com.grillecube.engine.opengl.GLFWWindow;
-import com.grillecube.engine.renderer.camera.CameraPerspectiveWorldCentered;
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.renderer.model.ModelSkin;
-import com.grillecube.engine.renderer.model.builder.ModelPartBuilder;
-import com.grillecube.engine.renderer.model.builder.ModelPartSkinBuilder;
-import com.grillecube.engine.renderer.world.lines.Line;
-import com.grillecube.engine.renderer.world.lines.LineRenderer;
-import com.grillecube.engine.world.Terrain;
 
 public class CameraEditor extends CameraPerspectiveWorldCentered
 		implements GLFWListenerMousePress, GLFWListenerMouseRelease {

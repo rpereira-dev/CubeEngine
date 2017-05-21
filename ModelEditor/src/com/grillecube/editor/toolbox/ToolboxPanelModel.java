@@ -19,20 +19,20 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import com.grillecube.client.renderer.MainRenderer.GLTask;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.ModelAttachmentPoint;
+import com.grillecube.client.renderer.model.ModelPart;
+import com.grillecube.client.renderer.model.ModelSkin;
+import com.grillecube.client.renderer.model.animation.ModelAnimation;
+import com.grillecube.client.renderer.model.animation.ModelAnimationFrame;
+import com.grillecube.client.renderer.model.animation.ModelAnimationInstance;
+import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
+import com.grillecube.common.Logger;
+import com.grillecube.common.world.entity.EntityModeled;
 import com.grillecube.editor.ModelEditor;
 import com.grillecube.editor.toolbox.JComboBoxColor.IconColor;
 import com.grillecube.editor.window.camera.CameraToolNewAttachmentPointModel;
-import com.grillecube.engine.Logger;
-import com.grillecube.engine.renderer.MainRenderer.GLTask;
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.renderer.model.ModelAttachmentPoint;
-import com.grillecube.engine.renderer.model.ModelPart;
-import com.grillecube.engine.renderer.model.ModelSkin;
-import com.grillecube.engine.renderer.model.animation.ModelAnimation;
-import com.grillecube.engine.renderer.model.animation.ModelAnimationFrame;
-import com.grillecube.engine.renderer.model.animation.ModelAnimationInstance;
-import com.grillecube.engine.renderer.model.builder.ModelPartBuilder;
-import com.grillecube.engine.world.entity.EntityModeled;
 
 public class ToolboxPanelModel extends ToolboxPanel {
 	private static final long serialVersionUID = 1L;

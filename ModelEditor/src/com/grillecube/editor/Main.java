@@ -14,9 +14,9 @@
 
 package com.grillecube.editor;
 
-import com.grillecube.engine.Logger;
-import com.grillecube.engine.Logger.Level;
-import com.grillecube.engine.renderer.model.json.ModelBuilderExporter;
+import com.grillecube.client.renderer.model.json.ModelBuilderExporter;
+import com.grillecube.common.Logger;
+import com.grillecube.common.Logger.Level;
 
 public class Main {
 	public static final void main(String[] args) {

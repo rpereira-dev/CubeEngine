@@ -3,15 +3,15 @@ package com.grillecube.editor.model;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
-import com.grillecube.engine.geometry.Grid;
-import com.grillecube.engine.maths.Matrix4f;
-import com.grillecube.engine.maths.Vector3f;
-import com.grillecube.engine.maths.Vector4f;
-import com.grillecube.engine.opengl.GLH;
-import com.grillecube.engine.opengl.object.GLVertexArray;
-import com.grillecube.engine.opengl.object.GLVertexBuffer;
-import com.grillecube.engine.renderer.world.MVPObject;
-import com.grillecube.engine.renderer.world.ProgramMVP;
+import com.grillecube.client.opengl.GLH;
+import com.grillecube.client.opengl.object.GLVertexArray;
+import com.grillecube.client.opengl.object.GLVertexBuffer;
+import com.grillecube.client.renderer.geometry.Grid;
+import com.grillecube.client.renderer.world.MVPObject;
+import com.grillecube.client.renderer.world.ProgramMVP;
+import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.maths.Vector4f;
 
 public class ModelGrid implements MVPObject {
 	private GLVertexArray _vao;

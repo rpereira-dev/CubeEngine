@@ -2,13 +2,13 @@ package com.grillecube.editor.window.camera;
 
 import java.util.Arrays;
 
-import com.grillecube.engine.Logger;
-import com.grillecube.engine.maths.Vector3i;
-import com.grillecube.engine.maths.Vector4f;
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.renderer.model.builder.ModelPartBuilder;
-import com.grillecube.engine.renderer.model.builder.ModelPartSkinBuilder;
-import com.grillecube.engine.resources.Compress;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
+import com.grillecube.client.renderer.model.builder.ModelPartSkinBuilder;
+import com.grillecube.common.Logger;
+import com.grillecube.common.maths.Vector3i;
+import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.world.terrain.Compress;
 
 public abstract class CameraToolPerBlock extends CameraTool {
 

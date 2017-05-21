@@ -2,19 +2,19 @@ package com.grillecube.editor.window.camera;
 
 import javax.swing.JOptionPane;
 
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.ModelAttachmentPoint;
+import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
+import com.grillecube.client.renderer.model.builder.ModelPartSkinBuilder;
+import com.grillecube.client.sound.ALH;
+import com.grillecube.client.sound.ALSound;
+import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.resources.R;
+import com.grillecube.common.world.terrain.Terrain;
 import com.grillecube.editor.ModelEditor;
 import com.grillecube.editor.toolbox.Toolbox;
 import com.grillecube.editor.toolbox.ToolboxPanelModel;
-import com.grillecube.engine.maths.Matrix4f;
-import com.grillecube.engine.maths.Vector4f;
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.renderer.model.ModelAttachmentPoint;
-import com.grillecube.engine.renderer.model.builder.ModelPartBuilder;
-import com.grillecube.engine.renderer.model.builder.ModelPartSkinBuilder;
-import com.grillecube.engine.resources.R;
-import com.grillecube.engine.sound.ALH;
-import com.grillecube.engine.sound.ALSound;
-import com.grillecube.engine.world.Terrain;
 
 public class CameraToolNewAttachmentPointModel extends CameraTool {
 	public CameraToolNewAttachmentPointModel() {

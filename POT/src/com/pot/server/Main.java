@@ -1,9 +1,9 @@
 package com.pot.server;
 
+import com.grillecube.client.opengl.GLH;
 import com.grillecube.common.ModSample;
-import com.grillecube.engine.VoxelEngineServer;
-import com.grillecube.engine.opengl.GLH;
-import com.pot.common.ModCommon;
+import com.grillecube.server.VoxelEngineServer;
+import com.pot.common.ModPOT;
 
 public class Main {
 
@@ -14,8 +14,8 @@ public class Main {
 
 		/* 2 */
 		// inject resources to be loaded
-		engine.injectInternalMod(new ModCommon());
-		engine.injectInternalMod(new ModSample());
+		engine.getModLoader().injectMod(ModPOT.class);
+		engine.getModLoader().injectMod(ModSample.class);
 
 		// load resources (mods)
 		engine.load();

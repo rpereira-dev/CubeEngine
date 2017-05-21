@@ -4,19 +4,19 @@ import java.util.Random;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.grillecube.engine.VoxelEngine;
-import com.grillecube.engine.VoxelEngine.Side;
-import com.grillecube.engine.event.EventCallback;
-import com.grillecube.engine.event.renderer.EventPreRender;
-import com.grillecube.engine.maths.Vector3f;
-import com.grillecube.engine.mod.Mod;
-import com.grillecube.engine.renderer.world.particles.ParticleBillboarded;
-import com.grillecube.engine.renderer.world.particles.ParticleRenderer;
-import com.grillecube.engine.renderer.world.particles.TextureSprite;
-import com.grillecube.engine.resources.IModResource;
-import com.grillecube.engine.resources.R;
-import com.grillecube.engine.resources.ResourceManager;
-import com.pot.common.ModCommon;
+import com.grillecube.client.renderer.event.EventPreRender;
+import com.grillecube.client.renderer.world.particles.ParticleBillboarded;
+import com.grillecube.client.renderer.world.particles.ParticleRenderer;
+import com.grillecube.client.renderer.world.particles.TextureSprite;
+import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.VoxelEngine.Side;
+import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.mod.IModResource;
+import com.grillecube.common.mod.Mod;
+import com.grillecube.common.resources.R;
+import com.grillecube.common.resources.ResourceManager;
+import com.pot.common.ModPOT;
 
 /** client GUI resources main class */
 public class POTParticles implements IModResource {
@@ -35,17 +35,17 @@ public class POTParticles implements IModResource {
 		if (VoxelEngine.instance().getSide().equals(Side.CLIENT)) {
 			manager.getEventManager().registerEventCallback(new PostRenderCallback());
 
-			SPRITE_EXPLOSION = new TextureSprite(R.getResPath(ModCommon.MOD_ID, "textures/particles/explosion.png"), 5,
+			SPRITE_EXPLOSION = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/explosion.png"), 5,
 					5);
-			SPRITE_FIRE = new TextureSprite(R.getResPath(ModCommon.MOD_ID, "textures/particles/fire.png"), 2, 2);
-			SPRITE_FIRE2 = new TextureSprite(R.getResPath(ModCommon.MOD_ID, "textures/particles/fire2.png"), 4, 4);
-			SPRITE_FLAME = new TextureSprite(R.getResPath(ModCommon.MOD_ID, "textures/particles/flame.png"), 8, 4);
-			SPRITE_FLAMEDROP = new TextureSprite(R.getResPath(ModCommon.MOD_ID, "textures/particles/flamedrop.png"), 5,
+			SPRITE_FIRE = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/fire.png"), 2, 2);
+			SPRITE_FIRE2 = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/fire2.png"), 4, 4);
+			SPRITE_FLAME = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/flame.png"), 8, 4);
+			SPRITE_FLAMEDROP = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/flamedrop.png"), 5,
 					2);
-			SPRITE_LEAVES = new TextureSprite(R.getResPath(ModCommon.MOD_ID, "textures/particles/leaves.png"), 1, 1);
-			SPRITE_MAGIC = new TextureSprite(R.getResPath(ModCommon.MOD_ID, "textures/particles/magic.png"), 2, 2);
-			SPRITE_SNOW = new TextureSprite(R.getResPath(ModCommon.MOD_ID, "textures/particles/snow.png"), 2, 2);
-			SPRITE_CLOUDS = new TextureSprite(R.getResPath(ModCommon.MOD_ID, "textures/particles/clouds.png"), 2, 2);
+			SPRITE_LEAVES = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/leaves.png"), 1, 1);
+			SPRITE_MAGIC = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/magic.png"), 2, 2);
+			SPRITE_SNOW = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/snow.png"), 2, 2);
+			SPRITE_CLOUDS = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/clouds.png"), 2, 2);
 		}
 	}
 

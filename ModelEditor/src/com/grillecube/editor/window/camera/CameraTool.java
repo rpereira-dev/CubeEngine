@@ -1,11 +1,11 @@
 package com.grillecube.editor.window.camera;
 
-import com.grillecube.engine.maths.Vector3f;
-import com.grillecube.engine.maths.Vector4f;
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.renderer.model.builder.ModelPartBuilder;
-import com.grillecube.engine.renderer.model.builder.ModelPartSkinBuilder;
-import com.grillecube.engine.sound.ALSound;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
+import com.grillecube.client.renderer.model.builder.ModelPartSkinBuilder;
+import com.grillecube.client.sound.ALSound;
+import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.maths.Vector4f;
 
 public abstract class CameraTool {
 

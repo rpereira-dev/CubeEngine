@@ -1,10 +1,10 @@
 package com.pot.common.world.item;
 
-import com.grillecube.engine.mod.Mod;
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.resources.IModResource;
-import com.grillecube.engine.resources.ResourceManager;
-import com.grillecube.engine.world.items.Item;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.common.mod.IModResource;
+import com.grillecube.common.mod.Mod;
+import com.grillecube.common.resources.ResourceManager;
+import com.grillecube.common.world.items.Item;
 
 public class POTItems implements IModResource {
 	//items

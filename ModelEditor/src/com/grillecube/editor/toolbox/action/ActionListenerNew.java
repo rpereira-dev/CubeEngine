@@ -11,11 +11,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.grillecube.client.renderer.MainRenderer.GLTask;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.common.Logger;
+import com.grillecube.common.Logger.Level;
 import com.grillecube.editor.ModelEditor;
-import com.grillecube.engine.Logger;
-import com.grillecube.engine.Logger.Level;
-import com.grillecube.engine.renderer.MainRenderer.GLTask;
-import com.grillecube.engine.renderer.model.Model;
 
 public class ActionListenerNew implements ActionListener {
 

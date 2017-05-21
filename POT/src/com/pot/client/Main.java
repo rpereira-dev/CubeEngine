@@ -1,11 +1,11 @@
 package com.pot.client;
 
+import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.renderer.camera.CameraPerspectiveWorldFree;
+import com.grillecube.client.renderer.gui.components.GuiViewIngame;
 import com.grillecube.common.ModSample;
-import com.grillecube.engine.VoxelEngineClient;
-import com.grillecube.engine.renderer.camera.CameraPerspectiveWorldFree;
-import com.grillecube.engine.renderer.gui.components.GuiViewIngame;
 import com.pot.client.renderer.gui.GuiViewDebug;
-import com.pot.common.ModCommon;
+import com.pot.common.ModPOT;
 import com.pot.common.world.POTWorlds;
 
 public class Main {
@@ -18,8 +18,8 @@ public class Main {
 
 		/* 2 */
 		// inject resources to be loaded
-		engine.injectInternalMod(new ModCommon());
-		engine.injectInternalMod(new ModSample());
+		engine.getModLoader().injectMod(ModPOT.class);
+		engine.getModLoader().injectMod(ModSample.class);
 
 		// load resources (mods)
 		engine.load();

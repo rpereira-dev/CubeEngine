@@ -81,18 +81,18 @@ As explained upside, every water block has it own instance. Each instance has an
 
 The flowing update algorythm (for eacg liquid block instance): the most it is called, the faster / smoother the water will flow, and so the flowing effect will look realistic, but this is a quite costly call as it require to rebuild a terrain mesh. So for now it is call like each 4 frames)
 
-Algorythm:
+Algorithm:
 
         var amount
         if amount < MIN_LIQUID_AMOUNT:
                 disperseWater() (remove block)
-        else:
-                if the block under this instance is air:
-                        make the instance 'fall', reducing this block height by 1
-                else if the block under is liquid:
+        else if the block under this instance is air:
+        			make the instance 'fall', reducing this block height by 1
+        else
+        			if the block under is liquid:
                         transfer as much liquid from the current instance, to the instance under
-                        if the current instance still has an amount of water:
-                                transfer as much liquid possible to neighbor liquid block (x+1, z), (x, z+1), (x-1, z), (x, z-1)
+                if the current instance still has an amount of water:
+                			transfer as much liquid possible to neighbor liquid block (x+1, z), (x, z+1), (x-1, z), (x, z-1)
 
 
 # Light

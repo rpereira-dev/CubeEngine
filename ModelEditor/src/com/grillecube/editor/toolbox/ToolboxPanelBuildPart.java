@@ -7,10 +7,10 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
+import com.grillecube.client.renderer.model.ModelPart;
+import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
 import com.grillecube.editor.window.camera.CameraTool;
 import com.grillecube.editor.window.camera.CameraTools;
-import com.grillecube.engine.renderer.model.ModelPart;
-import com.grillecube.engine.renderer.model.builder.ModelPartBuilder;
 
 public class ToolboxPanelBuildPart extends ToolboxPanel {
 	private static final long serialVersionUID = 1L;

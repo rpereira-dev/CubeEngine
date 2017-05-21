@@ -1,9 +1,9 @@
 package com.pot.common.world.entity;
 
-import com.grillecube.engine.mod.Mod;
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.resources.IModResource;
-import com.grillecube.engine.resources.ResourceManager;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.common.mod.IModResource;
+import com.grillecube.common.mod.Mod;
+import com.grillecube.common.resources.ResourceManager;
 
 public class POTEntities implements IModResource {
 	

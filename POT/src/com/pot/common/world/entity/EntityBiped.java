@@ -1,7 +1,7 @@
 package com.pot.common.world.entity;
 
-import com.grillecube.engine.world.World;
-import com.grillecube.engine.world.entity.EntityModeledLiving;
+import com.grillecube.common.world.World;
+import com.grillecube.common.world.entity.EntityModeledLiving;
 
 public class EntityBiped extends EntityModeledLiving {
 

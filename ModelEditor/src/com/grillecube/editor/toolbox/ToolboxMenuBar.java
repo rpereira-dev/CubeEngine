@@ -9,12 +9,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import com.grillecube.common.Logger;
+import com.grillecube.common.Logger.Level;
 import com.grillecube.editor.ModelEditor;
 import com.grillecube.editor.toolbox.action.ActionListenerExport;
 import com.grillecube.editor.toolbox.action.ActionListenerImport;
 import com.grillecube.editor.toolbox.action.ActionListenerNew;
-import com.grillecube.engine.Logger;
-import com.grillecube.engine.Logger.Level;
 
 public class ToolboxMenuBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;

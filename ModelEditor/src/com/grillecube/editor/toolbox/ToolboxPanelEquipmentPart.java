@@ -1,6 +1,6 @@
 package com.grillecube.editor.toolbox;
 
-import com.grillecube.engine.renderer.model.ModelPartAttachmentPoint;
+import com.grillecube.client.renderer.model.ModelPartAttachmentPoint;
 
 public class ToolboxPanelEquipmentPart extends ToolboxPanel {
 

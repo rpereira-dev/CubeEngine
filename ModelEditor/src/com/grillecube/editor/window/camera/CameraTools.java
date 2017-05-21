@@ -2,12 +2,12 @@ package com.grillecube.editor.window.camera;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.renderer.MainRenderer.GLTask;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
+import com.grillecube.client.renderer.model.builder.ModelPartSkinBuilder;
+import com.grillecube.common.maths.Vector3f;
 import com.grillecube.editor.ModelEditor;
-import com.grillecube.engine.maths.Vector3f;
-import com.grillecube.engine.renderer.MainRenderer.GLTask;
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.renderer.model.builder.ModelPartBuilder;
-import com.grillecube.engine.renderer.model.builder.ModelPartSkinBuilder;
 
 public class CameraTools {
 

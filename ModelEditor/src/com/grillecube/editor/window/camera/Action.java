@@ -1,7 +1,7 @@
 package com.grillecube.editor.window.camera;
 
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.renderer.model.builder.ModelPartBuilder;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
 
 public abstract class Action {
 	private Model _model;

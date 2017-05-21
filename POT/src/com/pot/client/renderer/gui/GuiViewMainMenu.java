@@ -1,23 +1,23 @@
 package com.pot.client.renderer.gui;
 
-import com.grillecube.engine.VoxelEngine;
-import com.grillecube.engine.VoxelEngineClient;
-import com.grillecube.engine.faces.Face;
-import com.grillecube.engine.maths.Vector3f;
-import com.grillecube.engine.opengl.object.GLProgramPostProcessing;
-import com.grillecube.engine.renderer.camera.CameraPerspectiveWorldCentered;
-import com.grillecube.engine.renderer.gui.Gui;
-import com.grillecube.engine.renderer.gui.GuiRenderer;
-import com.grillecube.engine.renderer.gui.animations.GuiAnimationTextAutoScale;
-import com.grillecube.engine.renderer.gui.animations.GuiAnimationTextHoverScale;
-import com.grillecube.engine.renderer.gui.components.GuiLabel;
-import com.grillecube.engine.renderer.gui.components.GuiView;
-import com.grillecube.engine.renderer.world.terrain.TerrainMesh;
-import com.grillecube.engine.resources.R;
-import com.grillecube.engine.world.SimplexNoiseOctave;
-import com.grillecube.engine.world.Terrain;
-import com.grillecube.engine.world.World;
-import com.grillecube.engine.world.block.Blocks;
+import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.opengl.object.GLProgramPostProcessing;
+import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
+import com.grillecube.client.renderer.gui.Gui;
+import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.animations.GuiAnimationTextAutoScale;
+import com.grillecube.client.renderer.gui.animations.GuiAnimationTextHoverScale;
+import com.grillecube.client.renderer.gui.components.GuiLabel;
+import com.grillecube.client.renderer.gui.components.GuiView;
+import com.grillecube.client.renderer.world.terrain.TerrainMesh;
+import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.defaultmod.Blocks;
+import com.grillecube.common.faces.Face;
+import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.resources.R;
+import com.grillecube.common.world.SimplexNoiseOctave;
+import com.grillecube.common.world.World;
+import com.grillecube.common.world.terrain.Terrain;
 
 public class GuiViewMainMenu extends GuiView {
 

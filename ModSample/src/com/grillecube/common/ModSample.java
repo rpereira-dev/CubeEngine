@@ -1,8 +1,8 @@
 package com.grillecube.common;
 
-import com.grillecube.engine.mod.IMod;
-import com.grillecube.engine.mod.Mod;
-import com.grillecube.engine.mod.ModInfo;
+import com.grillecube.common.mod.IMod;
+import com.grillecube.common.mod.Mod;
+import com.grillecube.common.mod.ModInfo;
 
 @ModInfo(name = "Sample mod", author = "author goes here", version = "1.0.0.a")
 public class ModSample implements IMod {

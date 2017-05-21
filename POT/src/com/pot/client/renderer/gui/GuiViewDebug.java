@@ -14,18 +14,18 @@
 
 package com.pot.client.renderer.gui;
 
-import com.grillecube.engine.VoxelEngineClient;
-import com.grillecube.engine.maths.Maths;
-import com.grillecube.engine.maths.Vector2f;
-import com.grillecube.engine.maths.Vector3f;
-import com.grillecube.engine.maths.Vector3i;
-import com.grillecube.engine.opengl.GLH;
-import com.grillecube.engine.renderer.camera.CameraPerspectiveWorldEntity;
-import com.grillecube.engine.renderer.camera.CameraProjectiveWorld;
-import com.grillecube.engine.renderer.gui.GuiRenderer;
-import com.grillecube.engine.renderer.gui.components.GuiLabel;
-import com.grillecube.engine.renderer.gui.components.GuiView;
-import com.grillecube.engine.world.entity.EntityModeled;
+import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.opengl.GLH;
+import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
+import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
+import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.components.GuiLabel;
+import com.grillecube.client.renderer.gui.components.GuiView;
+import com.grillecube.common.maths.Maths;
+import com.grillecube.common.maths.Vector2f;
+import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.maths.Vector3i;
+import com.grillecube.common.world.entity.EntityModeled;
 
 public class GuiViewDebug extends GuiView {
 

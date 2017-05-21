@@ -1,8 +1,8 @@
 package com.pot.client.event;
 
-import com.grillecube.engine.mod.Mod;
-import com.grillecube.engine.resources.IModResource;
-import com.grillecube.engine.resources.ResourceManager;
+import com.grillecube.common.mod.IModResource;
+import com.grillecube.common.mod.Mod;
+import com.grillecube.common.resources.ResourceManager;
 
 public class Events implements IModResource
 {

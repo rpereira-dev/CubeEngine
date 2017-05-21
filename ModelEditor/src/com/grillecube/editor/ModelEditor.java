@@ -26,27 +26,27 @@ import java.util.HashMap;
 
 import org.json.JSONObject;
 
+import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.opengl.GLFWListenerMouseEnter;
+import com.grillecube.client.opengl.GLFWListenerMouseExit;
+import com.grillecube.client.opengl.GLFWWindow;
+import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.ModelSkin;
+import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
+import com.grillecube.client.renderer.model.builder.ModelPartSkinBuilder;
+import com.grillecube.client.renderer.model.json.JSONHelper;
+import com.grillecube.client.renderer.model.json.ModelBuilderExporter;
+import com.grillecube.client.sound.ALSound;
+import com.grillecube.common.Logger;
+import com.grillecube.common.Logger.Level;
+import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.event.EventPostLoop;
+import com.grillecube.common.mod.ModInfo;
+import com.grillecube.common.world.entity.EntityModeled;
 import com.grillecube.editor.model.ModelGrid;
 import com.grillecube.editor.toolbox.Toolbox;
 import com.grillecube.editor.window.camera.CameraEditor;
 import com.grillecube.editor.window.camera.CameraTool;
-import com.grillecube.engine.Logger;
-import com.grillecube.engine.Logger.Level;
-import com.grillecube.engine.VoxelEngineClient;
-import com.grillecube.engine.event.EventCallback;
-import com.grillecube.engine.event.EventPostLoop;
-import com.grillecube.engine.mod.ModInfo;
-import com.grillecube.engine.opengl.GLFWListenerMouseEnter;
-import com.grillecube.engine.opengl.GLFWListenerMouseExit;
-import com.grillecube.engine.opengl.GLFWWindow;
-import com.grillecube.engine.renderer.model.Model;
-import com.grillecube.engine.renderer.model.ModelSkin;
-import com.grillecube.engine.renderer.model.builder.ModelPartBuilder;
-import com.grillecube.engine.renderer.model.builder.ModelPartSkinBuilder;
-import com.grillecube.engine.renderer.model.json.JSONHelper;
-import com.grillecube.engine.renderer.model.json.ModelBuilderExporter;
-import com.grillecube.engine.sound.ALSound;
-import com.grillecube.engine.world.entity.EntityModeled;
 
 @ModInfo(name = "Model Editor", author = "toss-dev", version = "1.0.0")
 public class ModelEditor implements GLFWListenerMouseEnter, GLFWListenerMouseExit {
