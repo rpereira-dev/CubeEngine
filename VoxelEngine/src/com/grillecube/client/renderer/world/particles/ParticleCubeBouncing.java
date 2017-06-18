@@ -27,13 +27,14 @@ public class ParticleCubeBouncing extends ParticleCube {
 
 	/** update the particle (move it) */
 	public void update(World world, CameraProjectiveWorld camera) {
-		if (!this._is_bouncing) {
-			this._pos_vel.y -= 0.001f;
-		} else if (world.getBlock(this.getPosition()).isOpaque()) {
-			this._is_bouncing = true;
-			this._pos_vel.y = 0.1f;
-			this._health = 120;
-		}
+
+//		if (world.getBlock(this.getPosition()).isOpaque()) {
+//			this._is_bouncing = true;
+//			super.posVel.y = 0.4f;
+//			super.health = 60;
+//		}
+
+		super.posVel.y -= 0.001f;
 		super.update(world, camera);
 	}
 }

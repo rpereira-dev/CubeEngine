@@ -26,8 +26,8 @@ import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.renderer.MainRenderer;
-import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
+import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiView;
 import com.grillecube.client.renderer.gui.font.Font;
@@ -39,20 +39,20 @@ import com.grillecube.common.resources.R;
 
 public class GuiRenderer extends Renderer {
 	/** rendering program */
-	private ProgramFont _program_font;
-	private ProgramQuad _program_quad;
+	private ProgramFont programFont;
+	private ProgramQuad programQuad;
 
 	/** fonts */
 	public static Font DEFAULT_FONT;
 
 	/** Fonts */
-	private Map<String, Font> _fonts;
+	private Map<String, Font> fonts;
 
 	/** listener */
-	private GLFWListenerKeyPress _key_listener;
+	private GLFWListenerKeyPress keyListeners;
 
 	/** view */
-	private ArrayList<GuiView> _views;
+	private ArrayList<GuiView> views;
 
 	public GuiRenderer(MainRenderer renderer) {
 		super(renderer);
@@ -60,33 +60,33 @@ public class GuiRenderer extends Renderer {
 
 	@Override
 	public void initialize() {
-		this._fonts = new HashMap<String, Font>();
-		this._program_quad = new ProgramQuad();
-		this._program_font = new ProgramFont();
-		this._views = new ArrayList<GuiView>();
+		this.fonts = new HashMap<String, Font>();
+		this.programQuad = new ProgramQuad();
+		this.programFont = new ProgramFont();
+		this.views = new ArrayList<GuiView>();
 		this.loadFonts();
 		this.createListeners();
 	}
 
 	@Override
 	public void deinitialize() {
-		for (GuiView view : this._views) {
+		for (GuiView view : this.views) {
 			view.delete(this);
 		}
 
-		this.getParent().getGLFWWindow().removeKeyPressListener(this._key_listener);
+		this.getParent().getGLFWWindow().removeKeyPressListener(this.keyListeners);
 	}
 
 	private void createListeners() {
 
-		this._key_listener = new GLFWListenerKeyPress() {
+		this.keyListeners = new GLFWListenerKeyPress() {
 
 			@Override
 			public void invokeKeyPress(GLFWWindow glfwWindow, int key, int scancode, int mods) {
 				getTopView().invokeKeyPress(glfwWindow, key, scancode, mods);
 			}
 		};
-		this.getParent().getGLFWWindow().addKeyPressListener(this._key_listener);
+		this.getParent().getGLFWWindow().addKeyPressListener(this.keyListeners);
 	}
 
 	/** load every fonts */
@@ -98,12 +98,12 @@ public class GuiRenderer extends Renderer {
 
 	public Font registerFont(String name) {
 		Font font = new Font(R.getResPath("font/" + name));
-		this._fonts.put(name, font);
+		this.fonts.put(name, font);
 		return (font);
 	}
 
 	public Font getFont(String fontname) {
-		Font font = this._fonts.get(fontname);
+		Font font = this.fonts.get(fontname);
 		if (font == null) {
 			return (this.registerFont(fontname));
 		}
@@ -124,14 +124,14 @@ public class GuiRenderer extends Renderer {
 
 	@Override
 	public void render() {
-		for (GuiView view : this._views) {
+		for (GuiView view : this.views) {
 			view.render(this);
 		}
 	}
 
 	public void renderFontModel(FontModel model) {
-		this._program_font.useStart();
-		this._program_font.bindFontModel(model);
+		this.programFont.useStart();
+		this.programFont.bindFontModel(model);
 		model.render();
 	}
 
@@ -160,14 +160,14 @@ public class GuiRenderer extends Renderer {
 	public void renderQuad(GLTexture texture, float uvxmin, float uvymin, float uvxmax, float uvymax, float x, float y,
 			float width, float height) {
 
-		this._program_quad.useStart();
+		this.programQuad.useStart();
 		texture.bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
-		this._program_quad.loadQuadTextured(x, y, width, height, uvxmin, uvymin, uvxmax, uvymax);
+		this.programQuad.loadQuadTextured(x, y, width, height, uvxmin, uvymin, uvxmax, uvymax);
 		GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
 	}
 
 	private void updateViews() {
-		for (GuiView view : this._views) {
+		for (GuiView view : this.views) {
 			view.update();
 		}
 	}
@@ -191,19 +191,19 @@ public class GuiRenderer extends Renderer {
 
 	/** add a view to render */
 	public void addView(GuiView view) {
-		this._views.add(view);
+		this.views.add(view);
 		view.setGLFWWindow(this.getParent().getGLFWWindow());
 		view.onAdded(this);
 	}
 
 	/** remove a view to render */
 	public void removeView(GuiView view) {
-		this._views.remove(view);
+		this.views.remove(view);
 		view.onRemoved(this);
 	}
 
 	public GuiView getTopView() {
-		return (this._views.size() > 0 ? this._views.get(0) : null);
+		return (this.views.size() > 0 ? this.views.get(0) : null);
 	}
 
 	// TODO fix toasts

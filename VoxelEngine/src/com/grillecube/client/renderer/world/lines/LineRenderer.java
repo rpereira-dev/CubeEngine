@@ -28,31 +28,31 @@ public class LineRenderer extends RendererWorld {
 	private static final int FLOAT_PER_LINE_VERTEX = 3 + 4;
 
 	/** the lines */
-	private ArrayList<Line> _lines;
+	private ArrayList<Line> lines;
 
 	/** the vbo which contains every lines instances data */
-	private GLVertexArray _vao;
-	private GLVertexBuffer _vbo;
+	private GLVertexArray vao;
+	private GLVertexBuffer vbo;
 
 	/** the rendering program */
-	private ProgramLines _program;
+	private ProgramLines program;
 
-	private boolean _up_to_date;
+	private boolean upToDate;
 
-	private ByteBuffer _buffer;
+	private ByteBuffer buffer;
 
 	public LineRenderer(MainRenderer renderer) {
 		super(renderer);
 	}
 
 	public Line addLine(Line line) {
-		int size = this._lines.size();
+		int size = this.lines.size();
 		if (size >= MAX_LINE_NUMBER) {
 			Logger.get().log(Logger.Level.WARNING, "already rendering too much line: " + size + "/" + MAX_LINE_NUMBER);
 			return (null);
 		}
 
-		if (this._lines.add(line)) {
+		if (this.lines.add(line)) {
 			this.requestUpdate();
 			return (line);
 		}
@@ -60,17 +60,17 @@ public class LineRenderer extends RendererWorld {
 	}
 
 	public void removeLine(Line line) {
-		this._lines.remove(this._lines.indexOf(line));
+		this.lines.remove(this.lines.indexOf(line));
 	}
 
 	public void removeLine(int index) {
-		if (index < 0 || index >= this._lines.size()) {
+		if (index < 0 || index >= this.lines.size()) {
 			Logger.get().log(Logger.Level.DEBUG,
-					"tried to remove a line that wasnt pushed to the renderer: " + index + "/" + this._lines.size());
+					"tried to remove a line that wasnt pushed to the renderer: " + index + "/" + this.lines.size());
 			return;
 		}
-		this._lines.remove(index);
-		this._up_to_date = false;
+		this.lines.remove(index);
+		this.upToDate = false;
 	}
 
 	@Override
@@ -114,15 +114,15 @@ public class LineRenderer extends RendererWorld {
 	}
 
 	public void removeAllLines() {
-		this._lines.clear();
+		this.lines.clear();
 		this.requestUpdate();
 	}
 
 	private void updateVertexBuffer() {
 
 		// update vertex buffer object
-		this._vbo.bind(GL15.GL_ARRAY_BUFFER);
-		this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, this._buffer, GL15.GL_STATIC_DRAW);
+		this.vbo.bind(GL15.GL_ARRAY_BUFFER);
+		this.vbo.bufferData(GL15.GL_ARRAY_BUFFER, this.buffer, GL15.GL_STATIC_DRAW);
 	}
 
 	public void updateFloatBuffer() {
@@ -131,44 +131,44 @@ public class LineRenderer extends RendererWorld {
 		// 0.0f, 0.0f, 1.0f);
 		// this.addBox(this.getParent().getWorldRenderer().getShadowBox().box);
 
-		int size_required = this._lines.size() * 2 * LineRenderer.FLOAT_PER_LINE_VERTEX * 4;
-		if (this._buffer != null && this._buffer.capacity() == size_required) {
-			this._buffer.rewind();
+		int size_required = this.lines.size() * 2 * LineRenderer.FLOAT_PER_LINE_VERTEX * 4;
+		if (this.buffer != null && this.buffer.capacity() == size_required) {
+			this.buffer.rewind();
 		} else {
-			this._buffer = BufferUtils.createByteBuffer(size_required);
+			this.buffer = BufferUtils.createByteBuffer(size_required);
 		}
 
-		for (Line line : this._lines) {
-			this._buffer.putFloat(line.posa.x);
-			this._buffer.putFloat(line.posa.y);
-			this._buffer.putFloat(line.posa.z);
-			this._buffer.putFloat(line.colora.x);
-			this._buffer.putFloat(line.colora.y);
-			this._buffer.putFloat(line.colora.z);
-			this._buffer.putFloat(line.colora.w);
+		for (Line line : this.lines) {
+			this.buffer.putFloat(line.posa.x);
+			this.buffer.putFloat(line.posa.y);
+			this.buffer.putFloat(line.posa.z);
+			this.buffer.putFloat(line.colora.x);
+			this.buffer.putFloat(line.colora.y);
+			this.buffer.putFloat(line.colora.z);
+			this.buffer.putFloat(line.colora.w);
 
-			this._buffer.putFloat(line.posb.x);
-			this._buffer.putFloat(line.posb.y);
-			this._buffer.putFloat(line.posb.z);
-			this._buffer.putFloat(line.colorb.x);
-			this._buffer.putFloat(line.colorb.y);
-			this._buffer.putFloat(line.colorb.z);
-			this._buffer.putFloat(line.colorb.w);
+			this.buffer.putFloat(line.posb.x);
+			this.buffer.putFloat(line.posb.y);
+			this.buffer.putFloat(line.posb.z);
+			this.buffer.putFloat(line.colorb.x);
+			this.buffer.putFloat(line.colorb.y);
+			this.buffer.putFloat(line.colorb.z);
+			this.buffer.putFloat(line.colorb.w);
 		}
-		this._buffer.flip();
+		this.buffer.flip();
 	}
 
 	public void render(CameraProjectiveWorld camera) {
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
-		this._program.useStart();
+		this.program.useStart();
 		{
-			this._program.loadGlobalUniforms(camera);
-			this._vao.bind();
-			this._vao.draw(GL11.GL_LINES, 0, this._vbo.getFloatCount() / FLOAT_PER_LINE_VERTEX);
+			this.program.loadGlobalUniforms(camera);
+			this.vao.bind();
+			this.vao.draw(GL11.GL_LINES, 0, this.vbo.getFloatCount() / FLOAT_PER_LINE_VERTEX);
 		}
-		this._program.useStop();
+		this.program.useStop();
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
@@ -199,37 +199,37 @@ public class LineRenderer extends RendererWorld {
 
 	@Override
 	public void initialize() {
-		this._program = new ProgramLines();
-		this._lines = new ArrayList<Line>();
+		this.program = new ProgramLines();
+		this.lines = new ArrayList<Line>();
 
-		this._vao = GLH.glhGenVAO();
-		this._vbo = GLH.glhGenVBO();
-		this._vao.bind();
-		this._vbo.bind(GL15.GL_ARRAY_BUFFER);
-		this._vao.setAttribute(0, 3, GL11.GL_FLOAT, false, FLOAT_PER_LINE_VERTEX * 4, 0); // pos
-		this._vao.setAttribute(1, 4, GL11.GL_FLOAT, false, FLOAT_PER_LINE_VERTEX * 4, 3 * 4); // color
-		this._vao.enableAttribute(0);
-		this._vao.enableAttribute(1);
-		this._vbo.unbind(GL15.GL_ARRAY_BUFFER);
-		this._vao.unbind();
+		this.vao = GLH.glhGenVAO();
+		this.vbo = GLH.glhGenVBO();
+		this.vao.bind();
+		this.vbo.bind(GL15.GL_ARRAY_BUFFER);
+		this.vao.setAttribute(0, 3, GL11.GL_FLOAT, false, FLOAT_PER_LINE_VERTEX * 4, 0); // pos
+		this.vao.setAttribute(1, 4, GL11.GL_FLOAT, false, FLOAT_PER_LINE_VERTEX * 4, 3 * 4); // color
+		this.vao.enableAttribute(0);
+		this.vao.enableAttribute(1);
+		this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
+		this.vao.unbind();
 	}
 
 	@Override
 	public void deinitialize() {
-		this._vao.delete();
-		this._vbo.delete();
+		this.vao.delete();
+		this.vbo.delete();
 	}
 
 	public void requestUpdate() {
-		this._up_to_date = false;
+		this.upToDate = false;
 	}
 
 	public void setUpToDate() {
-		this._up_to_date = true;
+		this.upToDate = true;
 	}
 
 	public boolean isUpToDate() {
-		return (this._up_to_date);
+		return (this.upToDate);
 	}
 
 	// bounding box corners

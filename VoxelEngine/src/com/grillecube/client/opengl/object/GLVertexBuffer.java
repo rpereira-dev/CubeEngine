@@ -15,34 +15,33 @@
 package com.grillecube.client.opengl.object;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 
 public class GLVertexBuffer implements GLObject {
 	/** opengl id */
-	private int _id;
-	private int _float_count;
+	private int glID;
+	private int byteCount;
 
 	public GLVertexBuffer() {
 		this(GL15.glGenBuffers());
 	}
 
 	public GLVertexBuffer(int vboID) {
-		this._id = vboID;
-		this._float_count = 0;
+		this.glID = vboID;
+		this.byteCount = 0;
 	}
 
 	/** free the buffer object */
 	public void delete() {
-		GL15.glDeleteBuffers(this._id);
-		this._id = 0;
+		GL15.glDeleteBuffers(this.glID);
+		this.glID = 0;
 	}
 
 	/** bind the vbo */
 	public void bind(int target) {
-		GL15.glBindBuffer(target, this._id);
+		GL15.glBindBuffer(target, this.glID);
 	}
 
 	/** unbind the vbo */
@@ -54,18 +53,12 @@ public class GLVertexBuffer implements GLObject {
 	public void bufferData(int target, ByteBuffer data, int usage) {
 		if (data == null) {
 			this.bufferSize(target, 0, GL15.GL_STREAM_DRAW);
-			this._float_count = 0;
+			this.byteCount = 0;
 		} else {
 			GL15.glBufferData(target, data, usage);
 			GL15.glBufferSubData(target, 0, data);
-			this._float_count = data.capacity();
+			this.byteCount = data.capacity();
 		}
-	}
-
-	/** update the whole vbo data, using stream draw */
-	public void bufferDataUpdate(int target, ByteBuffer data) {
-		int capacity = data == null ? 0 : data.capacity() * 4;
-		this.bufferDataUpdate(target, data, capacity);
 	}
 
 	/** update the whole vbo data, using stream draw */
@@ -91,8 +84,21 @@ public class GLVertexBuffer implements GLObject {
 		}
 	}
 
+	public void bufferData(int target, int[] data, int usage) {
+		if (data == null) {
+			this.bufferData(target, (ByteBuffer) null, usage);
+		} else {
+			ByteBuffer buffer = BufferUtils.createByteBuffer(data.length * 4);
+			for (int i : data) {
+				buffer.putInt(i);
+			}
+			buffer.flip();
+			this.bufferData(target, buffer, usage);
+		}
+	}
+
 	public int getFloatCount() {
-		return (this._float_count);
+		return (this.byteCount);
 	}
 
 	/**
@@ -103,25 +109,19 @@ public class GLVertexBuffer implements GLObject {
 	 *            : number of floats to get
 	 * @return
 	 */
-	public float[] getContent(int offset, int floats_count) {
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(floats_count);
+	public ByteBuffer getContent(int offset, int byteCount) {
+		ByteBuffer buffer = BufferUtils.createByteBuffer(byteCount);
 		this.bind(GL15.GL_ARRAY_BUFFER);
 		GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, offset, buffer);
 		this.unbind(GL15.GL_ARRAY_BUFFER);
-		float[] array = new float[floats_count];
-		int i = 0;
-		while (i < floats_count && buffer.hasRemaining()) {
-			array[i] = buffer.get();
-			++i;
-		}
-		return (array);
+		return (buffer);
 	}
 
-	public float[] getContent(int offset) {
-		return (this.getContent(offset, this._float_count));
+	public ByteBuffer getContent(int offset) {
+		return (this.getContent(offset, this.byteCount));
 	}
 
 	public int getGLID() {
-		return (this._id);
+		return (this.glID);
 	}
 }

@@ -44,13 +44,13 @@ public class Main {
 		// int s = 2;
 		// for (int i = 0; i < s; i++) {
 		// for (int j = 0; j < s; j++) {
-		// EntityModeled entity = new EntityShroom(Worlds.DEFAULT);
+		// Entity entity = new EntityShroom(Worlds.DEFAULT);
 		// Worlds.DEFAULT.spawnEntity(entity, i, 100, j);
 		// entity.toggleSkin(i % 2);
 		// }
 		// }
 
-		// EntityModeled entity = new EntityShroom(POTWorlds.DEFAULT);
+		// Entity entity = new EntityShroom(POTWorlds.DEFAULT);
 		// POTWorlds.DEFAULT.getEntityStorage().add(entity, 64, 256, 64);
 		// CameraPerspectiveWorldEntity cam = new
 		// CameraPerspectiveWorldEntity(engine.getGLFWWindow());
@@ -63,6 +63,5 @@ public class Main {
 		engine.getGLFWWindow().setScreenPosition(100, 100);
 		engine.getRenderer().getGuiRenderer().addView(new GuiViewDebug());
 		engine.getRenderer().getGuiRenderer().addView(new GuiViewIngame());
-
 	}
 }

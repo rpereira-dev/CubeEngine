@@ -44,18 +44,18 @@ public class BoundingBox {
 
 	public static final BoundingBox EMPTY_BOX = new BoundingBox();
 
-	private Vector3f _center;
-	private Vector3f _size;
-	private Vector3f _min;
-	private Vector3f _max;
-	private Vector4f _color;
+	private Vector3f center;
+	private Vector3f size;
+	private Vector3f min;
+	private Vector3f max;
+	private Vector4f color;
 
 	public BoundingBox() {
-		this._color = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
-		this._center = new Vector3f();
-		this._min = new Vector3f();
-		this._max = new Vector3f();
-		this._size = new Vector3f();
+		this.color = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+		this.center = new Vector3f();
+		this.min = new Vector3f();
+		this.max = new Vector3f();
+		this.size = new Vector3f();
 	}
 
 	public BoundingBox(BoundingBox box) {
@@ -70,7 +70,7 @@ public class BoundingBox {
 
 	public BoundingBox(Vector3f min, Vector3f size, Vector4f color) {
 		this();
-		this._color.set(color);
+		this.color.set(color);
 		this.setMinSize(min, size);
 	}
 
@@ -88,8 +88,8 @@ public class BoundingBox {
 	}
 
 	public boolean contains(float x, float y, float z) {
-		return (x >= this._min.x && x <= this._max.x && y >= this._min.y && y <= this._max.y && z >= this._min.z
-				&& z <= this._max.z);
+		return (x >= this.min.x && x <= this.max.x && y >= this.min.y && y <= this.max.y && z >= this.min.z
+				&& z <= this.max.z);
 	}
 
 	public boolean contains(BoundingBox box) {
@@ -115,54 +115,54 @@ public class BoundingBox {
 		float s = 0;
 		float d = 0;
 
-		if (center.x < this._min.x) {
-			s = center.x - this._min.x;
+		if (center.x < this.min.x) {
+			s = center.x - this.min.x;
 			d = s * s;
-		} else if (center.x > this._max.x) {
-			s = center.x - this._max.x;
+		} else if (center.x > this.max.x) {
+			s = center.x - this.max.x;
 			d += s * s;
 		}
 
-		if (center.y < this._min.y) {
-			s = center.y - this._min.y;
+		if (center.y < this.min.y) {
+			s = center.y - this.min.y;
 			d += s * s;
-		} else if (center.y > this._max.y) {
-			s = center.y - this._max.y;
+		} else if (center.y > this.max.y) {
+			s = center.y - this.max.y;
 			d += s * s;
 		}
 
-		if (center.z < this._min.z) {
-			s = center.z - this._min.z;
+		if (center.z < this.min.z) {
+			s = center.z - this.min.z;
 			d += s * s;
-		} else if (center.z > this._max.z) {
-			s = center.z - this._max.z;
+		} else if (center.z > this.max.z) {
+			s = center.z - this.max.z;
 			d += s * s;
 		}
 		return (d <= radius * radius);
 	}
 
 	public Vector3f getMax() {
-		return (this._max);
+		return (this.max);
 	}
 
 	public Vector3f getMin() {
-		return (this._min);
+		return (this.min);
 	}
 
 	public Vector3f getSize() {
-		return (this._size);
+		return (this.size);
 	}
 
 	public Vector4f getColor() {
-		return (this._color);
+		return (this.color);
 	}
 
 	public void setColor(Vector4f vec) {
-		this._color.set(vec);
+		this.color.set(vec);
 	}
 
 	public void setColor(float r, float g, float b, float a) {
-		this._color.set(r, g, b, a);
+		this.color.set(r, g, b, a);
 	}
 
 	public void setMinSize(Vector3f min, Vector3f size) {
@@ -174,11 +174,11 @@ public class BoundingBox {
 	}
 
 	public void setMinSize(Vector3f min, float sizex, float sizey, float sizez) {
-		this._min.set(min);
-		this._size.set(sizex, sizey, sizez);
-		this._max.set(this._min.x + sizex, this._min.y + sizey, this._min.z + sizez);
-		this._center.set(this._min.x + this._size.x / 2.0f, this._min.y + this._size.y / 2.0f,
-				this._min.z + this._size.z / 2.0f);
+		this.min.set(min);
+		this.size.set(sizex, sizey, sizez);
+		this.max.set(this.min.x + sizex, this.min.y + sizey, this.min.z + sizez);
+		this.center.set(this.min.x + this.size.x / 2.0f, this.min.y + this.size.y / 2.0f,
+				this.min.z + this.size.z / 2.0f);
 	}
 
 	public void setMinMax(Vector3f min, Vector3f max) {
@@ -190,23 +190,34 @@ public class BoundingBox {
 	}
 
 	public void setMinMax(float minx, float miny, float minz, float maxx, float maxy, float maxz) {
-		this._min.set(minx, miny, minz);
-		this._max.set(maxx, maxy, maxz);
-		this._size.set(this._max.x - this._min.x, this._max.y - this._min.y, this._max.z - this._min.z);
-		this._center.set(this._min.x + this._size.x / 2.0f, this._min.y + this._size.y / 2.0f,
-				this._min.z + this._size.z / 2.0f);
+		this.min.set(minx, miny, minz);
+		this.max.set(maxx, maxy, maxz);
+		this.size.set(this.max.x - this.min.x, this.max.y - this.min.y, this.max.z - this.min.z);
+		this.center.set(this.min.x + this.size.x / 2.0f, this.min.y + this.size.y / 2.0f,
+				this.min.z + this.size.z / 2.0f);
 	}
 
 	public void setMin(Vector3f min) {
-		this.setMinSize(min, this._size);
+		this.setMinSize(min, this.size);
 	}
 
 	public void setSize(Vector3f size) {
-		this.setMinSize(this._min, size);
+		this.setMinSize(this.min, size);
 	}
 
 	public Vector3f getCenter() {
-		return (this._center);
+		return (this.center);
+	}
+
+	/** set bounding box by a center and it dimensions */
+	public void setCenterSize(Vector3f center, float width, float height, float depth) {
+		float w = width * 0.5f;
+		float h = height * 0.5f;
+		float d = depth * 0.5f;
+		this.center.set(center);
+		this.min.set(center.x - w, center.y - h, center.z - d);
+		this.max.set(center.x + w, center.y + h, center.z + d);
+		this.size.set(width, height, depth);
 	}
 
 	@Override
@@ -223,10 +234,10 @@ public class BoundingBox {
 	}
 
 	public void translate(float x, float y, float z) {
-		this._min.translate(x, y, z);
-		this._max.translate(x, y, z);
-		this._center.set(this._min.x + this._size.x / 2.0f, this._min.y + this._size.y / 2.0f,
-				this._min.z + this._size.z / 2.0f);
+		this.min.translate(x, y, z);
+		this.max.translate(x, y, z);
+		this.center.set(this.min.x + this.size.x / 2.0f, this.min.y + this.size.y / 2.0f,
+				this.min.z + this.size.z / 2.0f);
 	}
 
 	public void scale(float f) {
@@ -238,9 +249,9 @@ public class BoundingBox {
 	}
 
 	public void scale(float fx, float fy, float fz) {
-		float sx = this._size.x;
-		float sy = this._size.y;
-		float sz = this._size.z;
+		float sx = this.size.x;
+		float sy = this.size.y;
+		float sz = this.size.z;
 
 		float scalex = sx * fx;
 		float scaley = sy * fy;
@@ -254,15 +265,15 @@ public class BoundingBox {
 		float ddy = dy / 2.0f;
 		float ddz = dz / 2.0f;
 
-		this._min.x += ddx;
-		this._min.y += ddy;
-		this._min.z += ddz;
+		this.min.x += ddx;
+		this.min.y += ddy;
+		this.min.z += ddz;
 
-		this._max.x -= ddx;
-		this._max.y -= ddy;
-		this._max.z -= ddz;
+		this.max.x -= ddx;
+		this.max.y -= ddy;
+		this.max.z -= ddz;
 
-		this.setMinMax(this._min, this._max);
+		this.setMinMax(this.min, this.max);
 	}
 
 	public void rotate(Vector3f rot, Vector3f center) {
@@ -278,15 +289,14 @@ public class BoundingBox {
 		matrix.translate(center.negate(null));
 
 		Vector4f[] vecs = new Vector4f[8];
-		vecs[0] = new Vector4f(this._min.x, this._min.y, this._min.z, 1.0f);
-		vecs[1] = new Vector4f(this._min.x + this._size.x, this._min.y, this._min.z, 1.0f);
-		vecs[2] = new Vector4f(this._min.x + this._size.x, this._min.y, this._min.z + this._size.z, 1.0f);
-		vecs[3] = new Vector4f(this._min.x, this._min.y, this._min.z + this._size.z, 1.0f);
-		vecs[4] = new Vector4f(this._min.x, this._min.y + this._size.y, this._min.z, 1.0f);
-		vecs[5] = new Vector4f(this._min.x + this._size.x, this._min.y + this._size.y, this._min.z, 1.0f);
-		vecs[6] = new Vector4f(this._min.x + this._size.x, this._min.y + this._size.y, this._min.z + this._size.z,
-				1.0f);
-		vecs[7] = new Vector4f(this._min.x, this._min.y + this._size.y, this._min.z + this._size.z, 1.0f);
+		vecs[0] = new Vector4f(this.min.x, this.min.y, this.min.z, 1.0f);
+		vecs[1] = new Vector4f(this.min.x + this.size.x, this.min.y, this.min.z, 1.0f);
+		vecs[2] = new Vector4f(this.min.x + this.size.x, this.min.y, this.min.z + this.size.z, 1.0f);
+		vecs[3] = new Vector4f(this.min.x, this.min.y, this.min.z + this.size.z, 1.0f);
+		vecs[4] = new Vector4f(this.min.x, this.min.y + this.size.y, this.min.z, 1.0f);
+		vecs[5] = new Vector4f(this.min.x + this.size.x, this.min.y + this.size.y, this.min.z, 1.0f);
+		vecs[6] = new Vector4f(this.min.x + this.size.x, this.min.y + this.size.y, this.min.z + this.size.z, 1.0f);
+		vecs[7] = new Vector4f(this.min.x, this.min.y + this.size.y, this.min.z + this.size.z, 1.0f);
 
 		Vector3f min = new Vector3f(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 		Vector3f max = new Vector3f(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
@@ -316,42 +326,42 @@ public class BoundingBox {
 	}
 
 	public void set(BoundingBox box) {
-		this._min.set(box.getMin());
-		this._max.set(box.getMax());
-		this._size.set(box.getSize());
-		this._color.set(box.getColor());
-		this._center.set(box.getCenter());
+		this.min.set(box.getMin());
+		this.max.set(box.getMax());
+		this.size.set(box.getSize());
+		this.color.set(box.getColor());
+		this.center.set(box.getCenter());
 	}
 
 	public void join(BoundingBox box) {
 		// min
-		if (box._min.x < this._min.x) {
-			this._min.x = box._min.x;
+		if (box.min.x < this.min.x) {
+			this.min.x = box.min.x;
 		}
 
-		if (box._min.y < this._min.y) {
-			this._min.y = box._min.y;
+		if (box.min.y < this.min.y) {
+			this.min.y = box.min.y;
 		}
 
-		if (box._min.z < this._min.z) {
-			this._min.z = box._min.z;
+		if (box.min.z < this.min.z) {
+			this.min.z = box.min.z;
 		}
 
 		// max
-		if (box._max.x > this._max.x) {
-			this._max.x = box._max.x;
+		if (box.max.x > this.max.x) {
+			this.max.x = box.max.x;
 		}
 
-		if (box._max.y > this._max.y) {
-			this._max.y = box._max.y;
+		if (box.max.y > this.max.y) {
+			this.max.y = box.max.y;
 		}
 
-		if (box._max.z > this._max.z) {
-			this._max.z = box._max.z;
+		if (box.max.z > this.max.z) {
+			this.max.z = box.max.z;
 		}
-		this._size.set(this._max.x - this._min.x, this._max.y - this._min.y, this._max.z - this._min.z);
-		this._center.set(this._min.x + this._size.x / 2.0f, this._min.y + this._size.y / 2.0f,
-				this._min.z + this._size.z / 2.0f);
+		this.size.set(this.max.x - this.min.x, this.max.y - this.min.y, this.max.z - this.min.z);
+		this.center.set(this.min.x + this.size.x / 2.0f, this.min.y + this.size.y / 2.0f,
+				this.min.z + this.size.z / 2.0f);
 	}
 
 	public void join(Vector4f vec) {
@@ -380,22 +390,22 @@ public class BoundingBox {
 	 * inferior to respective componnent of maximum (mx < Mx, my < mY, mz < Mz)
 	 */
 	public void reequilibrateMinMax() {
-		if (this._min.x > this._max.x) {
-			float tmp = this._min.x;
-			this._min.x = this._max.x;
-			this._max.x = tmp;
+		if (this.min.x > this.max.x) {
+			float tmp = this.min.x;
+			this.min.x = this.max.x;
+			this.max.x = tmp;
 		}
 
-		if (this._min.y > this._max.y) {
-			float tmp = this._min.y;
-			this._min.y = this._max.y;
-			this._max.y = tmp;
+		if (this.min.y > this.max.y) {
+			float tmp = this.min.y;
+			this.min.y = this.max.y;
+			this.max.y = tmp;
 		}
 
-		if (this._min.z > this._max.z) {
-			float tmp = this._min.z;
-			this._min.z = this._max.z;
-			this._max.z = tmp;
+		if (this.min.z > this.max.z) {
+			float tmp = this.min.z;
+			this.min.z = this.max.z;
+			this.max.z = tmp;
 		}
 	}
 }

@@ -41,33 +41,33 @@ import com.grillecube.common.maths.Vector4f;
 
 /** openGL program */
 public abstract class GLProgram implements GLObject {
-	private FloatBuffer _matrix_buffer;
-	private ArrayList<GLShader> _shaders;
-	private int _programID;
+	private FloatBuffer matrixBuffer;
+	private ArrayList<GLShader> shaders;
+	private int progID;
 
 	/** standart program class with a vertex + fragment shader */
 	public GLProgram() {
-		this._matrix_buffer = BufferUtils.createFloatBuffer(4 * 4);
-		this._shaders = new ArrayList<GLShader>();
+		this.matrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
+		this.shaders = new ArrayList<GLShader>();
 	}
 
 	public void addShader(GLShader shader) {
-		this._shaders.add(shader);
+		this.shaders.add(shader);
 	}
 
 	public void link() {
-		this._programID = GL20.glCreateProgram();
-		for (GLShader shader : this._shaders) {
-			GL20.glAttachShader(this._programID, shader.getID());
+		this.progID = GL20.glCreateProgram();
+		for (GLShader shader : this.shaders) {
+			GL20.glAttachShader(this.progID, shader.getID());
 		}
 		this.bindAttributes();
-		GL20.glLinkProgram(this._programID);
-		String message = GL20.glGetProgramInfoLog(this._programID);
+		GL20.glLinkProgram(this.progID);
+		String message = GL20.glGetProgramInfoLog(this.progID);
 		if (message.length() > 0) {
 			Logger.get().log(Logger.Level.WARNING, "Linking shader message: " + message);
 		}
 
-		GL20.glValidateProgram(this._programID);
+		GL20.glValidateProgram(this.progID);
 
 		this.linkUniforms();
 
@@ -85,11 +85,11 @@ public abstract class GLProgram implements GLObject {
 	 */
 	@Override
 	public void delete() {
-		GL20.glDeleteProgram(this._programID);
+		GL20.glDeleteProgram(this.progID);
 	}
 
 	public void useStart() {
-		GL20.glUseProgram(this._programID);
+		GL20.glUseProgram(this.progID);
 	}
 
 	public void useStop() {
@@ -97,7 +97,7 @@ public abstract class GLProgram implements GLObject {
 	}
 
 	protected void bindAttribute(int attribute, String name) {
-		GL20.glBindAttribLocation(this._programID, attribute, name);
+		GL20.glBindAttribLocation(this.progID, attribute, name);
 	}
 
 	protected void loadUniformInteger(int location, int value) {
@@ -133,12 +133,12 @@ public abstract class GLProgram implements GLObject {
 	}
 
 	protected void loadUniformMatrix(int location, Matrix4f matrix) {
-		matrix.store(_matrix_buffer);
-		_matrix_buffer.flip();
-		GL20.glUniformMatrix4fv(location, false, _matrix_buffer);
+		matrix.store(matrixBuffer);
+		matrixBuffer.flip();
+		GL20.glUniformMatrix4fv(location, false, matrixBuffer);
 	}
 
 	public int getUniform(String name) {
-		return (GL20.glGetUniformLocation(this._programID, name));
+		return (GL20.glGetUniformLocation(this.progID, name));
 	}
 }

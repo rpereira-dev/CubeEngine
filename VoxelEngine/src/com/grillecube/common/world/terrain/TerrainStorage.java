@@ -5,12 +5,11 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import com.grillecube.common.Logger;
+import com.grillecube.common.Logger.Level;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.Logger.Level;
 import com.grillecube.common.VoxelEngine.Callable;
 import com.grillecube.common.defaultmod.Blocks;
-import com.grillecube.common.event.world.EventWorldSpawnTerrain;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
@@ -20,6 +19,7 @@ import com.grillecube.common.world.WorldStorage;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.instances.BlockInstance;
 import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.events.EventWorldSpawnTerrain;
 
 public class TerrainStorage extends WorldStorage {
 
@@ -39,42 +39,33 @@ public class TerrainStorage extends WorldStorage {
 		this.terrains = new HashMap<Vector3i, Terrain>(4096 * 4);
 		this.topTerrains = new HashMap<Vector2i, Terrain>(4096);
 		this.loadedTerrains = new ArrayList<Terrain>(128);
-		this.setMinHeightIndex(-16);
-		this.setMaxHeightIndex(16);
+		this.setMinHeightIndex(-4096);
+		this.setMaxHeightIndex(4096);
 	}
-
-	/** the number of entity to be updated per tasks */
-	public static final int TERRAIN_PER_TASK = 4;
 
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<Callable<Taskable>> tasks) {
 		final Terrain[] loaded = this.getLoaded();
-		for (Terrain terrain : loaded) {
-			terrain.update();
-		}
 
-		// for (int i = 0; i < loaded.length; i += TERRAIN_PER_TASK) {
-		//
-		// final int begin = i;
-		// final int end = Maths.min(i + TERRAIN_PER_TASK, loaded.length);
-		//
-		// tasks.add(engine.new Callable<Taskable>() {
-		// @Override
-		// public TerrainStorage call() throws Exception {
-		// for (int j = begin; j < end; j++) {
-		// Terrain terrain = loaded[j];
+		// for (Terrain terrain : loaded) {
 		// terrain.update();
 		// }
-		// return (TerrainStorage.this);
-		// }
-		//
-		// @Override
-		// public String getName() {
-		// return ("TerrainStorage update n°" + begin + " to n°" + end + " on a
-		// total of " + loaded.length);
-		// }
-		// });
 
+		tasks.add(engine.new Callable<Taskable>() {
+			@Override
+			public TerrainStorage call() throws Exception {
+				for (int i = 0; i < loaded.length; i++) {
+					Terrain terrain = loaded[i];
+					terrain.update();
+				}
+				return (TerrainStorage.this);
+			}
+
+			@Override
+			public String getName() {
+				return ("TerrainStorage update");
+			}
+		});
 	}
 
 	/**
@@ -349,6 +340,12 @@ public class TerrainStorage extends WorldStorage {
 	/** return true if the given terrain is loaded */
 	public boolean isLoaded(Terrain terrain) {
 		return (this.loadedTerrains.contains(terrain));
+	}
+
+	/** return the topest terrain at the given (x, z) coordinates */
+	public Terrain getTop(int x, int z) {
+		// TODO : avoid Vector2i instanciation
+		return (this.topTerrains.get(new Vector2i(x, z)));
 	}
 
 }

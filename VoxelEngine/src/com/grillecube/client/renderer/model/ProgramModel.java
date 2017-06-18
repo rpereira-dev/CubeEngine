@@ -14,18 +14,27 @@
 
 package com.grillecube.client.renderer.model;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLProgram;
 import com.grillecube.client.renderer.camera.CameraProjective;
+import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
+import com.grillecube.common.world.entity.Entity;
 
 public class ProgramModel extends GLProgram {
 
-	private int _mvp_matrix;
-	private int _transf_matrix;
+	public static final int MAX_JOINTS = 32;
+
+	private int mvpMatrix;
+	private int transfMatrix;
+	private int[] jointTransforms;
+
+	private int diffuseMap;
 
 	public ProgramModel() {
 		super();
@@ -37,21 +46,53 @@ public class ProgramModel extends GLProgram {
 	@Override
 	public void bindAttributes() {
 		super.bindAttribute(0, "position");
-		super.bindAttribute(1, "normal");
-		super.bindAttribute(2, "color");
+		super.bindAttribute(1, "uv");
+		super.bindAttribute(2, "normal");
+		super.bindAttribute(3, "jointIDS");
+		super.bindAttribute(4, "jointWeights");
 	}
 
 	@Override
 	public void linkUniforms() {
-		this._mvp_matrix = super.getUniform("mvp_matrix");
-		this._transf_matrix = super.getUniform("transf_matrix");
+		this.mvpMatrix = super.getUniform("mvp_matrix");
+		this.transfMatrix = super.getUniform("transf_matrix");
+
+		this.jointTransforms = new int[MAX_JOINTS];
+		for (int i = 0; i < MAX_JOINTS; i++) {
+			this.jointTransforms[i] = super.getUniform("jointTransforms[" + i + "]");
+		}
+
+		this.diffuseMap = super.getUniform("diffuseMap");
 	}
 
-	public void loadUniforms(CameraProjective camera) {
-		this.loadUniformMatrix(this._mvp_matrix, camera.getMVPMatrix());
+	public void loadCamera(CameraProjective camera) {
+		this.loadUniformMatrix(this.mvpMatrix, camera.getMVPMatrix());
 	}
 
-	public void loadInstanceUniforms(Matrix4f transf_matrix) {
-		this.loadUniformMatrix(this._transf_matrix, transf_matrix);
+	public void loadModel(Model model) {
+
+	}
+
+	public void loadModelInstance(ModelInstance modelInstance) {
+		// joint matrices
+		Matrix4f[] jointTransformMatrices = modelInstance.getSkeletonInstance().getJointTransforms();
+		for (int i = 0; i < jointTransformMatrices.length; i++) {
+			super.loadUniformMatrix(this.jointTransforms[i], jointTransformMatrices[i]);
+		}
+
+		// transformation matrix
+		Matrix4f transf = new Matrix4f();
+		Entity entity = modelInstance.getEntity();
+		transf.translate(entity.getPosition());
+		transf.rotateXYZ(entity.getRotation());
+		// transf.scale(2.0f);
+		this.loadUniformMatrix(this.transfMatrix, transf);
+
+		// the skin
+		ModelSkin skin = modelInstance.getModel().getSkins().get(modelInstance.getSkinID());
+		skin.bind(GL13.GL_TEXTURE1, GL11.GL_TEXTURE_2D);
+
+		this.loadUniformInteger(this.diffuseMap, 1);
+
 	}
 }

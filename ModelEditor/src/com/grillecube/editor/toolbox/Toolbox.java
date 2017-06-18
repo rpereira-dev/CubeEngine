@@ -52,7 +52,7 @@ import com.grillecube.common.Logger.Level;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.entity.EntityModeled;
+import com.grillecube.common.world.entity.Entity;
 import com.grillecube.editor.ModelEditor;
 import com.grillecube.editor.model.ModelGrid;
 import com.grillecube.editor.toolbox.action.ActionListenerNew;
@@ -152,10 +152,10 @@ public class Toolbox extends JFrame implements MouseListener {
 		super.addMouseListener(this);
 	}
 
-	public void addModel(EntityModeled entity) {
+	public void addModel(Entity entity) {
 
 		ToolboxPanelModel panel = new ToolboxPanelModel(this, entity);
-		Model model = entity.getModelInstance().getModel();
+		Model model = null;// entity.getModelInstance().getModel();
 		this._panels.put(model, panel);
 		this._models.addItem(model);
 		this._models.setSelectedItem(model);
@@ -289,7 +289,7 @@ public class Toolbox extends JFrame implements MouseListener {
 		return (this.getModelPanel().getModelName());
 	}
 
-	public EntityModeled getEntity() {
+	public Entity getEntity() {
 
 		if (this.getModelPanel() == null) {
 			return (null);
@@ -409,7 +409,7 @@ abstract class ToolboxPanel extends JPanel {
 		return (this.getToolbox().getModelPanel().getModelAnimation());
 	}
 
-	public EntityModeled getEntity() {
+	public Entity getEntity() {
 		return (this.getToolbox().getEntity());
 	}
 
@@ -420,7 +420,7 @@ abstract class ToolboxPanel extends JPanel {
 	public ModelAnimationInstance getAnimationInstance() {
 
 		ModelAnimation animation = this.getModelAnimation();
-		EntityModeled entity = this.getEntity();
+		Entity entity = this.getEntity();
 		if (animation != null && entity != null) {
 			ModelInstance instance = entity.getModelInstance();
 			if (instance != null) {

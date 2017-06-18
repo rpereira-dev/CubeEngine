@@ -24,13 +24,10 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLVertexArray;
 import com.grillecube.client.opengl.object.GLVertexBuffer;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
-import com.grillecube.client.renderer.geometry.Cube;
 import com.grillecube.client.renderer.world.RendererWorld;
-import com.grillecube.client.renderer.world.ShadowCamera;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
@@ -42,25 +39,20 @@ import com.grillecube.common.world.World;
 /** a simple cube rendering system for particles */
 public class ParticleRenderer extends RendererWorld {
 	/** program */
-	private ProgramParticleBillboarded _program_billboarded_particle;
-	private ProgramParticleCube _program_cube;
+	private ProgramParticleBillboarded programBillboardedParticles;
+	private ProgramParticleCube programCube;
 
 	// one array list is an array list of particles (one list for each sprite)
 	private ArrayList<ParticleBillboarded> billboardedParticles;
 	private ArrayList<ParticleCube> cubeParticles;
 
 	/** cube and quads vaos */
-	private GLVertexArray _vao_cube;
-	// the vbo which contains cube model data
-	private GLVertexBuffer _vbo_cube;
+	private CubeMesh cubeMesh;
+
 	// the vbo which contains every cubes instances informations
-	private GLVertexBuffer _vbo_cube_instances;
-	private int _cubes_in_buffer;
+	private GLVertexBuffer cubeInstancesVBO;
+	private int cubesInBuffer;
 
-	// transf matrix + color + health
-	public static final int FLOATS_PER_CUBE_INSTANCE = 16 + 4 + 1;
-
-	// TODO: increase it maybe
 	private static final int MAX_CUBE_PARTICLES = 100000;
 
 	private Comparator<ParticleBillboarded> _particle_comparator = new Comparator<ParticleBillboarded>() {
@@ -83,10 +75,10 @@ public class ParticleRenderer extends RendererWorld {
 	@Override
 	public void initialize() {
 
-		this._cubes_in_buffer = 0;
+		this.cubesInBuffer = 0;
 
-		this._program_billboarded_particle = new ProgramParticleBillboarded();
-		this._program_cube = new ProgramParticleCube();
+		this.programBillboardedParticles = new ProgramParticleBillboarded();
+		this.programCube = new ProgramParticleCube();
 
 		this.billboardedParticles = new ArrayList<ParticleBillboarded>();
 		this.cubeParticles = new ArrayList<ParticleCube>();
@@ -96,51 +88,29 @@ public class ParticleRenderer extends RendererWorld {
 
 	/** create a new cube object */
 	private void initializeVAO() {
-		this._vao_cube = GLH.glhGenVAO();
-		this._vbo_cube = GLH.glhGenVBO();
+		this.cubeMesh = new CubeMesh();
+		this.cubeMesh.initialize();
 
-		this._vao_cube.bind();
-
-		this._vbo_cube.bind(GL15.GL_ARRAY_BUFFER);
-		this._vbo_cube.bufferData(GL15.GL_ARRAY_BUFFER, Cube.makeWithTrianglesAndFaces(1), GL15.GL_STATIC_DRAW);
-		this._vao_cube.setAttribute(this._vbo_cube, 0, 4, GL11.GL_FLOAT, false, 4 * 4, 0);
-
-		this._vbo_cube_instances = GLH.glhGenVBO();
-		this._vbo_cube_instances.bind(GL15.GL_ARRAY_BUFFER);
-		this._vbo_cube_instances.bufferSize(GL15.GL_ARRAY_BUFFER, 0, GL15.GL_STREAM_DRAW);
-		this._vao_cube.setAttributeInstanced(1, 4, GL11.GL_FLOAT, false, FLOATS_PER_CUBE_INSTANCE * 4, 0 * 4);
-		this._vao_cube.setAttributeInstanced(2, 4, GL11.GL_FLOAT, false, FLOATS_PER_CUBE_INSTANCE * 4, 4 * 4);
-		this._vao_cube.setAttributeInstanced(3, 4, GL11.GL_FLOAT, false, FLOATS_PER_CUBE_INSTANCE * 4, 8 * 4);
-		this._vao_cube.setAttributeInstanced(4, 4, GL11.GL_FLOAT, false, FLOATS_PER_CUBE_INSTANCE * 4, 12 * 4);
-		this._vao_cube.setAttributeInstanced(5, 4, GL11.GL_FLOAT, false, FLOATS_PER_CUBE_INSTANCE * 4, 16 * 4);
-		this._vao_cube.setAttributeInstanced(6, 1, GL11.GL_FLOAT, false, FLOATS_PER_CUBE_INSTANCE * 4, 20 * 4);
-
-		this._vao_cube.enableAttribute(0);
-		this._vao_cube.enableAttribute(1);
-		this._vao_cube.enableAttribute(2);
-		this._vao_cube.enableAttribute(3);
-		this._vao_cube.enableAttribute(4);
-		this._vao_cube.enableAttribute(5);
-		this._vao_cube.enableAttribute(6);
+		this.cubeMesh.bind();
+		this.cubeInstancesVBO = GLH.glhGenVBO();
+		this.cubeInstancesVBO.bind(GL15.GL_ARRAY_BUFFER);
+		this.cubeInstancesVBO.bufferSize(GL15.GL_ARRAY_BUFFER, 0, GL15.GL_STREAM_DRAW);
+		this.cubeMesh.setAttributesInstanced();
 	}
 
 	@Override
 	public void deinitialize() {
 
-		GLH.glhDeleteObject(this._program_billboarded_particle);
-		this._program_billboarded_particle = null;
+		GLH.glhDeleteObject(this.programBillboardedParticles);
+		this.programBillboardedParticles = null;
 
-		GLH.glhDeleteObject(this._program_cube);
-		this._program_cube = null;
+		GLH.glhDeleteObject(this.programCube);
+		this.programCube = null;
 
-		GLH.glhDeleteObject(this._vao_cube);
-		this._vao_cube = null;
+		this.cubeMesh.deinitialize();
 
-		GLH.glhDeleteObject(this._vbo_cube);
-		this._vbo_cube = null;
-
-		GLH.glhDeleteObject(this._vbo_cube_instances);
-		this._vbo_cube_instances = null;
+		GLH.glhDeleteObject(this.cubeInstancesVBO);
+		this.cubeInstancesVBO = null;
 
 		this.billboardedParticles = null;
 		this.cubeParticles = null;
@@ -158,21 +128,24 @@ public class ParticleRenderer extends RendererWorld {
 
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<VoxelEngine.Callable<Taskable>> tasks, World world,
-			CameraProjectiveWorld camera) { // TODO move make this support
-											// concurrency
-		// tasks.add(new Callable<Taskable>() {
-		// @Override
-		// public Taskable call() throws Exception {
-		// // TODO: split update in multiple tasks
-		// updateParticles(world, camera);
-		// return (ParticleRenderer.this);
-		// }
-		// });
+			CameraProjectiveWorld camera) {
+		tasks.add(engine.new Callable<Taskable>() {
+
+			@Override
+			public Taskable call() throws Exception {
+				updateParticles(getWorld(), getCamera());
+				return (ParticleRenderer.this);
+			}
+
+			@Override
+			public String getName() {
+				return ("Particle update");
+			}
+		});
 	}
 
 	@Override
 	public void preRender() {
-		this.updateParticles(this.getWorld(), this.getCamera());
 		this.updateVBO(this.getCamera());
 	}
 
@@ -231,8 +204,8 @@ public class ParticleRenderer extends RendererWorld {
 		}
 
 		// create a buffer to hold them all
-		ByteBuffer floats = BufferUtils.createByteBuffer(cube_count * ParticleRenderer.FLOATS_PER_CUBE_INSTANCE * 4);
-		this._cubes_in_buffer = 0;
+		ByteBuffer floats = BufferUtils.createByteBuffer(cube_count * CubeMesh.FLOATS_PER_CUBE_INSTANCE * 4);
+		this.cubesInBuffer = 0;
 		for (int i = 0; i < cube_count; i++) {
 			ParticleCube particle = this.cubeParticles.get(i);
 
@@ -272,13 +245,13 @@ public class ParticleRenderer extends RendererWorld {
 
 			floats.putFloat(health);
 
-			++this._cubes_in_buffer;
+			++this.cubesInBuffer;
 		}
 
 		floats.flip();
-		this._vbo_cube_instances.bind(GL15.GL_ARRAY_BUFFER);
-		int buffersize = this._cubes_in_buffer * FLOATS_PER_CUBE_INSTANCE * 4;
-		this._vbo_cube_instances.bufferDataUpdate(GL15.GL_ARRAY_BUFFER, floats, buffersize);
+		this.cubeInstancesVBO.bind(GL15.GL_ARRAY_BUFFER);
+		int buffersize = this.cubesInBuffer * CubeMesh.FLOATS_PER_CUBE_INSTANCE * 4;
+		this.cubeInstancesVBO.bufferDataUpdate(GL15.GL_ARRAY_BUFFER, floats, buffersize);
 	}
 
 	@Override
@@ -294,14 +267,6 @@ public class ParticleRenderer extends RendererWorld {
 		this.renderBillboardedParticles(world, camera);
 	}
 
-	public void renderReflection(CameraProjectiveWorld camera, Vector4f clipplane) {
-		this.render(camera); // TODO optimize this, clip particles
-	}
-
-	public void renderRefraction(CameraProjectiveWorld camera, Vector4f clipplane) {
-		this.render(camera); // TODO optimize this, clip particles
-	}
-
 	/** render every quad particles */
 	private void renderBillboardedParticles(World world, CameraProjectiveWorld camera) {
 		if (this.billboardedParticles.size() == 0) {
@@ -313,10 +278,10 @@ public class ParticleRenderer extends RendererWorld {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-		this._program_billboarded_particle.useStart();
+		this.programBillboardedParticles.useStart();
 		this.getParent().getDefaultVAO().bind();
 
-		this._program_billboarded_particle.loadGlobalUniforms(camera);
+		this.programBillboardedParticles.loadGlobalUniforms(camera);
 		this.billboardedParticles.sort(this._particle_comparator);
 
 		int i = 0;
@@ -326,7 +291,7 @@ public class ParticleRenderer extends RendererWorld {
 			float radius = Maths.max(particle.getScale().x, particle.getScale().y);
 			if (particle != null && particle.getCameraSquareDistance() < camera.getSquaredRenderDistance()
 					&& camera.isSphereInFrustum(particle.getPosition(), radius)) {
-				this._program_billboarded_particle.loadInstanceUniforms(particle);
+				this.programBillboardedParticles.loadInstanceUniforms(particle);
 				this.getParent().getDefaultVAO().draw(GL11.GL_POINTS, 0, 1);
 			}
 			++i;
@@ -343,11 +308,12 @@ public class ParticleRenderer extends RendererWorld {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-		this._program_cube.useStart();
-		this._vao_cube.bind();
-		this._program_cube.loadGlobalUniforms(camera);
+		this.programCube.useStart();
+		this.programCube.loadGlobalUniforms(camera);
 
-		this._vao_cube.drawInstanced(GL11.GL_TRIANGLES, 0, 36, this._cubes_in_buffer);
+		this.cubeMesh.bind();
+		this.cubeMesh.preRender();
+		this.cubeMesh.drawInstanced(this.cubesInBuffer);
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_BLEND);

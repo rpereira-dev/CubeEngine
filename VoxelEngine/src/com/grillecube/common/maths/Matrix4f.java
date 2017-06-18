@@ -688,6 +688,14 @@ public class Matrix4f extends Matrix implements Serializable {
 		Matrix4f.rotateZ(angle, this, this);
 	}
 
+	public void rotateXYZ(Vector3f rot) {
+		this.rotateXYZ(rot.x, rot.y, rot.z);
+	}
+
+	public void rotateXYZ(float rx, float ry, float rz) {
+		rotateXYZ(rx, ry, rz, this, this);
+	}
+
 	public static Matrix4f rotateX(float angle, Matrix4f src, Matrix4f dest) {
 
 		if (dest == null) {
@@ -776,6 +784,17 @@ public class Matrix4f extends Matrix implements Serializable {
 		dest.m12 = t12;
 		dest.m13 = t13;
 		return dest;
+	}
+
+	public static Matrix4f rotateXYZ(Vector3f rot, Matrix4f src, Matrix4f dest) {
+		return (rotateXYZ(rot.x, rot.y, rot.z, src, dest));
+	}
+
+	private static Matrix4f rotateXYZ(float rx, float ry, float rz, Matrix4f src, Matrix4f dest) {
+		rotateX(rx, src, dest);
+		rotateY(ry, src, dest);
+		rotateZ(rz, src, dest);
+		return (dest);
 	}
 
 	/**

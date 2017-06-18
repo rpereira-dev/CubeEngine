@@ -24,10 +24,10 @@ import org.lwjgl.opengl.GL13;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.renderer.MainRenderer;
-import com.grillecube.client.renderer.blocks.BlockRendererManager;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.camera.CameraView;
 import com.grillecube.client.renderer.world.RendererWorld;
+import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Vector3f;
@@ -40,6 +40,7 @@ public class TerrainRenderer extends RendererWorld {
 	/** terrains */
 	private TerrainRendererFactory factory;
 
+	/** meshes to render */
 	private ArrayList<TerrainMesh> meshes;
 
 	/** texture atlas (blocks) */
@@ -163,7 +164,8 @@ public class TerrainRenderer extends RendererWorld {
 				}
 				this.bindTextureAtlas(mesh, camera);
 				this.terrainProgram.loadInstanceUniforms(mesh);
-				mesh.render();
+				mesh.bind();
+				mesh.draw();
 			}
 		}
 		GL11.glDisable(GL11.GL_DEPTH_TEST);

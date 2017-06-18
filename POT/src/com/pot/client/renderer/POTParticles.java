@@ -35,13 +35,11 @@ public class POTParticles implements IModResource {
 		if (VoxelEngine.instance().getSide().equals(Side.CLIENT)) {
 			manager.getEventManager().registerEventCallback(new PostRenderCallback());
 
-			SPRITE_EXPLOSION = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/explosion.png"), 5,
-					5);
+			SPRITE_EXPLOSION = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/explosion.png"), 5, 5);
 			SPRITE_FIRE = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/fire.png"), 2, 2);
 			SPRITE_FIRE2 = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/fire2.png"), 4, 4);
 			SPRITE_FLAME = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/flame.png"), 8, 4);
-			SPRITE_FLAMEDROP = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/flamedrop.png"), 5,
-					2);
+			SPRITE_FLAMEDROP = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/flamedrop.png"), 5, 2);
 			SPRITE_LEAVES = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/leaves.png"), 1, 1);
 			SPRITE_MAGIC = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/magic.png"), 2, 2);
 			SPRITE_SNOW = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/snow.png"), 2, 2);
@@ -61,9 +59,9 @@ class PostRenderCallback extends EventCallback<EventPreRender> {
 	@Override
 	public void invoke(EventPreRender event) {
 		//
-		// if (true) {
-		// return;
-		// }
+		if (true) {
+			return;
+		}
 
 		ParticleRenderer renderer = event.getRenderer().getWorldRenderer().getParticleRenderer();
 

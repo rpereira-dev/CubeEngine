@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import com.grillecube.client.renderer.model.Model;
 import com.grillecube.common.Logger;
+import com.grillecube.common.Logger.Level;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.Logger.Level;
-import com.grillecube.common.event.world.EventEntitySpawn;
-import com.grillecube.common.maths.Maths;
-import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldStorage;
+import com.grillecube.common.world.events.EventEntityDespawn;
+import com.grillecube.common.world.events.EventEntitySpawn;
 
 /**
  * data structure which contains every entities
@@ -24,15 +22,16 @@ import com.grillecube.common.world.WorldStorage;
  **/
 public class EntityStorage extends WorldStorage {
 
+	/** the entities by their UUID */
 	private HashMap<Integer, Entity> entities;
+
+	/** the list of the entities sharing the class */
 	private HashMap<Class<? extends Entity>, ArrayList<Entity>> entitiesByClass;
-	private HashMap<Model, ArrayList<Entity>> entityByModel;
 
 	public EntityStorage(World world) {
 		super(world);
 		this.entities = new HashMap<Integer, Entity>();
 		this.entitiesByClass = new HashMap<Class<? extends Entity>, ArrayList<Entity>>();
-		this.entityByModel = new HashMap<Model, ArrayList<Entity>>();
 	}
 
 	/** get all entities */
@@ -45,41 +44,20 @@ public class EntityStorage extends WorldStorage {
 	}
 
 	/** return a list of entities using the same class */
-	public ArrayList<Entity> getentitiesByClass(Class<? extends Entity> clazz) {
+	public ArrayList<Entity> getEntitiesByClass(Class<? extends Entity> clazz) {
 		return (this.entitiesByClass.get(clazz));
 	}
 
-	public ArrayList<Entity> getentitiesByClass(Entity entity) {
-		return (this.getentitiesByClass(entity.getClass()));
+	public ArrayList<Entity> getEntitiesByClass(Entity entity) {
+		return (this.getEntitiesByClass(entity.getClass()));
 	}
 
 	/**
 	 * return a collection of array list of entities, where each array list
 	 * holds entities of the same class
 	 */
-	public Collection<ArrayList<Entity>> getentitiesByClass() {
+	public Collection<ArrayList<Entity>> getEntitiesByClass() {
 		return (this.entitiesByClass.values());
-	}
-
-	/**
-	 * return a list of entities using the same model. IMPORTANT: if the model
-	 * is non null, then the entities all inherite from class "EntityModeled"
-	 * (you can cast them safely)
-	 */
-	public ArrayList<Entity> getEntitiesByModel(Model model) {
-		return (this.entityByModel.get(model));
-	}
-
-	public ArrayList<Entity> getEntitiesByModel(Entity entity) {
-		return (this.getEntitiesByModel(this.getEntityModel(entity)));
-	}
-
-	/**
-	 * return a collection of array list of entitymodeled, where each array list
-	 * contains all entities using the same model
-	 */
-	public Collection<ArrayList<Entity>> getEntitiesByModel() {
-		return (this.entityByModel.values());
 	}
 
 	/** return the entity with the given world id */
@@ -100,6 +78,7 @@ public class EntityStorage extends WorldStorage {
 	public Entity add(Entity entity) {
 
 		if (this.contains(entity)) {
+			Logger.get().log(Logger.Level.WARNING, "Tried to spawn an already spawned entity", entity);
 			return (entity);
 		}
 
@@ -119,32 +98,14 @@ public class EntityStorage extends WorldStorage {
 		// add it to the type list
 		this.addEntityToTypeList(entity);
 
-		// add it to the model list
-		this.addEntityToModelList(entity);
-
 		// invoke events
 		this.invokeEvent(new EventEntitySpawn(entity));
 
 		return (entity);
 	}
 
-	private void addEntityToModelList(Entity entity) {
-		Model model = this.getEntityModel(entity);
-		ArrayList<Entity> model_list = this.getEntitiesByModel(model);
-
-		if (model_list == null) {
-			model_list = new ArrayList<Entity>(1);
-			this.entityByModel.put(model, model_list);
-		}
-		model_list.add(entity);
-	}
-
-	private Model getEntityModel(Entity entity) {
-		return ((entity instanceof EntityModeled) ? ((EntityModeled) entity).getModelInstance().getModel() : null);
-	}
-
 	private void addEntityToTypeList(Entity entity) {
-		ArrayList<Entity> type_list = this.getentitiesByClass(entity.getClass());
+		ArrayList<Entity> type_list = this.getEntitiesByClass(entity.getClass());
 		if (type_list == null) {
 			type_list = new ArrayList<Entity>(1);
 			this.entitiesByClass.put(entity.getClass(), type_list);
@@ -171,17 +132,6 @@ public class EntityStorage extends WorldStorage {
 		return (id);
 	}
 
-	public Entity add(Entity entity, float x, float y, float z) {
-		entity.setPosition(x, y, z);
-		return (this.add(entity));
-	}
-
-	@Deprecated
-	public Entity add(int entityID, float x, float y, float z) {
-		Entity entity = ResourceManager.instance().getEntityManager().newInstance(entityID);
-		return (this.add(entity, x, y, z));
-	}
-
 	/** remove the given entity */
 	public Entity remove(Entity entity) {
 		if (!(this.contains(entity))) {
@@ -193,7 +143,7 @@ public class EntityStorage extends WorldStorage {
 		this.entities.remove(entity.getWorldID());
 
 		// remove from type list
-		ArrayList<Entity> type_list = this.getentitiesByClass(entity);
+		ArrayList<Entity> type_list = this.getEntitiesByClass(entity);
 		if (type_list != null) {
 			type_list.remove(entity);
 			if (type_list.size() == 0) {
@@ -201,49 +151,17 @@ public class EntityStorage extends WorldStorage {
 			}
 		}
 
-		// remove from model list
-		Model model = this.getEntityModel(entity);
-		ArrayList<Entity> model_list = this.getEntitiesByModel(model);
-		if (model_list != null) {
-			model_list.remove(entity);
-			if (model_list.size() == 0) {
-				this.entityByModel.remove(model);
-			}
-		}
+		// invoke events
+		this.invokeEvent(new EventEntityDespawn(entity));
 
 		return (entity);
-	}
-
-	/** remove every entities which uses the given model (can be null) */
-	public Collection<Entity> removeEntitiesByModel(Model model) {
-
-		ArrayList<Entity> entities = this.getEntitiesByModel(model);
-
-		if (entities == null || entities.size() == 0) {
-			Logger.get().log(Logger.Level.DEBUG,
-					"Tried to remove entity with model: " + model + " but no entities with this model where found.");
-			return (null);
-		}
-
-		for (Entity entity : entities) {
-			this.entities.remove(entity.getWorldID());
-			this.entitiesByClass.remove(entity.getClass());
-		}
-
-		this.entityByModel.remove(model);
-
-		return (entities);
 	}
 
 	/** clean the entity storage, remove every entities */
 	public void removeAll() {
 		this.entities.clear();
-		this.entityByModel.clear();
 		this.entitiesByClass.clear();
 	}
-
-	/** the number of entity to be updated per tasks */
-	public static final int ENTITY_PER_TASK = 8;
 
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<com.grillecube.common.VoxelEngine.Callable<Taskable>> tasks) {
@@ -252,30 +170,23 @@ public class EntityStorage extends WorldStorage {
 		int size = entities_collection.size();
 		Entity[] entities = entities_collection.toArray(new Entity[size]);
 
-		int i;
-		for (i = 0; i < size; i += ENTITY_PER_TASK) {
+		tasks.add(engine.new Callable<Taskable>() {
 
-			final int begin = i;
-			final int end = Maths.min(i + ENTITY_PER_TASK, size);
+			@Override
+			public EntityStorage call() throws Exception {
 
-			tasks.add(engine.new Callable<Taskable>() {
-
-				@Override
-				public EntityStorage call() throws Exception {
-
-					for (int j = begin; j < end; j++) {
-						Entity entity = entities[j];
-						entity.update();
-					}
-					return (EntityStorage.this);
+				for (int i = 0; i < entities.length; i++) {
+					Entity entity = entities[i];
+					entity.update();
 				}
+				return (EntityStorage.this);
+			}
 
-				@Override
-				public String getName() {
-					return ("EntityStorage update n°" + begin + " to n°" + end + " on a total of " + size);
-				}
-			});
-		}
+			@Override
+			public String getName() {
+				return ("EntityStorage update");
+			}
+		});
 	}
 
 	@Override

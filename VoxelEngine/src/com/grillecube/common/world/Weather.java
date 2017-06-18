@@ -19,6 +19,7 @@ import java.util.Random;
 
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 
 public class Weather implements Taskable {
@@ -70,7 +71,6 @@ public class Weather implements Taskable {
 
 	public static final int MAX_RAIN_STRENGTH = 128;
 	public static final int MIN_RAIN_STRENGTH = 8;
-	public static final int MID_RAIN_STRENGTH = (MAX_RAIN_STRENGTH + MIN_RAIN_STRENGTH) / 2;
 
 	/** weather factors */
 	private float _humidity;
@@ -103,10 +103,6 @@ public class Weather implements Taskable {
 	/** update the weather (mb use a 1D noise for rains, storm ...) */
 	/** ACUALLY CALLED IN WORLD RENDERER! */
 	public void update() {
-		// if (VoxelEngineClient.getGLFWWindow().isKeyPressed(GLFW.GLFW_KEY_B))
-		// {
-		// this.startRain(1.0f);
-		// }
 		this.updateTime();
 		this.calculateSunPosition();
 		this.calculateFog();
@@ -341,9 +337,7 @@ public class Weather implements Taskable {
 	 * MAX_RAIN
 	 */
 	public void startRain(float f) {
-		if (f == 0) {
-			return;
-		}
+		f = Maths.clamp(f, 0.0f, 1.0f);
 		this.startRain((int) (f * (Weather.MAX_RAIN_STRENGTH - Weather.MIN_RAIN_STRENGTH) + Weather.MIN_RAIN_STRENGTH));
 	}
 
@@ -351,7 +345,7 @@ public class Weather implements Taskable {
 	public void startRain(int particles) {
 		this._rain_strength_max = particles;
 		this._rain_strength = 0;
-		this._rain_timer = 60 * 8;
+		this._rain_timer = 60 * 16;
 		this.setState(WeatherState.RAIN_STARTING);
 	}
 

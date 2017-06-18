@@ -25,7 +25,7 @@ import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector2f;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.world.entity.EntityModeled;
+import com.grillecube.common.world.entity.Entity;
 
 public class GuiViewDebug extends GuiView {
 
@@ -93,7 +93,7 @@ public class GuiViewDebug extends GuiView {
 		StringBuilder builder = new StringBuilder();
 
 		if (cam instanceof CameraPerspectiveWorldEntity) {
-			EntityModeled entity = (EntityModeled) ((CameraPerspectiveWorldEntity) cam).getEntity();
+			Entity entity = ((CameraPerspectiveWorldEntity) cam).getEntity();
 			builder.append("Entity: ");
 			builder.append(Maths.approximatate(entity.getPosition().x, 10.0f));
 			builder.append(":");

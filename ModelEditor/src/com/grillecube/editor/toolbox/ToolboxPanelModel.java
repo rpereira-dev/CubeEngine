@@ -29,7 +29,7 @@ import com.grillecube.client.renderer.model.animation.ModelAnimationFrame;
 import com.grillecube.client.renderer.model.animation.ModelAnimationInstance;
 import com.grillecube.client.renderer.model.builder.ModelPartBuilder;
 import com.grillecube.common.Logger;
-import com.grillecube.common.world.entity.EntityModeled;
+import com.grillecube.common.world.entity.Entity;
 import com.grillecube.editor.ModelEditor;
 import com.grillecube.editor.toolbox.JComboBoxColor.IconColor;
 import com.grillecube.editor.window.camera.CameraToolNewAttachmentPointModel;
@@ -73,7 +73,7 @@ public class ToolboxPanelModel extends ToolboxPanel {
 	private HashMap<ModelPart, HashMap<ModelAnimation, ToolboxPanelAnimationPart>> _animations_panels;
 	private HashMap<ModelPart, ToolboxPanelEquipmentPart> _equipment_panels;
 
-	private EntityModeled _entity;
+	private Entity _entity;
 
 	public static final Color[] DEFAULT_COLORS = { new Color(0xFFFFFFFF), new Color(0xFF7EC0EE), new Color(0xFFCD5555),
 			new Color(0xFF90EE90) };
@@ -85,7 +85,7 @@ public class ToolboxPanelModel extends ToolboxPanel {
 
 	private Border _border;
 
-	public ToolboxPanelModel(Toolbox toolbox, EntityModeled entity) {
+	public ToolboxPanelModel(Toolbox toolbox, Entity entity) {
 		super(toolbox);
 
 		this._border = BorderFactory.createLineBorder(Color.BLACK, 2);
@@ -428,7 +428,7 @@ public class ToolboxPanelModel extends ToolboxPanel {
 		return (this._entity.getModelInstance().getModel());
 	}
 
-	public EntityModeled getEntity() {
+	public Entity getEntity() {
 		return (this._entity);
 	}
 

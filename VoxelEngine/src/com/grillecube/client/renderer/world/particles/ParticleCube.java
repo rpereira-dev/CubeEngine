@@ -22,40 +22,40 @@ import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.world.World;
 
 public class ParticleCube {
-	protected Matrix4f _transf_matrix;
+	protected Matrix4f transfMatrix;
 
-	protected Vector3f _pos;
-	protected Vector3f _rot;
-	protected Vector3f _scale;
+	protected Vector3f pos;
+	protected Vector3f rot;
+	protected Vector3f scale;
 
-	protected Vector3f _pos_vel;
-	protected Vector3f _rot_vel;
-	protected Vector3f _scale_vel;
+	protected Vector3f posVel;
+	protected Vector3f rotVel;
+	protected Vector3f scaleVel;
 
-	protected Vector4f _color;
+	protected Vector4f color;
 
-	protected int _max_health;
-	protected int _health;
-	protected float _health_ratio;
+	protected int maxhealth;
+	protected int health;
+	protected float healthRatio;
 
-	private double _camera_square_distance;
+	private double cameraSquareDistance;
 
 	public ParticleCube(int health) {
-		this._max_health = health;
-		this._health = health;
-		this._health_ratio = 1;
-		this._transf_matrix = new Matrix4f();
-		this._pos = new Vector3f(0, 0, 0);
-		this._rot = new Vector3f(0, 0, 0);
-		this._scale = new Vector3f(1, 1, 1);
+		this.maxhealth = health;
+		this.health = health;
+		this.healthRatio = 1;
+		this.transfMatrix = new Matrix4f();
+		this.pos = new Vector3f(0, 0, 0);
+		this.rot = new Vector3f(0, 0, 0);
+		this.scale = new Vector3f(1, 1, 1);
 
-		this._pos_vel = new Vector3f(0, 0, 0);
-		this._rot_vel = new Vector3f(0, 0, 0);
-		this._scale_vel = new Vector3f(0, 0, 0);
+		this.posVel = new Vector3f(0, 0, 0);
+		this.rotVel = new Vector3f(0, 0, 0);
+		this.scaleVel = new Vector3f(0, 0, 0);
 
-		this._color = new Vector4f(0.8f, 0.5f, 0.3f, 1.0f);
+		this.color = new Vector4f(0.8f, 0.5f, 0.3f, 1.0f);
 
-		this._camera_square_distance = 0;
+		this.cameraSquareDistance = 0;
 	}
 
 	public ParticleCube() {
@@ -64,7 +64,7 @@ public class ParticleCube {
 
 	/** set particle world location */
 	public void setPosition(float x, float y, float z) {
-		this._pos.set(x, y, z);
+		this.pos.set(x, y, z);
 	}
 
 	public void setPosition(Vector3f pos) {
@@ -72,28 +72,28 @@ public class ParticleCube {
 	}
 
 	public void setHealth(int health) {
-		this._health = health;
-		this._max_health = health;
+		this.health = health;
+		this.maxhealth = health;
 	}
 
 	/** set particle world location */
 	public void setPositionVel(float x, float y, float z) {
-		this._pos_vel.set(x, y, z);
+		this.posVel.set(x, y, z);
 	}
 
 	/** set particle world location */
 	public void setRotation(float x, float y, float z) {
-		this._rot.set(x, y, z);
+		this.rot.set(x, y, z);
 	}
 
 	/** set particle world location */
 	public void setRotationVel(float x, float y, float z) {
-		this._rot_vel.set(x, y, z);
+		this.rotVel.set(x, y, z);
 	}
 
 	/** set particle world location */
 	public void setScale(float x, float y, float z) {
-		this._scale.set(x, y, z);
+		this.scale.set(x, y, z);
 	}
 
 	public void setScale(float f) {
@@ -102,53 +102,53 @@ public class ParticleCube {
 
 	/** set particle world location */
 	public void setScaleVel(float x, float y, float z) {
-		this._scale_vel.set(x, y, z);
+		this.scaleVel.set(x, y, z);
 	}
 
 	public Vector3f getScale() {
-		return (this._scale);
+		return (this.scale);
 	}
 
 	public void setColor(float r, float g, float b, float a) {
-		this._color.set(r, g, b, a);
+		this.color.set(r, g, b, a);
 	}
 
 	/** update the particle (move it) */
 	public void update(World world, CameraProjectiveWorld camera) {
-		this._pos.add(this._pos_vel);
-		this._rot.add(this._rot_vel);
-		this._scale.add(this._scale_vel);
-		this._health--;
+		this.pos.add(this.posVel);
+		this.rot.add(this.rotVel);
+		this.scale.add(this.scaleVel);
+		this.health--;
 
-		this._health_ratio = this._health / (float) this._max_health;
+		this.healthRatio = this.health / (float) this.maxhealth;
 
 		this.calculateTransformationMatrix(camera);
-		this._camera_square_distance = Vector3f.distanceSquare(camera.getPosition(), this.getPosition());
+		this.cameraSquareDistance = Vector3f.distanceSquare(camera.getPosition(), this.getPosition());
 	}
 
 	protected void calculateTransformationMatrix(Camera camera) {
-		Matrix4f.createTransformationMatrix(this._transf_matrix, this._pos, this._rot, this._scale);
+		Matrix4f.createTransformationMatrix(this.transfMatrix, this.pos, this.rot, this.scale);
 	}
 
 	public double getCameraSquareDistance() {
-		return (this._camera_square_distance);
+		return (this.cameraSquareDistance);
 	}
 
 	public Matrix4f getTransfMatrix() {
-		return (this._transf_matrix);
+		return (this.transfMatrix);
 	}
 
 	/** return true if the partcle is dead */
 	public boolean isDead() {
-		return (this._health <= 0);
+		return (this.health <= 0);
 	}
 
 	public Vector4f getColor() {
-		return (this._color);
+		return (this.color);
 	}
 
 	public Vector3f getPosition() {
-		return (this._pos);
+		return (this.pos);
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class ParticleCube {
 	 * dead, 1 is born)
 	 */
 	public float getHealthRatio() {
-		return (this._health_ratio);
+		return (this.healthRatio);
 	}
 
 	public void setRotation(Vector3f rot) {

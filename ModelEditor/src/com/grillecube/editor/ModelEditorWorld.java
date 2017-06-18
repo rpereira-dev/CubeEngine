@@ -49,7 +49,7 @@ public class ModelEditorWorld extends World {
 		// if (model == null) {
 		// model = new ModelBuilder();
 		// }
-		// this._entity = new EntityModeled(this, model) {
+		// this._entity = new Entity(this, model) {
 		// @Override
 		// public boolean move(float x, float y, float z) {
 		// return (false);
@@ -81,7 +81,7 @@ public class ModelEditorWorld extends World {
 					Terrain terrain = new Terrain(i, j, k) {
 
 						@Override
-						public void onGenerated() {
+						public void preGenerated() {
 
 							if (this.getLocation().getWorldIndex().y == -1) {
 								for (int x = 0; x < Terrain.DIM; x++) {

@@ -1,9 +1,7 @@
 package com.grillecube.common.world.entity.physic;
 
-import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.entity.Entity;
-import com.grillecube.common.world.entity.EntityModeled;
 
 public class EntityPhysicMoveForward extends EntityPhysic {
 	private Vector3f move;
@@ -18,13 +16,13 @@ public class EntityPhysicMoveForward extends EntityPhysic {
 
 	@Override
 	public void onDisable(Entity entity) {
-		if (entity instanceof EntityModeled) {
-			EntityModeled model = (EntityModeled) entity;
-			ModelInstance instance = model.getModelInstance();
-			if (instance != null && instance.isPlayingAnyAnimations()) {
-				instance.getAnimationInstance(0).startPlay();
-			}
-		}
+		// if (entity instanceof Entity) {
+		// Entity model = (Entity) entity;
+		// ModelInstance instance = model.getModelInstance();
+		// if (instance != null && instance.isPlayingAnyAnimations()) {
+		// instance.getAnimationInstance(0).startPlay();
+		// }
+		// }
 	}
 
 	@Override
@@ -35,12 +33,12 @@ public class EntityPhysicMoveForward extends EntityPhysic {
 		this.move.scale(entity.getSpeed());
 		entity.move(this.move);
 
-		if (entity instanceof EntityModeled) {
-			EntityModeled model = (EntityModeled) entity;
-			ModelInstance instance = model.getModelInstance();
-			if (instance != null && !instance.isPlayingAnyAnimations()) {
-				instance.getAnimationInstance(0).startPlay();
-			}
-		}
+		// if (entity instanceof Entity) {
+		// Entity model = (Entity) entity;
+		// ModelInstance instance = model.getModelInstance();
+		// if (instance != null && !instance.isPlayingAnyAnimations()) {
+		// instance.getAnimationInstance(0).startPlay();
+		// }
+		// }
 	}
 }

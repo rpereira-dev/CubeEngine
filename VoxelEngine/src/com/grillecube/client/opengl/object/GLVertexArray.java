@@ -70,6 +70,13 @@ public class GLVertexArray implements GLObject {
 		GL30.glVertexAttribIPointer(index, size, type, stride, pointer);
 	}
 
+	/** set VertexArray attribute depending on bounded VertexBuffer */
+	public void setAttributei(GLVertexBuffer vbo, int index, int size, int type, int stride, long pointer) {
+		vbo.bind(GL15.GL_ARRAY_BUFFER);
+		GL30.glVertexAttribIPointer(index, size, type, stride, pointer);
+		vbo.unbind(GL15.GL_ARRAY_BUFFER);
+	}
+
 	/** bind the given VertexBuffer and set the attribute in the VertexArray */
 	public void setAttribute(GLVertexBuffer vbo, int attributeID, int length, int type, boolean normalized, int stride,
 			int offset) {

@@ -23,7 +23,7 @@ import com.grillecube.common.resources.R;
 
 public class ProgramParticleCube extends GLProgram {
 
-	protected int _mvp_matrix;
+	protected int mvpMatrix;
 
 	public ProgramParticleCube() {
 		super();
@@ -42,11 +42,11 @@ public class ProgramParticleCube extends GLProgram {
 
 	@Override
 	public void linkUniforms() {
-		this._mvp_matrix = super.getUniform("mvp_matrix");
+		this.mvpMatrix = super.getUniform("mvp_matrix");
 	}
 
 	/** load global uniforms */
 	public void loadGlobalUniforms(CameraProjectiveWorld camera) {
-		super.loadUniformMatrix(this._mvp_matrix, camera.getMVPMatrix());
+		super.loadUniformMatrix(this.mvpMatrix, camera.getMVPMatrix());
 	}
 }

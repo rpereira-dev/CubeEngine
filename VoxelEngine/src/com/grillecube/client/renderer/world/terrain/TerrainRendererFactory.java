@@ -9,6 +9,7 @@ import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.camera.Camera;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
+import com.grillecube.client.renderer.event.EventTerrainList;
 import com.grillecube.client.renderer.world.particles.ParticleCube;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
@@ -17,58 +18,38 @@ import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.terrain.Terrain;
 
-/**
- * HOW THE FACTORY WORKS:
- * 
- * it get the world in which the camera is.
- * 
- * For every loaded terrains in this world, it checks which one should be
- * rendered (frustum / occlusion culling)
- * 
- * For every terrain that should be rendered, it update it mesh if needed
- * 
- * If the current camera world is different from a terrain mesh world, then the
- * mesh is destroyed
- *
- * If a terrain is farer than (1.4f * the camera render distance), then it mesh
- * is deleted.
- *
- * If a mesh hasnt been rendered for more than TERRAIN_MESH_MAX_REMAINING_TIME
- * seconds, then it is deleted (meaning that this terrain is occluded, or that
- * the user isnt looking at it for a long time
- * 
- * 
- * 
- * @author Romain
- *
- */
 public class TerrainRendererFactory {
 
-	public static final double TERRAIN_MESH_MAX_REMAINING_TIME = 30.0d;
-
 	/** array list of terrain to render */
-	private HashMap<Terrain, TerrainMesh> _meshes;
-	private TerrainMesher _mesher;
-	private ArrayList<TerrainMesh> _rendering_list_camera;
+	private HashMap<Terrain, TerrainMesh> meshes;
+
+	/** the mesher */
+	private TerrainMesher mesher;
+
+	/** next rendering list */
+	private ArrayList<TerrainMesh> renderingList;
+
+	/** post rendernig list creation callback */
+	private EventTerrainList eventTerrainList;
 
 	public void initialize() {
-		this._meshes = new HashMap<Terrain, TerrainMesh>(8192);
-		this._mesher = new TerrainMesherGreedy();
-		//		this._mesher = new TerrainMesherCull();
-		this._rendering_list_camera = new ArrayList<TerrainMesh>();
+		this.meshes = new HashMap<Terrain, TerrainMesh>(8192);
+		this.mesher = new TerrainMesherGreedy();
+		// this.mesher = new TerrainMesherCull();
+		this.renderingList = new ArrayList<TerrainMesh>();
+		this.eventTerrainList = new EventTerrainList();
 	}
 
 	public void deinitialize() {
-
 		this.destroyMeshes();
-		this._meshes = null;
-		this._mesher = null;
-		this._rendering_list_camera = null;
+		this.meshes = null;
+		this.mesher = null;
+		this.renderingList = null;
 	}
 
 	public void requestMeshRebuild() {
 		// ask for every terrain's mesh rebuild
-		Collection<Terrain> terrains = this._meshes.keySet();
+		Collection<Terrain> terrains = this.meshes.keySet();
 		for (Terrain terrain : terrains) {
 			terrain.requestMeshUpdate();
 		}
@@ -78,20 +59,20 @@ public class TerrainRendererFactory {
 	public void destroyMeshes() {
 
 		// destroy meshes
-		Collection<TerrainMesh> meshes = this._meshes.values();
+		Collection<TerrainMesh> meshes = this.meshes.values();
 		VoxelEngineClient.instance().getRenderer().addGLTask(new GLTask() {
 
 			@Override
 			public void run() {
 				for (TerrainMesh mesh : meshes) {
 					if (mesh != null) {
-						mesh.destroy();
+						mesh.deinitialize();
 					}
 				}
 			}
 		});
 
-		this._meshes.clear();
+		this.meshes.clear();
 	}
 
 	public void onWorldSet(World world) {
@@ -107,33 +88,48 @@ public class TerrainRendererFactory {
 		World world = renderer.getWorld();
 		CameraProjectiveWorld camera = (CameraProjectiveWorld) renderer.getCamera();
 
-		this.updateLoadedTerrains(world);
+		this.updateLoadedMeshes(world);
 		this.updateRenderingList(camera);
 		this.updateRenderingListMeshes(camera);
+		renderer.getParent().getResourceManager().getEventManager().invokeEvent(this.eventTerrainList);
+
 	}
 
-	/** this function register the terrain meshes */
-	private void updateLoadedTerrains(World world) {
+	/** unload the meshes */
+	private void updateLoadedMeshes(World world) {
 
 		// for each terrain in the factory
-		for (Terrain terrain : this._meshes.keySet()) {
+		for (Terrain terrain : this.meshes.keySet()) {
 			// if this terrain isnt loaded anymore
 			if (!world.isTerrainLoaded(terrain)) {
 				// then remove it from the factory
-				this._meshes.remove(terrain);
+				this.meshes.remove(terrain);
 			}
 		}
 
 		// for every loaded terrains
 		Terrain[] terrains = world.getLoadedTerrains();
+		final ArrayList<TerrainMesh> newMeshes = new ArrayList<TerrainMesh>();
 		for (Terrain terrain : terrains) {
 			// add it to the factory if it hasnt already been added
-			if (this._meshes.get(terrain) == null) {
-				this._meshes.put(terrain, new TerrainMesh(terrain));
-				// PS: the new TerrainMesh instanciation doesnt allocate any GL
-				// stuff
+			if (this.meshes.get(terrain) == null) {
+				TerrainMesh mesh = new TerrainMesh(terrain);
+				newMeshes.add(mesh);
+				this.meshes.put(terrain, mesh);
 			}
 		}
+
+		VoxelEngineClient.instance().getRenderer().addGLTask(new GLTask() {
+
+			@Override
+			public void run() {
+				for (TerrainMesh mesh : newMeshes) {
+					mesh.initialize();
+				}
+			}
+
+		});
+
 	}
 
 	/**
@@ -142,8 +138,8 @@ public class TerrainRendererFactory {
 	 */
 	private void updateRenderingListMeshes(Camera camera) {
 		int i = 0;
-		for (TerrainMesh mesh : this._meshes.values()) {
-			if (mesh != null && mesh.update(this._mesher, camera)) {
+		for (TerrainMesh mesh : this.meshes.values()) {
+			if (mesh != null && mesh.update(this.mesher, camera)) {
 				if (++i == 8) {
 					break;
 				}
@@ -164,22 +160,22 @@ public class TerrainRendererFactory {
 
 	/** CULLING ALGORYTHM STOPS HERE */
 	public TerrainMesh getMesh(Terrain terrain) {
-		return (this._meshes.get(terrain));
+		return (this.meshes.get(terrain));
 	}
 
 	private void updateRenderingList(CameraProjectiveWorld camera) {
 		// if (GLH.glhGetContext().getWindow().isKeyPressed(GLFW.GLFW_KEY_L)) {
-		// this._rendering_list_camera.clear();
+		// this.renderingList.clear();
 		// this._rendering_list_shadow.clear();
 		// this.getRenderingListFrustumOcclusionCull(camera);
 		// } else if
 		// (GLH.glhGetContext().getWindow().isKeyPressed(GLFW.GLFW_KEY_X)) {
-		// this._rendering_list_camera.clear();
+		// this.renderingList.clear();
 		// this._rendering_list_shadow.clear();
 		// this.getRenderingListFrustumCull(camera, shadow_camera);
 		// }
 
-		this._rendering_list_camera.clear();
+		this.renderingList.clear();
 		this.getRenderingListFrustumCull(camera);
 	}
 
@@ -259,8 +255,8 @@ public class TerrainRendererFactory {
 			// rendering list
 			if (interrain != null && camera.isBoxInFrustum(interrain.getWorldPosition(), Terrain.DIM_SIZE)) {
 				TerrainMesh mesh = this.getMesh(interrain);
-				if (this._rendering_list_camera.contains(mesh) == false) {
-					this._rendering_list_camera.add(mesh);
+				if (this.renderingList.contains(mesh) == false) {
+					this.renderingList.add(mesh);
 					this.addBox(inindex, 0, 1, 0);
 				}
 			}
@@ -295,7 +291,7 @@ public class TerrainRendererFactory {
 		}
 
 		Logger.get().log(Logger.Level.DEBUG, i + "/300", "stack size: " + stack.size(),
-				"rendering list: " + this._rendering_list_camera.size());
+				"rendering list: " + this.renderingList.size());
 
 		i = 0;
 		while (i < 16) {
@@ -307,7 +303,7 @@ public class TerrainRendererFactory {
 
 	private void getRenderingListFrustumCull(CameraProjectiveWorld camera) {
 
-		for (TerrainMesh mesh : this._meshes.values()) {
+		for (TerrainMesh mesh : this.meshes.values()) {
 
 			if (mesh == null) {
 				continue;
@@ -317,7 +313,7 @@ public class TerrainRendererFactory {
 			float distance = (float) Vector3f.distanceSquare(mesh.getTerrain().getCenter(), camera.getPosition());
 			if (distance < camera.getSquaredRenderDistance()
 					&& camera.isBoxInFrustum(mesh.getTerrain().getLocation().getWorldPosition(), Terrain.DIM_SIZE)) {
-				this._rendering_list_camera.add(mesh);
+				this.renderingList.add(mesh);
 			}
 		}
 	}
@@ -326,7 +322,7 @@ public class TerrainRendererFactory {
 	 * return the list of the terrain that should be rendered (non null terrain)
 	 */
 	public ArrayList<TerrainMesh> getCameraRenderingList() {
-		return (this._rendering_list_camera);
+		return (this.renderingList);
 	}
 
 	/**
@@ -334,6 +330,6 @@ public class TerrainRendererFactory {
 	 * meshes)
 	 */
 	public TerrainMesh[] getMeshes() {
-		return (this._meshes.values().toArray(new TerrainMesh[this._meshes.size()]));
+		return (this.meshes.values().toArray(new TerrainMesh[this.meshes.size()]));
 	}
 }

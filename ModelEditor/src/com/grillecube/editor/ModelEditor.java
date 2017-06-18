@@ -42,7 +42,7 @@ import com.grillecube.common.Logger.Level;
 import com.grillecube.common.event.EventCallback;
 import com.grillecube.common.event.EventPostLoop;
 import com.grillecube.common.mod.ModInfo;
-import com.grillecube.common.world.entity.EntityModeled;
+import com.grillecube.common.world.entity.Entity;
 import com.grillecube.editor.model.ModelGrid;
 import com.grillecube.editor.toolbox.Toolbox;
 import com.grillecube.editor.window.camera.CameraEditor;
@@ -257,7 +257,7 @@ public class ModelEditor implements GLFWListenerMouseEnter, GLFWListenerMouseExi
 		ModelBuilderExporter.exportModelBuilder(this.getModel(), ModelEditor.Config.TMP_MODEL_BUILDER_FILE);
 	}
 
-	public EntityModeled getEntity() {
+	public Entity getEntity() {
 		return (this._toolbox.getEntity());
 	}
 
@@ -341,7 +341,7 @@ public class ModelEditor implements GLFWListenerMouseEnter, GLFWListenerMouseExi
 
 	public void addModel(Model model) {
 
-		EntityModeled entity = new EntityModeled(this.getWorld(), model) {
+		Entity entity = new Entity(this.getWorld(), model) {
 			@Override
 			protected void onUpdate() {
 			}

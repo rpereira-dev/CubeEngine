@@ -21,7 +21,6 @@ import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.defaultmod.Blocks;
-import com.grillecube.common.event.world.EventEntityJump;
 import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.World;
@@ -38,6 +37,7 @@ import com.grillecube.common.world.entity.physic.EntityPhysicRotateLeft;
 import com.grillecube.common.world.entity.physic.EntityPhysicRotateRight;
 import com.grillecube.common.world.entity.physic.EntityPhysicStrafeLeft;
 import com.grillecube.common.world.entity.physic.EntityPhysicStrafeRight;
+import com.grillecube.common.world.events.EventEntityJump;
 
 public abstract class Entity {
 
@@ -54,32 +54,37 @@ public abstract class Entity {
 	private World world;
 
 	/** entity AI */
-	private ArrayList<EntityAI> _ais;
+	private ArrayList<EntityAI> ais;
+
+	/** entity dimensions */
+	private static final float DEFAULT_DIMENSION = 1e-7f; // point
+	private float width;
+	private float height;
+	private float depth;
 
 	/** entity's world pos */
 	private Vector3f pos;
-	private Vector3f posVelocity;
-	private Vector3f pos_acceleration;
+	private Vector3f vel;
+	private Vector3f acc;
 	private Vector3f forces;
 
 	/** entity's world rotation */
 	private Vector3f rotation;
-	private Vector3f rotation_speed;
+	private Vector3f rotVel;
 
 	/** vector where the entity is looking at */
-	private Vector3f _look_vec;
+	private Vector3f lookVec;
+
+	/** the entity bounding box */
+	private BoundingBox boundingBox;
 
 	/** speed for this entity, in block per seconde */
-	private float _speed;
+	private float speed;
 	private static final float DEFAULT_SPEED = 0.2f;
 
 	/** entity weight */
 	private float weight;
 	private static final float DEFAULT_WEIGHT = 1e-7f;
-
-	/** entity height */
-	private float height;
-	private static final float DEFAULT_HEIGHT = 1e-7f; // point
 
 	/** world id */
 	public static final int DEFAULT_WORLD_ID = 0;
@@ -88,23 +93,31 @@ public abstract class Entity {
 	public Entity(World world) {
 		this.world = world;
 
-		this._ais = new ArrayList<EntityAI>();
+		this.boundingBox = new BoundingBox();
+
+		this.ais = new ArrayList<EntityAI>();
 
 		this.pos = new Vector3f();
-		this.posVelocity = new Vector3f();
-		this.pos_acceleration = new Vector3f();
+		this.vel = new Vector3f();
+		this.acc = new Vector3f();
 		this.forces = new Vector3f();
 
 		this.rotation = new Vector3f();
-		this.rotation_speed = new Vector3f();
+		this.rotVel = new Vector3f();
 
-		this._look_vec = new Vector3f();
+		this.lookVec = new Vector3f();
 
-		this._speed = DEFAULT_SPEED;
+		this.speed = DEFAULT_SPEED;
 		this.weight = DEFAULT_WEIGHT;
-		this.height = DEFAULT_HEIGHT;
+
+		this.width = DEFAULT_DIMENSION;
+		this.height = DEFAULT_DIMENSION;
+		this.depth = DEFAULT_DIMENSION;
 
 		this.addAI(new EntityAIIdle(this));
+
+//		this.enablePhysic(EntityPhysic.AIR_FRICTION);
+//		this.enablePhysic(EntityPhysic.GRAVITY);
 	}
 
 	public Entity() {
@@ -112,7 +125,7 @@ public abstract class Entity {
 	}
 
 	public Vector3f getViewVector() {
-		return (this._look_vec);
+		return (this.lookVec);
 	}
 
 	/** called when entity spawns */
@@ -124,32 +137,37 @@ public abstract class Entity {
 		this.updateAI();
 		this.updatePosition();
 		this.updateRotation();
+		this.updateBoundingBox();
 		this.onUpdate();
 	}
 
+	private void updateBoundingBox() {
+		this.boundingBox.setCenterSize(this.pos, this.width, this.height, this.depth);
+	}
+
 	private void updateAI() {
-		for (int i = 0; i < this._ais.size(); i++) {
-			EntityAI ai = this._ais.get(i);
+		for (int i = 0; i < this.ais.size(); i++) {
+			EntityAI ai = this.ais.get(i);
 			ai.update();
 		}
 	}
 
 	public void addAI(EntityAI ai) {
-		this._ais.add(ai);
+		this.ais.add(ai);
 	}
 
 	public void removeAI(EntityAI ai) {
-		this._ais.remove(ai);
+		this.ais.remove(ai);
 	}
 
 	/** update entity's rotation */
 	private void updateRotation() {
 		// update looking vector
 		float f = (float) Math.cos(Math.toRadians(this.getPitch()));
-		this._look_vec.setX((float) (f * Math.sin(Math.toRadians(this.getYaw()))));
-		this._look_vec.setY((float) -Math.sin(Math.toRadians(this.getPitch())));
-		this._look_vec.setZ((float) (f * Math.cos(Math.toRadians(this.getYaw()))));
-		this._look_vec.normalise();
+		this.lookVec.setX((float) (f * Math.sin(Math.toRadians(this.getYaw()))));
+		this.lookVec.setY((float) -Math.sin(Math.toRadians(this.getPitch())));
+		this.lookVec.setZ((float) (f * Math.cos(Math.toRadians(this.getYaw()))));
+		this.lookVec.normalise();
 
 		this.increasePitch(this.getRotationSpeed().x);
 		this.increaseYaw(this.getRotationSpeed().y);
@@ -231,11 +249,11 @@ public abstract class Entity {
 	}
 
 	public Vector3f getPositionVelocity() {
-		return (this.posVelocity);
+		return (this.vel);
 	}
 
 	public Vector3f getPositionAcceleration() {
-		return (this.pos_acceleration);
+		return (this.acc);
 	}
 
 	/** get entity world */
@@ -277,11 +295,11 @@ public abstract class Entity {
 	}
 
 	public float getSpeed() {
-		return (this._speed);
+		return (this.speed);
 	}
 
 	public void setSpeed(float speed) {
-		this._speed = speed;
+		this.speed = speed;
 	}
 
 	/** return true if the entity is moving */
@@ -304,7 +322,7 @@ public abstract class Entity {
 
 	/** rotation speed vector, x == pitch, y == yaw, z == roll */
 	public Vector3f getRotationSpeed() {
-		return (this.rotation_speed);
+		return (this.rotVel);
 	}
 
 	public void setWeight(float weight) {
@@ -313,14 +331,6 @@ public abstract class Entity {
 
 	public float getWeight() {
 		return (this.weight);
-	}
-
-	public void setHeight(float height) {
-		this.height = height;
-	}
-
-	public float getHeight() {
-		return (this.height);
 	}
 
 	public boolean hasState(int stateID) {
@@ -364,11 +374,11 @@ public abstract class Entity {
 	}
 
 	public boolean isFalling() {
-		return (this.posVelocity.y < -1.0e-3f);
+		return (this.vel.y < -1.0e-3f);
 	}
 
 	public BoundingBox getBoundingBox() {
-		return (null);
+		return (this.boundingBox);
 	}
 
 	public void playSound(ALSound sound) {
@@ -377,5 +387,35 @@ public abstract class Entity {
 
 	public void playSound(String filepath) {
 		this.playSound(ALH.alhLoadSound(filepath));
+	}
+
+	/** set entity width */
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+	/** set entity width */
+	public void setHeight(float height) {
+		this.height = height;
+	}
+
+	/** set entity width */
+	public void setDepth(float depth) {
+		this.depth = depth;
+	}
+
+	/** @return : entity width */
+	public float getWidth() {
+		return (this.width);
+	}
+
+	/** @return : entity width */
+	public float getHeight() {
+		return (this.height);
+	}
+
+	/** @return : entity width */
+	public float getDepth() {
+		return (this.depth);
 	}
 }

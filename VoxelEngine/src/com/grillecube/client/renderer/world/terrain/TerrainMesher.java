@@ -31,7 +31,7 @@ public abstract class TerrainMesher {
 	public final ByteBuffer generateVertices(Terrain terrain) {
 
 		Stack<MeshVertex> stack = this.getVertexStack(terrain);
-		ByteBuffer buffer = BufferUtils.createByteBuffer(stack.size() * TerrainMesh.FLOAT_PER_VERTEX * 4);
+		ByteBuffer buffer = BufferUtils.createByteBuffer(stack.size() * TerrainMesh.BYTES_PER_VERTEX);
 
 		for (MeshVertex vertex : stack) {
 			buffer.putFloat(vertex.posx);

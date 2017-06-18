@@ -29,27 +29,24 @@ import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.geometry.GLGeometry;
 import com.grillecube.client.renderer.geometry.Sphere;
 import com.grillecube.client.renderer.world.RendererWorld;
-import com.grillecube.client.renderer.world.ShadowCamera;
 import com.grillecube.client.renderer.world.particles.ParticleCube;
 import com.grillecube.client.renderer.world.particles.ParticleCubeBouncing;
 import com.grillecube.client.renderer.world.particles.ParticleRenderer;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.maths.Vector4f;
-import com.grillecube.common.world.Weather;
 import com.grillecube.common.world.World;
 
 public class SkyRenderer extends RendererWorld {
-	private static final int SKYDOME_PRECISION = 4;
+	private static final int SKYDOME_PRECISION = 3;
 	private static final float SKYDOME_SIZE = 1.0f;
 
 	/** program */
-	private ProgramSky _sky_program;
+	private ProgramSky programSky;
 
 	/** vao for icosphere */
-	private GLVertexArray _vao;
-	private GLVertexBuffer _vbo;
+	private GLVertexArray vao;
+	private GLVertexBuffer vbo;
 
 	public SkyRenderer(MainRenderer main_renderer) {
 		super(main_renderer);
@@ -58,31 +55,31 @@ public class SkyRenderer extends RendererWorld {
 	@Override
 	public void initialize() {
 
-		this._sky_program = new ProgramSky();
+		this.programSky = new ProgramSky();
 
-		this._vao = GLH.glhGenVAO();
-		this._vbo = GLH.glhGenVBO();
+		this.vao = GLH.glhGenVAO();
+		this.vbo = GLH.glhGenVBO();
 
-		this._vao.bind();
-		this._vbo.bind(GL15.GL_ARRAY_BUFFER);
+		this.vao.bind();
+		this.vbo.bind(GL15.GL_ARRAY_BUFFER);
 		ByteBuffer floats = GLGeometry.generateSphere(SKYDOME_PRECISION, SKYDOME_SIZE);
-		this._vbo.bufferData(GL15.GL_ARRAY_BUFFER, floats, GL15.GL_STATIC_DRAW);
-		this._vao.setAttribute(0, 3, GL11.GL_FLOAT, false, 4 * 3, 0);
-		this._vao.enableAttribute(0);
+		this.vbo.bufferData(GL15.GL_ARRAY_BUFFER, floats, GL15.GL_STATIC_DRAW);
+		this.vao.setAttribute(0, 3, GL11.GL_FLOAT, false, 4 * 3, 0);
+		this.vao.enableAttribute(0);
 
 	}
 
 	@Override
 	public void deinitialize() {
 
-		GLH.glhDeleteObject(this._sky_program);
-		this._sky_program = null;
+		GLH.glhDeleteObject(this.programSky);
+		this.programSky = null;
 
-		GLH.glhDeleteObject(this._vao);
-		this._vao = null;
+		GLH.glhDeleteObject(this.vao);
+		this.vao = null;
 
-		GLH.glhDeleteObject(this._vbo);
-		this._vbo = null;
+		GLH.glhDeleteObject(this.vbo);
+		this.vbo = null;
 	}
 
 	@Override
@@ -114,25 +111,15 @@ public class SkyRenderer extends RendererWorld {
 		// GL11.glEnable(GL11.GL_CULL_FACE);
 		// GL11.glCullFace(GL11.GL_BACK);
 
-		this._sky_program.useStart();
-		this._sky_program.loadUniforms(world.getWeather(), camera);
+		this.programSky.useStart();
+		this.programSky.loadUniforms(world.getWeather(), camera);
 
-		this._vao.bind();
-		this._vao.draw(GL11.GL_TRIANGLES, 0, Sphere.getVertexCount(SKYDOME_PRECISION));
+		this.vao.bind();
+		this.vao.draw(GL11.GL_TRIANGLES, 0, Sphere.getVertexCount(SKYDOME_PRECISION));
 
-		this._sky_program.useStop();
+		this.programSky.useStop();
 
 		GL11.glDisable(GL11.GL_CULL_FACE);
-	}
-
-	public void renderReflection(CameraProjectiveWorld camera, Vector4f clipplane) {
-		// TODO : clip plane
-		this.render(camera);
-	}
-
-	public void renderRefraction(CameraProjectiveWorld camera, Vector4f clipplane) {
-		// TODO : cliplane
-		this.render(camera);
 	}
 
 	/** testing particles system :D */
@@ -161,12 +148,15 @@ public class SkyRenderer extends RendererWorld {
 
 	/** testing particles system :D */
 	private void rainParticles(World world, int strength) {
-		float yfactor = strength / (3 * Weather.MID_RAIN_STRENGTH);
+		Random rng = this.getParent().getRNG();
+		ParticleRenderer renderer = this.getParent().getWorldRenderer().getParticleRenderer();
+		Vector3f campos = this.getParent().getCamera().getPosition();
+
+		float yfactor = 0.5f;
+
 		for (int i = 0; i < strength; i++) {
-			Random rng = this.getParent().getRNG();
-			ParticleRenderer renderer = this.getParent().getWorldRenderer().getParticleRenderer();
+
 			ParticleCubeBouncing cube = new ParticleCubeBouncing();
-			Vector3f campos = this.getParent().getCamera().getPosition();
 
 			float x = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
 			float y = rng.nextFloat();

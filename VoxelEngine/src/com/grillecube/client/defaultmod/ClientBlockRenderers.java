@@ -2,7 +2,7 @@ package com.grillecube.client.defaultmod;
 
 import com.grillecube.client.renderer.blocks.BlockRendererCube;
 import com.grillecube.client.renderer.blocks.BlockRendererLiquid;
-import com.grillecube.client.renderer.blocks.BlockRendererManager;
+import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.faces.Face;

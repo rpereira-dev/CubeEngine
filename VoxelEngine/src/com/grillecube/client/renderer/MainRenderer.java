@@ -41,27 +41,27 @@ import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.Logger;
+import com.grillecube.common.Logger.Level;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.Logger.Level;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.world.World;
 
 public class MainRenderer implements Taskable, GLFWListenerResize {
 
 	/** resource manager */
-	private VoxelEngineClient _engine;
+	private VoxelEngineClient engine;
 
 	/** post processing shaders programs */
 	private GLProgramPostProcessing finalProcessProgram;
 	private GLProgramPostProcessing postProcessingProgram;
 
 	/** camera */
-	private CameraProjectiveWorld _camera;
+	private CameraProjectiveWorld camera;
 
 	/** default renderers */
-	private WorldRenderer _world_renderer;
-	private GuiRenderer _gui_renderer;
+	private WorldRenderer worldRenderer;
+	private GuiRenderer guiRenderer;
 
 	private ArrayList<GLTask> glTasks;
 
@@ -78,17 +78,17 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	private GLRenderBuffer fboDepthBuffer;
 
 	/** values */
-	private int _vertices_drawn;
-	private int _draw_calls;
+	private int verticesDrawn;
+	private int drawCalls;
 
 	/** default and simple vao (to use geometry shaders) */
 	private GLVertexArray _default_vao;
 	private GLVertexBuffer _default_vbo;
 
-	private boolean _toggled = true;
+	private boolean toggle = true;
 
 	public MainRenderer(VoxelEngineClient engine) {
-		this._engine = engine;
+		this.engine = engine;
 	}
 
 	/** called after resources where loaded */
@@ -105,17 +105,17 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		this.initialiseDefaultVAO();
 		this.initializeMainFBO(this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
 
-		this._world_renderer = new WorldRenderer(this);
-		this._gui_renderer = new GuiRenderer(this);
+		this.worldRenderer = new WorldRenderer(this);
+		this.guiRenderer = new GuiRenderer(this);
 
 		this.getGLFWWindow().addResizeListener(this);
 
 		Logger.get().log(Level.FINE, "Initializing " + this.getClass().getSimpleName());
 
-		Logger.get().log(Level.FINE, "Initializing " + this._gui_renderer.getClass().getSimpleName());
+		Logger.get().log(Level.FINE, "Initializing " + this.guiRenderer.getClass().getSimpleName());
 		GLH.glhCheckError("pre guirenderer starts");
-		this._gui_renderer.initialize();
-		// this._gui_renderer.addView(new GuiViewDefault());
+		this.guiRenderer.initialize();
+		// this.guiRenderer.addView(new GuiViewDefault());
 		GLH.glhCheckError("post guirenderer starts");
 
 		this.finalProcessProgram = new GLProgramPostProcessing(R.getResPath("shaders/post_process/post_processing.fs"));
@@ -183,8 +183,8 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	public void deinitialize() {
 		this.getGLFWWindow().removeResizeListener(this);
 
-		this._gui_renderer.deinitialize();
-		this._world_renderer.deinitialize();
+		this.guiRenderer.deinitialize();
+		this.worldRenderer.deinitialize();
 
 		GLH.glhDeleteObject(this._default_vao);
 		this._default_vao = null;
@@ -212,45 +212,44 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		}
 
 		// if renderer is not enabled, return
-		if (!this._toggled) {
+		if (!this.toggle) {
 			return;
 		}
 
 		// TODO move this somewhere else, if openal is thread safe
 		if (this.getCamera() != null) {
 			this.getCamera().update();
-			this._engine.getResourceManager().getSoundManager().update(this.getCamera());
+			this.engine.getResourceManager().getSoundManager().update(this.getCamera());
 		}
 
 		this.getResourceManager().getEventManager().invokeEvent(this.preRenderEvent);
 
 		// reset these values before next rendering
-		this._draw_calls = GLH.glhGetContext().resetDrawCalls();
-		this._vertices_drawn = GLH.glhGetContext().resetDrawVertices();
+		this.drawCalls = GLH.glhGetContext().resetDrawCalls();
+		this.verticesDrawn = GLH.glhGetContext().resetDrawVertices();
 
 		// if there is a world
 		if (this.getWorldRenderer().getWorld() != null && this.getCamera() != null) {
 			// render it
-			this._world_renderer.preRender();
+			this.worldRenderer.preRender();
 
 			// refresh fbo
 			this.getFBO().bind();
 			this.getFBO().clear();
 			this.getFBO().viewport(0, 0, this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
-			this._world_renderer.render();
+			this.worldRenderer.render();
 			this.renderPostProcessingEffects(); // post processing effects
 			this.getFBO().unbind(); // render the world to the main fbo
 
-			this._world_renderer.postRender();
+			this.worldRenderer.postRender();
 
 			this.renderFinalImage(); // final image to default fbo
 		}
 
-		// render guis to default fbo (post processing effects doesnt affect
-		// guis)
-		this._gui_renderer.preRender();
-		this._gui_renderer.render();
-		this._gui_renderer.postRender();
+		// render guis to default fbo
+		this.guiRenderer.preRender();
+		this.guiRenderer.render();
+		this.guiRenderer.postRender();
 
 		this.getResourceManager().getEventManager().invokeEvent(this.postRenderEvent);
 	}
@@ -293,37 +292,37 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 
 	/** return the draw calls for the last frame */
 	public int getDrawCalls() {
-		return (this._draw_calls);
+		return (this.drawCalls);
 	}
 
 	/** return the vertices drawn for the last frame */
 	public int getVerticesDrawn() {
-		return (this._vertices_drawn);
+		return (this.verticesDrawn);
 	}
 
 	/** get the resource manager */
 	public ResourceManagerClient getResourceManager() {
-		return (this._engine.getResourceManager());
+		return (this.engine.getResourceManager());
 	}
 
 	/** get the camera */
 	public CameraProjectiveWorld getCamera() {
-		return (this._camera);
+		return (this.camera);
 	}
 
 	public void setCamera(CameraProjectiveWorld camera) {
 		Logger.get().log(Level.FINE, "Setting MainRenderer camera: " + camera);
-		this._camera = camera;
+		this.camera = camera;
 	}
 
 	/** font renderer */
 	public GuiRenderer getGuiRenderer() {
-		return (this._gui_renderer);
+		return (this.guiRenderer);
 	}
 
 	/** get the world renderer */
 	public WorldRenderer getWorldRenderer() {
-		return (this._world_renderer);
+		return (this.worldRenderer);
 	}
 
 	/** OpenGL tasks to be realized in main thread */
@@ -333,17 +332,17 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 
 	/** get current window on which the main renderer is rendering */
 	public GLFWWindow getGLFWWindow() {
-		return (this._engine.getGLFWWindow());
+		return (this.engine.getGLFWWindow());
 	}
 
 	public VoxelEngineClient getEngine() {
-		return (this._engine);
+		return (this.engine);
 	}
 
 	public void setWorld(World world) {
-		this._world_renderer.setWorld(world);
-		if (this._camera != null && this._camera instanceof CameraPerspectiveWorld) {
-			((CameraPerspectiveWorld) this._camera).setWorld(world);
+		this.worldRenderer.setWorld(world);
+		if (this.camera != null && this.camera instanceof CameraPerspectiveWorld) {
+			((CameraPerspectiveWorld) this.camera).setWorld(world);
 		}
 	}
 
@@ -370,28 +369,13 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<VoxelEngine.Callable<Taskable>> tasks) {
 
-		this._world_renderer.getTasks(engine, tasks);
-		this._gui_renderer.getTasks(engine, tasks);
-		// TODO : fix me
-		// final Camera camera = this.getCamera();
-		//
-		// if (camera != null) {
-		//
-		// Callable<Taskable> call = new Callable<Taskable>() {
-		// @Override
-		// public Taskable call() throws Exception {
-		// camera.update();
-		// return (MainRenderer.this);
-		// }
-		// };
-		// tasks.add(call);
-		//
-		// }
+		this.worldRenderer.getTasks(engine, tasks);
+		this.guiRenderer.getTasks(engine, tasks);
 	}
 
 	/** set to true of false weather you want to render or not */
 	public void toggle(boolean b) {
-		this._toggled = b;
+		this.toggle = b;
 	}
 
 }

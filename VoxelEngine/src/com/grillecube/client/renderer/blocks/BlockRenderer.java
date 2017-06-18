@@ -5,6 +5,7 @@ import java.util.Stack;
 import com.grillecube.client.renderer.world.terrain.BlockFace;
 import com.grillecube.client.renderer.world.terrain.MeshVertex;
 import com.grillecube.client.renderer.world.terrain.TerrainMesher;
+import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;

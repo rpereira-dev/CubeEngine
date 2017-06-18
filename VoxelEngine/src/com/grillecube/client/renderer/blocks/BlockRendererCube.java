@@ -142,13 +142,25 @@ public class BlockRendererCube extends BlockRenderer {
 		float ao = this.getVertexAO(terrain, side1, side2, corner);
 
 		// the block light
-		float l1 = terrain.getLight(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
-		float l2 = terrain.getLight(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
-		float l3 = terrain.getLight(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
-		float light = (l1 + l2 + l3) / 3.0f;
+		byte l1, l2, l3;
+
+		l1 = terrain.getBlockLight(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
+		l2 = terrain.getBlockLight(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
+		l3 = terrain.getBlockLight(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
+		float blockLight = (l1 + l2 + l3) / (3.0f * 16.0f);
+
+		// the sun light
+		l1 = terrain.getSunLight(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
+		l2 = terrain.getSunLight(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
+		l3 = terrain.getSunLight(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
+		float sunLight = (l1 + l2 + l3) / (3.0f * 16.0f); // TODO : push the
+															// sunlight
+		// value to a specific vertex
+		// attributes to deal with time
+		// (sunlight on night == 0...)
 
 		// final brightness
-		float brightness = 1 + light - ao;
+		float brightness = 1 + blockLight - ao;
 
 		// light color
 		int color = 0xFFFFFFFF;// ColorInt.get(255, 255, 255, 255);

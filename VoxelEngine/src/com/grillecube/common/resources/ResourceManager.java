@@ -48,9 +48,6 @@ public abstract class ResourceManager {
 	/** Entities */
 	private final EntityManager entityManager;
 
-	/** Models manager */
-	private final ModelManager modelManager;
-
 	/** events */
 	private final EventManager eventManager;
 
@@ -74,18 +71,17 @@ public abstract class ResourceManager {
 		this.assets = new ArrayList<AssetsPack>();
 
 		this.managers = new ArrayList<GenericManager<?>>();
+		
 		this.worldManager = new WorldManager(this);
 		this.blockManager = new BlockManager(this);
 		this.itemManager = new ItemManager(this);
 		this.entityManager = new EntityManager(this);
-		this.modelManager = new ModelManager(this);
 		this.packetManager = new PacketManager(this);
 		this.eventManager = new EventManager(this);
 		this.langManager = new LangManager(this);
 
 		this.managers.add(this.blockManager);
 		this.managers.add(this.itemManager);
-		this.managers.add(this.modelManager);
 		this.managers.add(this.entityManager);
 		this.managers.add(this.packetManager);
 		this.managers.add(this.eventManager);
@@ -202,11 +198,6 @@ public abstract class ResourceManager {
 	/** get the event manager */
 	public final EventManager getEventManager() {
 		return (this.eventManager);
-	}
-
-	/** get the model manager */
-	public final ModelManager getModelManager() {
-		return (this.modelManager);
 	}
 
 	/** get the resource filepath */

@@ -15,7 +15,6 @@
 package com.grillecube.client.renderer.geometry;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 

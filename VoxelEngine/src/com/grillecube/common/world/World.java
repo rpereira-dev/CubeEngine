@@ -27,8 +27,9 @@ import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.instances.BlockInstance;
 import com.grillecube.common.world.entity.Entity;
-import com.grillecube.common.world.entity.EntityModeled;
 import com.grillecube.common.world.entity.EntityStorage;
+import com.grillecube.common.world.generator.WorldGenerator;
+import com.grillecube.common.world.generator.WorldGeneratorEmpty;
 import com.grillecube.common.world.terrain.Terrain;
 import com.grillecube.common.world.terrain.TerrainStorage;
 
@@ -77,6 +78,25 @@ public abstract class World implements Taskable {
 
 	/** call back to add tasks to run */
 	protected void onTasksGet(VoxelEngine engine, ArrayList<VoxelEngine.Callable<Taskable>> tasks) {
+	}
+
+	/**
+	 * generate the terrain for the given coordinates, spawn it if un-existant
+	 */
+	public Terrain generateTerrain(int x, int y, int z) {
+		Terrain terrain = this.getTerrain(x, y, z);
+		if (terrain == null) {
+			terrain = new Terrain(x, y, z);
+			this.spawnTerrain(terrain);
+		}
+		return (this.generateTerrain(terrain));
+	}
+
+	public Terrain generateTerrain(Terrain terrain) {
+		terrain.preGenerated();
+		this.generator.generate(terrain);
+		terrain.postGenerated();
+		return (terrain);
 	}
 
 	/** set the world generator */
@@ -170,7 +190,10 @@ public abstract class World implements Taskable {
 
 	/** spawn a terrain */
 	public Terrain spawnTerrain(Terrain terrain) {
-		return (this.terrains.spawn(terrain));
+		terrain.preSpawned();
+		this.terrains.spawn(terrain);
+		terrain.postSpawned();
+		return (terrain);
 	}
 
 	/** tick the world once */
@@ -236,11 +259,7 @@ public abstract class World implements Taskable {
 		ArrayList<Entity> lst = new ArrayList<Entity>();
 		Collection<Entity> entities = this.getEntityStorage().getEntities();
 		for (Entity entity : entities) {
-			if (!(entity instanceof EntityModeled)) {
-				continue;
-			}
-
-			if (((EntityModeled) entity).getModelInstance().getMaxBoundingBox().intersect(box)) {
+			if (entity.getBoundingBox().intersect(box)) {
 				lst.add(entity);
 			}
 		}
@@ -294,11 +313,11 @@ public abstract class World implements Taskable {
 		}
 
 		// for (Entity e : this.getEntities()) {
-		// if (!(e instanceof EntityModeled) || e == entity) {
+		// if (!(e instanceof Entity) || e == entity) {
 		// continue;
 		// }
 		//
-		// BoundingBox entity_box = ((EntityModeled)
+		// BoundingBox entity_box = ((Entity)
 		// e).getModelInstance().getMaxBoundingBox();
 		// if (box.intersect(entity_box)) {
 		// lst.add(entity_box);
@@ -339,21 +358,7 @@ public abstract class World implements Taskable {
 
 	/**
 	 * save the given world to the given folder
-	 * 
-	 * HOW WORLD SAVE (WS) WORKS: - 'WS_INFO_FILE' stores information about the
-	 * save - 'WS_ENTITIES_FILE' stores entities - 'WS_TERRAINS_FILE + x_y_z'
-	 * stores 'WS_TERRAINS_PER_FILE' terrains inside the same files.
-	 * 
 	 */
-
-	private static final String WS_INFO_FILE = "save_info";
-	private static final String WS_ENTITIES_FILE = "entities";
-	private static final String WS_TERRAINS_FILE = "terrain";
-	private static final int WS_TERRAINS_PER_FILE_WIDTH = 3;
-	private static final int WS_TERRAINS_PER_FILE_HEIGHT = 3;
-	private static final int WS_TERRAINS_PER_FILE_DEPTH = 3;
-	private static final int WS_TERRAINS_PER_FILE = WS_TERRAINS_PER_FILE_WIDTH * WS_TERRAINS_PER_FILE_HEIGHT
-			* WS_TERRAINS_PER_FILE_DEPTH;
 
 	public static final void save(World world, String filepath) {
 	}
@@ -361,5 +366,10 @@ public abstract class World implements Taskable {
 	/** load the given folder as a world */
 	public static final World load(String filepath) {
 		return (null);
+	}
+
+	/** return the top loaded terrain for the given (x, z) coordinates */
+	public Terrain getTopTerrain(int x, int z) {
+		return (this.terrains.getTop(x, z));
 	}
 }
