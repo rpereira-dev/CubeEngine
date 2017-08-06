@@ -2,23 +2,25 @@ package com.grillecube.client.renderer.model.animation;
 
 import java.util.ArrayList;
 
-public class Animation {
+public class ModelAnimation {
 
 	/** the animation name */
-	private String name;
+	private final String name;
 
 	/** the keyframes for this animation */
-	private ArrayList<KeyFrame> keyFrames;
+	private final ArrayList<KeyFrame> keyFrames;
 
-	public Animation() {
+	/** animation length */
+	private final long duration;
+
+	public ModelAnimation(String name, long duration, ArrayList<KeyFrame> keyFrames) {
+		this.name = name;
+		this.duration = duration;
+		this.keyFrames = keyFrames;
 	}
 
 	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		return (name);
 	}
 
 	/** get the keyframe list of this animation */
@@ -29,14 +31,14 @@ public class Animation {
 	/** add a keyframe to the animation */
 	public KeyFrame addKeyFrame(KeyFrame keyFrame) {
 		int i = 0;
-		while (this.keyFrames.get(i++).getTime() < keyFrame.getTime())
+		while (i < this.keyFrames.size() && this.keyFrames.get(i++).getTime() < keyFrame.getTime())
 			;
 		this.keyFrames.add(i, keyFrame);
 		return (keyFrame);
 	}
 
 	/** get the time of the last keyframe for this animation */
-	public int getDuration() {
-		return (this.keyFrames.size() == 0 ? 0 : this.keyFrames.get(this.keyFrames.size() - 1).getTime());
+	public final long getDuration() {
+		return (this.duration);
 	}
 }

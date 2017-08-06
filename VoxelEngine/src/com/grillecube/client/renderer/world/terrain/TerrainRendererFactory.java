@@ -12,10 +12,14 @@ import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.event.EventTerrainList;
 import com.grillecube.client.renderer.world.particles.ParticleCube;
 import com.grillecube.common.Logger;
+import com.grillecube.common.event.EventCallback;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
+import com.grillecube.common.resources.EventManager;
+import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.World;
+import com.grillecube.common.world.events.EventWorldDespawnTerrain;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class TerrainRendererFactory {
@@ -38,6 +42,19 @@ public class TerrainRendererFactory {
 		// this.mesher = new TerrainMesherCull();
 		this.renderingList = new ArrayList<TerrainMesh>();
 		this.eventTerrainList = new EventTerrainList();
+
+		EventManager eventManager = ResourceManager.instance().getEventManager();
+		eventManager.registerEventCallback(new EventCallback<EventWorldDespawnTerrain>() {
+			@Override
+			public void invoke(EventWorldDespawnTerrain event) {
+				Terrain terrain = event.getTerrain();
+				TerrainMesh terrainMesh = getMesh(terrain);
+				if (terrainMesh != null) {
+					terrainMesh.deinitialize();
+					meshes.remove(terrain);
+				}
+			}
+		});
 	}
 
 	public void deinitialize() {
@@ -76,11 +93,9 @@ public class TerrainRendererFactory {
 	}
 
 	public void onWorldSet(World world) {
-		// TODO
 	}
 
 	public void onWorldUnset(World world) {
-		// TODO
 	}
 
 	public void update(TerrainRenderer renderer) {
@@ -145,17 +160,6 @@ public class TerrainRendererFactory {
 				}
 			}
 		}
-	}
-
-	/** return true if the given terrain is in the camera frustum */
-	public boolean isTerrainInFrustum(CameraProjectiveWorld camera, Terrain terrain) {
-
-		float distance = (float) Vector3f.distanceSquare(terrain.getCenter(), camera.getPosition());
-		if (distance >= camera.getSquaredRenderDistance()) {
-			return (false);
-		}
-
-		return (camera.isBoxInFrustum(terrain.getLocation().getWorldPosition(), Terrain.DIM_SIZE));
 	}
 
 	/** CULLING ALGORYTHM STOPS HERE */
@@ -253,7 +257,7 @@ public class TerrainRendererFactory {
 			Terrain interrain = visit.terrain;
 			// if non null (full of air), and in frustum, then add it to the
 			// rendering list
-			if (interrain != null && camera.isBoxInFrustum(interrain.getWorldPosition(), Terrain.DIM_SIZE)) {
+			if (interrain != null && camera.isBoxInFrustum(interrain.getWorldPos(), Terrain.DIM_SIZE)) {
 				TerrainMesh mesh = this.getMesh(interrain);
 				if (this.renderingList.contains(mesh) == false) {
 					this.renderingList.add(mesh);
@@ -310,9 +314,10 @@ public class TerrainRendererFactory {
 			}
 
 			// calculate square distance from camera
-			float distance = (float) Vector3f.distanceSquare(mesh.getTerrain().getCenter(), camera.getPosition());
+			float distance = (float) Vector3f.distanceSquare(mesh.getTerrain().getWorldPosCenter(),
+					camera.getPosition());
 			if (distance < camera.getSquaredRenderDistance()
-					&& camera.isBoxInFrustum(mesh.getTerrain().getLocation().getWorldPosition(), Terrain.DIM_SIZE)) {
+					&& camera.isBoxInFrustum(mesh.getTerrain().getWorldPos(), Terrain.DIM_SIZE)) {
 				this.renderingList.add(mesh);
 			}
 		}

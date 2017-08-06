@@ -21,6 +21,10 @@ public class Vector3i extends Vector {
 		this.set(x, y, z);
 	}
 
+	public Vector3i(Vector3i vec) {
+		this(vec.x, vec.y, vec.z);
+	}
+
 	public Vector3i(Vector3f vec) {
 		this((int) vec.x, (int) vec.y, (int) vec.z);
 	}

@@ -6,17 +6,24 @@ import com.grillecube.common.maths.Matrix4f;
 
 public class Joint {
 
+	/** the parent */
+	private Joint parent;
+
 	/** joint childrens */
 	private ArrayList<Joint> childrens;
 
 	/** joint id */
-	private final int id;
+	private int id;
 
 	/** the name */
 	private final String name;
 
+	/** bind matrices */
 	private final Matrix4f localBindTransform;
 	private final Matrix4f inverseBindTransform;
+
+	/** joint transformation matrix */
+	private Matrix4f animatedTransform;
 
 	/**
 	 * @param id
@@ -28,11 +35,54 @@ public class Joint {
 	 * @param bindLocalTransform
 	 *            - the bone-space transform of the joint in the bind position.
 	 */
-	public Joint(int id, String name, Matrix4f bindLocalTransform) {
-		this.id = id;
+	public Joint(String name, Matrix4f bindLocalTransform) {
+		this.animatedTransform = new Matrix4f();
 		this.name = name;
 		this.localBindTransform = bindLocalTransform;
 		this.inverseBindTransform = new Matrix4f();
+	}
+
+	/** get the joint name */
+	public String getName() {
+		return (this.name);
+	}
+
+	/** set this joint parent */
+	public void setParent(Joint joint) {
+		this.parent = joint;
+	}
+
+	/** set this joint ID */
+	public void setID(int jointID) {
+		this.id = jointID;
+	}
+
+	/**
+	 * The animated transform is the transform that gets loaded up to the shader
+	 * and is used to deform the vertices of the "skin". It represents the
+	 * transformation from the joint's bind position (original position in
+	 * model-space) to the joint's desired animation pose (also in model-space).
+	 * This matrix is calculated by taking the desired model-space transform of
+	 * the joint and multiplying it by the inverse of the starting model-space
+	 * transform of the joint.
+	 * 
+	 * @return The transformation matrix of the joint which is used to deform
+	 *         associated vertices of the skin in the shaders.
+	 */
+	public Matrix4f getTransformation() {
+		return (this.animatedTransform);
+	}
+
+	/**
+	 * This method allows those all important "joint transforms" (as I referred
+	 * to them in the tutorial) to be set by the animator. This is used to put
+	 * the joints of the animated model in a certain pose.
+	 * 
+	 * @param animationTransform
+	 *            - the new joint transform.
+	 */
+	public void setAnimationTransform(Matrix4f animationTransform) {
+		this.animatedTransform = animationTransform;
 	}
 
 	/**
@@ -40,6 +90,11 @@ public class Joint {
 	 */
 	public int getID() {
 		return (this.id);
+	}
+
+	/** get the joint parent */
+	public final Joint getParent() {
+		return (this.parent);
 	}
 
 	/**
@@ -57,6 +112,19 @@ public class Joint {
 		}
 		this.childrens.add(modelJoint);
 		return (modelJoint);
+	}
+
+	/** return true if this joint has a children */
+	public boolean hasChildren() {
+		return (this.childrens != null && this.childrens.size() > 0);
+	}
+
+	/** remove a child of this joint */
+	public void removeChild(Joint joint) {
+		this.childrens.remove(joint);
+		if (this.childrens.size() == 0) {
+			this.childrens = null;
+		}
 	}
 
 	public ArrayList<Joint> getChildrens() {
@@ -95,11 +163,12 @@ public class Joint {
 	 * @param parentBindTransform
 	 *            - the model-space bind transform of the parent joint.
 	 */
-	private void calcInverseBindTransform(Matrix4f parentBindTransform) {// TODO
+	public void calcInverseBindTransform(Matrix4f parentBindTransform) {
 		Matrix4f bindTransform = Matrix4f.mul(parentBindTransform, this.localBindTransform, null);
-		// Matrix4f bindTransform = Matrix4f.mul(parentBindTransform,
-		// this.localBindTransform, this.inverseBindTransform);
-		Matrix4f.invert(bindTransform, this.inverseBindTransform);
+		Matrix4f.invert(this.inverseBindTransform, this.inverseBindTransform);
+		if (!this.hasChildren()) {
+			return;
+		}
 		for (Joint child : this.childrens) {
 			child.calcInverseBindTransform(bindTransform);
 		}

@@ -32,8 +32,8 @@ public class WorldDefault extends World {
 	@Override
 	public void onSet() {
 		this.setWorldGenerator(new WorldGeneratorHoles());
-		for (int x = -8; x < 8; x++) {
-			for (int y = -2; y < 2; y++) {
+		for (int y = 8; y > 0; y--) {
+			for (int x = -8; x < 8; x++) {
 				for (int z = -8; z < 8; z++) {
 					this.generateTerrain(x, y, z);
 				}
@@ -45,7 +45,7 @@ public class WorldDefault extends World {
 
 				EntityTest entityTest = new EntityTest(this);
 				entityTest.setPosition(x * 8.0f, 38.0f, z * 8.0f);
-				this.getEntityStorage().add(entityTest);
+				this.spawnEntity(entityTest);
 			}
 		}
 		// this.generateLights(); //TODO

@@ -459,9 +459,13 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	}
 
 	public static double distanceSquare(Vector3f a, Vector3f b) {
-		float dx = a.getX() - b.getX();
-		float dy = a.getY() - b.getY();
-		float dz = a.getZ() - b.getZ();
+		return (distanceSquare(a.x, a.y, a.z, b.x, b.y, b.z));
+	}
+
+	public static double distanceSquare(float ax, float ay, float az, float bx, float by, float bz) {
+		float dx = ax - bx;
+		float dy = ay - by;
+		float dz = az - bz;
 
 		return (dx * dx + dy * dy + dz * dz);
 	}

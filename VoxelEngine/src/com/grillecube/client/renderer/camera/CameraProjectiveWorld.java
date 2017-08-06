@@ -83,7 +83,8 @@ public abstract class CameraProjectiveWorld extends CameraProjective implements 
 			return;
 		}
 
-		terrain.requestUpdateAll();
+		terrain.requestMeshUpdate();
+		terrain.requestFaceVisibilityUpdate();
 	}
 
 	/** return the height of the last liquid seen */

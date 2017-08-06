@@ -79,6 +79,8 @@ public abstract class Mesh {
 		this.position = null;
 		this.rotation = null;
 		this.scale = null;
+		this.vao = null;
+		this.vbo = null;
 	}
 
 	protected abstract void setAttributes(GLVertexArray vao, GLVertexBuffer vbo);

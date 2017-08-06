@@ -1,16 +1,8 @@
 package com.grillecube.client.renderer.model;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.grillecube.client.renderer.model.animation.Animation;
-import com.grillecube.client.renderer.model.dae.ColladaLoader;
-import com.grillecube.client.renderer.model.dae.datastructures.ModelData;
-import com.grillecube.common.JSONHelper;
+import com.grillecube.client.renderer.model.animation.ModelAnimation;
 
 public class Model {
 
@@ -26,13 +18,21 @@ public class Model {
 	/** the model skeleton */
 	private ModelSkeleton skeleton;
 
+	/** the model animations */
+	private ArrayList<ModelAnimation> animations;
+
 	/** the skin list for this model */
 	private ArrayList<ModelSkin> skins;
 
-	/** the animation list for this model */
-	private ArrayList<Animation> animations;
+	/** model initialized callback */
+	private final ModelInitializer modelInitializer;
 
 	public Model() {
+		this(null);
+	}
+
+	public Model(ModelInitializer modelInitializer) {
+		this.modelInitializer = modelInitializer;
 	}
 
 	/** initialize this model */
@@ -40,9 +40,13 @@ public class Model {
 		this.mesh = new ModelMesh();
 		this.skeleton = new ModelSkeleton();
 		this.skins = new ArrayList<ModelSkin>();
-		this.animations = new ArrayList<Animation>();
+		this.animations = new ArrayList<ModelAnimation>();
 
 		this.mesh.initialize();
+
+		if (this.modelInitializer != null) {
+			this.modelInitializer.onInitialized(this);
+		}
 	}
 
 	/** deinitialize this model */
@@ -82,11 +86,6 @@ public class Model {
 		return (this.skins);
 	}
 
-	/** get the animations this model can play */
-	public ArrayList<Animation> getAnimations() {
-		return (this.animations);
-	}
-
 	/** get this model mesh */
 	public ModelMesh getMesh() {
 		return (this.mesh);
@@ -117,19 +116,24 @@ public class Model {
 		return (this.skins.get(skinID));
 	}
 
-	public void set(String dirpath) throws JSONException, IOException {
-		JSONObject json = new JSONObject(JSONHelper.readFile(dirpath + "info.json"));
-		String modelpath = dirpath + json.getString("model");
-		ModelData modelData = ColladaLoader.loadColladaModel(modelpath, MAX_WEIGHTS);
-		this.mesh.set(modelData.getMeshData());
-		this.skeleton.set(modelData.getSkeletonData());
+	/** add an animation to the model */
+	public void addAnimation(ModelAnimation animation) {
+		this.animations.add(animation);
+	}
 
-		JSONArray skins = json.getJSONArray("skins");
-		for (int i = 0; i < skins.length(); i++) {
-			JSONObject skin = skins.getJSONObject(i);
-			String name = dirpath + skin.getString("name");
-			String texture = dirpath + skin.getString("texture");
-			this.addSkin(new ModelSkin(name, texture));
+	/** get the animations this model can play */
+	public ModelAnimation getAnimation(int id) {
+		if (id < 0 || id >= this.animations.size()) {
+			return (null);
 		}
+		return (this.animations.get(id));
+	}
+
+	/** clone this model so it has it own mesh (destructible then) */
+	public final Model clone() {
+		Model model = new Model();
+		model.initialize();
+		model.getMesh().setVertices(model.getMesh().getVertices());
+		return (model);
 	}
 }

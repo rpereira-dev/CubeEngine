@@ -165,9 +165,9 @@ class ViewMainMenuWorld extends World {
 								for (int y = 0; y < Terrain.DIM; y++) {
 									for (int z = 0; z < Terrain.DIM; z++) {
 
-										double noisex = this.getWorldPosition().x;
-										double noisey = this.getWorldPosition().y + 1024;
-										double noisez = this.getWorldPosition().z;
+										double noisex = this.getWorldPos().x;
+										double noisey = this.getWorldPos().y + 1024;
+										double noisez = this.getWorldPos().z;
 
 										noisex += x * Terrain.BLOCK_SIZE;
 										noisey += y * Terrain.BLOCK_SIZE;

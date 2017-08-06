@@ -29,7 +29,7 @@ public class TerrainMesh extends Mesh {
 	public static final int BYTES_PER_VERTEX = 12 * 4;
 
 	/** the terrain */
-	private Terrain terrain;
+	private final Terrain terrain;
 
 	public TerrainMesh(Terrain terrain) {
 		super();
@@ -39,7 +39,7 @@ public class TerrainMesh extends Mesh {
 	@Override
 	public void initialize() {
 		super.initialize();
-		super.getPosition().set(terrain.getWorldPosition());
+		super.getPosition().set(this.terrain.getWorldPos());
 		super.updateTransformationMatrix();
 	}
 

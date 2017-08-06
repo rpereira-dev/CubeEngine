@@ -7,7 +7,7 @@ public class WorldGeneratorFlat extends WorldGenerator {
 
 	@Override
 	public void generate(Terrain terrain) {
-		if (terrain.getWorldIndex().y != 0) {
+		if (terrain.getWorldIndex3().y != 0) {
 			return;
 		}
 		for (int x = 0; x < Terrain.DIM; x++) {

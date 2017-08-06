@@ -32,8 +32,7 @@ public class Compress {
 
 		short[] dst = new short[dstlen];
 		int index = 0;
-		int start = 0;
-		int end = 0;
+		int i = 0;
 
 		// for each integer of the compressed array
 		while (index < data.length) {
@@ -43,16 +42,10 @@ public class Compress {
 			// get the value
 			short value = data[index++];
 
-			// set next bounds to copy
-			end += count;
-
 			// do the copy
-			for (int i = start; i < end; i++) {
-				dst[i] = value;
+			for (int j = 0; j < count; j++) {
+				dst[i++] = value;
 			}
-
-			// set next bounds to copy
-			start += count;
 		}
 		return (dst);
 

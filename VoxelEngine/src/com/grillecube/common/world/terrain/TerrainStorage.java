@@ -18,13 +18,14 @@ import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldStorage;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.instances.BlockInstance;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.events.EventWorldDespawnTerrain;
 import com.grillecube.common.world.events.EventWorldSpawnTerrain;
 
 public class TerrainStorage extends WorldStorage {
 
 	private HashMap<Vector3i, Terrain> terrains;
 	private HashMap<Vector2i, Terrain> topTerrains;
+	private HashMap<Vector2i, Terrain> botTerrains;
 	private ArrayList<Terrain> loadedTerrains;
 
 	/**
@@ -38,25 +39,24 @@ public class TerrainStorage extends WorldStorage {
 		super(world);
 		this.terrains = new HashMap<Vector3i, Terrain>(4096 * 4);
 		this.topTerrains = new HashMap<Vector2i, Terrain>(4096);
+		this.botTerrains = new HashMap<Vector2i, Terrain>(4096);
 		this.loadedTerrains = new ArrayList<Terrain>(128);
-		this.setMinHeightIndex(-4096);
-		this.setMaxHeightIndex(4096);
+		this.setMinHeightIndex(-32);
+		this.setMaxHeightIndex(32);
 	}
 
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<Callable<Taskable>> tasks) {
-		final Terrain[] loaded = this.getLoaded();
-
-		// for (Terrain terrain : loaded) {
-		// terrain.update();
-		// }
+		this.updateLoadedTerrains();
 
 		tasks.add(engine.new Callable<Taskable>() {
 			@Override
 			public TerrainStorage call() throws Exception {
-				for (int i = 0; i < loaded.length; i++) {
-					Terrain terrain = loaded[i];
+				for (Terrain terrain : loadedTerrains) {
 					terrain.update();
+					if (terrain.getBlockCount() == 0) {
+						despawn(terrain);
+					}
 				}
 				return (TerrainStorage.this);
 			}
@@ -68,19 +68,26 @@ public class TerrainStorage extends WorldStorage {
 		});
 	}
 
+	private void updateLoadedTerrains() {
+		this.loadedTerrains.clear();
+		for (Terrain terrain : this.terrains.values()) {
+			this.loadedTerrains.add(terrain);
+		}
+	}
+
 	/**
 	 * add the terrain to the world, return true it if added sucessfully, return
 	 * false else way
 	 */
 	public Terrain spawn(Terrain terrain) {
-		Terrain previous = this.get(terrain.getLocation().getWorldIndex());
+		Terrain previous = this.get(terrain.getWorldIndex3());
 		if (previous != null) {
-			Logger.get().log(Level.WARNING, "Tried to spawn a terrain on an already existed terrain at: "
-					+ terrain.getLocation().getWorldIndex());
+			Logger.get().log(Level.WARNING,
+					"Tried to spawn a terrain on an already existed terrain at: " + terrain.getWorldIndex3());
 			return (previous);
 		}
 
-		int height = terrain.getLocation().getWorldIndex().y;
+		int height = terrain.getWorldIndex3().y;
 		if (height > this.getMaxHeightIndex()) {
 			Logger.get().log(Level.WARNING, "Tried to spawn a terrain above the current maximum height! " + height
 					+ " / " + this.getMaxHeightIndex());
@@ -93,29 +100,70 @@ public class TerrainStorage extends WorldStorage {
 			return (null);
 		}
 
-		this.terrains.put(terrain.getLocation().getWorldIndex(), terrain);
-		this.loadedTerrains.add(terrain);
-		terrain.onSpawned(this.getWorld());
-		this.invokeEvent(new EventWorldSpawnTerrain(this.getWorld(), terrain));
+		terrain.preSpawned();
 
-		Vector2i index2 = terrain.getLocation().getWorldIndex().xz();
+		this.terrains.put(terrain.getWorldIndex3(), terrain);
+		this.loadedTerrains.add(terrain);
+
+		Vector2i index2 = terrain.getWorldIndex2();
 		Terrain top = this.topTerrains.get(index2);
-		if (top == null || top.getWorldIndex().y < terrain.getWorldIndex().y) {
+		if (top == null || top.getWorldIndex3().y < terrain.getWorldIndex3().y) {
 			this.topTerrains.put(index2, terrain);
 		}
+
+		Terrain bot = this.botTerrains.get(index2);
+		if (bot == null || bot.getWorldIndex3().y > terrain.getWorldIndex3().y) {
+			this.botTerrains.put(index2, terrain);
+		}
+
+		terrain.onSpawned(this.getWorld());
+		this.invokeEvent(new EventWorldSpawnTerrain(this.getWorld(), terrain));
+		terrain.postSpawned();
+
 		return (terrain);
 	}
 
 	/** remove the terrain */
 	public void despawn(Terrain terrain) {
 
-		if (terrain == null) {
+		if (terrain == null || this.terrains.containsKey(terrain.getWorldIndex3())) {
 			return;
 		}
 
 		terrain.destroy();
-		this.terrains.remove(terrain);
+		this.invokeEvent(new EventWorldDespawnTerrain(this.getWorld(), terrain));
+
+		this.terrains.remove(terrain.getWorldIndex3());
 		this.loadedTerrains.remove(terrain);
+
+		Vector2i index2 = terrain.getWorldIndex2();
+		Terrain topest = this.getTop(index2);
+		Terrain botest = this.getTop(index2);
+		if (topest == botest) {
+			// this column is now empty
+			this.topTerrains.remove(index2);
+			this.botTerrains.remove(index2);
+		} else if (topest == terrain) {
+			this.topTerrains.remove(index2);
+			Vector3i index3 = new Vector3i(terrain.getWorldIndex3());
+			while (--index3.y >= this.getMinHeightIndex()) {
+				topest = this.get(index3);
+				if (topest != null) {
+					this.topTerrains.put(index2, topest);
+					break;
+				}
+			}
+		} else if (this.getBot(index2) == terrain) {
+			this.botTerrains.remove(index2);
+			Vector3i index3 = new Vector3i(terrain.getWorldIndex3());
+			while (++index3.y <= this.getMaxHeightIndex()) {
+				botest = this.get(index3);
+				if (botest != null) {
+					this.botTerrains.put(index2, botest);
+					break;
+				}
+			}
+		}
 	}
 
 	/** remove the terrain */
@@ -183,24 +231,24 @@ public class TerrainStorage extends WorldStorage {
 	}
 
 	/** return true if the terrain height is valid */
-	public boolean canHold(Terrain terrain) {
-		int y = terrain.getLocation().getWorldIndex().y;
+	public final boolean canHold(Terrain terrain) {
+		int y = terrain.getWorldIndex3().y;
 		return (y >= this.minY && y <= this.maxY);
 	}
 
-	public int getMaxHeight() {
+	public final int getMaxHeight() {
 		return (this.maxY * Terrain.DIM);
 	}
 
-	public int getMinHeight() {
+	public final int getMinHeight() {
 		return (this.minY * Terrain.DIM);
 	}
 
-	public int getMaxHeightIndex() {
+	public final int getMaxHeightIndex() {
 		return (this.maxY);
 	}
 
-	public int getMinHeightIndex() {
+	public final int getMinHeightIndex() {
 		return (this.minY);
 	}
 
@@ -288,6 +336,7 @@ public class TerrainStorage extends WorldStorage {
 		int zz = this.getRelativeCoordinate((int) z);
 
 		terrain.setBlock(block, xx, yy, zz);
+
 		return (terrain);
 	}
 
@@ -307,45 +356,67 @@ public class TerrainStorage extends WorldStorage {
 		return (terrain.getBlockInstance(xx, yy, zz));
 	}
 
-	public int getGroundHeight(Entity entity, int height) {
-
-		if (height < 0) { // abs
-			height = -height;
-		}
-
-		int indexx = this.getIndex(entity.getPosition().x);
-		int indexy = this.getIndex(entity.getPosition().y);
-		int indexz = this.getIndex(entity.getPosition().z);
-		Terrain terrain = this.get(indexx, indexy, indexz);
-		while (terrain == null) {
-			--indexy;
-			height -= Terrain.DIM;
-			terrain = this.get(indexx, indexy, indexz);
-		}
-
-		int xx = this.getRelativeCoordinate((int) entity.getPosition().x);
-		int yy = this.getRelativeCoordinate((int) entity.getPosition().y);
-		int zz = this.getRelativeCoordinate((int) entity.getPosition().z);
-		int i = 0;
-		for (i = 0; i < height; i++) {
-			Block block = terrain.getBlock(xx, yy - i, zz);
-			if (block != Blocks.AIR) {
-				return ((int) (entity.getPosition().y - i));
-			}
-			--height;
-		}
-		return (indexy * Terrain.DIM);
-	}
-
 	/** return true if the given terrain is loaded */
 	public boolean isLoaded(Terrain terrain) {
 		return (this.loadedTerrains.contains(terrain));
 	}
 
 	/** return the topest terrain at the given (x, z) coordinates */
-	public Terrain getTop(int x, int z) {
-		// TODO : avoid Vector2i instanciation
-		return (this.topTerrains.get(new Vector2i(x, z)));
+	public Terrain getTop(Vector2i index2) {
+		return (this.topTerrains.get(index2));
 	}
 
+	/** return the topest terrain at the given (x, z) coordinates */
+	public Terrain getBot(Vector2i index2) {
+		return (this.botTerrains.get(index2));
+	}
+
+	/**
+	 * return the world maximum block height for the given (x, z) coordinates
+	 * relative to the given terrain
+	 */
+	public final int getHeight(Vector2i index2, int x, int z) {
+		Terrain terrain = this.getTopestTerrainWithNonEmptyColumn(index2, x, z);
+		if (terrain == null) {
+			return (this.getMinHeight() - 1);
+		}
+		int iy = terrain.getWorldIndex3().y;
+		int h = terrain.getHeightAt(x, z);
+		return (iy * Terrain.DIM + h);
+	}
+
+	/**
+	 * get the topest terrain where the column (located in the (ix, iz) world
+	 * terrain index, at coordinates (x, z) relatively to the terrain) is non
+	 * empty
+	 */
+	public final Terrain getTopestTerrainWithNonEmptyColumn(Vector2i index2, int x, int z) {
+		Terrain topest = this.getTop(index2);
+		if (topest == null) {
+			return (null);
+		}
+		Terrain botest = this.getBot(index2);
+		Vector3i index3 = new Vector3i(topest.getWorldIndex3());
+		while (topest != botest) {
+			if (topest != null && topest.getHeightAt(x, z) != 0) {
+				return (topest);
+			}
+			--index3.y;
+			topest = this.get(index3);
+		}
+
+		return (topest);
+	}
+
+	/**
+	 * return the world maximum block height for the given (x, z) coordinates
+	 * relative to the given terrain
+	 */
+	public int getHeight(float wx, float wz) {
+		int ix = this.getIndex(wx);
+		int iz = this.getIndex(wz);
+		int x = this.getRelativeCoordinate((int) wx);
+		int z = this.getRelativeCoordinate((int) wz);
+		return (this.getHeight(new Vector2i(ix, iz), x, z));
+	}
 }

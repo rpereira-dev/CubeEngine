@@ -75,7 +75,7 @@ public class EntityStorage extends WorldStorage {
 	}
 
 	/** add an entity to the storage */
-	public Entity add(Entity entity) {
+	public Entity spawn(Entity entity) {
 
 		if (this.contains(entity)) {
 			Logger.get().log(Logger.Level.WARNING, "Tried to spawn an already spawned entity", entity);
@@ -133,7 +133,7 @@ public class EntityStorage extends WorldStorage {
 	}
 
 	/** remove the given entity */
-	public Entity remove(Entity entity) {
+	public Entity despawn(Entity entity) {
 		if (!(this.contains(entity))) {
 			Logger.get().log(Level.WARNING, "Tried to remove an entity which wasnt in the world");
 			return (null);

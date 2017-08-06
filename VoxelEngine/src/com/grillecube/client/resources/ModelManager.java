@@ -14,10 +14,7 @@ import com.grillecube.common.world.events.EventEntityDespawn;
 import com.grillecube.common.world.events.EventEntitySpawn;
 
 /** handle models */
-public class ModelManager extends GenericManager<String> {
-
-	/** the filepath to model map */
-	private final HashMap<String, Model> models;
+public class ModelManager extends GenericManager<Model> {
 
 	/** the model hashmap */
 	private final HashMap<Class<? extends Entity>, Integer> entitiesModels;
@@ -31,7 +28,6 @@ public class ModelManager extends GenericManager<String> {
 	/** the model manager */
 	public ModelManager(ResourceManager resourceManager) {
 		super(resourceManager);
-		this.models = new HashMap<String, Model>();
 		this.entitiesModels = new HashMap<Class<? extends Entity>, Integer>();
 		this.modelsModelInstances = new HashMap<Model, ArrayList<ModelInstance>>();
 		this.entitiesModelInstance = new HashMap<Entity, ModelInstance>();
@@ -58,22 +54,15 @@ public class ModelManager extends GenericManager<String> {
 			public void invoke(EventEntitySpawn event) {
 
 				Entity entity = event.getEntity();
-				String dirpath = getModelFilepathForEntity(entity);
-				if (dirpath == null) {
-					Logger.get().log(Logger.Level.ERROR, "no model for entity class", entity.getClass());
+				Model model = getModelForEntity(entity);
+				if (model == null) {
+					Logger.get().log(Logger.Level.ERROR, "No model for entity class", entity.getClass());
 					return;
 				}
 
-				Model model = getModelByFilepath(dirpath);
 				if (!model.isInitialized()) {
+					Logger.get().log(Logger.Level.FINE, "Initializing model", model);
 					model.initialize();
-					try {
-						model.set(dirpath);
-					} catch (Exception exception) {
-						model.deinitialize();
-						Logger.get().log(Logger.Level.ERROR, "error when initializing model...");
-						Logger.get().log(Logger.Level.ERROR, exception.getLocalizedMessage());
-					}
 				}
 				ModelInstance modelInstance = new ModelInstance(model, entity);
 				ArrayList<ModelInstance> modelInstances = modelsModelInstances.get(model);
@@ -115,9 +104,8 @@ public class ModelManager extends GenericManager<String> {
 	 * register a new model, link it with the entity class, and return the model
 	 * ID
 	 */
-	public int registerModel(String filepath) {
-		this.models.put(filepath, new Model());
-		return (super.registerObject(filepath));
+	public int registerModel(Model model) {
+		return (super.registerObject(model));
 	}
 
 	/**
@@ -149,32 +137,8 @@ public class ModelManager extends GenericManager<String> {
 		return (this.getModelForEntity(entity.getClass()));
 	}
 
-	public String getModelFilepathForEntity(Class<? extends Entity> entityClass) {
-		return (this.getModelFilepath(this.entitiesModels.get(entityClass)));
-	}
-
-	public String getModelFilepathForEntity(Entity entity) {
-		return (this.getModelFilepathForEntity(entity.getClass()));
-	}
-
-	/**
-	 * get a model by it id
-	 * 
-	 * @param modelID
-	 *            : the modelID of the model we want
-	 * @return : the model
-	 */
-	public Model getModelByID(int modelID) {
-		return (this.getModelByFilepath(this.getModelFilepath(modelID)));
-	}
-
-	/** get a model by it filepath */
-	public Model getModelByFilepath(String filepath) {
-		return (this.models.get(filepath));
-	}
-
 	/** get a model filepath by it id */
-	public String getModelFilepath(int modelID) {
+	public Model getModelByID(int modelID) {
 		return (super.getObjectByID(modelID));
 	}
 
@@ -189,8 +153,8 @@ public class ModelManager extends GenericManager<String> {
 	}
 
 	@Override
-	protected void onObjectRegistered(String filepath) {
-		Logger.get().log(Logger.Level.FINE, "new model registered", filepath);
+	protected void onObjectRegistered(Model model) {
+		Logger.get().log(Logger.Level.FINE, "new model registered", model);
 	}
 
 }

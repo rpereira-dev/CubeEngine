@@ -1112,6 +1112,8 @@ public class Matrix4f extends Matrix implements Serializable {
 	public static final Vector3f DEFAULT_SCALE = new Vector3f(1, 1, 1);
 	public static final Vector3f DEFAULT_OFFSET = new Vector3f(0.5f, 0.5f, 0.5f);
 
+	public static final Matrix4f IDENTITY = new Matrix4f();
+
 	public static Matrix4f createTransformationMatrix(Matrix4f dst, Vector3f pos, Vector3f rot, Vector3f scale) {
 		if (dst == null) {
 			dst = new Matrix4f();

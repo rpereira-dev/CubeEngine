@@ -22,6 +22,7 @@ import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Maths;
+import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
@@ -189,11 +190,13 @@ public abstract class World implements Taskable {
 	}
 
 	/** spawn a terrain */
-	public Terrain spawnTerrain(Terrain terrain) {
-		terrain.preSpawned();
-		this.terrains.spawn(terrain);
-		terrain.postSpawned();
-		return (terrain);
+	public final Terrain spawnTerrain(Terrain terrain) {
+		return (this.terrains.spawn(terrain));
+	}
+
+	/** spawn an entity into the world */
+	public final Entity spawnEntity(Entity entity) {
+		return (this.entities.spawn(entity));
 	}
 
 	/** tick the world once */
@@ -332,14 +335,6 @@ public abstract class World implements Taskable {
 		return (this.terrains.getBlockInstance(x, y, z));
 	}
 
-	/**
-	 * return the ground height under the given entity, by testing 'height'
-	 * block along the Y axis at most
-	 */
-	public int getGroundHeight(Entity entity, int height) {
-		return (this.terrains.getGroundHeight(entity, height));
-	}
-
 	/** called whenever this world is set as the current one */
 	public abstract void onSet();
 
@@ -369,7 +364,7 @@ public abstract class World implements Taskable {
 	}
 
 	/** return the top loaded terrain for the given (x, z) coordinates */
-	public Terrain getTopTerrain(int x, int z) {
-		return (this.terrains.getTop(x, z));
+	public final Terrain getTopTerrain(Vector2i index2) {
+		return (this.terrains.getTop(index2));
 	}
 }

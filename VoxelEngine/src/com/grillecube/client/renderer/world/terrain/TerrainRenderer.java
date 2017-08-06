@@ -83,8 +83,8 @@ public class TerrainRenderer extends RendererWorld {
 
 			@Override
 			public int compare(TerrainMesh t1, TerrainMesh t2) {
-				double d1 = Vector3f.distanceSquare(getCamera().getPosition(), t1.getTerrain().getCenter());
-				double d2 = Vector3f.distanceSquare(getCamera().getPosition(), t2.getTerrain().getCenter());
+				double d1 = Vector3f.distanceSquare(getCamera().getPosition(), t1.getTerrain().getWorldPosCenter());
+				double d2 = Vector3f.distanceSquare(getCamera().getPosition(), t2.getTerrain().getWorldPosCenter());
 				return ((int) (d2 - d1));
 			}
 
@@ -119,7 +119,7 @@ public class TerrainRenderer extends RendererWorld {
 
 	public void bindTextureAtlas(TerrainMesh mesh, CameraView camera) {
 
-		float distance = (float) Vector3f.distanceSquare(mesh.getTerrain().getCenter(), camera.getPosition());
+		float distance = (float) Vector3f.distanceSquare(camera.getPosition(), mesh.getTerrain().getWorldPosCenter());
 		BlockRendererManager manager = this.getParent().getResourceManager().getBlockTextureManager();
 		GLTexture texture = null;
 

@@ -14,7 +14,11 @@
 
 package com.grillecube.client.renderer.model.instance;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.common.world.entity.Entity;
 
 public class ModelInstance {
@@ -25,16 +29,28 @@ public class ModelInstance {
 	private Model model;
 
 	/** the skeleton instance */
-	private ModelSkeletonInstance skeleton;
+	private ModelSkeleton skeleton;
+
+	/** the animation list for this model */
+	private final ArrayList<AnimationInstance> animationInstances;
 
 	/** curent skin id */
 	private int skinID;
+
+	private long lastUpdate;
 
 	public ModelInstance(Model model, Entity entity) {
 		this.entity = entity;
 		this.skinID = 0;
 		this.model = model;
-		this.skeleton = new ModelSkeletonInstance(this);
+		this.skeleton = new ModelSkeleton(model.getSkeleton());
+		this.animationInstances = new ArrayList<AnimationInstance>();
+
+		// init animations
+		// AnimationInstance instance = new
+		// AnimationInstance(model.getAnimation(0));
+		// instance.loop();
+		// this.animationInstances.add(instance);
 	}
 
 	/** get model from this model instance */
@@ -52,15 +68,39 @@ public class ModelInstance {
 
 	/** update the model */
 	public void update() {
-		this.skeleton.update();
+		long curr = System.currentTimeMillis();
+		long dt = curr - this.lastUpdate;
+
+		this.updateAnimations(dt);
+		this.skeleton.update(this.animationInstances);
+
+		this.lastUpdate = curr;
 	}
 
-	/** @return : get tthis model instance entity */
+	private void updateAnimations(long dt) {
+		// update animation
+		Iterator<AnimationInstance> iterator = this.animationInstances.iterator();
+		while (iterator.hasNext()) {
+			AnimationInstance animationInstance = iterator.next();
+			animationInstance.update(dt);
+			if (animationInstance.isStopped()) {
+				iterator.remove();
+			}
+		}
+	}
+
+	/** @return : get this model instance entity */
 	public Entity getEntity() {
 		return (this.entity);
 	}
 
-	public ModelSkeletonInstance getSkeletonInstance() {
+	/** get the skeleton instance */
+	public ModelSkeleton getSkeleton() {
 		return (this.skeleton);
+	}
+
+	/** get the animations this model can play */
+	public ArrayList<AnimationInstance> getAnimationInstances() {
+		return (this.animationInstances);
 	}
 }

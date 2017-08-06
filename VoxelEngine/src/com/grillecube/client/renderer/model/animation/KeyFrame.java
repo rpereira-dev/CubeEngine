@@ -1,51 +1,56 @@
-/**
-**	This file is part of the project https://github.com/toss-dev/VoxelEngine
-**
-**	License is available here: https://raw.githubusercontent.com/toss-dev/VoxelEngine/master/LICENSE.md
-**
-**	PEREIRA Romain
-**                                       4-----7          
-**                                      /|    /|
-**                                     0-----3 |
-**                                     | 5___|_6
-**                                     |/    | /
-**                                     1-----2
-*/
-
 package com.grillecube.client.renderer.model.animation;
 
+import java.util.ArrayList;
+
+/**
+ * 
+ * Represents one keyframe of an animation. This contains the timestamp of the
+ * keyframe, which is the time (in seconds) from the start of the animation when
+ * this keyframe occurs.
+ * 
+ * It also contains the desired bone-space transforms of all of the joints in
+ * the animated entity at this keyframe in the animation (i.e. it contains all
+ * the joint transforms for the "pose" at this time of the animation.). The
+ * joint transforms are stored in a map, indexed by the name of the joint that
+ * they should be applied to.
+ * 
+ * @author Karl
+ *
+ */
 public class KeyFrame implements Comparable<KeyFrame> {
-	
-	/** keyframe time in ms */
-	private int time;
 
-	/** the transformation */
-	private JointTransform[] transformations;
+	private final int time;
+	private final ArrayList<JointTransform> pose;
 
-	public KeyFrame(int time) {
+	/**
+	 * @param time
+	 *            - the time (in millis) that this keyframe occurs during the
+	 *            animation.
+	 * @param jointKeyFrames
+	 *            - the local-space transforms for all the joints at this
+	 *            keyframe, indexed by the name of the joint that they should be
+	 *            applied to.
+	 */
+	public KeyFrame(int time, ArrayList<JointTransform> jointKeyFrames) {
 		this.time = time;
-		this.transformations = null;
+		this.pose = jointKeyFrames;
 	}
 
+	/**
+	 * @return The time in ms of the keyframe in the animation.
+	 */
 	public int getTime() {
 		return (this.time);
 	}
 
-	public void setTime(int time) {
-		this.time = time;
-	}
-
-	@Override
-	public String toString() {
-		return ("KeyFrame: " + String.valueOf(this.time / 1000.0f));
-	}
-
-	public void set(KeyFrame frame) {
-		if (frame == null) {
-			return;
-		}
-		this.time = frame.time;
-		this.transformations = frame.transformations;
+	/**
+	 * @return The desired bone-space transforms of all the joints at this
+	 *         keyframe, of the animation, indexed by the name of the joint that
+	 *         they correspond to. This basically represents the "pose" at this
+	 *         keyframe.
+	 */
+	public ArrayList<JointTransform> getJointKeyFrames() {
+		return (this.pose);
 	}
 
 	@Override
@@ -58,4 +63,5 @@ public class KeyFrame implements Comparable<KeyFrame> {
 		}
 		return (1);
 	}
+
 }

@@ -75,7 +75,7 @@ public class ProgramModel extends GLProgram {
 
 	public void loadModelInstance(ModelInstance modelInstance) {
 		// joint matrices
-		Matrix4f[] jointTransformMatrices = modelInstance.getSkeletonInstance().getJointTransforms();
+		Matrix4f[] jointTransformMatrices = modelInstance.getSkeleton().getJointTransforms();
 		for (int i = 0; i < jointTransformMatrices.length; i++) {
 			super.loadUniformMatrix(this.jointTransforms[i], jointTransformMatrices[i]);
 		}
