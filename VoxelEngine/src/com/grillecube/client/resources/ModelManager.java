@@ -61,8 +61,9 @@ public class ModelManager extends GenericManager<Model> {
 				}
 
 				if (!model.isInitialized()) {
-					Logger.get().log(Logger.Level.FINE, "Initializing model", model);
+					Logger.get().log(Logger.Level.FINE, "Initializing model", model.getInitializer());
 					model.initialize();
+					Logger.get().log(Logger.Level.FINE, "Initialized model", model);
 				}
 				ModelInstance modelInstance = new ModelInstance(model, entity);
 				ArrayList<ModelInstance> modelInstances = modelsModelInstances.get(model);

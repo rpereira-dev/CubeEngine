@@ -1,14 +1,14 @@
 package com.grillecube.client.renderer.gui.animations;
 
-import com.grillecube.client.renderer.gui.Gui;
+import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.common.world.Timer;
 
 public abstract class GuiAnimation<T extends Gui> {
 		
-	private Timer _timer;
+	private Timer timer;
 	
 	public GuiAnimation() {
-		this._timer = new Timer();
+		this.timer = new Timer();
 	}
 
 	/**
@@ -21,12 +21,12 @@ public abstract class GuiAnimation<T extends Gui> {
 	public abstract void onRestart(T gui);
 
 	public boolean update(T gui) {
-		this._timer.update();
-		return (this.run(gui, this._timer));
+		this.timer.update();
+		return (this.run(gui, this.timer));
 	}
 
 	public void restart(T gui) {
-		this._timer.restart();
+		this.timer.restart();
 		this.onRestart(gui);
 	}
 

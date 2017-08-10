@@ -2,7 +2,6 @@ package com.grillecube.client.renderer.world.lines;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -26,6 +25,7 @@ public class LineRenderer extends RendererWorld {
 
 	public static final int MAX_LINE_NUMBER = 1000;
 	private static final int FLOAT_PER_LINE_VERTEX = 3 + 4;
+	private static final int BYTES_PER_LINES = FLOAT_PER_LINE_VERTEX * 4;
 
 	/** the lines */
 	private ArrayList<Line> lines;
@@ -59,20 +59,6 @@ public class LineRenderer extends RendererWorld {
 		return (null);
 	}
 
-	public void removeLine(Line line) {
-		this.lines.remove(this.lines.indexOf(line));
-	}
-
-	public void removeLine(int index) {
-		if (index < 0 || index >= this.lines.size()) {
-			Logger.get().log(Logger.Level.DEBUG,
-					"tried to remove a line that wasnt pushed to the renderer: " + index + "/" + this.lines.size());
-			return;
-		}
-		this.lines.remove(index);
-		this.upToDate = false;
-	}
-
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<VoxelEngine.Callable<Taskable>> tasks, World world,
 			CameraProjectiveWorld camera) {
@@ -98,14 +84,14 @@ public class LineRenderer extends RendererWorld {
 	@Override
 	public void preRender() {
 
-		if (isUpToDate()) {
+		if (this.isUpToDate()) {
 			return;
 		}
+		this.setUpToDate();
 
 		// else update the buffer
 		this.updateFloatBuffer();
 		this.updateVertexBuffer();
-		this.setUpToDate();
 	}
 
 	@Override
@@ -166,7 +152,7 @@ public class LineRenderer extends RendererWorld {
 		{
 			this.program.loadGlobalUniforms(camera);
 			this.vao.bind();
-			this.vao.draw(GL11.GL_LINES, 0, this.vbo.getFloatCount() / FLOAT_PER_LINE_VERTEX);
+			this.vao.draw(GL11.GL_LINES, 0, this.vbo.getByteCount() / BYTES_PER_LINES);
 		}
 		this.program.useStop();
 
@@ -233,17 +219,17 @@ public class LineRenderer extends RendererWorld {
 	}
 
 	// bounding box corners
-	static Vector4f[] corners = new Vector4f[8];
+	static Vector3f[] corners = new Vector3f[8];
 
 	static {
-		corners[0] = new Vector4f(0, 0, 0, 1);
-		corners[1] = new Vector4f(1, 0, 0, 1);
-		corners[2] = new Vector4f(1, 0, 1, 1);
-		corners[3] = new Vector4f(0, 0, 1, 1);
-		corners[4] = new Vector4f(0, 1, 0, 1);
-		corners[5] = new Vector4f(1, 1, 0, 1);
-		corners[6] = new Vector4f(1, 1, 1, 1);
-		corners[7] = new Vector4f(0, 1, 1, 1);
+		corners[0] = new Vector3f(0, 0, 0);
+		corners[1] = new Vector3f(1, 0, 0);
+		corners[2] = new Vector3f(1, 0, 1);
+		corners[3] = new Vector3f(0, 0, 1);
+		corners[4] = new Vector3f(0, 1, 0);
+		corners[5] = new Vector3f(1, 1, 0);
+		corners[6] = new Vector3f(1, 1, 1);
+		corners[7] = new Vector3f(0, 1, 1);
 	}
 
 	public Line[] addBox(BoundingBox box) {
@@ -284,31 +270,5 @@ public class LineRenderer extends RendererWorld {
 
 		// Logger.get().log(Logger.Level.DEBUG, "added line: " + a, b);
 		return (new Line(a, color, b, color));
-	}
-
-	public void removeLines(int[] indices) {
-
-		if (indices == null || indices.length == 0) {
-			return;
-		}
-
-		// sort the indices
-		Arrays.sort(indices);
-
-		// remove them
-		int i;
-		for (i = indices.length - 1; i >= 0; i--) {
-			this.removeLine(indices[i]);
-		}
-	}
-
-	public void removeLines(Line[] lines) {
-		if (lines == null || lines.length == 0) {
-			return;
-		}
-
-		for (Line line : lines) {
-			this.removeLine(line);
-		}
 	}
 }

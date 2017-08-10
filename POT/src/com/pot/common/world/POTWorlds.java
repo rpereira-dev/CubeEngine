@@ -6,13 +6,13 @@ import com.grillecube.common.resources.ResourceManager;
 
 public class POTWorlds implements IModResource {
 	/** default world id */
-	public static WorldDefault DEFAULT;
+	public static int DEFAULT;
+	public static int MAIN_MENU;
 
 	@Override
 	public void load(Mod mod, ResourceManager manager) {
-
-		DEFAULT = new WorldDefault();
-		manager.getWorldManager().registerWorld(DEFAULT);
+		MAIN_MENU = manager.getWorldManager().registerWorld(new ViewMainMenuWorld());
+		DEFAULT = manager.getWorldManager().registerWorld(new WorldDefault());
 	}
 
 	@Override

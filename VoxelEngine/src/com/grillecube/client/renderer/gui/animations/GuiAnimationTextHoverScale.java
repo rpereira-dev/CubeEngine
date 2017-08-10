@@ -1,10 +1,9 @@
 package com.grillecube.client.renderer.gui.animations;
 
-import com.grillecube.client.renderer.gui.Gui;
-import com.grillecube.client.renderer.gui.GuiListenerMouseEnter;
-import com.grillecube.client.renderer.gui.GuiListenerMouseExit;
+import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiText;
-import com.grillecube.common.Logger;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseExit;
 import com.grillecube.common.world.Timer;
 
 /** a simple animations which scale the text when hovered by the mouse */

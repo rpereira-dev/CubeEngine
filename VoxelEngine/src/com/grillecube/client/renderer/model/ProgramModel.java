@@ -22,6 +22,7 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLProgram;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
+import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.world.entity.Entity;
@@ -75,8 +76,12 @@ public class ProgramModel extends GLProgram {
 
 	public void loadModelInstance(ModelInstance modelInstance) {
 		// joint matrices
-		Matrix4f[] jointTransformMatrices = modelInstance.getSkeleton().getJointTransforms();
+		Matrix4f[] jointTransformMatrices = modelInstance.getSkeleton().getBoneTransforms();
 		for (int i = 0; i < jointTransformMatrices.length; i++) {
+			if (jointTransformMatrices[i] == null) {
+				Logger.get().log(Logger.Level.ERROR, jointTransformMatrices.length,
+						modelInstance.getSkeleton().getBoneCount(), this.jointTransforms[i], jointTransformMatrices[i]);
+			}
 			super.loadUniformMatrix(this.jointTransforms[i], jointTransformMatrices[i]);
 		}
 

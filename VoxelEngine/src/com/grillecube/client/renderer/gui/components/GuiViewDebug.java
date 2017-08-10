@@ -12,15 +12,13 @@
 **                                     1-----2
 */
 
-package com.pot.client.renderer.gui;
+package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.components.GuiLabel;
-import com.grillecube.client.renderer.gui.components.GuiView;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector2f;
 import com.grillecube.common.maths.Vector3f;
@@ -29,61 +27,18 @@ import com.grillecube.common.world.entity.Entity;
 
 public class GuiViewDebug extends GuiView {
 
-	private GuiLabel _label;
+	private GuiLabel label;
 
 	public GuiViewDebug() {
 		super();
 	}
 
 	@Override
-	public void onAdded(GuiRenderer renderer) {
-		this._label = new GuiLabel();
-		this._label.setPosition(-1, 1);
-		this._label.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
-		this._label.setFontSize(new Vector2f(0.6f, 0.6f));
-		super.addGui(this._label);
-		// GuiTexture t1 = new GuiTexture(
-		// VoxelEngineClient.instance().getRenderer().getWorldRenderer().getShadowMap());
-		// t1.setPosition(-0.5f, 1.0f);
-		// t1.setSize(0.6f, 0.6f);
-		// super.addGui(t1);
-	}
-
-	@Override
-	public void onRemoved(GuiRenderer renderer) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected void onUpdate() {
+	protected void onUpdate(float x, float y, boolean pressed) {
 		this.updateText();
 	}
 
 	private void updateText() {
-
-		// if (true) {
-		// StringBuilder builder = new StringBuilder();
-		//
-		// builder.append("STARTS\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("abcdefghijklmn\n");
-		// builder.append("END\n");
-		// this._label.setText(builder.toString());
-		//
-		// return ;
-		// }
 
 		CameraProjectiveWorld cam = VoxelEngineClient.instance().getRenderer().getCamera();
 
@@ -132,14 +87,16 @@ public class GuiViewDebug extends GuiView {
 			builder.append(":");
 			builder.append(Maths.approximatate(look.z, 10.0f));
 
-			Vector3i windex = cam.getWorld().getTerrainIndex(cam.getLookCoords());
-			builder.append("\n");
-			builder.append("Look index: ");
-			builder.append(windex.x);
-			builder.append(":");
-			builder.append(windex.y);
-			builder.append(":");
-			builder.append(windex.z);
+			if (cam.getWorld() != null) {
+				Vector3i windex = cam.getWorld().getTerrainIndex(cam.getLookCoords());
+				builder.append("\n");
+				builder.append("Look index: ");
+				builder.append(windex.x);
+				builder.append(":");
+				builder.append(windex.y);
+				builder.append(":");
+				builder.append(windex.z);
+			}
 
 			Vector3f vec = cam.getLookCoords();
 			builder.append("\n");
@@ -158,6 +115,49 @@ public class GuiViewDebug extends GuiView {
 		builder.append(GLH.glhGetContext().getDrawCalls());
 		builder.append("\nVertex drawn: ");
 		builder.append(GLH.glhGetContext().getVerticesDrawn());
-		this._label.setText(builder.toString());
+		this.label.setText(builder.toString());
+	}
+
+	@Override
+	protected void onInitialized(GuiRenderer renderer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void onDeinitialized(GuiRenderer renderer) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onAddedTo(GuiRenderer renderer) {
+		this.label = new GuiLabel();
+		this.label.setPosition(-1, 1);
+		this.label.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
+		this.label.setFontSize(new Vector2f(0.6f, 0.6f));
+		this.addChild(this.label);
+
+		// GuiTexture t1 = new GuiTexture(
+		// VoxelEngineClient.instance().getRenderer().getWorldRenderer().getShadowMap());
+		// t1.setPosition(-0.5f, 1.0f);
+		// t1.setSize(0.6f, 0.6f);
+		// super.addGui(t1);
+	}
+
+	@Override
+	public void onRemovedFrom(GuiRenderer renderer) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onAddedTo(Gui gui) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onRemovedFrom(Gui gui) {
+		// TODO Auto-generated method stub
+
 	}
 }

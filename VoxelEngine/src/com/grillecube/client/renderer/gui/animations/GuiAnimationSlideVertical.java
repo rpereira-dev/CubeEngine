@@ -1,6 +1,6 @@
 package com.grillecube.client.renderer.gui.animations;
 
-import com.grillecube.client.renderer.gui.Gui;
+import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.common.world.Timer;
 
 /** a simple animation which translate the gui vertically depending on parameter speed */

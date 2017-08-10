@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL20;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLProgram;
 import com.grillecube.client.renderer.gui.font.FontModel;
+import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
 
 public class ProgramFont extends GLProgram {
@@ -54,18 +55,18 @@ public class ProgramFont extends GLProgram {
 		this._outline_offset = super.getUniform("outline_offset");
 		this._outline_color = super.getUniform("outline_color");
 	}
-	
-	public void bindFontModel(FontModel model) {
-		super.loadUniformMatrix(this._transf_matrix, model.getTransformationMatrix());
-		
+
+	public void bindFontModel(FontModel model, Matrix4f matrix) {
+		super.loadUniformMatrix(this._transf_matrix, matrix);
+
 		super.loadUniformFloat(this._width, 0.5f);
 		super.loadUniformFloat(this._edge, 0.1f);
-		
+
 		super.loadUniformFloat(this._border_width, model.getBorderWidth());
 		super.loadUniformFloat(this._border_edge, model.getBorderEdge());
-		
+
 		super.loadUniformVec(this._outline_offset, model.getOutlineOffset());
-		super.loadUniformVec(this._outline_color, model.getOutlineColor());		
+		super.loadUniformVec(this._outline_color, model.getOutlineColor());
 	}
 
 }

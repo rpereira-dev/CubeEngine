@@ -1,65 +1,96 @@
 package com.grillecube.client.renderer.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
-import com.grillecube.client.renderer.model.animation.Joint;
-import com.grillecube.client.renderer.model.animation.JointTransform;
+import com.grillecube.client.renderer.model.animation.Bone;
+import com.grillecube.client.renderer.model.animation.BoneTransform;
 import com.grillecube.client.renderer.model.animation.KeyFrame;
 import com.grillecube.client.renderer.model.instance.AnimationInstance;
 import com.grillecube.common.maths.Matrix4f;
 
 public class ModelSkeleton {
 
-	/** root joint instance */
-	private final ArrayList<Joint> joints;
-	private final Joint rootJoint;
-
-	/** the matrices */
-	private Matrix4f[] jointMatrices;
+	/** root bone instance */
+	private final HashMap<String, Bone> bonesMap;
+	private final ArrayList<Bone> bonesList;
+	private String rootBone;
 
 	public ModelSkeleton() {
-		this.rootJoint = new Joint("root", new Matrix4f());
-		this.joints = new ArrayList<Joint>();
-		this.joints.add(this.rootJoint);
-		this.jointMatrices = new Matrix4f[1];
-		this.jointMatrices[0] = Matrix4f.IDENTITY;
+		this.rootBone = null;
+		this.bonesMap = new HashMap<String, Bone>();
+		this.bonesList = new ArrayList<Bone>();
 	}
 
 	public ModelSkeleton(ModelSkeleton skeleton) {
-		this.joints = new ArrayList<Joint>(skeleton.joints.size());
-		this.joints.addAll(skeleton.joints);
-		this.rootJoint = skeleton.rootJoint;
-		this.jointMatrices = new Matrix4f[skeleton.jointMatrices.length];
+		this.bonesMap = new HashMap<String, Bone>(skeleton.bonesMap);
+		this.bonesList = new ArrayList<Bone>(skeleton.bonesList);
+		this.rootBone = skeleton.rootBone;
 	}
 
 	/**
-	 * @return : the joint transform array
+	 * @return : the root bone
 	 */
-	public Joint getRootJoint() {
-		return (this.rootJoint);
+	public final Bone getRootBone() {
+		return (this.bonesMap.get(this.rootBone));
 	}
 
-	/** get the number of joints for this skeleton */
-	public int getJointCount() {
-		return (this.joints.size());
+	/**
+	 * @return : the root bone name
+	 */
+	public final String getRootBoneName() {
+		return (this.rootBone);
 	}
 
-	/** add a joint to this skeleton */
-	public final void addJoint(Joint parent, Joint child) {
-		parent.addChild(child);
-		child.setParent(parent);
-		child.setID(this.joints.size());
-		this.joints.add(child);
-		this.jointMatrices = new Matrix4f[this.joints.size()];
+	/** get the number of bones for this skeleton */
+	public final int getJointCount() {
+		return (this.bonesMap.size());
 	}
 
-	/** remove a joint */
-	public final void removeJoint(Joint joint) {
-		int id = joint.getID();
-		this.joints.remove(id);
-		joint.getParent().removeChild(joint);
-		for (int i = id; i < this.joints.size(); i++) {
-			this.joints.get(i).setID(i);
+	/**
+	 * set the root bone of this model skeleton
+	 * 
+	 * @param rootBoneName
+	 */
+	public final void setRootBone(String rootBoneName) {
+		this.rootBone = rootBoneName;
+	}
+
+	/**
+	 * add a bone to this skeleton
+	 * 
+	 * @param boneName
+	 * @param boneParentName
+	 * @param boneBindLocalTransform
+	 * @return
+	 */
+	public final Bone addBone(String boneName, String boneParentName, Matrix4f boneBindLocalTransform) {
+		Bone bone = new Bone(this, boneName, boneParentName, boneBindLocalTransform);
+		this.bonesMap.put(bone.getName(), bone);
+		bone.setID(this.bonesList.size());
+		this.bonesList.add(bone);
+		return (bone);
+	}
+
+	/** get a bone by it name */
+	public final Bone getBone(String boneName) {
+		return (this.bonesMap.get(boneName));
+	}
+
+	/** remove a bone */
+	private final void removeBone(Bone bone) {
+		this.bonesMap.remove(bone.getName());
+
+		int boneID = bone.getID();
+		this.bonesList.remove(boneID);
+		Bone parent = this.getBone(bone.getParentName());
+		if (parent != null) {
+			parent.removeChild(bone.getName());
+		}
+
+		for (int i = boneID; i < this.bonesList.size(); i++) {
+			this.bonesList.get(i).setID(i);
 		}
 	}
 
@@ -70,63 +101,64 @@ public class ModelSkeleton {
 			return;
 		}
 
+		// only handle the first animation for now
 		AnimationInstance animationInstance = animationInstances.get(0);
 		KeyFrame[] frames = animationInstance.getFrames();
 		if (frames != null) {
 			KeyFrame prev = frames[0];
 			KeyFrame next = frames[1];
-			ArrayList<Matrix4f> currentPose = this.interpolatePoses(animationInstance, prev, next);
-			this.applyPoseToJoints(currentPose, this.rootJoint, new Matrix4f());
+			HashMap<String, Matrix4f> currentPose = this.interpolateFrames(animationInstance, prev, next);
+			this.applyPoseToBones(currentPose, this.getRootBone(), Matrix4f.IDENTITY);
 		}
 	}
 
 	/**
 	 * This is the method where the animator calculates and sets those all-
-	 * important "joint transforms" that I talked about so much in the tutorial.
+	 * important "bone transforms" that I talked about so much in the tutorial.
 	 * 
-	 * This method applies the current pose to a given joint, and all of its
+	 * This method applies the current pose to a given bone, and all of its
 	 * descendants. It does this by getting the desired local-transform for the
-	 * current joint, before applying it to the joint. Before applying the
+	 * current bone, before applying it to the bone. Before applying the
 	 * transformations it needs to be converted from local-space to model-space
 	 * (so that they are relative to the model's origin, rather than relative to
-	 * the parent joint). This can be done by multiplying the local-transform of
-	 * the joint with the model-space transform of the parent joint.
+	 * the parent bone). This can be done by multiplying the local-transform of
+	 * the bone with the model-space transform of the parent bone.
 	 * 
-	 * The same thing is then done to all the child joints.
+	 * The same thing is then done to all the child bones.
 	 * 
-	 * Finally the inverse of the joint's bind transform is multiplied with the
-	 * model-space transform of the joint. This basically "subtracts" the
-	 * joint's original bind (no animation applied) transform from the desired
-	 * pose transform. The result of this is then the transform required to move
-	 * the joint from its original model-space transform to it's desired
-	 * model-space posed transform. This is the transform that needs to be
-	 * loaded up to the vertex shader and used to transform the vertices into
-	 * the current pose.
+	 * Finally the inverse of the bone's bind transform is multiplied with the
+	 * model-space transform of the bone. This basically "subtracts" the bone's
+	 * original bind (no animation applied) transform from the desired pose
+	 * transform. The result of this is then the transform required to move the
+	 * bone from its original model-space transform to it's desired model-space
+	 * posed transform. This is the transform that needs to be loaded up to the
+	 * vertex shader and used to transform the vertices into the current pose.
 	 * 
 	 * @param currentPose
-	 *            - a map of the local-space transforms for all the joints for
-	 *            the desired pose. The map is indexed by the name of the joint
+	 *            - a map of the local-space transforms for all the bones for
+	 *            the desired pose. The map is indexed by the name of the bone
 	 *            which the transform corresponds to.
-	 * @param joint
-	 *            - the current joint which the pose should be applied to.
+	 * @param bone
+	 *            - the current bone which the pose should be applied to.
 	 * @param parentTransform
-	 *            - the desired model-space transform of the parent joint for
-	 *            the pose.
+	 *            - the desired model-space transform of the parent bone for the
+	 *            pose.
 	 */
-	private void applyPoseToJoints(ArrayList<Matrix4f> currentPose, Joint joint, Matrix4f parentTransform) {
-		Matrix4f currentLocalTransform = currentPose.get(joint.getID());
+	private void applyPoseToBones(HashMap<String, Matrix4f> currentPose, Bone bone, Matrix4f parentTransform) {
+		Matrix4f currentLocalTransform = currentPose.get(bone.getName());
 		Matrix4f currentTransform = Matrix4f.mul(parentTransform, currentLocalTransform, null);
-		if (joint.hasChildren()) {
-			for (Joint childJoint : joint.getChildrens()) {
-				this.applyPoseToJoints(currentPose, childJoint, currentTransform);
+		Matrix4f.mul(currentTransform, bone.getInverseBindTransform(), currentTransform);
+		bone.setAnimationTransform(currentTransform);
+
+		if (bone.hasChildren()) {
+			for (String childName : bone.getChildrens()) {
+				this.applyPoseToBones(currentPose, this.getBone(childName), currentTransform);
 			}
 		}
-		Matrix4f.mul(currentTransform, joint.getInverseBindTransform(), currentTransform);
-		this.joints.get(joint.getID()).setAnimationTransform(currentTransform);
 	}
 
 	/**
-	 * Calculates all the local-space joint transforms for the desired current
+	 * Calculates all the local-space bone transforms for the desired current
 	 * pose by interpolating between the transforms at the previous and next
 	 * keyframes.
 	 * 
@@ -134,25 +166,27 @@ public class ModelSkeleton {
 	 *            - the previous keyframe in the animation.
 	 * @param next
 	 *            - the next keyframe in the animation.
-	 * @return The local-space transforms for all the joints for the desired
+	 * @return The local-space transforms for all the bones for the desired
 	 *         current pose. They are returned in a map, indexed by the name of
-	 *         the joint to which they should be applied.
+	 *         the bone to which they should be applied.
 	 */
-	private ArrayList<Matrix4f> interpolatePoses(AnimationInstance animationInstance, KeyFrame prev, KeyFrame next) {
+	private HashMap<String, Matrix4f> interpolateFrames(AnimationInstance animInstance, KeyFrame prev, KeyFrame next) {
 
-		float progression = (animationInstance.getTime() - prev.getTime()) / (float) (next.getTime() - prev.getTime());
-		ArrayList<Matrix4f> currentPose = new ArrayList<Matrix4f>();
+		float progression = (animInstance.getTime() - prev.getTime()) / (float) (next.getTime() - prev.getTime());
 
-		ArrayList<JointTransform> prevTransforms = prev.getJointKeyFrames();
-		ArrayList<JointTransform> nextTransforms = next.getJointKeyFrames();
-		for (int i = 0; i < prevTransforms.size(); i++) {
-			JointTransform prevTransform = prevTransforms.get(i);
-			JointTransform nextTransform = nextTransforms.get(i);
+		HashMap<String, Matrix4f> currentPose = new HashMap<String, Matrix4f>();
 
-			JointTransform interpolation = JointTransform.interpolate(prevTransform, nextTransform, progression);
+		HashMap<String, BoneTransform> prevTransforms = prev.getBoneKeyFrames();
+		HashMap<String, BoneTransform> nextTransforms = next.getBoneKeyFrames();
+		for (Entry<String, BoneTransform> entry : prevTransforms.entrySet()) {
+			BoneTransform prevTransform = entry.getValue();
+			BoneTransform nextTransform = nextTransforms.get(entry.getKey());
+
+			BoneTransform interpolation = BoneTransform.interpolate(prevTransform, nextTransform, progression);
 
 			Matrix4f localTransform = interpolation.getLocalTransform();
-			currentPose.add(localTransform);
+
+			currentPose.put(entry.getKey(), localTransform);
 		}
 
 		return (currentPose);
@@ -160,22 +194,28 @@ public class ModelSkeleton {
 
 	/**
 	 * Gets an array of the all important model-space transforms of all the
-	 * joints (with the current animation pose applied) in the entity. The
-	 * joints are ordered in the array based on their joint index. The position
-	 * of each joint's transform in the array is equal to the joint's index.
+	 * bones (with the current animation pose applied) in the entity. The bones
+	 * are ordered in the array based on their bone index. The position of each
+	 * bone's transform in the array is equal to the bone's index.
 	 * 
-	 * This adds the current model-space transform of a joint (and all of its
-	 * descendants) into an array of transforms. The joint's transform is added
-	 * into the array at the position equal to the joint's index.
+	 * This adds the current model-space transform of a bone (and all of its
+	 * descendants) into an array of transforms. The bone's transform is added
+	 * into the array at the position equal to the bone's index.
 	 * 
-	 * @return The array of model-space transforms of the joints in the current
+	 * @return The array of model-space transforms of the bones in the current
 	 *         animation pose.
 	 */
-	public Matrix4f[] getJointTransforms() {
-		for (int i = 0; i < this.joints.size(); i++) {
-			this.jointMatrices[i] = this.joints.get(i).getTransformation();
+	public Matrix4f[] getBoneTransforms() {
+		Matrix4f[] boneMatrices = new Matrix4f[this.bonesList.size()];
+		for (Bone bone : this.bonesList) {
+			int id = bone.getID();
+			boneMatrices[id] = bone.getTransformation();
 		}
-		return (this.jointMatrices);
+		return (boneMatrices);
 	}
 
+	/** return the number of bones for this skeleton */
+	public final int getBoneCount() {
+		return (this.bonesList.size());
+	}
 }

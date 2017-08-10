@@ -29,7 +29,7 @@ public class ModelInstance {
 	private Model model;
 
 	/** the skeleton instance */
-	private ModelSkeleton skeleton;
+	private ModelSkeletonInstance skeleton;
 
 	/** the animation list for this model */
 	private final ArrayList<AnimationInstance> animationInstances;
@@ -43,14 +43,13 @@ public class ModelInstance {
 		this.entity = entity;
 		this.skinID = 0;
 		this.model = model;
-		this.skeleton = new ModelSkeleton(model.getSkeleton());
+		this.skeleton = new ModelSkeletonInstance(model.getSkeleton());
 		this.animationInstances = new ArrayList<AnimationInstance>();
 
 		// init animations
-		// AnimationInstance instance = new
-		// AnimationInstance(model.getAnimation(0));
-		// instance.loop();
-		// this.animationInstances.add(instance);
+		AnimationInstance instance = new AnimationInstance(model.getAnimation(0));
+		instance.loop();
+		this.animationInstances.add(instance);
 	}
 
 	/** get model from this model instance */

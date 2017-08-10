@@ -1,4 +1,6 @@
-package com.grillecube.client.renderer.gui;
+package com.grillecube.client.renderer.gui.animations;
+
+import com.grillecube.client.renderer.gui.components.Gui;
 
 public abstract class GuiParameter<T extends Gui> {
 	

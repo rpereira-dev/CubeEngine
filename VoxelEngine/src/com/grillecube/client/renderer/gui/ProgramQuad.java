@@ -14,17 +14,20 @@
 
 package com.grillecube.client.renderer.gui;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLProgram;
+import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
 
 public class ProgramQuad extends GLProgram {
-	private int _quad_pos;
-	private int _quad_size;
-	private int _uvs;
+	private int uvs;
+	private int transfMatrix;
 
 	public ProgramQuad() {
 		super();
@@ -40,15 +43,14 @@ public class ProgramQuad extends GLProgram {
 
 	@Override
 	public void linkUniforms() {
-		this._quad_pos = super.getUniform("quad_pos");
-		this._quad_size = super.getUniform("quad_size");
-		this._uvs = super.getUniform("uvs");
+		this.uvs = super.getUniform("uvs");
+		this.transfMatrix = super.getUniform("transfMatrix");
 	}
 
-	public void loadQuadTextured(float x, float y, float width, float height, float uvxmin, float uvymin, float uvxmax,
-			float uvymax) {
-		super.loadUniformVec(this._quad_pos, x, y);
-		super.loadUniformVec(this._quad_size, width, height);
-		super.loadUniformVec(this._uvs, uvxmin, uvymin, uvxmax, uvymax);
+	public void loadQuadTextured(GLTexture glTexture, float ux, float uy, float vx, float vy,
+			Matrix4f transformMatrix) {
+		glTexture.bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
+		super.loadUniformMatrix(this.transfMatrix, transformMatrix);
+		super.loadUniformVec(this.uvs, ux, uy, vx, vy);
 	}
 }

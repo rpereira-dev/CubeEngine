@@ -5,22 +5,42 @@ import com.grillecube.client.renderer.gui.GuiRenderer;
 
 public class GuiViewIngame extends GuiView {
 
-	private GuiTexture _tx_world;
+	private GuiTexture txWorld;
 
 	public GuiViewIngame() {
 		super();
 	}
 
 	@Override
-	public void onAdded(GuiRenderer renderer) {
-		this._tx_world = new GuiTexture(VoxelEngineClient.instance().getRenderer().getFBOTexture());
-		this._tx_world.set(-1, -1, 2, 2);
-		super.addGui(this._tx_world);
+	public void onAddedTo(GuiRenderer renderer) {
+		this.txWorld = new GuiTexture();
+		this.txWorld.setTexture(VoxelEngineClient.instance().getRenderer().getFBOTexture(), -1, -1, 2, 2);
+		this.addChild(this.txWorld);
 	}
 
 	@Override
-	public void onRemoved(GuiRenderer renderer) {
-		// TODO Auto-generated method stub
+	public void onRemovedFrom(GuiRenderer renderer) {
+	}
 
+	@Override
+	protected void onInitialized(GuiRenderer renderer) {
+	}
+
+	@Override
+	public void onAddedTo(Gui gui) {
+
+	}
+
+	@Override
+	public void onRemovedFrom(Gui gui) {
+
+	}
+
+	@Override
+	protected void onDeinitialized(GuiRenderer renderer) {
+	}
+
+	@Override
+	protected void onUpdate(float x, float y, boolean pressed) {
 	}
 }

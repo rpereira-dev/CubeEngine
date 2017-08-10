@@ -3,21 +3,16 @@ package com.pot.client.renderer.gui;
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.opengl.object.GLProgramPostProcessing;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
-import com.grillecube.client.renderer.gui.Gui;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.animations.GuiAnimationTextAutoScale;
 import com.grillecube.client.renderer.gui.animations.GuiAnimationTextHoverScale;
+import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiView;
-import com.grillecube.client.renderer.world.terrain.TerrainMesh;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.defaultmod.Blocks;
-import com.grillecube.common.faces.Face;
-import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.R;
-import com.grillecube.common.world.SimplexNoiseOctave;
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.terrain.Terrain;
+import com.pot.common.world.POTWorlds;
 
 public class GuiViewMainMenu extends GuiView {
 
@@ -27,7 +22,7 @@ public class GuiViewMainMenu extends GuiView {
 	/** the blur program effect */
 	private GLProgramPostProcessing _program;
 
-	private GuiLabel _lbl_version;
+	private GuiLabel lblVersion;
 
 	private GuiLabel _lbl_play;
 	// private GuiButton _button_play;
@@ -38,14 +33,14 @@ public class GuiViewMainMenu extends GuiView {
 	}
 
 	@Override
-	public void onAdded(GuiRenderer renderer) {
-		this._lbl_version = new GuiLabel();
-		this._lbl_version.setFontColor(Gui.COLOR_BLUE);
-		this._lbl_version.setFontSize(0.5f, 0.5f);
-		this._lbl_version.setPosition(-1, 1);
-		this._lbl_version.setText("Version: " + VoxelEngine.VERSION);
-		this._lbl_version.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
-		super.addGui(this._lbl_version);
+	public void onAddedTo(GuiRenderer renderer) {
+		this.lblVersion = new GuiLabel();
+		this.lblVersion.setFontColor(Gui.COLOR_BLUE);
+		this.lblVersion.setFontSize(0.5f, 0.5f);
+		this.lblVersion.setPosition(-1, 1);
+		this.lblVersion.setText("Version: " + VoxelEngine.VERSION);
+		this.lblVersion.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
+		this.addChild(this.lblVersion);
 
 		// this._button_play = new GuiButton("button_default");
 		// this._button_play.addParameter(GuiLabel.PARAM_CENTER);
@@ -60,22 +55,22 @@ public class GuiViewMainMenu extends GuiView {
 		this._lbl_play.setFontColor(Gui.COLOR_BLACK);
 		this._lbl_play.setFontSize(3.0f, 3.0f);
 		this._lbl_play.setText(R.getWord("play"));
-		this._lbl_play.setCenter(0.0f, 0.4f);
+		this._lbl_play.setCenterPosition(0.0f, 0.4f);
 		this._lbl_play.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
 		this._lbl_play.addParameters(GuiLabel.PARAM_CENTER);
 		this._lbl_play.startAnimation(new GuiAnimationTextHoverScale<GuiLabel>(1.1f));
 		this._lbl_play.startAnimation(new GuiAnimationTextAutoScale<GuiLabel>(0.01f));
-		super.addGui(this._lbl_play);
+		super.addChild(this._lbl_play);
 
 		this._lbl_options = new GuiLabel();
 		this._lbl_options.setFontColor(Gui.COLOR_BLACK);
 		this._lbl_options.setFontSize(3.0f, 3.0f);
-		this._lbl_options.setCenter(0.0f, -0.1f);
+		this._lbl_options.setCenterPosition(0.0f, -0.1f);
 		this._lbl_options.setText(R.getWord("options"));
 		this._lbl_options.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
 		this._lbl_options.addParameters(GuiLabel.PARAM_CENTER);
 		this._lbl_options.startAnimation(new GuiAnimationTextHoverScale<GuiLabel>(1.1f));
-		super.addGui(this._lbl_options);
+		super.addChild(this._lbl_options);
 
 		renderer.getParent().getGLFWWindow().setCursor(true);
 		this.setBackgroundWorld();
@@ -94,119 +89,46 @@ public class GuiViewMainMenu extends GuiView {
 		cam.setPitch(0.0f);
 		cam.setDistanceFromCenter(90.0f);
 
-		this._world = new ViewMainMenuWorld();
 		engine.getRenderer().setCamera(cam);
-		engine.setWorld(this._world);
+		engine.setWorld(POTWorlds.MAIN_MENU);
 		this._program = new GLProgramPostProcessing(R.getResPath("shaders/post_process/blurhv.fs"));
 		engine.getRenderer().setPostProcessingProgram(this._program);
 	}
 
 	@Override
-	public void onRemoved(GuiRenderer renderer) {
+	public void onRemovedFrom(GuiRenderer renderer) {
 		this._world.delete();
 		this._program.delete();
 	}
 
-}
+	@Override
+	protected void onInitialized(GuiRenderer renderer) {
+		// TODO Auto-generated method stub
 
-class ViewMainMenuWorld extends World {
-
-	private float rotspeedx = 0.005f;
-	private float rotspeedy = 0.005f;
-	private float rotspeedz = 0.005f;
-	private float scalespeed = 0.001f;
-	private int step = 1;
-	private float maxscale = 1.5f;
-
-	protected void update() {
-		TerrainMesh[] meshes = VoxelEngineClient.instance().getRenderer().getWorldRenderer().getTerrainRenderer()
-				.getTerrainFactory().getMeshes();
-		for (TerrainMesh mesh : meshes) {
-			if (mesh == null) {
-				continue;
-			}
-			Vector3f rot = mesh.getRotation();
-			mesh.setRotation(rot.x + 1 * rotspeedx, rot.y + 1 * rotspeedy, rot.z + 1 * rotspeedz);
-
-			Vector3f scale = mesh.getScale();
-			if (scale.x > maxscale) {
-				step = -1;
-			} else if (scale.x < 1.0f / maxscale) {
-				step = 1;
-			}
-			scale.x += scalespeed * step;
-			scale.y += scalespeed * step;
-			scale.z += scalespeed * step;
-		}
 	}
 
 	@Override
-	public String getName() {
-		return ("Main menu world");
+	protected void onDeinitialized(GuiRenderer renderer) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public void onSet() {
-		this.generate();
-	}
+	protected void onUpdate(float x, float y, boolean pressed) {
+		// TODO Auto-generated method stub
 
-	private void generate() {
-		for (int x = -1; x < 1; x++) {
-			for (int y = -1; y < 1; y++) {
-				for (int z = -1; z < 1; z++) {
-					this.spawnTerrain(new Terrain(x, y, z) {
-
-						@Override
-						public void preGenerated() {
-
-							final SimplexNoiseOctave octave = new SimplexNoiseOctave();
-
-							for (int x = 0; x < Terrain.DIM; x++) {
-								for (int y = 0; y < Terrain.DIM; y++) {
-									for (int z = 0; z < Terrain.DIM; z++) {
-
-										double noisex = this.getWorldPos().x;
-										double noisey = this.getWorldPos().y + 1024;
-										double noisez = this.getWorldPos().z;
-
-										noisex += x * Terrain.BLOCK_SIZE;
-										noisey += y * Terrain.BLOCK_SIZE;
-										noisez += z * Terrain.BLOCK_SIZE;
-
-										float weight = 16.0f;
-
-										double d = octave.noise(noisex / (weight * Terrain.BLOCK_SIZE),
-												noisey / (weight * Terrain.BLOCK_SIZE),
-												noisez / (weight * Terrain.BLOCK_SIZE));
-
-										if (d < 0.2f) {
-											this.setBlockAt(Blocks.STONE, x, y, z);
-										} else {
-											this.setBlockAt(Blocks.AIR, x, y, z);
-										}
-									}
-								}
-							}
-
-							for (int x = 0; x < Terrain.DIM; x++) {
-								for (int y = 0; y < Terrain.DIM; y++) {
-									for (int z = 0; z < Terrain.DIM; z++) {
-										if (this.getBlockAt(x, y, z) != Blocks.AIR && ((y < Terrain.DIM - 1
-												&& this.getBlockAt(x, y + 1, z) == Blocks.AIR)
-												|| (y == Terrain.DIM - 1 && this.getNeighbor(Face.TOP) == null))) {
-											this.setBlock(Blocks.GRASS, x, y, z);
-										}
-									}
-								}
-							}
-						}
-					});
-				}
-			}
-		}
 	}
 
 	@Override
-	public void onUnset() {
+	public void onAddedTo(Gui gui) {
+		// TODO Auto-generated method stub
+
 	}
+
+	@Override
+	public void onRemovedFrom(Gui gui) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

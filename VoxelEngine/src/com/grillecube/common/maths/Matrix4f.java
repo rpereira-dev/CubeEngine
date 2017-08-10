@@ -513,17 +513,6 @@ public class Matrix4f extends Matrix implements Serializable {
 	 *            The vector to translate by
 	 * @return this
 	 */
-	public Matrix4f translate(Vector2f vec) {
-		return translate(vec, this);
-	}
-
-	/**
-	 * Translate this matrix
-	 * 
-	 * @param vec
-	 *            The vector to translate by
-	 * @return this
-	 */
 	public Matrix4f translate(Vector3f vec) {
 		return translate(vec, this);
 	}
@@ -552,20 +541,28 @@ public class Matrix4f extends Matrix implements Serializable {
 	 * @return The scaled matrix
 	 */
 	public static Matrix4f scale(Vector3f vec, Matrix4f src, Matrix4f dest) {
+		return scale(vec.x, vec.y, vec.z, src, dest);
+	}
+
+	public Matrix4f scale(float x, float y, float z) {
+		return (scale(x, y, z, this, this));
+	}
+
+	public static Matrix4f scale(float x, float y, float z, Matrix4f src, Matrix4f dest) {
 		if (dest == null)
 			dest = new Matrix4f();
-		dest.m00 = src.m00 * vec.x;
-		dest.m01 = src.m01 * vec.x;
-		dest.m02 = src.m02 * vec.x;
-		dest.m03 = src.m03 * vec.x;
-		dest.m10 = src.m10 * vec.y;
-		dest.m11 = src.m11 * vec.y;
-		dest.m12 = src.m12 * vec.y;
-		dest.m13 = src.m13 * vec.y;
-		dest.m20 = src.m20 * vec.z;
-		dest.m21 = src.m21 * vec.z;
-		dest.m22 = src.m22 * vec.z;
-		dest.m23 = src.m23 * vec.z;
+		dest.m00 = src.m00 * x;
+		dest.m01 = src.m01 * x;
+		dest.m02 = src.m02 * x;
+		dest.m03 = src.m03 * x;
+		dest.m10 = src.m10 * y;
+		dest.m11 = src.m11 * y;
+		dest.m12 = src.m12 * y;
+		dest.m13 = src.m13 * y;
+		dest.m20 = src.m20 * z;
+		dest.m21 = src.m21 * z;
+		dest.m22 = src.m22 * z;
+		dest.m23 = src.m23 * z;
 		return dest;
 	}
 
@@ -841,45 +838,6 @@ public class Matrix4f extends Matrix implements Serializable {
 		this.m31 += this.m01 * x + this.m11 * y + this.m21 * z;
 		this.m32 += this.m02 * x + this.m12 * y + this.m22 * z;
 		this.m33 += this.m03 * x + this.m13 * y + this.m23 * z;
-	}
-
-	/**
-	 * Translate this matrix and stash the result in another matrix
-	 * 
-	 * @param vec
-	 *            The vector to translate by
-	 * @param dest
-	 *            The destination matrix or null if a new matrix is to be
-	 *            created
-	 * @return the translated matrix
-	 */
-	public Matrix4f translate(Vector2f vec, Matrix4f dest) {
-		return translate(vec, this, dest);
-	}
-
-	/**
-	 * Translate the source matrix and stash the result in the destination
-	 * matrix
-	 * 
-	 * @param vec
-	 *            The vector to translate by
-	 * @param src
-	 *            The source matrix
-	 * @param dest
-	 *            The destination matrix or null if a new matrix is to be
-	 *            created
-	 * @return The translated matrix
-	 */
-	public static Matrix4f translate(Vector2f vec, Matrix4f src, Matrix4f dest) {
-		if (dest == null)
-			dest = new Matrix4f();
-
-		dest.m30 += src.m00 * vec.x + src.m10 * vec.y;
-		dest.m31 += src.m01 * vec.x + src.m11 * vec.y;
-		dest.m32 += src.m02 * vec.x + src.m12 * vec.y;
-		dest.m33 += src.m03 * vec.x + src.m13 * vec.y;
-
-		return dest;
 	}
 
 	/**

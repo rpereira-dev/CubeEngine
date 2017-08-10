@@ -7,9 +7,10 @@ import org.lwjgl.glfw.GLFW;
 import com.grillecube.client.opengl.GLFWListenerChar;
 import com.grillecube.client.opengl.GLFWListenerKeyPress;
 import com.grillecube.client.opengl.GLFWWindow;
-import com.grillecube.client.renderer.gui.GuiListenerMouseLeftPress;
-import com.grillecube.client.renderer.gui.GuiParameter;
+import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.animations.GuiParameter;
 import com.grillecube.client.renderer.gui.font.FontChar;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftPress;
 
 public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWListenerKeyPress {
 
@@ -40,6 +41,8 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 	private float _rh, _gh, _bh, _ah;
 	private int _max_chars;
 
+	private GLFWWindow glfwWindow;
+
 	private static final GuiListenerMouseLeftPress<GuiTextPrompt> LISTENER = new GuiListenerMouseLeftPress<GuiTextPrompt>() {
 		@Override
 		public void invokeMouseLeftPress(GuiTextPrompt gui, double mousex, double mousey) {
@@ -67,17 +70,23 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 	}
 
 	@Override
-	public void onAdded(GuiView view) {
-		view.getGLFWWindow().addCharListener(this);
-		view.getGLFWWindow().addKeyPressListener(this);
-		super.onAdded(view);
+	public void onAddedTo(GuiRenderer guiRenderer) {
+		super.onAddedTo(guiRenderer);
+		this.glfwWindow = guiRenderer.getParent().getGLFWWindow();
+		if (this.glfwWindow != null) {
+			this.glfwWindow.addCharListener(this);
+			this.glfwWindow.addKeyPressListener(this);
+		}
 	}
 
 	@Override
-	public void onRemoved(GuiView view) {
-		view.getGLFWWindow().removeCharListener(this);
-		view.getGLFWWindow().removeKeyPressListener(this);
-		super.onRemoved(view);
+	public void onRemovedFrom(GuiRenderer guiRenderer) {
+		super.onRemovedFrom(guiRenderer);
+		if (this.glfwWindow != null) {
+			this.glfwWindow.removeCharListener(this);
+			this.glfwWindow.removeKeyPressListener(this);
+			this.glfwWindow = null;
+		}
 	}
 
 	@Override

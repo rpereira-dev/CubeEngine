@@ -107,8 +107,8 @@ public abstract class Mesh {
 	}
 
 	/** draw with index buffer */
-	public void drawElements(int indexCount) {
-		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
+	public void drawElements(int indexCount, int indiceType) {
+		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, indiceType, 0);
 	}
 
 	public void drawInstanced(int primcount) {

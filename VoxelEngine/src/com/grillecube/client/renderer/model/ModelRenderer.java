@@ -120,8 +120,7 @@ public class ModelRenderer extends RendererWorld {
 					mesh.bind();
 					for (ModelInstance instance : models) {
 						this.programModel.loadModelInstance(instance);
-						mesh.draw();
-						// System.out.println(instance.getModel());
+						mesh.drawElements();
 					}
 				}
 			}

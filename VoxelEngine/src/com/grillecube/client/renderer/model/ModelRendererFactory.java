@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.event.EventEntityList;
@@ -73,6 +74,8 @@ public class ModelRendererFactory {
 				instances = new ArrayList<ModelInstance>(1);
 				this.entitiesInFrustum.put(modelInstance.getModel(), instances);
 			}
+			VoxelEngineClient.instance().getRenderer().getWorldRenderer().getLineRenderer()
+					.addBox(modelInstance.getEntity().getBoundingBox());
 			instances.add(modelInstance);
 
 			// VoxelEngineClient.instance().getRenderer().getWorldRenderer().getLineRenderer()

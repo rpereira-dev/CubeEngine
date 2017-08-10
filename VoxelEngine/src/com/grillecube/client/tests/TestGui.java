@@ -2,19 +2,13 @@ package com.grillecube.client.tests;
 
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLTexture;
-import com.grillecube.client.renderer.gui.Gui;
-import com.grillecube.client.renderer.gui.GuiListenerMouseEnter;
-import com.grillecube.client.renderer.gui.GuiListenerMouseLeftRelease;
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.animations.GuiAnimationTextHoverScale;
-import com.grillecube.client.renderer.gui.components.GuiButton;
-import com.grillecube.client.renderer.gui.components.GuiButtonTextured;
+import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
-import com.grillecube.client.renderer.gui.components.GuiText;
-import com.grillecube.client.renderer.gui.components.GuiTextPrompt;
 import com.grillecube.client.renderer.gui.components.GuiTexture;
 import com.grillecube.client.renderer.gui.components.GuiView;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseExit;
 import com.grillecube.common.Logger;
 import com.grillecube.common.resources.R;
 
@@ -25,8 +19,74 @@ public class TestGui {
 		VoxelEngineClient engine = new VoxelEngineClient();
 
 		engine.load();
-		engine.getRenderer().getGuiRenderer().addView(new GuiViewTest());
-		engine.getRenderer().getGLFWWindow().setClearColor(1, 1, 1, 1);
+
+		GuiView guiView = new GuiView() {
+
+			@Override
+			protected void onInitialized(GuiRenderer renderer) {
+			}
+
+			@Override
+			protected void onDeinitialized(GuiRenderer renderer) {
+			}
+
+			@Override
+			protected void onUpdate(float x, float y, boolean pressed) {
+			}
+
+			@Override
+			public void onAddedTo(GuiRenderer guiRenderer) {
+				this.addGuiTexture();
+				// this.addGuiLabel();
+			}
+
+			private void addGuiTexture() {
+				GuiTexture t = new GuiTexture();
+				float ux = 144.0f / 256.0f;
+				float uy = 16.0f / 256.0f;
+				t.set(0.1f, 0.1f, 0.8f, 0.16f, 0.5f);
+				t.setTexture(GLH.glhGenTexture(R.getResPath("textures/blocks/atlas_256x256.png")), 0.0f, 0.0f, ux, uy);
+				t.addListener(new GuiListenerMouseEnter<GuiTexture>() {
+					@Override
+					public void invokeMouseEnter(GuiTexture gui, double mousex, double mousey) {
+						Logger.get().log(Logger.Level.DEBUG, "in");
+					}
+				});
+
+				t.addListener(new GuiListenerMouseExit<GuiTexture>() {
+					@Override
+					public void invokeMouseExit(GuiTexture gui, double mousex, double mousey) {
+						Logger.get().log(Logger.Level.DEBUG, "out");
+					}
+				});
+				this.addGui(t);
+			}
+
+			private void addGuiLabel() {
+				GuiLabel lbl = new GuiLabel();
+				lbl.setFontColor(Gui.COLOR_DARK_MAGENTA);
+				lbl.setText("abcdefg");
+				lbl.addParameter(GuiLabel.PARAM_AUTO_ADJUST_RECT);
+				lbl.setFontSize(1.0f, 1.0f);
+				lbl.setPosition(0.0f, 0.0f);
+				this.addGui(lbl);
+			}
+
+			@Override
+			public void onRemovedFrom(GuiRenderer guiRenderer) {
+			}
+
+			@Override
+			public void onAddedTo(Gui gui) {
+			}
+
+			@Override
+			public void onRemovedFrom(Gui gui) {
+			}
+
+		};
+		guiView.set(0.f, 0.0f, 1.0f, 1.0f, 0.0f);
+		engine.getRenderer().getGuiRenderer().addGui(guiView);
 
 		try {
 			engine.loop();
@@ -34,82 +94,5 @@ public class TestGui {
 			e.printStackTrace();
 		}
 		engine.stopAll();
-	}
-}
-
-class GuiViewTest extends GuiView {
-
-	@Override
-	public void onRemoved(GuiRenderer renderer) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onAdded(GuiRenderer renderer) {
-		this.addGuiLabel(renderer);
-		this.addGuiTexture(renderer);
-		this.addGuiButton(renderer);
-		this.addGuiTextPrompt(renderer);
-	}
-
-	private void addGuiLabel(GuiRenderer renderer) {
-		GuiLabel lbl = new GuiLabel();
-		lbl.setFontColor(Gui.COLOR_BLACK);
-		lbl.setText("This is a GuiLabel and a GuiTexture under it");
-		lbl.setPosition(-1.0f, 1.0f);
-		lbl.setSize(1.0f, 0.2f);
-		lbl.setFontSize(1.0f, 1.0f);
-		lbl.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
-		lbl.startAnimation(new GuiAnimationTextHoverScale<GuiLabel>(1.1f));
-		this.addGui(lbl);
-	}
-
-	private void addGuiTexture(GuiRenderer renderer) {
-		GuiTexture t = new GuiTexture(GLH.glhGenTexture(R.getResPath("textures/blocks/atlas_256x256.png")));
-		t.setPosition(-1.0f, 0.8f);
-		t.setSize(0.5f, 0.5f);
-		this.addGui(t);
-	}
-
-	private void addGuiTextPrompt(GuiRenderer renderer) {
-		GLTexture texture = GLH.glhGenTexture(R.getResPath("textures/gui/button_default.png"));
-		GuiTextPrompt prompt = new GuiTextPrompt();
-		prompt.setBackgroundTexture(texture, 0, 0, 1, 1 / 3.0f);
-		prompt.setPosition(-1.0f, 0.0f);
-		prompt.setFontSize(1.0f, 1.0f);
-		prompt.setSize(1.0f, 0.2f);
-		prompt.setHint("hello world i'm a hint");
-		prompt.setHintColor(0.5f, 0.5f, 0.5f, 0.5f);
-		prompt.setFontColor(1.0f, 0.0f, 0.0f, 1.0f);
-		prompt.setHintAsText();
-		// prompt.addParameter(GuiTextPrompt.PARAM_TEXT_DONT_OVERFLOW);
-		// prompt.addParameter(GuiTextPrompt.PARAM_TEXT_CENTER_X);
-		prompt.addParameter(GuiTextPrompt.PARAM_TEXT_CENTER_Y);
-		prompt.setMaxChars(16);
-		this.addGui(prompt);
-	}
-
-	private void addGuiButton(GuiRenderer renderer) {
-		GLTexture texture = GLH.glhGenTexture(R.getResPath("textures/gui/button_default.png"));
-		GuiButtonTextured b = new GuiButtonTextured(texture);
-		b.setPosition(-1.0f, 0.7f);
-		b.setSize(0.5f, 0.1f);
-		b.setText("I'm a GuiButton (FIX ME)");
-		b.addParameter(GuiButton.PARAM_TEXT_FILL_BUTTON);
-		b.addParameter(GuiText.PARAM_TEXT_CENTER);
-		b.addListener(new GuiListenerMouseEnter<GuiButton>() {
-			@Override
-			public void invokeMouseEnter(GuiButton gui, double mousex, double mousey) {
-				Logger.get().log(Logger.Level.DEBUG, "entered GuiButton hitbox at: " + mousex + " : " + mousey);
-			}
-		});
-		b.addListener(new GuiListenerMouseLeftRelease<GuiButton>() {
-			@Override
-			public void invokeMouseLeftRelease(GuiButton gui, double mousex, double mousey) {
-				Logger.get().log(Logger.Level.DEBUG, "GuiButton clicked");
-			}
-		});
-		this.addGui(b);
 	}
 }

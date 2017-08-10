@@ -116,8 +116,8 @@ public abstract class Entity {
 
 		this.addAI(new EntityAIIdle(this));
 
-//		this.enablePhysic(EntityPhysic.AIR_FRICTION);
-//		this.enablePhysic(EntityPhysic.GRAVITY);
+		// this.enablePhysic(EntityPhysic.AIR_FRICTION);
+		// this.enablePhysic(EntityPhysic.GRAVITY);
 	}
 
 	public Entity() {
@@ -142,7 +142,11 @@ public abstract class Entity {
 	}
 
 	private void updateBoundingBox() {
+		this.width = 1.5f;
+		this.height = 1.5f;
+		this.depth = 1.5f;
 		this.boundingBox.setCenterSize(this.pos, this.width, this.height, this.depth);
+		this.boundingBox.setColor(1.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	private void updateAI() {

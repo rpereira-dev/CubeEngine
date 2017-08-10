@@ -17,11 +17,12 @@ import com.grillecube.common.maths.Vector3f;
  *
  */
 
-public class JointTransform {
+public class BoneTransform {
 
 	// remember, this position and rotation are relative to the parent bone!
 	private final Vector3f position;
 	private final Quaternion rotation;
+	private final Matrix4f localTransform;
 
 	/**
 	 * 
@@ -35,9 +36,19 @@ public class JointTransform {
 	 *            - the rotation of the joint relative to the parent joint
 	 *            (bone-space) at a certain keyframe.
 	 */
-	public JointTransform(Vector3f position, Quaternion rotation) {
-		this.position = position;
-		this.rotation = rotation;
+	public BoneTransform(Vector3f position, Quaternion rotation) {
+		this.position = new Vector3f();
+		this.rotation = new Quaternion(0, 0, 0, 0);
+		this.localTransform = new Matrix4f();
+		this.set(position, rotation);
+	}
+
+	private void set(Vector3f position, Quaternion rotation) {
+		this.position.set(position);
+		this.rotation.set(rotation);
+		this.localTransform.setIdentity();
+		this.localTransform.translate(this.position);
+		Matrix4f.mul(this.localTransform, this.rotation.toRotationMatrix(), this.localTransform);
 	}
 
 	/**
@@ -52,10 +63,7 @@ public class JointTransform {
 	 *         instance, just in matrix form.
 	 */
 	public Matrix4f getLocalTransform() {
-		Matrix4f matrix = new Matrix4f();
-		matrix.translate(this.position);
-		Matrix4f.mul(matrix, this.rotation.toRotationMatrix(), matrix);
-		return (matrix);
+		return (this.localTransform);
 	}
 
 	/**
@@ -79,10 +87,10 @@ public class JointTransform {
 	 *            transform somewhere in-between the two.
 	 * @return
 	 */
-	public static JointTransform interpolate(JointTransform frameA, JointTransform frameB, float progression) {
+	public static BoneTransform interpolate(BoneTransform frameA, BoneTransform frameB, float progression) {
 		Vector3f pos = interpolate(frameA.position, frameB.position, progression);
 		Quaternion rot = Quaternion.interpolate(frameA.rotation, frameB.rotation, progression);
-		return new JointTransform(pos, rot);
+		return new BoneTransform(pos, rot);
 	}
 
 	/**

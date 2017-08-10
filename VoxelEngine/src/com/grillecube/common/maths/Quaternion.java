@@ -33,11 +33,7 @@ public class Quaternion {
 	 * @param w
 	 */
 	public Quaternion(float x, float y, float z, float w) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.w = w;
-		normalize();
+		this.set(x, y, z, w);
 	}
 
 	/**
@@ -64,6 +60,10 @@ public class Quaternion {
 	 *         this quaternion.
 	 */
 	public Matrix4f toRotationMatrix() {
+		return toRotationMatrix(this.x, this.y, this.z, this.w);
+	}
+
+	public static final Matrix4f toRotationMatrix(float x, float y, float z, float w) {
 		Matrix4f matrix = new Matrix4f();
 		final float xy = x * y;
 		final float xz = x * z;
@@ -169,6 +169,18 @@ public class Quaternion {
 		}
 		result.normalize();
 		return result;
+	}
+
+	public void set(Quaternion quaternion) {
+		this.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+	}
+
+	private void set(float x, float y, float z, float w) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
+		this.normalize();
 	}
 
 }

@@ -15,17 +15,8 @@
 package com.grillecube.client.renderer.gui.components;
 
 public class GuiLabel extends GuiText {
-	
+
 	public GuiLabel() {
 		super();
 	}
-	
-	public GuiLabel(float x, float y, float width, float height) {
-		super(x, y, width, height);
-	}
-	
-	public GuiLabel(float x, float y) {
-		super(x, y);
-	}
 }
-

@@ -22,6 +22,7 @@ import org.lwjgl.opengl.GL20;
 
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.common.Logger;
+import com.grillecube.common.maths.Matrix3f;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector2f;
 import com.grillecube.common.maths.Vector3f;
@@ -133,9 +134,15 @@ public abstract class GLProgram implements GLObject {
 	}
 
 	protected void loadUniformMatrix(int location, Matrix4f matrix) {
-		matrix.store(matrixBuffer);
-		matrixBuffer.flip();
-		GL20.glUniformMatrix4fv(location, false, matrixBuffer);
+		matrix.store(this.matrixBuffer);
+		this.matrixBuffer.flip();
+		GL20.glUniformMatrix4fv(location, false, this.matrixBuffer);
+	}
+
+	protected void loadUniformMatrix(int location, Matrix3f matrix) {
+		matrix.store(this.matrixBuffer);
+		this.matrixBuffer.flip();
+		GL20.glUniformMatrix3fv(location, false, this.matrixBuffer);
 	}
 
 	public int getUniform(String name) {

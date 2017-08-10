@@ -1,14 +1,15 @@
 package com.grillecube.client.renderer.gui.components;
 
-import com.grillecube.client.opengl.object.GLTexture;
-
+//TODO
 public class GuiButtonTextured extends GuiButton {
 
 	private static final float UV_UNIT = 1 / 3.0f;
 
-	public GuiButtonTextured(GLTexture texture) {
+	private GuiTexture bgGuiTexture;
+
+	public GuiButtonTextured() {
 		super();
-		super.setBackgroundTexture(texture);
+		this.bgGuiTexture = new GuiTexture();
 	}
 
 	@Override
@@ -24,6 +25,8 @@ public class GuiButtonTextured extends GuiButton {
 			uvymin = 2 / 3.0f;
 		}
 
-		super.setBackgroundTexture(super.getBackgroundTexture(), 0.0f, uvymin, 1.0f, uvymin + UV_UNIT);
+		// TODO
+		// super.setBackgroundTexture(super.getBackgroundTexture(), 0.0f,
+		// uvymin, 1.0f, uvymin + UV_UNIT);
 	}
 }

@@ -1,8 +1,9 @@
 package com.pot.client.renderer.model;
 
-import com.grillecube.client.renderer.model.JSONModelInitializer;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelInitializer;
+import com.grillecube.client.renderer.model.collada.ColladaModelInitializer;
+import com.grillecube.client.renderer.model.json.JSONModelInitializer;
 import com.grillecube.client.resources.ModelManager;
 import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.mod.IModResource;
@@ -17,7 +18,7 @@ public class POTModels implements IModResource {
 
 	@Override
 	public void load(Mod mod, ResourceManager manager) {
-		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/player/"), EntityTest.class);
+		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/playerJSON/"), EntityTest.class);
 	}
 
 	@Override
@@ -26,7 +27,16 @@ public class POTModels implements IModResource {
 
 	public static final int registerJSONModel(ResourceManager manager, String dirpath,
 			Class<? extends Entity> entityClass) {
-		ModelInitializer modelInitializer = new JSONModelInitializer(dirpath);
+		return (registerModel(manager, new JSONModelInitializer(dirpath), entityClass));
+	}
+
+	public static final int registerColladaModel(ResourceManager manager, String dirpath,
+			Class<? extends Entity> entityClass) {
+		return (registerModel(manager, new ColladaModelInitializer(dirpath), entityClass));
+	}
+
+	public static final int registerModel(ResourceManager manager, ModelInitializer modelInitializer,
+			Class<? extends Entity> entityClass) {
 		Model model = new Model(modelInitializer);
 		ModelManager modelManager = ((ResourceManagerClient) manager).getModelManager();
 		int modelID = modelManager.registerModel(model);

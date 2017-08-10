@@ -14,14 +14,12 @@
 
 package com.grillecube.client.renderer.gui.components;
 
-import com.grillecube.client.renderer.gui.Gui;
-import com.grillecube.client.renderer.gui.GuiParameter;
 import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.animations.GuiParameter;
 import com.grillecube.client.renderer.gui.font.Font;
 import com.grillecube.client.renderer.gui.font.FontModel;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector2f;
-import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 
@@ -37,8 +35,7 @@ public abstract class GuiText extends Gui {
 		public void run(GuiText gui) {
 			float width = gui.getFontModel().getTextWidth();
 			float height = gui.getFontModel().getTextHeight();
-			gui.setWidth(width);
-			gui.setHeight(height);
+			gui.setSize(width, height, false);
 		}
 	};
 
@@ -47,8 +44,8 @@ public abstract class GuiText extends Gui {
 
 		@Override
 		public void run(GuiText gui) {
-			float scalex = gui.getWidth() / gui.getFontModel().getTextWidth();
-			float scaley = gui.getHeight() / gui.getFontModel().getTextHeight();
+			float scalex = gui.getWidth() / (gui.getFontModel().getTextWidth() * 0.5f);
+			float scaley = gui.getHeight() / (gui.getFontModel().getTextHeight() * 0.5f);
 			float scale = Maths.min(scalex, scaley);
 			gui.getFontModel().setScale(scale, scale, 0);
 		}
@@ -91,27 +88,19 @@ public abstract class GuiText extends Gui {
 	};
 
 	/** the font model for this text */
-	private FontModel _font_model;
+	private FontModel fontModel;
 
 	public GuiText() {
-		this(0, 0, 0, 0);
-	}
-
-	public GuiText(float x, float y, float width, float height) {
-		super(x, y, width, height);
-		this._font_model = new FontModel(GuiRenderer.DEFAULT_FONT);
-	}
-
-	public GuiText(float x, float y) {
-		this(x, y, 0, 0);
+		super();
+		this.fontModel = new FontModel(GuiRenderer.DEFAULT_FONT);
 	}
 
 	/** set text to render */
 	public void setText(String str) {
-		if (this._font_model.getText().equals(str)) {
+		if (this.fontModel.getText().equals(str)) {
 			return;
 		}
-		this._font_model.setText(str);
+		this.fontModel.setText(str);
 		super.runParameters();
 	}
 
@@ -121,20 +110,20 @@ public abstract class GuiText extends Gui {
 
 	/** set the font color */
 	public void setFontColor(float r, float g, float b, float a) {
-		Vector4f color = this._font_model.getFontColor();
+		Vector4f color = this.fontModel.getFontColor();
 		if (color.x == r && color.y == g && color.z == b && color.w == a) {
 			return;
 		}
-		this._font_model.setFontColor(r, g, b, a);
+		this.fontModel.setFontColor(r, g, b, a);
 	}
 
 	public void addText(String str) {
-		this.setText(this._font_model.getText() == null ? str : this._font_model.getText() + str);
+		this.setText(this.fontModel.getText() == null ? str : this.fontModel.getText() + str);
 	}
 
 	/** set font to use */
 	public void setFont(Font font) {
-		this._font_model.setFont(font);
+		this.fontModel.setFont(font);
 	}
 
 	/**
@@ -144,7 +133,7 @@ public abstract class GuiText extends Gui {
 	 *            : y font size
 	 */
 	public void setFontSize(float x, float y) {
-		this._font_model.setScale(x, y, 0);
+		this.fontModel.setScale(x, y, 0);
 		this.runParameters();
 	}
 
@@ -153,85 +142,65 @@ public abstract class GuiText extends Gui {
 	}
 
 	public Vector3f getFontSize() {
-		if (this._font_model == null) {
+		if (this.fontModel == null) {
 			return (Vector3f.NULL_VEC);
 		}
-		return (this._font_model.getScale());
+		return (this.fontModel.getScale());
 	}
 
 	/** get the text held */
 	public String getText() {
-		if (this._font_model == null) {
+		if (this.fontModel == null) {
 			return (null);
 		}
-		return (this._font_model.getText());
+		return (this.fontModel.getText());
 	}
 
 	@Override
-	public void render(GuiRenderer renderer) {
-		super.render(renderer);
-		renderer.renderFontModel(this._font_model);
+	protected void onSet(float x, float y, float width, float height, float rot) {
+		super.onSet(x, y, width, height, rot);
+		this.fontModel.setPosition(x, y, 0.0f);
+	}
+
+	@Override
+	protected void onRender(GuiRenderer renderer) {
+		super.onRender(renderer);
+		renderer.renderFontModel(this.fontModel, this.fontModel.getTransformationMatrix());
 	}
 
 	public FontModel getFontModel() {
-		return (this._font_model);
-	}
-
-	/** cols_lines[0] == cols ; cols_lines[1] == lines */
-	public Vector2i countColsLines() {
-		int cols = 0;
-		int lines = 1;
-		int cols_tmp = 0;
-		String text = this.getText();
-		int length = text.length();
-		for (int i = 0; i < length; i++) {
-			char c = text.charAt(i);
-			if (c == '\n') {
-				++lines;
-				if (cols_tmp > cols) {
-					cols = cols_tmp;
-				}
-				cols_tmp = 0;
-			} else {
-				++cols_tmp;
-			}
-		}
-		if (cols_tmp > cols) {
-			cols = cols_tmp;
-		}
-		return (new Vector2i(cols, lines));
+		return (this.fontModel);
 	}
 
 	@Override
-	public void onAdded(GuiView view) {
-		view.addFontModel(this._font_model);
+	protected void onInitialized(GuiRenderer guiRenderer) {
 	}
 
 	@Override
-	public void onRemoved(GuiView view) {
-		view.removeFontModel(this._font_model);
-		this._font_model.delete();
-	}
-
-	@Override
-	public void setPosition(float x, float y) {
-		super.setPosition(x, y);
-
-		if (this._font_model != null) {
-			this._font_model.setPosition(x, y, 0);
+	protected void onDeinitialized(GuiRenderer guiRenderer) {
+		if (this.fontModel != null) {
+			this.fontModel.delete();
+			this.fontModel = null;
 		}
 	}
 
 	@Override
-	public void setPosition(float x, float y, boolean runParameters) {
-		super.setPosition(x, y, runParameters);
-		if (this._font_model != null) {
-			this._font_model.setPosition(x, y, 0);
-		}
+	public void onAddedTo(GuiRenderer guiRenderer) {
+	}
+
+	@Override
+	public void onRemovedFrom(GuiRenderer guiRenderer) {
+	}
+
+	@Override
+	public void onAddedTo(Gui gui) {
+	}
+
+	@Override
+	public void onRemovedFrom(Gui gui) {
 	}
 
 	@Override
 	protected void onUpdate(float x, float y, boolean pressed) {
-
 	}
 }

@@ -97,7 +97,7 @@ public class GLVertexBuffer implements GLObject {
 		}
 	}
 
-	public int getFloatCount() {
+	public int getByteCount() {
 		return (this.byteCount);
 	}
 

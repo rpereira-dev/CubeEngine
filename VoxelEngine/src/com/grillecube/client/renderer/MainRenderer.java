@@ -44,10 +44,25 @@ import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.world.World;
 
 public class MainRenderer implements Taskable, GLFWListenerResize {
+
+	/**
+	 * screen referentials (bottom left to top right) varies from
+	 * 
+	 * (0, 0) to (1,1) from window referential
+	 * 
+	 * -1, -1) to (1, 1) from openg referential
+	 */
+	public static final Matrix4f WINDOW_TO_GL_BASIS = new Matrix4f();
+
+	static {
+		WINDOW_TO_GL_BASIS.translate(-1.0f, -1.0f, 0.0f);
+		WINDOW_TO_GL_BASIS.scale(2.0f, 2.0f, 1.0f);
+	}
 
 	/** resource manager */
 	private VoxelEngineClient engine;

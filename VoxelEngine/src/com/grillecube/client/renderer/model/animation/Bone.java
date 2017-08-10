@@ -2,28 +2,32 @@ package com.grillecube.client.renderer.model.animation;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.common.maths.Matrix4f;
 
-public class Joint {
+public class Bone {
 
-	/** the parent */
-	private Joint parent;
+	/** the global skeleton */
+	private final ModelSkeleton modelSkeleton;
 
-	/** joint childrens */
-	private ArrayList<Joint> childrens;
-
-	/** joint id */
+	/** the bone id */
 	private int id;
 
 	/** the name */
 	private final String name;
+
+	/** parent name */
+	private String parentName;
+
+	/** joint childrenNames */
+	private ArrayList<String> childrenNames;
 
 	/** bind matrices */
 	private final Matrix4f localBindTransform;
 	private final Matrix4f inverseBindTransform;
 
 	/** joint transformation matrix */
-	private Matrix4f animatedTransform;
+	private final Matrix4f animatedTransform;
 
 	/**
 	 * @param id
@@ -35,26 +39,18 @@ public class Joint {
 	 * @param bindLocalTransform
 	 *            - the bone-space transform of the joint in the bind position.
 	 */
-	public Joint(String name, Matrix4f bindLocalTransform) {
-		this.animatedTransform = new Matrix4f();
+	public Bone(ModelSkeleton modelSkeleton, String name, String parentName, Matrix4f localBindTransform) {
+		this.modelSkeleton = modelSkeleton;
 		this.name = name;
-		this.localBindTransform = bindLocalTransform;
+		this.parentName = parentName;
+		this.animatedTransform = new Matrix4f();
+		this.localBindTransform = new Matrix4f(localBindTransform);
 		this.inverseBindTransform = new Matrix4f();
 	}
 
 	/** get the joint name */
 	public String getName() {
 		return (this.name);
-	}
-
-	/** set this joint parent */
-	public void setParent(Joint joint) {
-		this.parent = joint;
-	}
-
-	/** set this joint ID */
-	public void setID(int jointID) {
-		this.id = jointID;
 	}
 
 	/**
@@ -69,7 +65,7 @@ public class Joint {
 	 * @return The transformation matrix of the joint which is used to deform
 	 *         associated vertices of the skin in the shaders.
 	 */
-	public Matrix4f getTransformation() {
+	public final Matrix4f getTransformation() {
 		return (this.animatedTransform);
 	}
 
@@ -81,54 +77,50 @@ public class Joint {
 	 * @param animationTransform
 	 *            - the new joint transform.
 	 */
-	public void setAnimationTransform(Matrix4f animationTransform) {
-		this.animatedTransform = animationTransform;
-	}
-
-	/**
-	 * @return : the joint id
-	 */
-	public int getID() {
-		return (this.id);
-	}
-
-	/** get the joint parent */
-	public final Joint getParent() {
-		return (this.parent);
+	public final void setAnimationTransform(Matrix4f animationTransform) {
+		this.animatedTransform.set(animationTransform);
 	}
 
 	/**
 	 * Adds a child joint to this joint. Used during the creation of the joint
-	 * hierarchy. Joints can have multiple children, which is why they are
-	 * stored in a list (e.g. a "hand" joint may have multiple "finger" children
+	 * hierarchy. Bones can have multiple children, which is why they are stored
+	 * in a list (e.g. a "hand" joint may have multiple "finger" children
 	 * joints).
 	 * 
 	 * @param child
 	 *            - the new child joint of this joint.
 	 */
-	public Joint addChild(Joint modelJoint) {
-		if (this.childrens == null) {
-			this.childrens = new ArrayList<Joint>(1);
+	public String addChild(String child) {
+		if (this.childrenNames == null) {
+			this.childrenNames = new ArrayList<String>(1);
 		}
-		this.childrens.add(modelJoint);
-		return (modelJoint);
+		this.childrenNames.add(child);
+		return (child);
 	}
 
 	/** return true if this joint has a children */
 	public boolean hasChildren() {
-		return (this.childrens != null && this.childrens.size() > 0);
+		return (this.childrenNames != null && this.childrenNames.size() > 0);
 	}
 
 	/** remove a child of this joint */
-	public void removeChild(Joint joint) {
-		this.childrens.remove(joint);
-		if (this.childrens.size() == 0) {
-			this.childrens = null;
+	public void removeChild(String childName) {
+		this.childrenNames.remove(childName);
+		if (this.childrenNames.size() == 0) {
+			this.childrenNames = null;
 		}
 	}
 
-	public ArrayList<Joint> getChildrens() {
-		return (this.childrens);
+	public ArrayList<String> getChildrens() {
+		return (this.childrenNames);
+	}
+
+	public final void setParentName(String parentName) {
+		this.parentName = parentName;
+	}
+
+	public final String getParentName() {
+		return (this.parentName);
 	}
 
 	/**
@@ -165,26 +157,33 @@ public class Joint {
 	 */
 	public void calcInverseBindTransform(Matrix4f parentBindTransform) {
 		Matrix4f bindTransform = Matrix4f.mul(parentBindTransform, this.localBindTransform, null);
-		Matrix4f.invert(this.inverseBindTransform, this.inverseBindTransform);
-		if (!this.hasChildren()) {
-			return;
-		}
-		for (Joint child : this.childrens) {
-			child.calcInverseBindTransform(bindTransform);
+		Matrix4f.invert(bindTransform, this.inverseBindTransform);
+		if (this.hasChildren()) {
+			for (String childName : this.childrenNames) {
+				this.modelSkeleton.getBone(childName).calcInverseBindTransform(bindTransform);
+			}
 		}
 	}
 
-	public interface JointTraveller {
-		public void onJointProcessed(Joint joint);
+	public interface BoneTraveller {
+		public void onBoneProcessed(Bone joint);
 	}
 
 	/** an iterator on each joints */
-	public void travel(JointTraveller jointTraveller) {
-		jointTraveller.onJointProcessed(this);
-		if (this.childrens != null) {
-			for (Joint joint : this.childrens) {
-				joint.travel(jointTraveller);
+	public void travel(BoneTraveller boneTraveller) {
+		boneTraveller.onBoneProcessed(this);
+		if (this.childrenNames != null) {
+			for (String childName : this.childrenNames) {
+				this.modelSkeleton.getBone(childName).travel(boneTraveller);
 			}
 		}
+	}
+
+	public final int getID() {
+		return (this.id);
+	}
+
+	public final void setID(int id) {
+		this.id = id;
 	}
 }

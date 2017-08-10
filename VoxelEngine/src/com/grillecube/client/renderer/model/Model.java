@@ -123,9 +123,6 @@ public class Model {
 
 	/** get the animations this model can play */
 	public ModelAnimation getAnimation(int id) {
-		if (id < 0 || id >= this.animations.size()) {
-			return (null);
-		}
 		return (this.animations.get(id));
 	}
 
@@ -135,5 +132,14 @@ public class Model {
 		model.initialize();
 		model.getMesh().setVertices(model.getMesh().getVertices());
 		return (model);
+	}
+
+	@Override
+	public String toString() {
+		return ("Model: " + this.getName());
+	}
+
+	public ModelInitializer getInitializer() {
+		return (this.modelInitializer);
 	}
 }

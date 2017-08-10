@@ -1,6 +1,6 @@
 package com.grillecube.client.renderer.model.animation;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * 
@@ -19,8 +19,8 @@ import java.util.ArrayList;
  */
 public class KeyFrame implements Comparable<KeyFrame> {
 
-	private final int time;
-	private final ArrayList<JointTransform> pose;
+	private final long time;
+	private final HashMap<String, BoneTransform> pose;
 
 	/**
 	 * @param time
@@ -31,7 +31,7 @@ public class KeyFrame implements Comparable<KeyFrame> {
 	 *            keyframe, indexed by the name of the joint that they should be
 	 *            applied to.
 	 */
-	public KeyFrame(int time, ArrayList<JointTransform> jointKeyFrames) {
+	public KeyFrame(long time, HashMap<String, BoneTransform> jointKeyFrames) {
 		this.time = time;
 		this.pose = jointKeyFrames;
 	}
@@ -39,7 +39,7 @@ public class KeyFrame implements Comparable<KeyFrame> {
 	/**
 	 * @return The time in ms of the keyframe in the animation.
 	 */
-	public int getTime() {
+	public long getTime() {
 		return (this.time);
 	}
 
@@ -49,7 +49,7 @@ public class KeyFrame implements Comparable<KeyFrame> {
 	 *         they correspond to. This basically represents the "pose" at this
 	 *         keyframe.
 	 */
-	public ArrayList<JointTransform> getJointKeyFrames() {
+	public HashMap<String, BoneTransform> getBoneKeyFrames() {
 		return (this.pose);
 	}
 

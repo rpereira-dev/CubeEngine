@@ -2,9 +2,9 @@ package com.pot.client;
 
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldFree;
+import com.grillecube.client.renderer.gui.components.GuiViewDebug;
 import com.grillecube.client.renderer.gui.components.GuiViewIngame;
 import com.grillecube.common.ModSample;
-import com.pot.client.renderer.gui.GuiViewDebug;
 import com.pot.common.ModPOT;
 import com.pot.common.world.POTWorlds;
 
@@ -58,10 +58,11 @@ public class Main {
 		// engine.getRenderer().setCamera(cam);
 
 		engine.getRenderer().setCamera(new CameraPerspectiveWorldFree(engine.getGLFWWindow()));
+		engine.getRenderer().getCamera().setPosition(0.0f, 170.0f, -40.0f);
 		engine.setWorld(POTWorlds.DEFAULT);
 		engine.getGLFWWindow().swapInterval(1);
 		engine.getGLFWWindow().setScreenPosition(100, 100);
-		engine.getRenderer().getGuiRenderer().addView(new GuiViewDebug());
-		engine.getRenderer().getGuiRenderer().addView(new GuiViewIngame());
+		engine.getRenderer().getGuiRenderer().addGui(new GuiViewDebug());
+		engine.getRenderer().getGuiRenderer().addGui(new GuiViewIngame());
 	}
 }

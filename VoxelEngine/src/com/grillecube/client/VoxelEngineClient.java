@@ -87,6 +87,13 @@ public class VoxelEngineClient extends VoxelEngine {
 		if (this.getGLFWWindow().shouldClose()) {
 			super.stop();
 		}
+		
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -131,21 +138,21 @@ public class VoxelEngineClient extends VoxelEngine {
 	}
 
 	/** get the window */
-	public GLFWWindow getGLFWWindow() {
+	public final GLFWWindow getGLFWWindow() {
 		return (this.getGLContext().getWindow());
 	}
 
-	public GLFWContext getGLContext() {
+	public final GLFWContext getGLContext() {
 		return (this.glContext);
 	}
 
 	/** set current world for the client */
-	public void setWorld(int worldID) {
+	public final void setWorld(int worldID) {
 		this.setWorld(this.getResourceManager().getWorldManager().getWorld(worldID));
 	}
 
 	/** set the current world (can be null) */
-	public void setWorld(World world) {
+	private final void setWorld(World world) {
 		if (this.world != null) {
 			this.world.unset();
 		}

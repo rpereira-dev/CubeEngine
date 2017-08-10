@@ -19,21 +19,21 @@ import com.grillecube.client.opengl.object.GLTexture;
 
 public class Font {
 	/** opengl textureID */
-	private GLTexture _texture;
+	private GLTexture texture;
 
 	/** font data */
-	private FontFile _file;
+	private FontFile fontFile;
 
 	public Font(String filepath) {
-		this._texture = GLH.glhGenTexture(filepath + ".png");
-		this._file = new FontFile(filepath + ".fnt");
+		this.texture = GLH.glhGenTexture(filepath + ".png");
+		this.fontFile = new FontFile(filepath + ".fnt");
 	}
 
 	public GLTexture getTexture() {
-		return (this._texture);
+		return (this.texture);
 	}
 
 	public FontFile getFile() {
-		return (this._file);
+		return (this.fontFile);
 	}
 }

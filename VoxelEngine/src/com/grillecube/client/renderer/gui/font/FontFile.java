@@ -11,23 +11,19 @@ import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.common.Logger;
 
 public class FontFile {
-	
-//	charset:
-//		
-//		ABCDEFGHIJKLMNOPQRSTUVWXYZ
-//		abcdefghijklmnopqrstuvwxyz
-//		אגיטךכהמןלûüשס²
-//		1234567890 
-//		"!`?'.,;:()[]{}<>|/@\^$-%+=#_&~*
+
+	// charset:
+	//
+	// ABCDEFGHIJKLMNOPQRSTUVWXYZ
+	// abcdefghijklmnopqrstuvwxyz
+	// אגיטךכהמןלûüשס²
+	// 1234567890
+	// "!`?'.,;:()[]{}<>|/@\^$-%+=#_&~*
 
 	/** default line height so every fonts have the same line heights */
 	private static final int LINE_PER_SCREEN = 16; // number of line per screen
 													// for a size of 1.0f
-	public static final float LINEHEIGHT = 1 / ((float) LINE_PER_SCREEN - 1) * 2; // GL
-																					// is
-																					// -1
-																					// to
-																					// 1
+	public static final float LINEHEIGHT = 1 / ((float) LINE_PER_SCREEN - 1) * 2;
 
 	public static final int FONT_WIDTH = 512;
 	public static final int FONT_HEIGHT = 512;
