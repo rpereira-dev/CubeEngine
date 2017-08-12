@@ -386,10 +386,12 @@ public abstract class Entity {
 	}
 
 	public void playSound(ALSound sound) {
+		// TODO : CLIENT SIDE ONLY
 		SoundManager.instance().playSoundAt(sound, this.getPosition(), this.getPositionVelocity());
 	}
 
 	public void playSound(String filepath) {
+		// TODO : CLIENT SIDE ONLY
 		this.playSound(ALH.alhLoadSound(filepath));
 	}
 

@@ -34,20 +34,20 @@ public class ModelManager extends GenericManager<Model> {
 	}
 
 	@Override
-	protected void onInitialized() {
+	protected final void onInitialized() {
 	}
 
 	@Override
-	protected void onStopped() {
+	protected final void onStopped() {
 	}
 
 	@Override
-	protected void onCleaned() {
+	protected final void onCleaned() {
 		this.entitiesModels.clear();
 	}
 
 	@Override
-	protected void onLoaded() {
+	protected final void onLoaded() {
 
 		this.getResourceManager().getEventManager().registerEventCallback(new EventCallback<EventEntitySpawn>() {
 			@Override
@@ -65,15 +65,7 @@ public class ModelManager extends GenericManager<Model> {
 					model.initialize();
 					Logger.get().log(Logger.Level.FINE, "Initialized model", model);
 				}
-				ModelInstance modelInstance = new ModelInstance(model, entity);
-				ArrayList<ModelInstance> modelInstances = modelsModelInstances.get(model);
-				if (modelInstances == null) {
-					modelInstances = new ArrayList<ModelInstance>(1);
-					modelsModelInstances.put(model, modelInstances);
-				}
-				modelInstances.add(modelInstance);
-
-				entitiesModelInstance.put(entity, modelInstance);
+				addModelInstance(new ModelInstance(model, entity));
 			}
 		});
 
@@ -98,14 +90,29 @@ public class ModelManager extends GenericManager<Model> {
 				entitiesModelInstance.remove(entity);
 			}
 		});
+	}
 
+	/**
+	 * WARNING: do not use it unless you know what you're doing. spawn a model
+	 * instance
+	 */
+	public final void addModelInstance(ModelInstance modelInstance) {
+		Entity entity = modelInstance.getEntity();
+		Model model = modelInstance.getModel();
+		ArrayList<ModelInstance> modelInstances = this.modelsModelInstances.get(model);
+		if (modelInstances == null) {
+			modelInstances = new ArrayList<ModelInstance>(1);
+			this.modelsModelInstances.put(model, modelInstances);
+		}
+		modelInstances.add(modelInstance);
+		this.entitiesModelInstance.put(entity, modelInstance);
 	}
 
 	/**
 	 * register a new model, link it with the entity class, and return the model
 	 * ID
 	 */
-	public int registerModel(Model model) {
+	public final int registerModel(Model model) {
 		return (super.registerObject(model));
 	}
 
@@ -118,7 +125,7 @@ public class ModelManager extends GenericManager<Model> {
 	 * @param modelID
 	 *            : the registered modelID
 	 */
-	public void attachEntityToModel(Class<? extends Entity> entityClass, Integer modelID) {
+	public final void attachEntityToModel(Class<? extends Entity> entityClass, Integer modelID) {
 		this.entitiesModels.put(entityClass, modelID);
 	}
 
@@ -130,26 +137,29 @@ public class ModelManager extends GenericManager<Model> {
 	 * 
 	 * @return : the model
 	 */
-	public Model getModelForEntity(Class<? extends Entity> entityClass) {
+	public final Model getModelForEntity(Class<? extends Entity> entityClass) {
+		if (!this.entitiesModels.containsKey(entityClass)) {
+			return (null);
+		}
 		return (this.getModelByID(this.entitiesModels.get(entityClass)));
 	}
 
-	public Model getModelForEntity(Entity entity) {
+	public final Model getModelForEntity(Entity entity) {
 		return (this.getModelForEntity(entity.getClass()));
 	}
 
 	/** get a model filepath by it id */
-	public Model getModelByID(int modelID) {
+	public final Model getModelByID(int modelID) {
 		return (super.getObjectByID(modelID));
 	}
 
 	/** get the model instance for the given entity */
-	public ModelInstance getModelInstance(Entity entity) {
+	public final ModelInstance getModelInstance(Entity entity) {
 		return (this.entitiesModelInstance.get(entity));
 	}
 
 	/** get the list of the model instances using the given model */
-	public ArrayList<ModelInstance> getModelInstances(Model model) {
+	public final ArrayList<ModelInstance> getModelInstances(Model model) {
 		return (this.modelsModelInstances.get(model));
 	}
 

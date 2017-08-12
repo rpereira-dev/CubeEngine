@@ -48,7 +48,7 @@ public abstract class Mesh {
 	/** initialize opengl stuff (vao, vbo) */
 	public void initialize() {
 
-		if (this.vao != null) {
+		if (this.isInitialized()) {
 			Logger.get().log(Logger.Level.WARNING, "tried to initialized a mesh that was already initialized!!");
 			return;
 		}
@@ -72,6 +72,10 @@ public abstract class Mesh {
 		this.vao.unbind();
 	}
 
+	public boolean isInitialized() {
+		return (this.vao != null);
+	}
+
 	public void deinitialize() {
 		GLH.glhDeleteObject(this.vao);
 		GLH.glhDeleteObject(this.vbo);
@@ -85,15 +89,15 @@ public abstract class Mesh {
 
 	protected abstract void setAttributes(GLVertexArray vao, GLVertexBuffer vbo);
 
-	public GLVertexArray getVAO() {
+	public final GLVertexArray getVAO() {
 		return (this.vao);
 	}
 
-	public GLVertexBuffer getVBO() {
+	public final GLVertexBuffer getVBO() {
 		return (this.vbo);
 	}
 
-	public ByteBuffer getVertices() {
+	public final ByteBuffer getVertices() {
 		return (this.vbo.getContent(0));
 	}
 
@@ -102,23 +106,23 @@ public abstract class Mesh {
 	}
 
 	/** called in the rendering thread */
-	public void draw() {
+	public final void draw() {
 		this.vao.draw(GL11.GL_TRIANGLES, 0, this.vertexCount);
 	}
 
 	/** draw with index buffer */
-	public void drawElements(int indexCount, int indiceType) {
+	public final void drawElements(int indexCount, int indiceType) {
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, indiceType, 0);
 	}
 
-	public void drawInstanced(int primcount) {
+	public final void drawInstanced(int primcount) {
 		this.vao.drawInstanced(GL11.GL_TRIANGLES, 0, this.vertexCount, primcount);
 	}
 
-	public void preRender() {
+	public final void preRender() {
 	}
 
-	public int getVertexCount() {
+	public final int getVertexCount() {
 		return (this.vertexCount);
 	}
 
@@ -127,45 +131,44 @@ public abstract class Mesh {
 		return (false);
 	}
 
-	protected void setVertices(ByteBuffer buffer, int bytesPerVertex) {
+	protected final void setVertices(ByteBuffer buffer, int bytesPerVertex) {
 		this.vertexCount = buffer.capacity() / bytesPerVertex;
 		this.vbo.bind(GL15.GL_ARRAY_BUFFER);
 		this.vbo.bufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 	}
 
-	protected void updateTransformationMatrix() {
+	protected final void updateTransformationMatrix() {
 		Matrix4f.createTransformationMatrix(this.transfMatrix, this.getPosition(), this.getRotation(), this.getScale());
 	}
 
-	public Vector3f getPosition() {
+	public final Vector3f getPosition() {
 		return (this.position);
 	}
 
-	public Vector3f getRotation() {
+	public final Vector3f getRotation() {
 		return (this.rotation);
 	}
 
-	public Vector3f getScale() {
+	public final Vector3f getScale() {
 		return (this.scale);
 	}
 
-	public void setPosition(float x, float y, float z) {
+	public final void setPosition(float x, float y, float z) {
 		this.position.set(x, y, z);
 		this.updateTransformationMatrix();
 	}
 
-	public void setRotation(float x, float y, float z) {
+	public final void setRotation(float x, float y, float z) {
 		this.rotation.set(x, y, z);
 		this.updateTransformationMatrix();
 	}
 
-	public void setScale(float x, float y, float z) {
+	public final void setScale(float x, float y, float z) {
 		this.scale.set(x, y, z);
 		this.updateTransformationMatrix();
 	}
 
-	public Matrix4f getTransformationMatrix() {
+	public final Matrix4f getTransformationMatrix() {
 		return (this.transfMatrix);
 	}
-
 }

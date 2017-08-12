@@ -22,7 +22,6 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLProgram;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
-import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.world.entity.Entity;
@@ -78,8 +77,6 @@ public class ProgramModel extends GLProgram {
 		// joint matrices
 		Matrix4f[] jointTransformMatrices = modelInstance.getSkeleton().getBoneTransforms();
 		for (int i = 0; i < jointTransformMatrices.length; i++) {
-
-//			Logger.get().log(Logger.Level.ERROR, jointTransformMatrices[i]);
 			super.loadUniformMatrix(this.jointTransforms[i], jointTransformMatrices[i]);
 		}
 
@@ -90,12 +87,10 @@ public class ProgramModel extends GLProgram {
 		transf.rotateXYZ(entity.getRotation());
 		// transf.scale(64.0f);
 		this.loadUniformMatrix(this.transfMatrix, transf);
-		// System.out.println(transf);
 
 		// the skin
-		ModelSkin skin = modelInstance.getModel().getSkins().get(modelInstance.getSkinID());
+		ModelSkin skin = modelInstance.getModel().getSkin(modelInstance.getSkinID());
 		skin.bind(GL13.GL_TEXTURE1, GL11.GL_TEXTURE_2D);
-
 		this.loadUniformInteger(this.diffuseMap, 1);
 
 	}

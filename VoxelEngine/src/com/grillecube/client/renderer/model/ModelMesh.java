@@ -38,6 +38,10 @@ public class ModelMesh extends Mesh {
 		return (this.indicesVBO.getByteCount() / 2);
 	}
 
+	public ByteBuffer getIndices() {
+		return (this.indicesVBO.getContent(0));
+	}
+
 	@Override
 	protected void setAttributes(GLVertexArray vao, GLVertexBuffer vbo) {
 

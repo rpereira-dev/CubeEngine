@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelSkeleton;
+import com.grillecube.client.renderer.model.animation.ModelAnimation;
 import com.grillecube.common.world.entity.Entity;
 
 public class ModelInstance {
@@ -47,9 +48,12 @@ public class ModelInstance {
 		this.animationInstances = new ArrayList<AnimationInstance>();
 
 		// init animations
-		AnimationInstance instance = new AnimationInstance(model.getAnimation(0));
-		instance.loop();
-		this.animationInstances.add(instance);
+		ModelAnimation modelAnimation = model.getAnimation(0);
+		if (modelAnimation != null) {
+			AnimationInstance instance = new AnimationInstance(modelAnimation);
+			instance.loop();
+			this.animationInstances.add(instance);
+		}
 	}
 
 	/** get model from this model instance */

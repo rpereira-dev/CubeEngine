@@ -19,6 +19,7 @@ import com.grillecube.client.renderer.model.animation.BoneTransform;
 import com.grillecube.client.renderer.model.animation.KeyFrame;
 import com.grillecube.client.renderer.model.animation.ModelAnimation;
 import com.grillecube.common.JSONHelper;
+import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Quaternion;
 import com.grillecube.common.maths.Vector3f;
@@ -44,6 +45,7 @@ public class JSONModelInitializer implements ModelInitializer {
 
 	private final void parseJSON(Model model) throws JSONException, IOException {
 
+		Logger.get().log(Logger.Level.FINE, "Parsing JSON Model", this.dirpath);
 		// get the info file
 		JSONObject json = new JSONObject(JSONHelper.readFile(this.dirpath + "info.json"));
 

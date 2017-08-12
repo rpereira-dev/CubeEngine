@@ -3,6 +3,7 @@ package com.grillecube.common.world.items;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.world.entity.EntityLiving;
+//TODO : CLIENT SIDE ONLY
 
 public abstract class Item {
 
@@ -31,6 +32,7 @@ public abstract class Item {
 
 	/** the model when this item is rendered */
 	private final Model model;
+	// TODO : CLIENT SIDE ONLY
 
 	/** the skin id to use (relative to the given model) */
 	private final int skinID;

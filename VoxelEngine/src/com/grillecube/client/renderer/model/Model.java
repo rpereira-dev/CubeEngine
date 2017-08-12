@@ -63,7 +63,7 @@ public class Model {
 	 * @return : true if this model is already initialized
 	 */
 	public final boolean isInitialized() {
-		return (this.mesh != null);
+		return (this.mesh.isInitialized());
 	}
 
 	/**
@@ -123,6 +123,9 @@ public class Model {
 
 	/** get the animations this model can play */
 	public ModelAnimation getAnimation(int id) {
+		if (id < 0 || id >= this.animations.size()) {
+			return (null);
+		}
 		return (this.animations.get(id));
 	}
 
@@ -131,6 +134,7 @@ public class Model {
 		Model model = new Model();
 		model.initialize();
 		model.getMesh().setVertices(model.getMesh().getVertices());
+		model.getMesh().setIndices(model.getMesh().getIndices());
 		return (model);
 	}
 

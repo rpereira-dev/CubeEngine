@@ -1,9 +1,9 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
+import com.grillecube.client.renderer.model.Model;
 import com.grillecube.common.maths.Vector3f;
 
-/** an holder for the model we are building data */
-public class ModelBuildingData {
+public class EditableModel extends Model {
 
 	/**
 	 * the size of a single block of this model (N.B: a terrain block size is
@@ -12,7 +12,7 @@ public class ModelBuildingData {
 	private float blockSizeUnit;
 
 	/** the data of each blocks of this model (null if empty block) */
-	private ModelBlockData[][][] modelBlocksData;
+	private BlockData[][][] modelBlocksData;
 
 	/**
 	 * the model origin (the origin coordinates, in the model referential), so
@@ -21,9 +21,9 @@ public class ModelBuildingData {
 	 */
 	private final Vector3f origin;
 
-	public ModelBuildingData() {
+	public EditableModel() {
 		this.blockSizeUnit = 1.0f;
-		this.modelBlocksData = new ModelBlockData[0][0][0];
+		this.modelBlocksData = new BlockData[0][0][0];
 		this.origin = new Vector3f(0, 0, 0);
 	}
 
@@ -64,12 +64,13 @@ public class ModelBuildingData {
 
 	/** @see ModelBuildingData#resize(int x, int y, int z) */
 	public final int getSizeY() {
-		return (this.modelBlocksData[0].length);
+		return (this.modelBlocksData.length == 0 ? 0 : this.modelBlocksData[0].length);
 	}
 
 	/** @see ModelBuildingData#resize(int x, int y, int z) */
 	public final int getSizeZ() {
-		return (this.modelBlocksData[0][0].length);
+		return (this.modelBlocksData.length == 0 ? 0
+				: this.modelBlocksData[0].length == 0 ? 0 : this.modelBlocksData[0][0].length);
 	}
 
 	/** @see ModelBuildingData#resize(int x, int y, int z) */
@@ -89,7 +90,7 @@ public class ModelBuildingData {
 
 	/** resize the capacity this modle building data can hold */
 	public final void resize(int x, int y, int z) {
-		ModelBlockData[][][] newModelBlocksData = new ModelBlockData[x][y][z];
+		BlockData[][][] newModelBlocksData = new BlockData[x][y][z];
 		int endx = x < this.getSizeX() ? x : this.getSizeX();
 		int endy = y < this.getSizeY() ? y : this.getSizeY();
 		int endz = z < this.getSizeZ() ? z : this.getSizeZ();
@@ -104,7 +105,15 @@ public class ModelBuildingData {
 		this.modelBlocksData = newModelBlocksData;
 	}
 
-	public final ModelBlockData getBlockData(int x, int y, int z) {
+	public final BlockData getBlockData(int x, int y, int z) {
+		if (x < 0 || x >= this.getSizeX() || y < 0 || y >= this.getSizeY() || z < 0 || z >= this.getSizeZ()) {
+			return (null);
+		}
 		return (this.modelBlocksData[x][y][z]);
 	}
+
+	public final void setBlockData(BlockData blockData, int x, int y, int z) {
+		this.modelBlocksData[x][y][z] = blockData;
+	}
+
 }

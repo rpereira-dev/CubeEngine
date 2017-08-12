@@ -17,26 +17,30 @@ package com.grillecube.client.renderer.model.editor.mesher;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
+import com.grillecube.client.renderer.model.ModelMesh;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
 
 public class ModelMesherCull extends ModelMesher {
 
-	public final void generate(ModelBuildingData modelBuildingData) {
+	public final void generate(EditableModel editableModel) {
+
+		ModelMesh mesh = editableModel.getMesh();
+
 		// prepare the mesh vertex stack
 		Stack<ModelMeshVertex> vertices = new Stack<ModelMeshVertex>();
 		Stack<Short> indices = new Stack<Short>();
 
 		for (Face face : Face.faces) {
-			for (int x = 0; x < modelBuildingData.getSizeX(); x++) {
-				for (int y = 0; y < modelBuildingData.getSizeY(); y++) {
-					for (int z = 0; z < modelBuildingData.getSizeZ(); z++) {
-						ModelBlockData modelBlockData = modelBuildingData.getBlockData(x, y, z);
+			for (int x = 0; x < editableModel.getSizeX(); x++) {
+				for (int y = 0; y < editableModel.getSizeY(); y++) {
+					for (int z = 0; z < editableModel.getSizeZ(); z++) {
+						BlockData modelBlockData = editableModel.getBlockData(x, y, z);
 						if (modelBlockData == null) {
 							continue;
 						}
 						Vector3i d = face.getVector();
-						ModelBlockData neighbor = modelBuildingData.getBlockData(x + d.x, y + d.y, z + d.z);
+						BlockData neighbor = editableModel.getBlockData(x + d.x, y + d.y, z + d.z);
 						if (neighbor != null) {
 							continue;
 						}
@@ -51,22 +55,28 @@ public class ModelMesherCull extends ModelMesher {
 						indices.add((short) (i + 3));
 
 						// add vertices
-						vertices.add(this.generateVertex(modelBuildingData, face, modelBlockData, x, y, z, 0));
-						vertices.add(this.generateVertex(modelBuildingData, face, modelBlockData, x, y, z, 1));
-						vertices.add(this.generateVertex(modelBuildingData, face, modelBlockData, x, y, z, 2));
-						vertices.add(this.generateVertex(modelBuildingData, face, modelBlockData, x, y, z, 3));
+						vertices.add(this.generateVertex(editableModel, face, modelBlockData, x, y, z, 0));
+						vertices.add(this.generateVertex(editableModel, face, modelBlockData, x, y, z, 1));
+						vertices.add(this.generateVertex(editableModel, face, modelBlockData, x, y, z, 2));
+						vertices.add(this.generateVertex(editableModel, face, modelBlockData, x, y, z, 3));
 					}
 				}
 			}
 		}
+
+		super.setIndices(indices);
+		super.setVertices(vertices);
+		mesh.setVertices(this.getVertices());
+		mesh.setIndices(this.getIndices());
+
 	}
 
-	private final ModelMeshVertex generateVertex(ModelBuildingData modelBuildingData, Face face,
-			ModelBlockData modelBlockData, int x, int y, int z, int vertexID) {
+	private final ModelMeshVertex generateVertex(EditableModel editableModel, Face face, BlockData modelBlockData,
+			int x, int y, int z, int vertexID) {
 
 		ModelMeshVertex vertex = new ModelMeshVertex();
 
-		float sizeUnit = modelBuildingData.getBlockSizeUnit();
+		float sizeUnit = editableModel.getBlockSizeUnit();
 
 		vertex.x = (x + BlockRenderer.FACES_VERTICES[face.getID()][vertexID].x) * sizeUnit;
 		vertex.y = (y + BlockRenderer.FACES_VERTICES[face.getID()][vertexID].y) * sizeUnit;

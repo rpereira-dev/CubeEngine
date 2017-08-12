@@ -1,12 +1,12 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
 /** hold the data of a single block of the model */
-public class ModelBlockData {
+public class BlockData {
 
 	private final int[] jointIds;
 	private final float[] jointWeights;
 
-	public ModelBlockData() {
+	public BlockData() {
 		this.jointIds = new int[3];
 		this.jointWeights = new float[3];
 	}

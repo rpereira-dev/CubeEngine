@@ -31,7 +31,7 @@ public abstract class ModelMesher {
 	public ModelMesher() {
 	}
 
-	public abstract void generate(ModelBuildingData modelBuildingData);
+	public abstract void generate(EditableModel modelBuildingData);
 
 	public final ByteBuffer getVertices() {
 		return (this.vertices);
