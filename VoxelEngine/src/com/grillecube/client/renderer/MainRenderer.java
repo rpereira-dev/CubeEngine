@@ -64,6 +64,12 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		WINDOW_TO_GL_BASIS.scale(2.0f, 2.0f, 1.0f);
 	}
 
+	public static final Matrix4f GL_TO_WINDOW_BASIS = new Matrix4f();
+
+	static {
+		Matrix4f.invert(WINDOW_TO_GL_BASIS, GL_TO_WINDOW_BASIS);
+	}
+
 	/** resource manager */
 	private VoxelEngineClient engine;
 

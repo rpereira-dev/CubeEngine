@@ -78,10 +78,8 @@ public class ProgramModel extends GLProgram {
 		// joint matrices
 		Matrix4f[] jointTransformMatrices = modelInstance.getSkeleton().getBoneTransforms();
 		for (int i = 0; i < jointTransformMatrices.length; i++) {
-			if (jointTransformMatrices[i] == null) {
-				Logger.get().log(Logger.Level.ERROR, jointTransformMatrices.length,
-						modelInstance.getSkeleton().getBoneCount(), this.jointTransforms[i], jointTransformMatrices[i]);
-			}
+
+//			Logger.get().log(Logger.Level.ERROR, jointTransformMatrices[i]);
 			super.loadUniformMatrix(this.jointTransforms[i], jointTransformMatrices[i]);
 		}
 
@@ -90,8 +88,9 @@ public class ProgramModel extends GLProgram {
 		Entity entity = modelInstance.getEntity();
 		transf.translate(entity.getPosition());
 		transf.rotateXYZ(entity.getRotation());
-		// transf.scale(2.0f);
+		// transf.scale(64.0f);
 		this.loadUniformMatrix(this.transfMatrix, transf);
+		// System.out.println(transf);
 
 		// the skin
 		ModelSkin skin = modelInstance.getModel().getSkins().get(modelInstance.getSkinID());

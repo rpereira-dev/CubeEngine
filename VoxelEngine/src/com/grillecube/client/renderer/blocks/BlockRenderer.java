@@ -3,7 +3,7 @@ package com.grillecube.client.renderer.blocks;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.world.terrain.BlockFace;
-import com.grillecube.client.renderer.world.terrain.MeshVertex;
+import com.grillecube.client.renderer.world.terrain.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.terrain.TerrainMesher;
 import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
@@ -15,7 +15,6 @@ import com.grillecube.common.world.terrain.Terrain;
 public abstract class BlockRenderer {
 
 	/** mesher stuff starts here */
-
 	public static Vector3i[][] FACES_VERTICES = new Vector3i[6][4];
 	// blocks offset which affect ao
 	public static Vector3i[][][] FACES_NEIGHBORS = new Vector3i[6][4][3];
@@ -183,7 +182,7 @@ public abstract class BlockRenderer {
 	 * stack
 	 */
 	public abstract void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y,
-			int z, BlockFace[][][][] faces, Stack<MeshVertex> stack);
+			int z, BlockFace[][][][] faces, Stack<TerrainMeshVertex> stack);
 
 	/** return true if this block has transparency */
 	public abstract boolean hasTransparency();

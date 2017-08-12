@@ -19,8 +19,8 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAdjustBox;
 import com.grillecube.common.maths.Maths;
-import com.grillecube.common.maths.Vector2f;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.entity.Entity;
@@ -116,6 +116,7 @@ public class GuiViewDebug extends GuiView {
 		builder.append("\nVertex drawn: ");
 		builder.append(GLH.glhGetContext().getVerticesDrawn());
 		this.label.setText(builder.toString());
+		this.label.setPosition(0.0f, 1.0f - this.label.getTextHeight());
 	}
 
 	@Override
@@ -132,16 +133,10 @@ public class GuiViewDebug extends GuiView {
 	@Override
 	public void onAddedTo(GuiRenderer renderer) {
 		this.label = new GuiLabel();
-		this.label.setPosition(-1, 1);
-		this.label.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
-		this.label.setFontSize(new Vector2f(0.6f, 0.6f));
+		this.label.setFontSize(0.65f, 0.65f);
+		this.label.setFontColor(Gui.COLOR_BLUE);
+		this.label.addParameter(new GuiTextParameterTextAdjustBox());
 		this.addChild(this.label);
-
-		// GuiTexture t1 = new GuiTexture(
-		// VoxelEngineClient.instance().getRenderer().getWorldRenderer().getShadowMap());
-		// t1.setPosition(-0.5f, 1.0f);
-		// t1.setSize(0.6f, 0.6f);
-		// super.addGui(t1);
 	}
 
 	@Override

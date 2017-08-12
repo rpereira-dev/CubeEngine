@@ -45,6 +45,7 @@ public class FontModel {
 	private Vector3f pos;
 	private Vector3f scale;
 	private Vector3f rot;
+	private Vector3f rotCenter;
 	private Font font;
 
 	/** status */
@@ -69,6 +70,7 @@ public class FontModel {
 	/** text width and height */
 	private float textWidth;
 	private float textHeight;
+	private int lineCount;
 
 	public FontModel(Font font) {
 		this.state = 0;
@@ -78,8 +80,9 @@ public class FontModel {
 		this.transfMatrix = new Matrix4f();
 		this.pos = new Vector3f();
 		this.rot = new Vector3f();
+		this.rotCenter = new Vector3f();
 		this.scale = new Vector3f();
-		this.set(0, 0, 0, 1.0f, 1.0f, 0.0f, 0, 0, 0);
+		this.set(0, 0, 0, 1.0f, 1.0f, 1.0f, 0, 0, 0, 0, 0, 0);
 		this.color = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
 		this.borderWidth = 0.0f;
 		this.borderEdge = 0.5f;
@@ -87,7 +90,13 @@ public class FontModel {
 		this.outlineOffset = new Vector2f(0, 0);
 	}
 
-	private void initialize() {
+	public final void initialize() {
+
+		if (this.hasState(STATE_INITIALIZED)) {
+			return;
+		}
+		this.setState(STATE_INITIALIZED);
+
 		this.vao = GLH.glhGenVAO();
 		this.vbo = GLH.glhGenVBO();
 
@@ -106,12 +115,10 @@ public class FontModel {
 			this.vao.enableAttribute(2);
 		}
 		this.vao.unbind();
-
-		this.setState(FontModel.STATE_INITIALIZED);
 	}
 
 	/** destroy the model */
-	public void delete() {
+	public void deinitialize() {
 		if (this.hasState(FontModel.STATE_INITIALIZED)) {
 			GLH.glhDeleteObject(this.vao);
 			GLH.glhDeleteObject(this.vbo);
@@ -125,13 +132,13 @@ public class FontModel {
 	}
 
 	/** rebuild the mesh depending on the given string */
-	public void setText(String str) {
+	public final void setText(String str) {
 		this.text = str;
 		this.updateFontChars();
 		this.requestUpdate();
 	}
 
-	private void updateFontChars() {
+	private final void updateFontChars() {
 		if (this.font == null || this.text == null || this.text.length() == 0) {
 			this.textChars = null;
 			this.textWidth = 0;
@@ -149,38 +156,47 @@ public class FontModel {
 		for (int i = 0; i < length; i++) {
 			FontChar fchar = this.font.getFile().getCharData(this.text.charAt(i));
 			this.textChars.add(fchar);
-			width += fchar.xadvance;
 
-			if (fchar.ascii == '\n') {
-				++lineCount;
+			if (this.text.charAt(i) == '\n') {
 				if (maxwidth < width) {
 					maxwidth = width;
 				}
 				width = 0;
+				++lineCount;
 				continue;
 			}
+			width += fchar.xadvance;
 		}
 
-		this.textWidth = (maxwidth == 0 ? width : maxwidth)
-				+ (this.font.getFile().getCharData(this.text.charAt(this.text.length() - 1)).xadvance);
+		this.textWidth = (width > maxwidth ? width : maxwidth) + this.textChars.get(0).xoffset;
 		this.textHeight = lineCount * FontFile.LINEHEIGHT;
+		this.lineCount = lineCount;
 	}
 
-	public void setFont(Font font) {
+	public final int getLineCount() {
+		return (this.lineCount);
+	}
+
+	public final void setFont(Font font) {
 		this.font = font;
 		this.updateFontChars();
 		this.requestUpdate();
 	}
 
 	/** set the font color */
-	public void setFontColor(float r, float g, float b, float a) {
+	public final void setFontColor(float r, float g, float b, float a) {
 		this.color.set(r, g, b, a);
 		this.requestUpdate();
 	}
 
 	/** update FontModel GLVertexBuffer vertices depending on 'this.text' */
-	private void updateText() {
+	private final void updateText() {
 		float[] vertices = this.generateFontBuffer();
+
+		if (!this.hasState(FontModel.STATE_INITIALIZED)) {
+			this.initialize();
+		}
+
 		this.vbo.bind(GL15.GL_ARRAY_BUFFER);
 		if (vertices != null) {
 			this.vbo.bufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
@@ -193,25 +209,29 @@ public class FontModel {
 	}
 
 	/** each char is a quad (4 vertex) of 5 floats (pos + uv) */
-	private float[] generateFontBuffer() {
-		int size = this.textChars.size();
-		if (this.textChars == null || size == 0 || this.font == null) {
+	private final float[] generateFontBuffer() {
+		if (this.textChars == null || this.textChars.size() == 0 || this.font == null) {
 			return (null);
 		}
 
+		int size = this.textChars.size();
 		Vector4f color = this.color;
 		float[] vertices = new float[size * (6 * (3 + 2 + 4))];
 
 		float posx = 0;
-		float posy = FontFile.LINEHEIGHT;
+		float posy = FontFile.LINEHEIGHT * this.lineCount;
+		// float posy = 0;
 		float posz = 0;
 		int index = 0;
 
-		for (FontChar fchar : this.textChars) {
+		for (int i = 0; i < size; i++) {
+			FontChar fchar = this.textChars.get(i);
+
 			if (fchar == null) {
 				continue;
 			}
-			if (fchar.ascii == '\n') {
+
+			if (this.text.charAt(i) == '\n') {
 				posy = posy - FontFile.LINEHEIGHT;
 				posx = 0;
 				continue;
@@ -293,26 +313,27 @@ public class FontModel {
 	}
 
 	/** in percent depending on screen position (-1:1) */
-	public void setPosition(float x, float y, float z) {
+	public final void setPosition(float x, float y, float z) {
 		this.set(x, y, z, this.getScaleX(), this.getScaleY(), this.getScaleZ(), this.getRotationX(),
-				this.getRotationY(), this.getRotationZ());
+				this.getRotationY(), this.getRotationZ(), this.getRotationCenterX(), this.getRotationCenterY(),
+				this.getRotationCenterZ());
 	}
 
-	public void setX(float x) {
+	public final void setX(float x) {
 		this.setPosition(x, this.pos.y, this.pos.z);
 	}
 
-	public void setY(float y) {
+	public final void setY(float y) {
 		this.setPosition(this.pos.x, y, this.pos.z);
 	}
 
-	public void setZ(float z) {
+	public final void setZ(float z) {
 		this.setPosition(this.pos.x, this.pos.y, z);
 	}
 
-	public void setRotation(float rx, float ry, float rz) {
+	public final void setRotation(float rx, float ry, float rz) {
 		this.set(this.getX(), this.getY(), this.getZ(), this.getScaleX(), this.getScaleY(), this.getScaleZ(), rx, ry,
-				rz);
+				rz, this.getRotationCenterX(), this.getRotationCenterY(), this.getRotationCenterZ());
 	}
 
 	public final Vector3f getRotation() {
@@ -331,29 +352,53 @@ public class FontModel {
 		return (this.rot.z);
 	}
 
-	public void setScale(float sx, float sy, float sz) {
-		this.set(this.getX(), this.getY(), this.getZ(), sx, sy, sz, this.getRotationX(), this.getRotationY(),
-				this.getRotationZ());
+	public final void setRotationCenter(float rcx, float rcy, float rcz) {
+		this.set(this.getX(), this.getY(), this.getZ(), this.getScaleX(), this.getScaleY(), this.getScaleZ(),
+				this.getRotationX(), this.getRotationY(), this.getRotationZ(), rcx, rcy, rcz);
 	}
 
-	public final void set(float x, float y, float z, float sx, float sy, float sz, float rx, float ry, float rz) {
+	public final Vector3f getRotationCenter() {
+		return (this.rotCenter);
+	}
+
+	public final float getRotationCenterX() {
+		return (this.rotCenter.x);
+	}
+
+	public final float getRotationCenterY() {
+		return (this.rotCenter.y);
+	}
+
+	public final float getRotationCenterZ() {
+		return (this.rotCenter.z);
+	}
+
+	public void setScale(float sx, float sy, float sz) {
+		this.set(this.getX(), this.getY(), this.getZ(), sx, sy, sz, this.getRotationX(), this.getRotationY(),
+				this.getRotationZ(), this.getRotationCenterX(), this.getRotationCenterY(), this.getRotationCenterZ());
+	}
+
+	public final void set(float x, float y, float z, float sx, float sy, float sz, float rx, float ry, float rz,
+			float rcx, float rcy, float rcz) {
 		this.pos.set(x, y, z);
 		this.scale.set(sx, sy, sz);
 		this.rot.set(rx, ry, rz);
+		this.rotCenter.set(rcx, rcy, rcz);
 
 		this.transfMatrix.setIdentity();
-		this.transfMatrix.translate(this.pos);
+
+		this.transfMatrix.translate(this.rotCenter);
 		this.transfMatrix.rotateX(this.rot.x);
 		this.transfMatrix.rotateY(this.rot.y);
 		this.transfMatrix.rotateZ(this.rot.z);
-		this.transfMatrix.scale(this.scale);
+		this.transfMatrix.translate(this.rotCenter.negate(new Vector3f()));
+
+		this.transfMatrix.translate(this.pos);
+		this.transfMatrix.scale(this.scale.x, this.scale.y, this.scale.z);
 	}
 
 	/** render this font model */
 	public void render() {
-		if (this.hasState(FontModel.STATE_INITIALIZED) == false) {
-			this.initialize();
-		}
 
 		if (this.hasState(FontModel.STATE_TEXT_UP_TO_DATE) == false) {
 			this.updateText();
@@ -403,12 +448,12 @@ public class FontModel {
 
 	/** return text height in gl coordinate system */
 	public float getTextWidth() {
-		return (this.textWidth * this.getScaleX());
+		return (this.textWidth);
 	}
 
 	/** return text height in gl coordinate system */
 	public float getTextHeight() {
-		return (this.textHeight * this.getScale().y);
+		return (this.textHeight);
 	}
 
 	public Vector3f getScale() {

@@ -31,9 +31,9 @@ public class TerrainMesherGreedy extends TerrainMesher {
 	 * [Terrain.BLOCK_SIZEIZE_X][Terrain.BLOCK_SIZEIZE_Y][Terrain.
 	 * BLOCK_SIZEIZE_Z][6] of terrain faces visibility
 	 */
-	protected Stack<MeshVertex> getVertexStack(Terrain terrain) {
+	protected Stack<TerrainMeshVertex> getVertexStack(Terrain terrain) {
 		// prepare the mesh vertex stack
-		Stack<MeshVertex> stack = new Stack<MeshVertex>();
+		Stack<TerrainMeshVertex> stack = new Stack<TerrainMeshVertex>();
 
 		// get visibile faces
 		BlockFace[][][][] faces = this.getFacesVisibility(terrain, stack);
@@ -86,7 +86,7 @@ public class TerrainMesherGreedy extends TerrainMesher {
 							// now we have the rectangle width / height
 							for (int i = 0; i < 4; i++) {
 
-								MeshVertex vertex = face.vertices[i];
+								TerrainMeshVertex vertex = face.vertices[i];
 
 								vertex.posx = x * Terrain.BLOCK_SIZE
 										+ BlockRenderer.FACES_VERTICES[faceID][i].x * Terrain.BLOCK_SIZE * width;
@@ -130,7 +130,7 @@ public class TerrainMesherGreedy extends TerrainMesher {
 							// now we have the rectangle width / height
 							for (int i = 0; i < 4; i++) {
 
-								MeshVertex vertex = face.vertices[i];
+								TerrainMeshVertex vertex = face.vertices[i];
 
 								vertex.posx = x * Terrain.BLOCK_SIZE
 										+ BlockRenderer.FACES_VERTICES[faceID][i].x * Terrain.BLOCK_SIZE * width;
@@ -175,7 +175,7 @@ public class TerrainMesherGreedy extends TerrainMesher {
 							// now we have the rectangle width / height
 							for (int i = 0; i < 4; i++) {
 
-								MeshVertex vertex = face.vertices[i];
+								TerrainMeshVertex vertex = face.vertices[i];
 
 								vertex.posz = z * Terrain.BLOCK_SIZE
 										+ BlockRenderer.FACES_VERTICES[faceID][i].z * Terrain.BLOCK_SIZE * depth;
@@ -215,7 +215,7 @@ public class TerrainMesherGreedy extends TerrainMesher {
 	 * return an array which contains standart block faces informations. Non
 	 * cubic blocks are pushed to the stack
 	 */
-	protected BlockFace[][][][] getFacesVisibility(Terrain terrain, Stack<MeshVertex> stack) {
+	protected BlockFace[][][][] getFacesVisibility(Terrain terrain, Stack<TerrainMeshVertex> stack) {
 
 		short[] blocks = terrain.getRawBlocks();
 

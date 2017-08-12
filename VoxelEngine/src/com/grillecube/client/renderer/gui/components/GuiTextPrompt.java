@@ -8,38 +8,24 @@ import com.grillecube.client.opengl.GLFWListenerChar;
 import com.grillecube.client.opengl.GLFWListenerKeyPress;
 import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.animations.GuiParameter;
 import com.grillecube.client.renderer.gui.font.FontChar;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftPress;
 
 public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWListenerKeyPress {
 
-	/**
-	 * a parameter which make the text not overflow the box
-	 */
-	public static final GuiParameter<GuiTextPrompt> PARAM_TEXT_DONT_OVERFLOW = new GuiParameter<GuiTextPrompt>() {
-
-		@Override
-		public void run(GuiTextPrompt gui) {
-			while (gui.getFontModel().getTextWidth() >= gui.getWidth()) {
-				gui.getFontModel().setText(gui.getFontModel().getText().substring(1));
-			}
-		}
-	};
-
 	private static final String DEFAULT_CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 123456789\n";
 	private static final int CURSOR_MS = 500;
-	private String _text;
-	private String _hint;
-	private int _cursor;
-	private boolean _show_cursor;
-	private long _last_cursor_update;
-	private long _cursor_timer;
-	private String _charset;
+	private String text;
+	private String hint;
+	private int cursor;
+	private boolean showCursor;
+	private long lastCursorUpdate;
+	private long cursorTimer;
+	private String charset;
 	/** hint color */
-	private float _r, _g, _b, _a;
-	private float _rh, _gh, _bh, _ah;
-	private int _max_chars;
+	private float r, g, b, a;
+	private float rh, gh, bh, ah;
+	private int maxChars;
 
 	private GLFWWindow glfwWindow;
 
@@ -53,20 +39,21 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 	public GuiTextPrompt() {
 		super();
 		this.addListener(LISTENER);
-		this._charset = new String(DEFAULT_CHARSET);
-		this._max_chars = Integer.MAX_VALUE;
+		this.charset = new String(DEFAULT_CHARSET);
+		this.maxChars = Integer.MAX_VALUE;
+		this.setHintColor(0.5f, 0.5f, 0.5f, 0.5f);
 	}
 
 	public String getCharset() {
-		return (this._charset);
+		return (this.charset);
 	}
 
 	public void setCharset(String str) {
-		this._charset = str;
+		this.charset = str;
 	}
 
 	public void addCharToCharset(char c) {
-		this._charset = this._charset + c;
+		this.charset = this.charset + c;
 	}
 
 	@Override
@@ -103,14 +90,14 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 	}
 
 	private void addChar(char c) {
-		if (this._text.length() < this._max_chars && this._charset.indexOf(c) >= 0) {
+		if (this.text.length() < this.maxChars && this.charset.indexOf(c) >= 0) {
 			if (this.getText() != null) {
-				this.setText(this.getText().substring(0, this._cursor) + c
-						+ this.getText().substring(this._cursor, this.getText().length()));
+				this.setText(this.getText().substring(0, this.cursor) + c
+						+ this.getText().substring(this.cursor, this.getText().length()));
 			} else {
 				this.setText("" + c);
 			}
-			this._cursor++;
+			this.cursor++;
 		}
 	}
 
@@ -125,13 +112,13 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 		if (text != null) {
 			if (key == GLFW.GLFW_KEY_BACKSPACE && this.getCursor() > 0) {
 				this.setText(text.substring(0, this.getCursor() - 1) + text.substring(this.getCursor(), text.length()));
-				this._cursor--;
+				this.cursor--;
 			} else if (key == GLFW.GLFW_KEY_DELETE && this.getCursor() < text.length()) {
 				this.setText(text.substring(0, this.getCursor()) + text.substring(this.getCursor() + 1, text.length()));
-			} else if (key == GLFW.GLFW_KEY_LEFT && this._cursor > 0) {
-				--this._cursor;
-			} else if (key == GLFW.GLFW_KEY_RIGHT && this._cursor < this.getText().length()) {
-				++this._cursor;
+			} else if (key == GLFW.GLFW_KEY_LEFT && this.cursor > 0) {
+				--this.cursor;
+			} else if (key == GLFW.GLFW_KEY_RIGHT && this.cursor < this.getText().length()) {
+				++this.cursor;
 			}
 		}
 
@@ -147,24 +134,24 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 	}
 
 	private void showCursor(boolean value) {
-		this._last_cursor_update = System.currentTimeMillis();
-		this._cursor_timer = value ? 0 : CURSOR_MS;
+		this.lastCursorUpdate = System.currentTimeMillis();
+		this.cursorTimer = value ? 0 : CURSOR_MS;
 	}
 
 	private boolean showCursor() {
-		return (this._show_cursor);
+		return (this.showCursor);
 	}
 
 	private void updateCursor() {
 		long now = System.currentTimeMillis();
-		this._cursor_timer = (this._cursor_timer + (now - this._last_cursor_update)) % (CURSOR_MS * 2);
-		this._last_cursor_update = now;
-		this._show_cursor = this._cursor_timer < CURSOR_MS;
+		this.cursorTimer = (this.cursorTimer + (now - this.lastCursorUpdate)) % (CURSOR_MS * 2);
+		this.lastCursorUpdate = now;
+		this.showCursor = this.cursorTimer < CURSOR_MS;
 
 		if (this.getText() != null) {
 			if (this.showCursor()) {
-				this.setFontModelText(this.getText().substring(0, this._cursor) + "|"
-						+ this.getText().substring(this._cursor, this.getText().length()));
+				this.setFontModelText(this.getText().substring(0, this.cursor) + "|"
+						+ this.getText().substring(this.cursor, this.getText().length()));
 			} else {
 				this.setFontModelText(this.getText());
 			}
@@ -187,57 +174,55 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 	}
 
 	private int getCursor() {
-		return (this._cursor);
+		return (this.cursor);
 	}
 
 	@Override
 	protected void onUpdate(float x, float y, boolean pressed) {
-		if (this.hasFocus()) {
+		if (this.hasFocus() || true) {
 			this.updateCursor();
 		}
 	}
 
 	public void setHintAsText() {
-		super.setFontColor(this._rh, this._gh, this._bh, this._ah);
+		super.setFontColor(this.rh, this.gh, this.bh, this.ah);
 		this.setFontModelText(this.getHint());
 	}
 
 	@Override
-	public void setText(String str) {
-		this._text = str;
+	protected void onTextChanged(String str) {
+		this.text = str;
 	}
 
 	/** return the text held by this prompt */
 	@Override
-	public String getText() {
-		return (this._text);
+	public final String getText() {
+		return (this.text);
 	}
 
 	/** get the hint */
-	public String getHint() {
-		return (this._hint);
+	public final String getHint() {
+		return (this.hint);
 	}
 
 	/** set the hint text */
-	public void setHint(String str) {
-		this._hint = str;
+	public final void setHint(String str) {
+		this.hint = str;
 	}
 
 	/** set text color of the hint */
-	public void setHintColor(float r, float g, float b, float a) {
-		this._rh = r;
-		this._gh = g;
-		this._bh = b;
-		this._ah = a;
+	public final void setHintColor(float r, float g, float b, float a) {
+		this.rh = r;
+		this.gh = g;
+		this.bh = b;
+		this.ah = a;
 	}
 
-	@Override
-	public void setFontColor(float r, float g, float b, float a) {
-		this._r = r;
-		this._g = g;
-		this._b = b;
-		this._a = a;
-		super.setFontColor(r, g, b, a);
+	public final void setPromptColor(float r, float g, float b, float a) {
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = a;
 	}
 
 	@Override
@@ -245,7 +230,7 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 		if (this.getText() == null) {
 			this.setText("");
 		}
-		super.setFontColor(this._r, this._g, this._b, this._a);
+		super.setFontColor(this.r, this.g, this.b, this.a);
 	}
 
 	@Override
@@ -259,6 +244,6 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 
 	/** set the maximum chars this prompt can holds */
 	public void setMaxChars(int max) {
-		this._max_chars = max;
+		this.maxChars = max;
 	}
 }

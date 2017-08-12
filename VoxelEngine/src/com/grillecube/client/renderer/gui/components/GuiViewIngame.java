@@ -14,7 +14,7 @@ public class GuiViewIngame extends GuiView {
 	@Override
 	public void onAddedTo(GuiRenderer renderer) {
 		this.txWorld = new GuiTexture();
-		this.txWorld.setTexture(VoxelEngineClient.instance().getRenderer().getFBOTexture(), -1, -1, 2, 2);
+		this.txWorld.setTexture(VoxelEngineClient.instance().getRenderer().getFBOTexture(), 0.0f, 0.0f, 1.0f, 1.0f);
 		this.addChild(this.txWorld);
 	}
 

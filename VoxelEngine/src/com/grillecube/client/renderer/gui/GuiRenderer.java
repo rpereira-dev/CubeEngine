@@ -29,6 +29,7 @@ import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
+import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAdjustBox;
 import com.grillecube.client.renderer.gui.font.Font;
 import com.grillecube.client.renderer.gui.font.FontModel;
 import com.grillecube.common.Taskable;
@@ -221,13 +222,12 @@ public class GuiRenderer extends Renderer {
 			}
 		};
 		lbl.setFontColor(r, g, b, a);
-		lbl.setFontSize(1.0f, 1.0f);
+		// lbl.setFontSize(1.0f, 1.0f);
 		lbl.setText(text);
-		lbl.setCenterPosition(0.0f, 0.0f);
-		lbl.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
-		lbl.addParameters(GuiLabel.PARAM_CENTER);
-		// gui.startAnimation(new
-		// GuiAnimationTextHoverScale<GuiLabel>(1.1f));
+		lbl.setBoxCenterPosition(0.5f, 0.5f);
+		lbl.addParameter(new GuiTextParameterTextAdjustBox());
+
+		// gui.startAnimation(new GuiAnimationTextHoverScale<GuiLabel>(1.1f));
 		this.addGui(lbl);
 	}
 

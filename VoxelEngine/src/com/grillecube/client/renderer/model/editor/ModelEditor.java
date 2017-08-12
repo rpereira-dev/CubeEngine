@@ -40,7 +40,5 @@ public class ModelEditor {
 		engine.setWorld(ModelEditorMod.WORLD_ID);
 		engine.getGLFWWindow().swapInterval(1);
 		engine.getGLFWWindow().setScreenPosition(100, 100);
-		engine.getRenderer().getGuiRenderer().addGui(new GuiViewDebug());
-		engine.getRenderer().getGuiRenderer().addGui(new GuiViewIngame());
 	}
 }

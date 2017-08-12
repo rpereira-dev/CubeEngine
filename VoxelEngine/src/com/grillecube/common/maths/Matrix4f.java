@@ -415,6 +415,17 @@ public class Matrix4f extends Matrix implements Serializable {
 		return dest;
 	}
 
+	public static Matrix4f mul(Matrix4f dst, Matrix4f... matrices) {
+		if (dst == null) {
+			dst = new Matrix4f();
+		}
+		dst.set(matrices[0]);
+		for (int i = 1; i < matrices.length; i++) {
+			Matrix4f.mul(dst, matrices[i], dst);
+		}
+		return (dst);
+	}
+
 	/**
 	 * Multiply the right matrix by the left and place the result in a third
 	 * matrix.

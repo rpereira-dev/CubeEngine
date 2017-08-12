@@ -12,12 +12,26 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.renderer.gui.components;
+package com.grillecube.client.renderer.model.editor.mesher;
 
-public class GuiLabel extends GuiText {
+public class ModelMeshVertex {
 
-	public GuiLabel() {
-		super();
-	}
+	public float x;
+	public float y;
+	public float z;
 
+	public float uvx;
+	public float uvy;
+
+	public float nx;
+	public float ny;
+	public float nz;
+
+	public int j1;
+	public int j2;
+	public int j3;
+
+	public float w1;
+	public float w2;
+	public float w3;
 }

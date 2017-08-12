@@ -31,7 +31,7 @@ public class GuiAnimationTextHoverScale<T extends GuiText> extends GuiAnimation<
 
 	@Override
 	public void invokeMouseExit(T gui, double mousex, double mousey) {
-		gui.setFontSize(this._scalex, this._scaley);
+//		gui.setFontSize(this._scalex, this._scaley);
 		gui.setFontColor(this._r, this._g, this._b, this._a);
 		gui.getFontModel().setOutlineColor(0.0f, 0.0f, 0.0f);
 		gui.getFontModel().clearEffects();
@@ -39,7 +39,8 @@ public class GuiAnimationTextHoverScale<T extends GuiText> extends GuiAnimation<
 
 	@Override
 	public void invokeMouseEnter(T gui, double mousex, double mousey) {
-		gui.setFontSize(this._scalex * this._hover_scale, this._scaley * this._hover_scale);
+		// gui.setFontSize(this._scalex * this._hover_scale, this._scaley *
+		// this._hover_scale);
 		gui.setFontColor(this._r - 0.1f, this._g - 0.1f, this._b - 0.1f, this._a);
 		gui.getFontModel().setBorderWidth(0.5f);
 		gui.getFontModel().setBorderEdge(0.3f);

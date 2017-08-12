@@ -16,7 +16,7 @@ package com.grillecube.client.renderer.world.terrain;
 
 import com.grillecube.common.maths.Vector3f;
 
-public class MeshVertex {
+public class TerrainMeshVertex {
 	public float posx; // [-oo, +oo]
 	public float posy; // [-oo, +oo]
 	public float posz; // [-oo, +oo]
@@ -35,10 +35,10 @@ public class MeshVertex {
 
 	private float ao;
 
-	public MeshVertex() {
+	public TerrainMeshVertex() {
 	}
 
-	public MeshVertex(float posx, float posy, float posz, Vector3f normal, float atlasX, float atlasY, float uvx,
+	public TerrainMeshVertex(float posx, float posy, float posz, Vector3f normal, float atlasX, float atlasY, float uvx,
 			float uvy, int color, float brightness, float ao) {
 		this.posx = posx;
 		this.posy = posy;

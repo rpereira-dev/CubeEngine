@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.model.editor;
+package com.grillecube.client.renderer.model.editor.gui;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;

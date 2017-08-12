@@ -19,16 +19,14 @@ import java.util.ArrayList;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.animations.GuiAnimation;
-import com.grillecube.client.renderer.gui.animations.GuiParameter;
+import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseExit;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseHover;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftPress;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftRelease;
-import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector2f;
-import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 
 /**
@@ -55,32 +53,16 @@ public abstract class Gui {
 	public static final Vector4f COLOR_RED = new Vector4f(176 / 255.0f, 23 / 255.0f, 31 / 255.0f, 1.0f);
 	public static final Vector4f COLOR_DARK_MAGENTA = new Vector4f(139 / 255.0f, 0 / 255.0f, 139 / 255.0f, 1.0f);
 
-	/**
-	 * a pamameter which tell the gui to be centered toward the gui center
-	 * position.
-	 * 
-	 * @see Gui.setCenter(float x, float y);
-	 */
-	public static final GuiParameter<Gui> PARAM_CENTER = new GuiParameter<Gui>() {
-
-		@Override
-		public void run(Gui gui) {
-			float x = gui.getCenterX() - gui.getWidth() / 2.0f;
-			float y = gui.getCenterY() + gui.getHeight() / 2.0f;
-			gui.setPosition(x, y, false);
-		}
-	};
-
 	/** the transformation matrix, relative to the parent */
 	private final Matrix4f guiToParentChangeOfBasis;
 	private final Matrix4f guiToWindowChangeOfBasis;
 	private final Matrix4f guiToGLChangeOfBasis;
 
 	/** this rectangle relative to opengl axis (-1;-1) to (1;1) */
-	private final Vector2f pos;
-	private final Vector2f size;
-	private float rot;
-	private Vector3f center;
+	private final Vector2f boxPos;
+	private final Vector2f boxSize;
+	private final Vector2f boxCenter;
+	private float boxRot;
 
 	/** guis of this view */
 	private ArrayList<Gui> children;
@@ -108,13 +90,15 @@ public abstract class Gui {
 
 	public Gui() {
 		this.children = null;
-		this.rot = 0.0F;
+		this.boxRot = 0.0F;
 		this.guiToParentChangeOfBasis = new Matrix4f();
 		this.guiToWindowChangeOfBasis = new Matrix4f();
 		this.guiToGLChangeOfBasis = new Matrix4f();
-		this.pos = new Vector2f();
-		this.size = new Vector2f();
-		this.center = new Vector3f();
+		this.boxPos = new Vector2f();
+		this.boxCenter = new Vector2f();
+		this.boxSize = new Vector2f();
+		this.boxRot = 0.0f;
+		this.setBox(0, 0, 1, 1, 0);
 		this.params = null;
 		this.animations = null;
 		this.listeners_mouse_hover = null;
@@ -250,54 +234,54 @@ public abstract class Gui {
 		}
 	}
 
-	public void setPosition(float x, float y) {
-		this.setPosition(x, y, true);
+	public void setBoxPosition(float x, float y) {
+		this.setBoxPosition(x, y, true);
 	}
 
-	protected void setPosition(float x, float y, boolean runParameters) {
-		this.set(x, y, this.getWidth(), this.getHeight(), this.getRotation(), runParameters);
+	protected void setBoxPosition(float x, float y, boolean runParameters) {
+		this.setBox(x, y, this.getBoxWidth(), this.getBoxHeight(), this.getBoxRotation(), runParameters);
 	}
 
 	/** set the gui text center, if using PARAM_CENTER */
-	public final void setCenterPosition(float xcenter, float ycenter) {
-		this.setCenter(xcenter, ycenter, this.getWidth(), this.getHeight(), this.getRotation());
+	public final void setBoxCenterPosition(float xcenter, float ycenter) {
+		this.setBoxCenter(xcenter, ycenter, this.getBoxWidth(), this.getBoxHeight(), this.getBoxRotation());
 	}
 
-	public final void setCenter(float xcenter, float ycenter, float width, float height, float rot) {
-		this.setCenter(xcenter, ycenter, width, height, rot, true);
+	public final void setBoxCenter(float xcenter, float ycenter, float width, float height, float rot) {
+		this.setBoxCenter(xcenter, ycenter, width, height, rot, true);
 	}
 
-	public final void setCenter(float xcenter, float ycenter, float width, float height, float rot,
+	public final void setBoxCenter(float xcenter, float ycenter, float width, float height, float rot,
 			boolean runParameters) {
-		this.set(xcenter - width * 0.5f, ycenter - height * 0.5f, width, height, rot, runParameters);
+		this.setBox(xcenter - width * 0.5f, ycenter - height * 0.5f, width, height, rot, runParameters);
 	}
 
 	/** set the x position, but do not run parameters to adjust it */
-	public final void setX(float x) {
-		this.setPosition(x, this.pos.y);
+	public final void setBoxX(float x) {
+		this.setBoxPosition(x, this.boxPos.y);
 	}
 
 	/** set the y position, but do not run parameters to adjust it */
-	public final void setY(float y) {
-		this.setPosition(this.pos.x, y);
+	public final void setBoxY(float y) {
+		this.setBoxPosition(this.boxPos.x, y);
 	}
 
 	/** set the width, but do not run parameters to adjust it */
-	public final void setWidth(float width) {
-		this.setSize(width, this.size.y);
+	public void setBoxWidth(float width) {
+		this.setBoxSize(width, this.boxSize.y);
 	}
 
 	/** set the height, but do not run parameters to adjust it */
-	public final void setHeight(float height) {
-		this.setSize(this.size.x, height);
+	public void setBoxHeight(float height) {
+		this.setBoxSize(this.boxSize.x, height);
 	}
 
-	public final void setSize(float width, float height) {
-		this.setSize(width, height, true);
+	public void setBoxSize(float width, float height) {
+		this.setBoxSize(width, height, true);
 	}
 
-	public final void setSize(float width, float height, boolean runParameters) {
-		this.set(this.getX(), this.getY(), width, height, this.getRotation(), runParameters);
+	public final void setBoxSize(float width, float height, boolean runParameters) {
+		this.setBox(this.getBoxX(), this.getBoxY(), width, height, this.getBoxRotation(), runParameters);
 	}
 
 	/**
@@ -315,35 +299,35 @@ public abstract class Gui {
 	 * @param height
 	 * @param rot
 	 */
-	public final void set(float x, float y, float width, float height, float rot) {
-		this.set(x, y, width, height, rot, true);
+	public final void setBox(float x, float y, float width, float height, float rot) {
+		this.setBox(x, y, width, height, rot, true);
 	}
 
-	public final void set(float x, float y, float width, float height, float rot, boolean runParameters) {
-		this.pos.set(x, y);
-		this.size.set(width, height);
-		this.rot = rot;
-		this.center.set(x + width * 0.5f, y + height * 0.5f);
+	public final void setBox(float x, float y, float width, float height, float rot, boolean runParameters) {
+		this.boxPos.set(x, y);
+		this.boxSize.set(width, height);
+		this.boxRot = rot;
+		this.boxCenter.set(x + width * 0.5f, y + height * 0.5f);
 
 		// matrices are relative to GL referential
 		this.guiToParentChangeOfBasis.setIdentity();
-		this.guiToParentChangeOfBasis.translate(this.center.x, this.center.y, 0.0f);
+		this.guiToParentChangeOfBasis.translate(this.boxCenter.x, this.boxCenter.y, 0.0f);
 		this.guiToParentChangeOfBasis.rotateZ(rot);
-		this.guiToParentChangeOfBasis.translate(-this.center.x, -this.center.y, 0.0f);
+		this.guiToParentChangeOfBasis.translate(-this.boxCenter.x, -this.boxCenter.y, 0.0f);
 		this.guiToParentChangeOfBasis.translate(x, y, 0.0f);
 		this.guiToParentChangeOfBasis.scale(width, height, 1.0f);
 
 		Matrix4f parentTransform = this.parent == null ? Matrix4f.IDENTITY : this.parent.guiToWindowChangeOfBasis;
 		this.updateTransformationMatrices(parentTransform);
 
-		this.onSet(x, y, width, height, rot);
+		this.onBoxSet(x, y, width, height, rot);
 
 		if (runParameters) {
 			this.runParameters();
 		}
 	}
 
-	protected void onSet(float x, float y, float width, float height, float rot) {
+	protected void onBoxSet(float x, float y, float width, float height, float rot) {
 	}
 
 	/** update transformation matrices */
@@ -418,7 +402,12 @@ public abstract class Gui {
 	 */
 	public final void update(float mouseX, float mouseY, boolean pressed) {
 		Vector4f mouse = new Vector4f(mouseX, mouseY, 0.0f, 1.0f);
-		Matrix4f.transform(Matrix4f.invert(this.guiToWindowChangeOfBasis, null), mouse, mouse);
+		Matrix4f parentToGuiChangeOfBasis = Matrix4f.invert(this.guiToParentChangeOfBasis, null);
+		if (parentToGuiChangeOfBasis == null) {
+			return;
+		}
+		Matrix4f.transform(parentToGuiChangeOfBasis, mouse, mouse);
+
 		float x = mouse.x;
 		float y = mouse.y;
 
@@ -541,7 +530,7 @@ public abstract class Gui {
 	 * parameters You shall not have to call it, as it is call when setting a
 	 * gui's size and position automatically
 	 */
-	public void runParameters() {
+	protected final void runParameters() {
 		if (this.params == null) {
 			return;
 		}
@@ -557,28 +546,28 @@ public abstract class Gui {
 		return (this.params.contains(param));
 	}
 
-	public float getCenterX() {
-		return (this.getX() + this.getWidth() * 0.5f);
+	public float getBoxCenterX() {
+		return (this.boxCenter.x);
 	}
 
-	public float getCenterY() {
-		return (this.getY() + this.getHeight() * 0.5f);
+	public float getBoxCenterY() {
+		return (this.boxCenter.y);
 	}
 
-	public float getX() {
-		return (this.pos.x);
+	public float getBoxX() {
+		return (this.boxPos.x);
 	}
 
-	public float getY() {
-		return (this.pos.y);
+	public float getBoxY() {
+		return (this.boxPos.y);
 	}
 
-	public float getWidth() {
-		return (this.size.x);
+	public float getBoxWidth() {
+		return (this.boxSize.x);
 	}
 
-	public float getHeight() {
-		return (this.size.y);
+	public float getBoxHeight() {
+		return (this.boxSize.y);
 	}
 
 	public boolean hasFocus() {
@@ -613,16 +602,16 @@ public abstract class Gui {
 		return (this.hasState(STATE_FOCUS_REQUESTED));
 	}
 
-	public final float getRotation() {
-		return (this.rot);
+	public final float getBoxRotation() {
+		return (this.boxRot);
 	}
 
-	public final void setRotation(float rot) {
-		this.setRotation(rot, true);
+	public final void setBoxRotation(float rot) {
+		this.setBoxRotation(rot, true);
 	}
 
-	public final void setRotation(float rot, boolean runParameters) {
-		this.set(this.getX(), this.getY(), this.getWidth(), this.getHeight(), rot, runParameters);
+	public final void setBoxRotation(float rot, boolean runParameters) {
+		this.setBox(this.getBoxX(), this.getBoxY(), this.getBoxWidth(), this.getBoxHeight(), rot, runParameters);
 	}
 
 	public final Gui getParent() {
@@ -633,18 +622,27 @@ public abstract class Gui {
 		return (this.children);
 	}
 
-	/** @see addChild(Gui gui) */
-	public final void addGui(Gui gui) {
-		this.addChild(gui);
-	}
-
+	/** add a child to this gui */
 	public final void addChild(Gui gui) {
 		gui.parent = this;
 		if (this.children == null) {
 			this.children = new ArrayList<Gui>();
 		}
 		this.children.add(gui);
+		gui.onAddedTo(this);
 		gui.updateTransformationMatrices(this.guiToWindowChangeOfBasis);
+	}
+
+	/** remove a child from this gui */
+	public final void removeChild(Gui gui) {
+		if (this.children == null) {
+			return;
+		}
+		this.children.remove(gui);
+		if (this.children.size() == 0) {
+			this.children = null;
+		}
+		gui.onRemovedFrom(gui);
 	}
 
 	/** called when this gui is added to the guirenderer */
@@ -681,11 +679,11 @@ public abstract class Gui {
 		this.state = this.state ^ state;
 	}
 
-	public final Matrix4f getWindowToGuiChangeOfBasis() {
+	public final Matrix4f getGuiToWindowChangeOfBasis() {
 		return (this.guiToWindowChangeOfBasis);
 	}
 
-	public final Matrix4f getParentToGuiChangeOfBasis() {
+	public final Matrix4f getGuiToParentChangeOfBasis() {
 		return (this.guiToParentChangeOfBasis);
 	}
 

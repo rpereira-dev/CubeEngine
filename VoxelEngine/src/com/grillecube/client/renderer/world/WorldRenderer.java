@@ -160,7 +160,7 @@ public class WorldRenderer extends Renderer {
 		for (int i = 0; i < this.renderers.size(); i++) {
 
 			RendererWorld renderer = this.renderers.get(i);
-			//
+
 			// long time = System.nanoTime();
 			renderer.render();
 			// long difft = System.nanoTime() - time;
@@ -171,10 +171,10 @@ public class WorldRenderer extends Renderer {
 		}
 
 		// float ftotal = 0;
-		// for (int i = 0 ; i < this.renderers.size() ; i++) {
+		// for (int i = 0; i < this.renderers.size(); i++) {
 		//
 		// RendererWorld renderer = this.renderers.get(i);
-		// float ftime = times[i] / (float)total;
+		// float ftime = times[i] / (float) total;
 		// ftotal += ftime;
 		// Logger.get().log(Logger.Level.DEBUG,
 		// renderer.getClass().getSimpleName(), ftime);

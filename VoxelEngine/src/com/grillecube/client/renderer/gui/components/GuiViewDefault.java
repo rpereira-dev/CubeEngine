@@ -9,7 +9,7 @@ public class GuiViewDefault extends GuiView {
 	public void onAddedTo(GuiRenderer renderer) {
 		this.label = new GuiLabel();
 		this.label.setPosition(-1, 1);
-		this.label.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
+		// this.label.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
 
 		this.label.addText("Hello you!");
 		this.label.addText("\n");

@@ -1,6 +1,6 @@
 package com.grillecube.client.renderer.gui.components;
 
-import com.grillecube.client.renderer.gui.animations.GuiParameter;
+import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
 import com.grillecube.client.renderer.gui.font.FontModel;
 import com.grillecube.common.maths.Maths;
 
@@ -14,8 +14,8 @@ public abstract class GuiButton extends GuiLabel {
 
 			FontModel model = gui.getFontModel();
 
-			float scalex = gui.getWidth() / model.getTextWidth();
-			float scaley = gui.getHeight() / model.getTextHeight();
+			float scalex = gui.getBoxWidth() / model.getTextWidth();
+			float scaley = gui.getBoxHeight() / model.getTextHeight();
 			float scale = Maths.min(scalex, scaley);
 			model.setScale(scale, scale, 0);
 		}
@@ -33,7 +33,7 @@ public abstract class GuiButton extends GuiLabel {
 
 			float width = model.getTextWidth() * model.getScale().x;
 			float height = model.getTextHeight() * model.getScale().y;
-			model.setPosition(gui.getCenterX() - width * 0.5f, gui.getCenterY() + height * 0.5f, 0);
+			model.setPosition(gui.getBoxCenterX() - width * 0.5f, gui.getBoxCenterY() + height * 0.5f, 0);
 		}
 	};
 

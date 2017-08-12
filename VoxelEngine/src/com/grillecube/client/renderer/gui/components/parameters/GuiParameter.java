@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.gui.animations;
+package com.grillecube.client.renderer.gui.components.parameters;
 
 import com.grillecube.client.renderer.gui.components.Gui;
 

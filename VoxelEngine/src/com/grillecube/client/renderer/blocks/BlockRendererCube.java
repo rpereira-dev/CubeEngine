@@ -3,7 +3,7 @@ package com.grillecube.client.renderer.blocks;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.world.terrain.BlockFace;
-import com.grillecube.client.renderer.world.terrain.MeshVertex;
+import com.grillecube.client.renderer.world.terrain.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.terrain.TerrainMesher;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
@@ -85,7 +85,7 @@ public class BlockRendererCube extends BlockRenderer {
 
 	@Override
 	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
-			BlockFace[][][][] faces, Stack<MeshVertex> stack) {
+			BlockFace[][][][] faces, Stack<TerrainMeshVertex> stack) {
 
 		for (Face face : Face.faces) {
 			faces[face.getID()][x][y][z] = this.createBlockFace(terrain, face, x, y, z);
@@ -106,10 +106,10 @@ public class BlockRendererCube extends BlockRenderer {
 		}
 
 		// else the face is visible, create it!
-		MeshVertex v0 = this.createBlockFaceVertex(terrain, face, x, y, z, 0);
-		MeshVertex v1 = this.createBlockFaceVertex(terrain, face, x, y, z, 1);
-		MeshVertex v2 = this.createBlockFaceVertex(terrain, face, x, y, z, 2);
-		MeshVertex v3 = this.createBlockFaceVertex(terrain, face, x, y, z, 3);
+		TerrainMeshVertex v0 = this.createBlockFaceVertex(terrain, face, x, y, z, 0);
+		TerrainMeshVertex v1 = this.createBlockFaceVertex(terrain, face, x, y, z, 1);
+		TerrainMeshVertex v2 = this.createBlockFaceVertex(terrain, face, x, y, z, 2);
+		TerrainMeshVertex v3 = this.createBlockFaceVertex(terrain, face, x, y, z, 3);
 		BlockFace blockface = new BlockFace(this.textureIDs[face.getID()], v0, v1, v2, v3);
 		return (blockface);
 
@@ -119,7 +119,7 @@ public class BlockRendererCube extends BlockRenderer {
 	 * return the vertex for the given face at the given coordinates, for it
 	 * given id
 	 */
-	public MeshVertex createBlockFaceVertex(Terrain terrain, Face face, int x, int y, int z, int vertexID) {
+	public TerrainMeshVertex createBlockFaceVertex(Terrain terrain, Face face, int x, int y, int z, int vertexID) {
 		Vector3i[] neighboors = FACES_NEIGHBORS[face.getID()][vertexID];
 
 		// position
@@ -164,7 +164,7 @@ public class BlockRendererCube extends BlockRenderer {
 
 		// light color
 		int color = 0xFFFFFFFF;// ColorInt.get(255, 255, 255, 255);
-		return (new MeshVertex(px, py, pz, face.getNormal(), atlasX, atlasY, uvx, uvy, color, brightness, ao));
+		return (new TerrainMeshVertex(px, py, pz, face.getNormal(), atlasX, atlasY, uvx, uvy, color, brightness, ao));
 	}
 
 	// the float returned is the ratio of black which will be used for this

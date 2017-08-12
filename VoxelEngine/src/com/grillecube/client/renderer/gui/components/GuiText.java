@@ -14,81 +14,17 @@
 
 package com.grillecube.client.renderer.gui.components;
 
+import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.animations.GuiParameter;
-import com.grillecube.client.renderer.gui.font.Font;
 import com.grillecube.client.renderer.gui.font.FontModel;
-import com.grillecube.common.maths.Maths;
-import com.grillecube.common.maths.Vector2f;
+import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 
 public abstract class GuiText extends Gui {
 
-	/**
-	 * a parameter which should used to recalculate the rect size when changing
-	 * the font size
-	 */
-	public static final GuiParameter<GuiText> PARAM_AUTO_ADJUST_RECT = new GuiParameter<GuiText>() {
-
-		@Override
-		public void run(GuiText gui) {
-			float width = gui.getFontModel().getTextWidth();
-			float height = gui.getFontModel().getTextHeight();
-			gui.setSize(width, height, false);
-		}
-	};
-
-	/** a parameter which tell the gui font model to fill the rectangle */
-	public static final GuiParameter<GuiText> PARAM_TEXT_FILL_RECT = new GuiParameter<GuiText>() {
-
-		@Override
-		public void run(GuiText gui) {
-			float scalex = gui.getWidth() / (gui.getFontModel().getTextWidth() * 0.5f);
-			float scaley = gui.getHeight() / (gui.getFontModel().getTextHeight() * 0.5f);
-			float scale = Maths.min(scalex, scaley);
-			gui.getFontModel().setScale(scale, scale, 0);
-		}
-	};
-
-	public static final GuiParameter<GuiText> PARAM_TEXT_CENTER = new GuiParameter<GuiText>() {
-
-		@Override
-		public void run(GuiText gui) {
-			float width = gui.getFontModel().getTextWidth();
-			float height = gui.getFontModel().getTextHeight();
-			float x = gui.getX() + (gui.getWidth() - width) / 2.0f;
-			float y = gui.getY() - (gui.getHeight() - height) / 2.0f;
-			gui.getFontModel().setPosition(x, y, 0);
-		}
-	};
-
-	/**
-	 * a parameter which tell the text to be centered X to the gui quad
-	 */
-	public static final GuiParameter<GuiText> PARAM_TEXT_CENTER_X = new GuiParameter<GuiText>() {
-
-		@Override
-		public void run(GuiText gui) {
-			float width = gui.getFontModel().getTextWidth();
-			gui.getFontModel().setX(gui.getX() + (gui.getWidth() - width) / 2.0f);
-		}
-	};
-
-	/**
-	 * a parameter which tell the text to be centered Y to the gui quad
-	 */
-	public static final GuiParameter<GuiText> PARAM_TEXT_CENTER_Y = new GuiParameter<GuiText>() {
-
-		@Override
-		public void run(GuiText gui) {
-			float height = gui.getFontModel().getTextHeight();
-			gui.getFontModel().setY(gui.getY() - (gui.getHeight() - height) / 2.0f);
-		}
-	};
-
 	/** the font model for this text */
-	private FontModel fontModel;
+	private final FontModel fontModel;
 
 	public GuiText() {
 		super();
@@ -96,24 +32,24 @@ public abstract class GuiText extends Gui {
 	}
 
 	/** set text to render */
-	public void setText(String str) {
+	public final void setText(String str) {
 		if (this.fontModel.getText().equals(str)) {
 			return;
 		}
 		this.fontModel.setText(str);
-		super.runParameters();
+		this.runParameters();
+		this.onTextChanged(str);
 	}
 
-	public void setFontColor(Vector4f color) {
+	protected void onTextChanged(String str) {
+	}
+
+	public final void setFontColor(Vector4f color) {
 		this.setFontColor(color.x, color.y, color.z, color.w);
 	}
 
 	/** set the font color */
-	public void setFontColor(float r, float g, float b, float a) {
-		Vector4f color = this.fontModel.getFontColor();
-		if (color.x == r && color.y == g && color.z == b && color.w == a) {
-			return;
-		}
+	public final void setFontColor(float r, float g, float b, float a) {
 		this.fontModel.setFontColor(r, g, b, a);
 	}
 
@@ -121,30 +57,7 @@ public abstract class GuiText extends Gui {
 		this.setText(this.fontModel.getText() == null ? str : this.fontModel.getText() + str);
 	}
 
-	/** set font to use */
-	public void setFont(Font font) {
-		this.fontModel.setFont(font);
-	}
-
-	/**
-	 * @param x
-	 *            : x font size
-	 * @param y
-	 *            : y font size
-	 */
-	public void setFontSize(float x, float y) {
-		this.fontModel.setScale(x, y, 0);
-		this.runParameters();
-	}
-
-	public void setFontSize(Vector2f vec) {
-		this.setFontSize(vec.x, vec.y);
-	}
-
 	public Vector3f getFontSize() {
-		if (this.fontModel == null) {
-			return (Vector3f.NULL_VEC);
-		}
 		return (this.fontModel.getScale());
 	}
 
@@ -157,15 +70,25 @@ public abstract class GuiText extends Gui {
 	}
 
 	@Override
-	protected void onSet(float x, float y, float width, float height, float rot) {
-		super.onSet(x, y, width, height, rot);
-		this.fontModel.setPosition(x, y, 0.0f);
-	}
-
-	@Override
 	protected void onRender(GuiRenderer renderer) {
 		super.onRender(renderer);
-		renderer.renderFontModel(this.fontModel, this.fontModel.getTransformationMatrix());
+
+		Matrix4f transfMatrix = this.fontModel.getTransformationMatrix();
+		if (this.getParent() != null) {
+			transfMatrix = Matrix4f.mul(MainRenderer.GL_TO_WINDOW_BASIS, transfMatrix, null);
+			transfMatrix = Matrix4f.mul(this.getParent().getGuiToWindowChangeOfBasis(), transfMatrix, null);
+			transfMatrix = Matrix4f.mul(MainRenderer.WINDOW_TO_GL_BASIS, transfMatrix, null);
+		}
+		renderer.renderFontModel(this.fontModel, transfMatrix);
+	}
+
+	public final void setPosition(float x, float y) {
+		this.fontModel.setPosition(2.0f * x - 1.0f, 2.0f * y - 1.0f, 0.0f);
+		this.runParameters();
+	}
+
+	public final void setFontSize(float x, float y) {
+		this.fontModel.setScale(x, y, 1.0f);
 	}
 
 	public FontModel getFontModel() {
@@ -174,14 +97,12 @@ public abstract class GuiText extends Gui {
 
 	@Override
 	protected void onInitialized(GuiRenderer guiRenderer) {
+		this.fontModel.initialize();
 	}
 
 	@Override
 	protected void onDeinitialized(GuiRenderer guiRenderer) {
-		if (this.fontModel != null) {
-			this.fontModel.delete();
-			this.fontModel = null;
-		}
+		this.fontModel.deinitialize();
 	}
 
 	@Override
@@ -202,5 +123,19 @@ public abstract class GuiText extends Gui {
 
 	@Override
 	protected void onUpdate(float x, float y, boolean pressed) {
+	}
+
+	/**
+	 * @return : the text width in the window coordinate system
+	 */
+	public float getTextWidth() {
+		return (this.getFontModel().getTextWidth() * this.getFontModel().getScaleX() * 0.5f);
+	}
+
+	/**
+	 * @return : the text height in the window coordinate system
+	 */
+	public float getTextHeight() {
+		return (this.getFontModel().getTextHeight() * this.getFontModel().getScaleY() * 0.5f);
 	}
 }

@@ -6,12 +6,12 @@ import java.util.Stack;
 public class BlockFace {
 
 	// the vertices
-	public MeshVertex[] vertices;
+	public TerrainMeshVertex[] vertices;
 
 	// the texture id
 	public int textureID;
 
-	public BlockFace(int textureID, MeshVertex... vertices) {
+	public BlockFace(int textureID, TerrainMeshVertex... vertices) {
 		this.textureID = textureID;
 		this.vertices = vertices;
 	}
@@ -39,12 +39,12 @@ public class BlockFace {
 	}
 
 	/** push this face vertices to the stack */
-	public void pushVertices(Stack<MeshVertex> stack) {
+	public void pushVertices(Stack<TerrainMeshVertex> stack) {
 
-		MeshVertex v0 = this.vertices[0];
-		MeshVertex v1 = this.vertices[1];
-		MeshVertex v2 = this.vertices[2];
-		MeshVertex v3 = this.vertices[3];
+		TerrainMeshVertex v0 = this.vertices[0];
+		TerrainMeshVertex v1 = this.vertices[1];
+		TerrainMeshVertex v2 = this.vertices[2];
+		TerrainMeshVertex v3 = this.vertices[3];
 
 		if (v0.getAO() + v2.getAO() < v1.getAO() + v3.getAO()) {
 			stack.push(v0);

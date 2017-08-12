@@ -33,14 +33,14 @@ public class Model {
 
 	public Model(ModelInitializer modelInitializer) {
 		this.modelInitializer = modelInitializer;
-	}
-
-	/** initialize this model */
-	public void initialize() {
 		this.mesh = new ModelMesh();
 		this.skeleton = new ModelSkeleton();
 		this.skins = new ArrayList<ModelSkin>();
 		this.animations = new ArrayList<ModelAnimation>();
+	}
+
+	/** initialize this model, to be called in a gl context */
+	public void initialize() {
 
 		this.mesh.initialize();
 

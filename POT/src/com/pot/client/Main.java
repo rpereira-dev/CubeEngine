@@ -1,10 +1,21 @@
 package com.pot.client;
 
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldFree;
+import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.components.Gui;
+import com.grillecube.client.renderer.gui.components.GuiLabel;
+import com.grillecube.client.renderer.gui.components.GuiText;
+import com.grillecube.client.renderer.gui.components.GuiTexture;
+import com.grillecube.client.renderer.gui.components.GuiView;
 import com.grillecube.client.renderer.gui.components.GuiViewDebug;
 import com.grillecube.client.renderer.gui.components.GuiViewIngame;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseExit;
+import com.grillecube.common.Logger;
 import com.grillecube.common.ModSample;
+import com.grillecube.common.resources.R;
 import com.pot.common.ModPOT;
 import com.pot.common.world.POTWorlds;
 
@@ -63,6 +74,5 @@ public class Main {
 		engine.getGLFWWindow().swapInterval(1);
 		engine.getGLFWWindow().setScreenPosition(100, 100);
 		engine.getRenderer().getGuiRenderer().addGui(new GuiViewDebug());
-		engine.getRenderer().getGuiRenderer().addGui(new GuiViewIngame());
 	}
 }

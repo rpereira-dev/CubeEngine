@@ -1,6 +1,9 @@
 package com.grillecube.common.world.generator;
 
+import java.util.Random;
+
 import com.grillecube.common.defaultmod.Blocks;
+import com.grillecube.common.maths.Maths;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class WorldGeneratorFlat extends WorldGenerator {
@@ -18,6 +21,22 @@ public class WorldGeneratorFlat extends WorldGenerator {
 				terrain.setBlockAt(Blocks.STONE, x, 1, z);
 				terrain.setBlockAt(Blocks.STONE, x, 0, z);
 			}
+		}
+
+		Random rng = new Random();
+		int ix = terrain.getWorldIndex3().x;
+		int iz = terrain.getWorldIndex3().z;
+		if (Maths.abs(ix) > 1 && Maths.abs(iz) > 1 && rng.nextInt() % 4 == 0) {
+			int x = rng.nextInt() % 8;
+			int z = rng.nextInt() % 8;
+			for (int y = 4; y < 8; y++) {
+				terrain.setBlock(Blocks.LOG, x, y, z);
+			}
+			terrain.setBlock(Blocks.LEAVES, x - 1, 8, z);
+			terrain.setBlock(Blocks.LEAVES, x, 8, z - 1);
+			terrain.setBlock(Blocks.LEAVES, x, 9, z);
+			terrain.setBlock(Blocks.LEAVES, x, 8, z + 1);
+			terrain.setBlock(Blocks.LEAVES, x + 1, 8, z);
 		}
 	}
 }

@@ -30,10 +30,10 @@ public abstract class TerrainMesher {
 
 	public final ByteBuffer generateVertices(Terrain terrain) {
 
-		Stack<MeshVertex> stack = this.getVertexStack(terrain);
+		Stack<TerrainMeshVertex> stack = this.getVertexStack(terrain);
 		ByteBuffer buffer = BufferUtils.createByteBuffer(stack.size() * TerrainMesh.BYTES_PER_VERTEX);
 
-		for (MeshVertex vertex : stack) {
+		for (TerrainMeshVertex vertex : stack) {
 			buffer.putFloat(vertex.posx);
 			buffer.putFloat(vertex.posy);
 			buffer.putFloat(vertex.posz);
@@ -55,5 +55,5 @@ public abstract class TerrainMesher {
 	 * generate a stack which contains every vertices ordered to render back
 	 * face culled triangles
 	 */
-	protected abstract Stack<MeshVertex> getVertexStack(Terrain terrain);
+	protected abstract Stack<TerrainMeshVertex> getVertexStack(Terrain terrain);
 }

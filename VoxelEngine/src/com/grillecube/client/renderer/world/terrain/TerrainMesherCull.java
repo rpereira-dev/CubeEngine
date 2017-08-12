@@ -31,9 +31,9 @@ public class TerrainMesherCull extends TerrainMesher {
 	 * [Terrain.BLOCK_SIZEIZE_X][Terrain.BLOCK_SIZEIZE_Y][Terrain.
 	 * BLOCK_SIZEIZE_Z][6] of terrain faces visibility
 	 */
-	protected Stack<MeshVertex> getVertexStack(Terrain terrain) {
+	protected Stack<TerrainMeshVertex> getVertexStack(Terrain terrain) {
 		// prepare the mesh vertex stack
-		Stack<MeshVertex> stack = new Stack<MeshVertex>();
+		Stack<TerrainMeshVertex> stack = new Stack<TerrainMeshVertex>();
 
 		// get visibile faces
 		BlockFace[][][][] faces = this.getFacesVisibility(terrain, stack);
@@ -69,7 +69,7 @@ public class TerrainMesherCull extends TerrainMesher {
 	 * return an array which contains standart block faces informations. Non
 	 * cubic blocks are pushed to the stack
 	 */
-	protected BlockFace[][][][] getFacesVisibility(Terrain terrain, Stack<MeshVertex> stack) {
+	protected BlockFace[][][][] getFacesVisibility(Terrain terrain, Stack<TerrainMeshVertex> stack) {
 
 		short[] blocks = terrain.getRawBlocks();
 

@@ -23,13 +23,13 @@ import com.grillecube.common.world.entity.Entity;
 
 public class ModelInstance {
 	/** entity reference */
-	private Entity entity;
+	private final Entity entity;
 
 	/** model reference */
-	private Model model;
+	private final Model model;
 
 	/** the skeleton instance */
-	private ModelSkeletonInstance skeleton;
+	private final ModelSkeletonInstance skeleton;
 
 	/** the animation list for this model */
 	private final ArrayList<AnimationInstance> animationInstances;

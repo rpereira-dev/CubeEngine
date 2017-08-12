@@ -3,7 +3,7 @@ package com.grillecube.client.renderer.blocks;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.world.terrain.BlockFace;
-import com.grillecube.client.renderer.world.terrain.MeshVertex;
+import com.grillecube.client.renderer.world.terrain.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.terrain.TerrainMesher;
 import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.faces.Face;
@@ -21,7 +21,7 @@ public class BlockRendererLiquid extends BlockRendererCube {
 
 	@Override
 	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
-			BlockFace[][][][] faces, Stack<MeshVertex> stack) {
+			BlockFace[][][][] faces, Stack<TerrainMeshVertex> stack) {
 
 		for (Face face : Face.values()) {
 			Vector3i vec = face.getVector();
@@ -37,7 +37,7 @@ public class BlockRendererLiquid extends BlockRendererCube {
 	}
 
 	/** push vertices for a liquid */
-	private void pushFaceVertices(TerrainMesher mesher, Terrain terrain, Block neighbor, Stack<MeshVertex> stack, int x,
+	private void pushFaceVertices(TerrainMesher mesher, Terrain terrain, Block neighbor, Stack<TerrainMeshVertex> stack, int x,
 			int y, int z, Face face) {
 
 		// get the instance for this block
@@ -59,10 +59,10 @@ public class BlockRendererLiquid extends BlockRendererCube {
 		}
 		// get every vertices as a standart cube
 		// TODO: move this so it is client side only (Block Renderer?)
-		MeshVertex v0 = super.createBlockFaceVertex(terrain, face, x, y, z, 0);
-		MeshVertex v1 = super.createBlockFaceVertex(terrain, face, x, y, z, 1);
-		MeshVertex v2 = super.createBlockFaceVertex(terrain, face, x, y, z, 2);
-		MeshVertex v3 = super.createBlockFaceVertex(terrain, face, x, y, z, 3);
+		TerrainMeshVertex v0 = super.createBlockFaceVertex(terrain, face, x, y, z, 0);
+		TerrainMeshVertex v1 = super.createBlockFaceVertex(terrain, face, x, y, z, 1);
+		TerrainMeshVertex v2 = super.createBlockFaceVertex(terrain, face, x, y, z, 2);
+		TerrainMeshVertex v3 = super.createBlockFaceVertex(terrain, face, x, y, z, 3);
 
 		// offset the standart vertices to create flowing effect
 

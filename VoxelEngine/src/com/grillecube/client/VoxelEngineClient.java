@@ -87,7 +87,8 @@ public class VoxelEngineClient extends VoxelEngine {
 		if (this.getGLFWWindow().shouldClose()) {
 			super.stop();
 		}
-		
+
+		// TODO : clean this
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {

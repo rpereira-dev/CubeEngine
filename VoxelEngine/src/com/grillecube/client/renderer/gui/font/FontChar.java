@@ -14,7 +14,7 @@ public class FontChar {
 
 	public FontChar() {
 	}
-	
+
 	public FontChar clone() {
 		FontChar c = new FontChar();
 		c.ascii = this.ascii;
