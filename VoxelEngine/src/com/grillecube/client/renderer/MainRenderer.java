@@ -263,8 +263,6 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 			this.getFBO().unbind(); // render the world to the main fbo
 
 			this.worldRenderer.postRender();
-
-			this.renderFinalImage(); // final image to default fbo
 		}
 
 		// render guis to default fbo
@@ -273,18 +271,6 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		this.guiRenderer.postRender();
 
 		this.getResourceManager().getEventManager().invokeEvent(this.postRenderEvent);
-	}
-
-	private void renderFinalImage() {
-
-		// bind the fbo texture to texture attachment 0
-		this.getFBOTexture().bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
-
-		this.finalProcessProgram.useStart();
-		this.finalProcessProgram.loadUniforms(this);
-		this._default_vao.bind();
-		GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
-		this.finalProcessProgram.useStop();
 	}
 
 	private void renderPostProcessingEffects() {

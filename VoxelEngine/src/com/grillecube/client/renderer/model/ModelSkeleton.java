@@ -146,6 +146,9 @@ public class ModelSkeleton {
 	 */
 	private void applyPoseToBones(HashMap<String, Matrix4f> currentPose, Bone bone, Matrix4f parentTransform) {
 		Matrix4f currentLocalTransform = currentPose.get(bone.getName());
+		if (currentLocalTransform == null) {
+			currentLocalTransform = Matrix4f.IDENTITY;
+		}
 		Matrix4f currentTransform = Matrix4f.mul(parentTransform, currentLocalTransform, null);
 		Matrix4f.mul(currentTransform, bone.getInverseBindTransform(), currentTransform);
 		bone.setAnimationTransform(currentTransform);

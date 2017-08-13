@@ -47,7 +47,7 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 			vel.setZ(0);
 		}
 
-		this.move(vel.scale(4.0F));
+		this.move(vel.scale(2.0F));
 	}
 
 	@Override
@@ -82,14 +82,14 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 		}
 		if (key == GLFW.GLFW_KEY_R) {
 
-//			for (int x = -2; x < 2; x++) {
-//				for (int y = 4; y < 8; y++) {
-//					for (int z = -2; z < 2; z++) {
-//						super.setBlock(Blocks.LIQUID_WATER,
-//								Vector3f.add(this.getLookCoords(), new Vector3f(x, y, z), null));
-//					}
-//				}
-//			}
+			// for (int x = -2; x < 2; x++) {
+			// for (int y = 4; y < 8; y++) {
+			// for (int z = -2; z < 2; z++) {
+			// super.setBlock(Blocks.LIQUID_WATER,
+			// Vector3f.add(this.getLookCoords(), new Vector3f(x, y, z), null));
+			// }
+			// }
+			// }
 
 			// super.setBlock(Blocks.LIQUID_WATER, this.getLookCoords());
 			//
@@ -99,9 +99,10 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 			} else {
 				super.setBlock(Blocks.AIR, pos);
 			}
-//			float wx = this.getPosition().x;
-//			float wz = this.getPosition().z;
-//			Logger.get().log(Logger.Level.DEBUG, this.getWorld().getTerrainStorage().getHeight(wx, wz));
+			// float wx = this.getPosition().x;
+			// float wz = this.getPosition().z;
+			// Logger.get().log(Logger.Level.DEBUG,
+			// this.getWorld().getTerrainStorage().getHeight(wx, wz));
 
 		}
 	}

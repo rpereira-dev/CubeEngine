@@ -10,7 +10,7 @@ import com.grillecube.client.renderer.gui.components.GuiText;
 import com.grillecube.client.renderer.gui.components.GuiTexture;
 import com.grillecube.client.renderer.gui.components.GuiView;
 import com.grillecube.client.renderer.gui.components.GuiViewDebug;
-import com.grillecube.client.renderer.gui.components.GuiViewIngame;
+import com.grillecube.client.renderer.gui.components.GuiViewWorld;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseExit;
 import com.grillecube.common.Logger;

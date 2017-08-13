@@ -60,9 +60,9 @@ public abstract class ModelMesher {
 			this.vertices.putFloat(vertex.nx);
 			this.vertices.putFloat(vertex.ny);
 			this.vertices.putFloat(vertex.nz);
-			this.vertices.putInt(vertex.j1);
-			this.vertices.putInt(vertex.j2);
-			this.vertices.putInt(vertex.j3);
+			this.vertices.putInt(vertex.b1);
+			this.vertices.putInt(vertex.b2);
+			this.vertices.putInt(vertex.b3);
 			this.vertices.putFloat(vertex.w1);
 			this.vertices.putFloat(vertex.w2);
 			this.vertices.putFloat(vertex.w3);

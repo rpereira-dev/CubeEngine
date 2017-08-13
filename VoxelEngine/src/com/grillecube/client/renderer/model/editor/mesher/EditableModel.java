@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
 import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.ModelInitializer;
 import com.grillecube.common.maths.Vector3f;
 
 public class EditableModel extends Model {
@@ -12,7 +13,7 @@ public class EditableModel extends Model {
 	private float blockSizeUnit;
 
 	/** the data of each blocks of this model (null if empty block) */
-	private BlockData[][][] modelBlocksData;
+	private BlockData[][][] blocksData;
 
 	/**
 	 * the model origin (the origin coordinates, in the model referential), so
@@ -22,8 +23,13 @@ public class EditableModel extends Model {
 	private final Vector3f origin;
 
 	public EditableModel() {
+		this(null);
+	}
+
+	public EditableModel(ModelInitializer modelInitializer) {
+		super(modelInitializer);
 		this.blockSizeUnit = 1.0f;
-		this.modelBlocksData = new BlockData[0][0][0];
+		this.blocksData = new BlockData[0][0][0];
 		this.origin = new Vector3f(0, 0, 0);
 	}
 
@@ -59,18 +65,17 @@ public class EditableModel extends Model {
 
 	/** @see ModelBuildingData#resize(int x, int y, int z) */
 	public final int getSizeX() {
-		return (this.modelBlocksData.length);
+		return (this.blocksData.length);
 	}
 
 	/** @see ModelBuildingData#resize(int x, int y, int z) */
 	public final int getSizeY() {
-		return (this.modelBlocksData.length == 0 ? 0 : this.modelBlocksData[0].length);
+		return (this.blocksData.length == 0 ? 0 : this.blocksData[0].length);
 	}
 
 	/** @see ModelBuildingData#resize(int x, int y, int z) */
 	public final int getSizeZ() {
-		return (this.modelBlocksData.length == 0 ? 0
-				: this.modelBlocksData[0].length == 0 ? 0 : this.modelBlocksData[0][0].length);
+		return (this.blocksData.length == 0 ? 0 : this.blocksData[0].length == 0 ? 0 : this.blocksData[0][0].length);
 	}
 
 	/** @see ModelBuildingData#resize(int x, int y, int z) */
@@ -98,22 +103,26 @@ public class EditableModel extends Model {
 		for (int dx = 0; dx < endx; dx++) {
 			for (int dy = 0; dy < endy; dy++) {
 				for (int dz = 0; dz < endz; dz++) {
-					newModelBlocksData[dx][dy][dz] = this.modelBlocksData[x][y][z];
+					newModelBlocksData[dx][dy][dz] = this.blocksData[x][y][z];
 				}
 			}
 		}
-		this.modelBlocksData = newModelBlocksData;
+		this.blocksData = newModelBlocksData;
 	}
 
 	public final BlockData getBlockData(int x, int y, int z) {
 		if (x < 0 || x >= this.getSizeX() || y < 0 || y >= this.getSizeY() || z < 0 || z >= this.getSizeZ()) {
 			return (null);
 		}
-		return (this.modelBlocksData[x][y][z]);
+		return (this.blocksData[x][y][z]);
 	}
 
-	public final void setBlockData(BlockData blockData, int x, int y, int z) {
-		this.modelBlocksData[x][y][z] = blockData;
+	public final void addBlockData(BlockData blockData) {
+		this.blocksData[blockData.getX()][blockData.getY()][blockData.getZ()] = blockData;
+	}
+
+	public final void setBlocksData(BlockData[][][] blocksData) {
+		this.blocksData = blocksData;
 	}
 
 }

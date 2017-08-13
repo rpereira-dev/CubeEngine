@@ -41,7 +41,8 @@ import com.grillecube.common.resources.R;
 public class GuiRenderer extends Renderer {
 	/** rendering program */
 	private ProgramFont programFont;
-	private ProgramQuad programQuad;
+	private ProgramTexturedQuad programTexturedQuad;
+	private ProgramColoredQuad programColoredQuad;
 
 	/** fonts */
 	public static Font DEFAULT_FONT;
@@ -62,7 +63,8 @@ public class GuiRenderer extends Renderer {
 	@Override
 	public void initialize() {
 		this.fonts = new HashMap<String, Font>();
-		this.programQuad = new ProgramQuad();
+		this.programColoredQuad = new ProgramColoredQuad();
+		this.programTexturedQuad = new ProgramTexturedQuad();
 		this.programFont = new ProgramFont();
 		this.guis = new ArrayList<Gui>();
 		this.loadFonts();
@@ -74,6 +76,10 @@ public class GuiRenderer extends Renderer {
 		for (Gui gui : this.guis) {
 			gui.deinitialize(this);
 		}
+		this.fonts.clear();
+		this.programColoredQuad.delete();
+		this.programTexturedQuad.delete();
+		this.programFont.delete();
 		this.getParent().getGLFWWindow().removeKeyPressListener(this.keyListeners);
 	}
 
@@ -135,8 +141,14 @@ public class GuiRenderer extends Renderer {
 
 	public void renderTexturedQuad(GLTexture glTexture, float ux, float uy, float vx, float vy,
 			Matrix4f transformMatrix) {
-		this.programQuad.useStart();
-		this.programQuad.loadQuadTextured(glTexture, ux, uy, vx, vy, transformMatrix);
+		this.programTexturedQuad.useStart();
+		this.programTexturedQuad.loadQuadTextured(glTexture, ux, uy, vx, vy, transformMatrix);
+		GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
+	}
+
+	public void renderColoredQuad(float r, float g, float b, float a, Matrix4f transformMatrix) {
+		this.programColoredQuad.useStart();
+		this.programColoredQuad.loadQuadColored(r, g, b, a, transformMatrix);
 		GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
 	}
 

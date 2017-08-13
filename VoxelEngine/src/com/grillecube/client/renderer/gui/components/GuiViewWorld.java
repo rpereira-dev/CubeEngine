@@ -3,12 +3,13 @@ package com.grillecube.client.renderer.gui.components;
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 
-public class GuiViewIngame extends GuiView {
+public class GuiViewWorld extends GuiView {
 
 	private GuiTexture txWorld;
 
-	public GuiViewIngame() {
+	public GuiViewWorld() {
 		super();
+		super.setBox(0, 0, 1.0f, 1.0f, 0);
 	}
 
 	@Override

@@ -14,26 +14,24 @@
 
 package com.grillecube.client.renderer.gui;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLProgram;
-import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
 
-public class ProgramQuad extends GLProgram {
-	private int uvs;
-	private int transfMatrix;
+public class ProgramColoredQuad extends GLProgram {
 
-	public ProgramQuad() {
+	private int transfMatrix;
+	private int color;
+
+	public ProgramColoredQuad() {
 		super();
-		this.addShader(GLH.glhLoadShader(R.getResPath("shaders/gui/quad.fs"), GL20.GL_FRAGMENT_SHADER));
-		this.addShader(GLH.glhLoadShader(R.getResPath("shaders/gui/quad.gs"), GL32.GL_GEOMETRY_SHADER));
-		this.addShader(GLH.glhLoadShader(R.getResPath("shaders/gui/quad.vs"), GL20.GL_VERTEX_SHADER));
+		this.addShader(GLH.glhLoadShader(R.getResPath("shaders/gui/quadColored.fs"), GL20.GL_FRAGMENT_SHADER));
+		this.addShader(GLH.glhLoadShader(R.getResPath("shaders/gui/quadColored.gs"), GL32.GL_GEOMETRY_SHADER));
+		this.addShader(GLH.glhLoadShader(R.getResPath("shaders/gui/quadColored.vs"), GL20.GL_VERTEX_SHADER));
 		this.link();
 	}
 
@@ -43,14 +41,12 @@ public class ProgramQuad extends GLProgram {
 
 	@Override
 	public void linkUniforms() {
-		this.uvs = super.getUniform("uvs");
 		this.transfMatrix = super.getUniform("transfMatrix");
+		this.color = super.getUniform("color");
 	}
 
-	public void loadQuadTextured(GLTexture glTexture, float ux, float uy, float vx, float vy,
-			Matrix4f transformMatrix) {
-		glTexture.bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
+	public void loadQuadColored(float r, float g, float b, float a, Matrix4f transformMatrix) {
 		super.loadUniformMatrix(this.transfMatrix, transformMatrix);
-		super.loadUniformVec(this.uvs, ux, uy, vx, vy);
+		super.loadUniformVec(this.color, r, g, b, a);
 	}
 }

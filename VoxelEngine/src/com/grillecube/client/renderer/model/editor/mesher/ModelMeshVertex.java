@@ -27,9 +27,9 @@ public class ModelMeshVertex {
 	public float ny;
 	public float nz;
 
-	public int j1;
-	public int j2;
-	public int j3;
+	public int b1;
+	public int b2;
+	public int b3;
 
 	public float w1;
 	public float w2;
