@@ -29,6 +29,7 @@ public abstract class GuiText extends Gui {
 	public GuiText() {
 		super();
 		this.fontModel = new FontModel(GuiRenderer.DEFAULT_FONT);
+		this.fontModel.setAspect(1 / 1.6f);
 	}
 
 	/** set text to render */
@@ -137,5 +138,18 @@ public abstract class GuiText extends Gui {
 	 */
 	public float getTextHeight() {
 		return (this.getFontModel().getTextHeight() * this.getFontModel().getScaleY() * 0.5f);
+	}
+
+	@Override
+	public void onWindowResized(int width, int height) {
+		super.onWindowResized(width, height);
+		this.resizeFontModelAspect(width / (float) height);
+	}
+
+	private void resizeFontModelAspect(float windowAspect) {
+		if (this.getFontModel() != null) {
+			this.getFontModel().setAspect(windowAspect * this.getTotalAspectRatio());
+			this.runParameters();
+		}
 	}
 }

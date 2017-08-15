@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.common.Logger;
 
 public class FontFile {
@@ -42,6 +41,7 @@ public class FontFile {
 
 	private FontChar[] _chars;
 	private int _fontsize;
+	private int line_height;
 
 	public FontFile(String filepath) {
 		this._chars = new FontChar[128];
@@ -74,10 +74,7 @@ public class FontFile {
 		this._padding_height = this._padding[PAD_TOP] + this._padding[PAD_BOT];
 
 		this.parseLine(values, reader);
-		float aspect = VoxelEngineClient.instance().getGLFWWindow().getAspectRatio();
-		int line_height = Integer.parseInt(values.get("lineHeight")) - this._padding_height;
-		float vertical_size_ppx = FontFile.LINEHEIGHT / (float) line_height;
-		float horizontal_size_ppx = vertical_size_ppx / aspect;
+		this.line_height = Integer.parseInt(values.get("lineHeight")) - this._padding_height;
 
 		while (this.parseLine(values, reader)) {
 			try {
@@ -94,13 +91,13 @@ public class FontFile {
 				fchar.ascii = id;
 				fchar.uvx = (uvx + this._padding[PAD_LEFT] - DESIRED_PADDING) / (float) FONT_WIDTH;
 				fchar.uvy = (uvy + this._padding[PAD_TOP] - DESIRED_PADDING) / (float) FONT_HEIGHT;
-				fchar.width = width * horizontal_size_ppx;
-				fchar.height = height * vertical_size_ppx;
+				fchar.width = width;
+				fchar.height = height;
 				fchar.uvwidth = width / (float) FONT_WIDTH;
 				fchar.uvheight = height / (float) FONT_HEIGHT;
-				fchar.xoffset = xoffset * horizontal_size_ppx;
-				fchar.yoffset = yoffset * vertical_size_ppx;
-				fchar.xadvance = xadvance * horizontal_size_ppx;
+				fchar.xoffset = xoffset;
+				fchar.yoffset = yoffset;
+				fchar.xadvance = xadvance;
 
 				this._chars[id] = fchar;
 			} catch (Exception e) {
@@ -142,5 +139,9 @@ public class FontFile {
 
 	public float getFontSize() {
 		return (this._fontsize);
+	}
+
+	public final float getLineHeight() {
+		return (this.line_height);
 	}
 }

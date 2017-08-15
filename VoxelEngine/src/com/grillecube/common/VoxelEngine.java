@@ -10,8 +10,11 @@ import java.util.concurrent.TimeUnit;
 
 import com.grillecube.common.Logger.Level;
 import com.grillecube.common.defaultmod.VoxelEngineDefaultMod;
+import com.grillecube.common.event.Event;
+import com.grillecube.common.event.EventGetTasks;
 import com.grillecube.common.event.EventPostLoop;
 import com.grillecube.common.event.EventPreLoop;
+import com.grillecube.common.mod.Mod;
 import com.grillecube.common.mod.ModLoader;
 import com.grillecube.common.network.INetwork;
 import com.grillecube.common.resources.ResourceManager;
@@ -68,6 +71,8 @@ public abstract class VoxelEngine {
 	/** Timer */
 	private Timer timer;
 
+	private Event eventGetTasks;
+
 	public VoxelEngine(Side side) {
 
 		Logger.get().log(Level.FINE, "Starting common Engine!");
@@ -86,6 +91,8 @@ public abstract class VoxelEngine {
 
 		// inject default mod
 		this.modLoader.injectMod(VoxelEngineDefaultMod.class);
+
+		this.eventGetTasks = new EventGetTasks();
 
 		Logger.get().log(Level.FINE, "Common Engine started!");
 	}
@@ -153,6 +160,7 @@ public abstract class VoxelEngine {
 		this.tasks.clear();
 
 		this.getTasks(this.tasks);
+		this.getResourceManager().getEventManager().invokeEvent(this.eventGetTasks);
 		this.runTasks();
 	}
 

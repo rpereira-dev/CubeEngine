@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.event.world.EventEntityList;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
-import com.grillecube.client.renderer.event.EventEntityList;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.resources.ModelManager;
 import com.grillecube.common.world.World;

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
+import com.grillecube.common.Taskable;
+import com.grillecube.common.VoxelEngine.Callable;
 import com.grillecube.common.resources.ResourceManager;
 
 public class Mod {
@@ -79,5 +81,8 @@ public class Mod {
 	public void deinitialize() {
 		Logger.get().log(Level.FINE, "Deinitializing: " + this.toString());
 		this.mod.deinitialize(this);
+	}
+
+	public void getTasks(ArrayList<Callable<Taskable>> tasks) {
 	}
 }

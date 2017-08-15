@@ -1,18 +1,9 @@
-package com.grillecube.common.defaultmod;
+package com.grillecube.common.world.block;
 
 import com.grillecube.common.mod.IModResource;
 import com.grillecube.common.mod.Mod;
 import com.grillecube.common.resources.BlockManager;
 import com.grillecube.common.resources.ResourceManager;
-import com.grillecube.common.world.block.Block;
-import com.grillecube.common.world.block.BlockAir;
-import com.grillecube.common.world.block.BlockDirt;
-import com.grillecube.common.world.block.BlockGrass;
-import com.grillecube.common.world.block.BlockLeaves;
-import com.grillecube.common.world.block.BlockLight;
-import com.grillecube.common.world.block.BlockLiquidWater;
-import com.grillecube.common.world.block.BlockLog;
-import com.grillecube.common.world.block.BlockStone;
 
 public class Blocks implements IModResource {
 	public static final int AIR_ID = 0;

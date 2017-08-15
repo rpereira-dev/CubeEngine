@@ -9,7 +9,8 @@ import com.grillecube.common.Logger.Level;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
-import com.grillecube.common.defaultmod.Blocks;
+import com.grillecube.common.event.world.EventWorldDespawnTerrain;
+import com.grillecube.common.event.world.EventWorldSpawnTerrain;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
@@ -17,9 +18,8 @@ import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldStorage;
 import com.grillecube.common.world.block.Block;
+import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.block.instances.BlockInstance;
-import com.grillecube.common.world.events.EventWorldDespawnTerrain;
-import com.grillecube.common.world.events.EventWorldSpawnTerrain;
 
 public class TerrainStorage extends WorldStorage {
 

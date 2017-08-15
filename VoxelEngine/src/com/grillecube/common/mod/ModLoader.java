@@ -36,6 +36,10 @@ public class ModLoader {
 		this.mods = new ArrayList<Mod>();
 	}
 
+	public ArrayList<Mod> getMods() {
+		return (this.mods);
+	}
+
 	/** find mods into the given folder and try to load it */
 	public void injectMods(String filepath) {
 		File folder = new File(filepath);

@@ -20,11 +20,12 @@ import com.grillecube.client.resources.SoundManager;
 import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.defaultmod.Blocks;
+import com.grillecube.common.event.world.entity.EventEntityJump;
 import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
+import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.entity.ai.EntityAI;
 import com.grillecube.common.world.entity.ai.EntityAIIdle;
 import com.grillecube.common.world.entity.physic.EntityPhysic;
@@ -37,7 +38,6 @@ import com.grillecube.common.world.entity.physic.EntityPhysicRotateLeft;
 import com.grillecube.common.world.entity.physic.EntityPhysicRotateRight;
 import com.grillecube.common.world.entity.physic.EntityPhysicStrafeLeft;
 import com.grillecube.common.world.entity.physic.EntityPhysicStrafeRight;
-import com.grillecube.common.world.events.EventEntityJump;
 
 public abstract class Entity {
 

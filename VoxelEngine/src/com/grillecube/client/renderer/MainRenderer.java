@@ -24,6 +24,8 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.event.renderer.EventPostRender;
+import com.grillecube.client.event.renderer.EventPreRender;
 import com.grillecube.client.opengl.GLFWListenerResize;
 import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.opengl.GLH;
@@ -35,8 +37,6 @@ import com.grillecube.client.opengl.object.GLVertexArray;
 import com.grillecube.client.opengl.object.GLVertexBuffer;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorld;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
-import com.grillecube.client.renderer.event.EventPostRender;
-import com.grillecube.client.renderer.event.EventPreRender;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.client.resources.ResourceManagerClient;
@@ -124,7 +124,8 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		this.postRenderEvent = new EventPostRender(this);
 
 		this.initialiseDefaultVAO();
-		this.initializeMainFBO(this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
+		this.initializeMainFBO();
+		this.resizeMainFBO(this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
 
 		this.worldRenderer = new WorldRenderer(this);
 		this.guiRenderer = new GuiRenderer(this);
@@ -147,15 +148,13 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		// GLProgramPostProcessing(R.getResPath("shaders/post_process/blurh.fs")));
 		// this.setPostProcessingProgram(new
 		// GLProgramPostProcessing(R.getResPath("shaders/post_process/drunk.fs")));
-		// this.setPostProcessingProgram(new
-		// GLProgramPostProcessing(R.getResPath("shaders/post_process/fisheye.fs")));
 
 		Logger.get().log(Level.FINE, "Done");
 		GLH.glhCheckError("post mainrenderer started");
 	}
 
 	/** the main fbo */
-	private void initializeMainFBO(int width, int height) {
+	private void initializeMainFBO() {
 
 		GLH.glhCheckError("pre mainrenderer fbo creation");
 
@@ -165,13 +164,13 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 
 		this.fboTexture = GLH.glhGenTexture();
 		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
-		this.fboTexture.image2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height, 0, GL11.GL_RGB,
-				GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
 		this.fboTexture.parameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		this.fboTexture.parameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 		this.fbo.createTextureAttachment(this.fboTexture, GL30.GL_COLOR_ATTACHMENT0);
 
-		this.fboDepthBuffer = this.fbo.createRenderBuffer(width, height, GL30.GL_DEPTH_ATTACHMENT);
+		this.fboDepthBuffer = GLH.glhGenRBO();
+		this.fboDepthBuffer.bind();
+		this.fboDepthBuffer.attachToFBO(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT);
 
 		this.fbo.unbind();
 		GLH.glhCheckError("post mainrenderer fbo creation");
@@ -197,8 +196,18 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	/** called whenever the window is resized */
 	@Override
 	public void invokeResize(GLFWWindow window, int width, int height) {
-		this.deleteMainVBO();
-		this.initializeMainFBO(width, height); // maybe dont do it
+		this.resizeMainFBO(width, height);
+		this.guiRenderer.onWindowResize(width, height);
+	}
+
+	private final void resizeMainFBO(int width, int height) {
+
+		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
+		this.fboTexture.image2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height, 0, GL11.GL_RGB,
+				GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
+
+		this.fboDepthBuffer.bind();
+		this.fboDepthBuffer.storage(GL11.GL_DEPTH_COMPONENT, width, height);
 	}
 
 	public void deinitialize() {
@@ -212,12 +221,13 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 
 		GLH.glhDeleteObject(this._default_vbo);
 		this._default_vbo = null;
-	}
 
-	private void deleteMainVBO() {
 		GLH.glhDeleteObject(this.fbo);
 		GLH.glhDeleteObject(this.fboTexture);
 		GLH.glhDeleteObject(this.fboDepthBuffer);
+		this.fbo = null;
+		this.fboTexture = null;
+		this.fboDepthBuffer = null;
 	}
 
 	/**

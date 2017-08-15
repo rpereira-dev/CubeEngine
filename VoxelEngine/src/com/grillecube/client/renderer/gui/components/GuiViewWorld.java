@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 
 public class GuiViewWorld extends GuiView {
@@ -9,7 +10,6 @@ public class GuiViewWorld extends GuiView {
 
 	public GuiViewWorld() {
 		super();
-		super.setBox(0, 0, 1.0f, 1.0f, 0);
 	}
 
 	@Override
@@ -43,5 +43,7 @@ public class GuiViewWorld extends GuiView {
 
 	@Override
 	protected void onUpdate(float x, float y, boolean pressed) {
+		float aspect = GLH.glhGetWindow().getAspectRatio() * super.getTotalAspectRatio();
+		VoxelEngineClient.instance().getRenderer().getCamera().setAspect(aspect);
 	}
 }

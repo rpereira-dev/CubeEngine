@@ -1,10 +1,10 @@
 package com.grillecube.common.world.block.instances;
 
-import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.BlockLiquid;
+import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 /**

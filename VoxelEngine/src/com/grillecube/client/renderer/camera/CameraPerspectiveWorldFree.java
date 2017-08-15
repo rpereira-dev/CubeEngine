@@ -3,8 +3,8 @@ package com.grillecube.client.renderer.camera;
 import org.lwjgl.glfw.GLFW;
 
 import com.grillecube.client.opengl.GLFWWindow;
-import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.world.block.Blocks;
 
 public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 

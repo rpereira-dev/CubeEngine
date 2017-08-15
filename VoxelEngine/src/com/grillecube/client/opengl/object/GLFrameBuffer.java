@@ -34,7 +34,7 @@ public class GLFrameBuffer implements GLObject {
 	public void unbind() {
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 	}
-	
+
 	public void texture(int target, int attachment, GLTexture texture) {
 		GL32.glFramebufferTexture(target, attachment, texture.getID(), 0);
 	}
@@ -43,7 +43,7 @@ public class GLFrameBuffer implements GLObject {
 		GL11.glClearColor(r, g, b, a);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
-	
+
 	public void clear() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
@@ -58,15 +58,6 @@ public class GLFrameBuffer implements GLObject {
 	 */
 	public void createTextureAttachment(GLTexture texture, int attachment) {
 		GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, attachment, texture.getID(), 0);
-	}
-
-	/** create a new draw buffer for the given attachment for this fbo */
-	public GLRenderBuffer createRenderBuffer(int width, int height, int attachment) {
-		GLRenderBuffer rbo = GLH.glhGenRBO();
-		rbo.bind();
-		rbo.storage(GL11.GL_DEPTH_COMPONENT, width, height);
-		rbo.attachToFBO(GL30.GL_FRAMEBUFFER, attachment);
-		return (rbo);
 	}
 
 	public void viewport(int x, int y, int width, int height) {

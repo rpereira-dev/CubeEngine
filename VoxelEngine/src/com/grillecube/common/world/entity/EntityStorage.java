@@ -6,12 +6,12 @@ import java.util.HashMap;
 
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
+import com.grillecube.common.event.world.entity.EventEntityDespawn;
+import com.grillecube.common.event.world.entity.EventEntitySpawn;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldStorage;
-import com.grillecube.common.world.events.EventEntityDespawn;
-import com.grillecube.common.world.events.EventEntitySpawn;
 
 /**
  * data structure which contains every entities

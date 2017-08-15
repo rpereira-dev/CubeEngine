@@ -2,8 +2,8 @@ package com.grillecube.common.world.generator;
 
 import java.util.Random;
 
-import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.maths.Maths;
+import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class WorldGeneratorFlat extends WorldGenerator {

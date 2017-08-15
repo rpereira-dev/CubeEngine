@@ -40,8 +40,8 @@ public class TestGui {
 			@Override
 			public void onAddedTo(GuiRenderer guiRenderer) {
 				// this.addGuiTexture();
-				// this.addGuiLabel();
-				this.addGuiTextPrompt();
+				this.addGuiLabel();
+				// this.addGuiTextPrompt();
 			}
 
 			private void addGuiTexture() {

@@ -7,11 +7,11 @@ import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.Logger;
 import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.event.world.entity.EventEntityDespawn;
+import com.grillecube.common.event.world.entity.EventEntitySpawn;
 import com.grillecube.common.resources.GenericManager;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.entity.Entity;
-import com.grillecube.common.world.events.EventEntityDespawn;
-import com.grillecube.common.world.events.EventEntitySpawn;
 
 /** handle models */
 public class ModelManager extends GenericManager<Model> {

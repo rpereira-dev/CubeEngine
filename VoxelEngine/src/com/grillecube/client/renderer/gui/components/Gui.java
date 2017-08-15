@@ -56,6 +56,7 @@ public abstract class Gui {
 	/** the transformation matrix, relative to the parent */
 	private final Matrix4f guiToParentChangeOfBasis;
 	private final Matrix4f guiToWindowChangeOfBasis;
+	private final Matrix4f windowToGuiChangeOfBasis;
 	private final Matrix4f guiToGLChangeOfBasis;
 
 	/** this rectangle relative to opengl axis (-1;-1) to (1;1) */
@@ -87,12 +88,15 @@ public abstract class Gui {
 
 	/** gui state */
 	private int state;
+	private float localAspectRatio;
+	private float totalAspectRatio;
 
 	public Gui() {
 		this.children = null;
 		this.boxRot = 0.0F;
 		this.guiToParentChangeOfBasis = new Matrix4f();
 		this.guiToWindowChangeOfBasis = new Matrix4f();
+		this.windowToGuiChangeOfBasis = new Matrix4f();
 		this.guiToGLChangeOfBasis = new Matrix4f();
 		this.boxPos = new Vector2f();
 		this.boxCenter = new Vector2f();
@@ -304,6 +308,7 @@ public abstract class Gui {
 	}
 
 	public final void setBox(float x, float y, float width, float height, float rot, boolean runParameters) {
+		// positions
 		this.boxPos.set(x, y);
 		this.boxSize.set(width, height);
 		this.boxRot = rot;
@@ -320,10 +325,23 @@ public abstract class Gui {
 		Matrix4f parentTransform = this.parent == null ? Matrix4f.IDENTITY : this.parent.guiToWindowChangeOfBasis;
 		this.updateTransformationMatrices(parentTransform);
 
+		// aspect ratio
+		this.localAspectRatio = this.getBoxWidth() / this.getBoxHeight();
+		this.updateAspectRatio(this.getParent() == null ? 1.0f : this.getParent().getTotalAspectRatio());
+
 		this.onBoxSet(x, y, width, height, rot);
 
 		if (runParameters) {
 			this.runParameters();
+		}
+	}
+
+	private void updateAspectRatio(float parentAspectRatio) {
+		this.totalAspectRatio = parentAspectRatio * this.localAspectRatio;
+		if (this.children != null) {
+			for (Gui gui : this.children) {
+				gui.updateAspectRatio(this.totalAspectRatio);
+			}
 		}
 	}
 
@@ -335,6 +353,7 @@ public abstract class Gui {
 
 		// combine with parent transformation
 		Matrix4f.mul(parentTransform, this.guiToParentChangeOfBasis, this.guiToWindowChangeOfBasis);
+		Matrix4f.invert(this.guiToWindowChangeOfBasis, this.windowToGuiChangeOfBasis);
 		Matrix4f.mul(MainRenderer.WINDOW_TO_GL_BASIS, this.guiToWindowChangeOfBasis, this.guiToGLChangeOfBasis);
 
 		// finally, set it relative to opengl screen referential
@@ -391,28 +410,20 @@ public abstract class Gui {
 	protected abstract void onDeinitialized(GuiRenderer renderer);
 
 	/**
-	 * update this gui, coordinates are relative to the parent of this gui
+	 * update this gui, mouse (x, y) coordinates are relative to the window
 	 * 
 	 * @param x
-	 *            : mouseX
+	 *            : x
 	 * @param y
-	 *            : mouseY
+	 *            : y
 	 * @param pressed
 	 *            : if mouse is left pressed
 	 */
-	public final void update(float mouseX, float mouseY, boolean pressed) {
-		Vector4f mouse = new Vector4f(mouseX, mouseY, 0.0f, 1.0f);
-		Matrix4f parentToGuiChangeOfBasis = Matrix4f.invert(this.guiToParentChangeOfBasis, null);
-		if (parentToGuiChangeOfBasis == null) {
-			return;
-		}
-		Matrix4f.transform(parentToGuiChangeOfBasis, mouse, mouse);
-
-		float x = mouse.x;
-		float y = mouse.y;
-
-		this.updateState(x, y, pressed);
-		this.onUpdate(x, y, pressed);
+	public final void update(float x, float y, boolean pressed) {
+		Vector4f mouse = new Vector4f(x, y, 0.0f, 1.0f);
+		Matrix4f.transform(this.windowToGuiChangeOfBasis, mouse, mouse);
+		this.updateState(mouse.x, mouse.y, pressed);
+		this.onUpdate(mouse.x, mouse.y, pressed);
 		this.updateAnimations();
 
 		if (this.children != null) {
@@ -530,7 +541,7 @@ public abstract class Gui {
 	 * parameters You shall not have to call it, as it is call when setting a
 	 * gui's size and position automatically
 	 */
-	protected final void runParameters() {
+	public final void runParameters() {
 		if (this.params == null) {
 			return;
 		}
@@ -631,6 +642,7 @@ public abstract class Gui {
 		this.children.add(gui);
 		gui.onAddedTo(this);
 		gui.updateTransformationMatrices(this.guiToWindowChangeOfBasis);
+		gui.updateAspectRatio(this.getTotalAspectRatio());
 	}
 
 	/** remove a child from this gui */
@@ -683,6 +695,10 @@ public abstract class Gui {
 		return (this.guiToWindowChangeOfBasis);
 	}
 
+	public final Matrix4f getWindowToGuiChangeOfBasis() {
+		return (this.windowToGuiChangeOfBasis);
+	}
+
 	public final Matrix4f getGuiToParentChangeOfBasis() {
 		return (this.guiToParentChangeOfBasis);
 	}
@@ -690,4 +706,27 @@ public abstract class Gui {
 	public final Matrix4f getGuiToGLChangeOfBasis() {
 		return (this.guiToGLChangeOfBasis);
 	}
+
+	/**
+	 * @return the aspect ratio of this gui relative to his parent
+	 */
+	public float getLocalAspectRatio() {
+		return (this.localAspectRatio);
+	}
+
+	/**
+	 * @return the aspect ratio of this gui relative to the window
+	 */
+	public float getTotalAspectRatio() {
+		return (this.totalAspectRatio);
+	}
+
+	public void onWindowResized(int width, int height) {
+		if (this.children != null) {
+			for (Gui gui : this.children) {
+				gui.onWindowResized(width, height);
+			}
+		}
+	}
+
 }

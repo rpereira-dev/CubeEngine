@@ -71,9 +71,13 @@ public class FontModel {
 	private float textWidth;
 	private float textHeight;
 	private int lineCount;
+	private float aspect;
+	private float verticalSizePpx;
+	private float horizontalSizePpx;
 
 	public FontModel(Font font) {
 		this.state = 0;
+		this.aspect = 1 / 1.6f;
 		this.text = new String();
 		this.textChars = new ArrayList<FontChar>();
 		this.font = font;
@@ -179,8 +183,14 @@ public class FontModel {
 
 	public final void setFont(Font font) {
 		this.font = font;
+		this.updateSizePpx();
 		this.updateFontChars();
 		this.requestUpdate();
+	}
+
+	private void updateSizePpx() {
+		this.verticalSizePpx = FontFile.LINEHEIGHT / (float) this.getFont().getFile().getLineHeight();
+		this.horizontalSizePpx = this.verticalSizePpx / this.aspect;
 	}
 
 	/** set the font color */
@@ -237,12 +247,15 @@ public class FontModel {
 				continue;
 			}
 
-			float xsize = fchar.width;
-			float ysize = fchar.height;
+			float xsize = fchar.width * this.horizontalSizePpx;
+			float ysize = fchar.height * this.verticalSizePpx;
+
+			float xoffset = fchar.xoffset * this.horizontalSizePpx;
+			float yoffset = fchar.yoffset * this.verticalSizePpx;
 
 			// first vertex
-			vertices[index++] = posx + fchar.xoffset;
-			vertices[index++] = posy - fchar.yoffset;
+			vertices[index++] = posx + xoffset;
+			vertices[index++] = posy - yoffset;
 			vertices[index++] = posz;
 			vertices[index++] = fchar.uvx;
 			vertices[index++] = fchar.uvy;
@@ -252,8 +265,8 @@ public class FontModel {
 			vertices[index++] = color.w;
 
 			// second vertex
-			vertices[index++] = posx + fchar.xoffset;
-			vertices[index++] = posy - fchar.yoffset - ysize;
+			vertices[index++] = posx + xoffset;
+			vertices[index++] = posy - yoffset - ysize;
 			vertices[index++] = posz;
 			vertices[index++] = fchar.uvx;
 			vertices[index++] = fchar.uvy + fchar.uvheight;
@@ -263,8 +276,8 @@ public class FontModel {
 			vertices[index++] = color.w;
 
 			// third vertex
-			vertices[index++] = posx + fchar.xoffset + xsize;
-			vertices[index++] = posy - fchar.yoffset - ysize;
+			vertices[index++] = posx + xoffset + xsize;
+			vertices[index++] = posy - yoffset - ysize;
 			vertices[index++] = posz;
 			vertices[index++] = fchar.uvx + fchar.uvwidth;
 			vertices[index++] = fchar.uvy + fchar.uvheight;
@@ -274,8 +287,8 @@ public class FontModel {
 			vertices[index++] = color.w;
 
 			// first vertex
-			vertices[index++] = posx + fchar.xoffset;
-			vertices[index++] = posy - fchar.yoffset;
+			vertices[index++] = posx + xoffset;
+			vertices[index++] = posy - yoffset;
 			vertices[index++] = posz;
 			vertices[index++] = fchar.uvx;
 			vertices[index++] = fchar.uvy;
@@ -285,8 +298,8 @@ public class FontModel {
 			vertices[index++] = color.w;
 
 			// third vertex
-			vertices[index++] = posx + fchar.xoffset + xsize;
-			vertices[index++] = posy - fchar.yoffset - ysize;
+			vertices[index++] = posx + xoffset + xsize;
+			vertices[index++] = posy - yoffset - ysize;
 			vertices[index++] = posz;
 			vertices[index++] = fchar.uvx + fchar.uvwidth;
 			vertices[index++] = fchar.uvy + fchar.uvheight;
@@ -296,8 +309,8 @@ public class FontModel {
 			vertices[index++] = color.w;
 
 			// fourth vertex
-			vertices[index++] = posx + fchar.xoffset + xsize;
-			vertices[index++] = posy - fchar.yoffset;
+			vertices[index++] = posx + xoffset + xsize;
+			vertices[index++] = posy - yoffset;
 			vertices[index++] = posz;
 			vertices[index++] = fchar.uvx + fchar.uvwidth;
 			vertices[index++] = fchar.uvy;
@@ -306,7 +319,7 @@ public class FontModel {
 			vertices[index++] = color.z;
 			vertices[index++] = color.w;
 
-			posx = posx + fchar.xadvance;
+			posx = posx + fchar.xadvance * this.horizontalSizePpx;
 		}
 
 		return (vertices);
@@ -448,7 +461,7 @@ public class FontModel {
 
 	/** return text height in gl coordinate system */
 	public float getTextWidth() {
-		return (this.textWidth);
+		return (this.textWidth * this.horizontalSizePpx);
 	}
 
 	/** return text height in gl coordinate system */
@@ -540,5 +553,15 @@ public class FontModel {
 		this.setBorderWidth(0.0f);
 		this.setOutlineOffset(0, 0);
 		this.setOutlineColor(0, 0, 0);
+	}
+
+	public final float getAspect() {
+		return (this.aspect);
+	}
+
+	public final void setAspect(float aspect) {
+		this.aspect = aspect;
+		this.updateSizePpx();
+		this.unsetState(STATE_TEXT_UP_TO_DATE);
 	}
 }

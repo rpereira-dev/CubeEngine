@@ -12,10 +12,10 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 	public static final float RENDER_DISTANCE = Terrain.DIM_SIZE * TERRAIN_RENDER_DISTANCE;
 	public static final float FAR_DISTANCE = RENDER_DISTANCE * 1.2f;
 	/** planes attributes */
-	private float _fov;
+	private float fov;
 
-	private float _near_distance;
-	private float _far_distance;
+	private float nearDistance;
+	private float farDistance;
 
 	class CameraPlane {
 
@@ -53,7 +53,7 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 	private static final int PLANE_RIGHT = 3;
 	private static final int PLANE_NEAR = 4;
 	private static final int PLANE_FAR = 5;
-	private CameraPlane[] _planes;
+	private CameraPlane[] planes;
 
 	public CameraPerspectiveWorld(GLFWWindow window) {
 		super(window);
@@ -66,9 +66,9 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 		super.setSpeed(0.2f);
 		super.setRotSpeed(1);
 
-		this._planes = new CameraPlane[6];
-		for (int i = 0; i < this._planes.length; i++) {
-			this._planes[i] = new CameraPlane();
+		this.planes = new CameraPlane[6];
+		for (int i = 0; i < this.planes.length; i++) {
+			this.planes[i] = new CameraPlane();
 		}
 
 		this.setFov(70);
@@ -136,10 +136,10 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 
 		float tang = (float) Math.tan(Math.toRadians(this.getFov() * 0.5f));
 
-		float nh = this._near_distance * tang;
+		float nh = this.nearDistance * tang;
 		float nw = nh * this.getAspect();
 
-		float fh = this._far_distance * tang;
+		float fh = this.farDistance * tang;
 		float fw = fh * this.getAspect();
 
 		nc.x = this.getPosition().x + forward.x * this.getNearDistance();
@@ -187,43 +187,43 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 		fbr.z = fc.z - (up.z * fh) + (right.z * fw);
 
 		// set the planes
-		this._planes[PLANE_TOP].set(ntr, ntl, ftl);
-		this._planes[PLANE_BOT].set(nbl, nbr, fbr);
-		this._planes[PLANE_LEFT].set(ntl, nbl, fbl);
-		this._planes[PLANE_RIGHT].set(nbr, ntr, fbr);
-		this._planes[PLANE_NEAR].set(ntl, ntr, nbr);
-		this._planes[PLANE_FAR].set(ftr, ftl, fbl);
+		this.planes[PLANE_TOP].set(ntr, ntl, ftl);
+		this.planes[PLANE_BOT].set(nbl, nbr, fbr);
+		this.planes[PLANE_LEFT].set(ntl, nbl, fbl);
+		this.planes[PLANE_RIGHT].set(nbr, ntr, fbr);
+		this.planes[PLANE_NEAR].set(ntl, ntr, nbr);
+		this.planes[PLANE_FAR].set(ftr, ftl, fbl);
 	}
 
 	public void setNearDistance(float f) {
-		this._near_distance = f;
+		this.nearDistance = f;
 	}
 
 	public void setFarDistance(float f) {
-		this._far_distance = f;
+		this.farDistance = f;
 	}
 
 	public void setFov(float f) {
-		this._fov = f;
+		this.fov = f;
 	}
 
 	public float getNearDistance() {
-		return (this._near_distance);
+		return (this.nearDistance);
 	}
 
 	public float getFarDistance() {
-		return (this._far_distance);
+		return (this.farDistance);
 	}
 
 	public float getFov() {
-		return (this._fov);
+		return (this.fov);
 	}
 
 	@Override
 	public boolean isPointInFrustum(float x, float y, float z) {
 		long t = System.nanoTime();
 		for (int i = 0; i < 6; i++) {
-			if (this._planes[i].distance(x, y, z) < 0) {
+			if (this.planes[i].distance(x, y, z) < 0) {
 				Logger.get().log(Logger.Level.DEBUG, "out: " + (System.nanoTime() - t));
 				return (false);
 			}
@@ -237,7 +237,7 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 
 		for (int i = 0; i < 6; i++) {
 
-			CameraPlane plane = this._planes[i];
+			CameraPlane plane = this.planes[i];
 
 			if (plane.distance(this.getVertexP(plane.normal, x, y, z, sx, sy, sz)) < 0) {
 				return (false); // outside
@@ -280,7 +280,7 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 	public boolean isSphereInFrustum(Vector3f center, float radius) {
 
 		for (int i = 0; i < 6; i++) {
-			float distance = this._planes[i].distance(center);
+			float distance = this.planes[i].distance(center);
 			if (distance < -radius) {
 				return (false);
 			}

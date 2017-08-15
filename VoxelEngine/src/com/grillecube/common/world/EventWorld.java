@@ -1,4 +1,4 @@
-package com.grillecube.common.world.events;
+package com.grillecube.common.world;
 
 import com.grillecube.common.event.Event;
 import com.grillecube.common.world.World;

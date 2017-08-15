@@ -14,7 +14,6 @@
 
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class BlockAir extends Block {

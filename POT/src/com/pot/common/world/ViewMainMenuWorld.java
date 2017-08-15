@@ -2,11 +2,11 @@ package com.pot.common.world;
 
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.world.terrain.TerrainMesh;
-import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.SimplexNoiseOctave;
 import com.grillecube.common.world.World;
+import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class ViewMainMenuWorld extends World {

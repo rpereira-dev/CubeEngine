@@ -96,8 +96,8 @@ public class GuiRenderer extends Renderer {
 	/** load every fonts */
 	private final void loadFonts() {
 
-		// DEFAULT_FONT = this.getFont("Kirbyss");
-		DEFAULT_FONT = this.getFont("Pokemon");
+		DEFAULT_FONT = this.getFont("Calibri");
+		// DEFAULT_FONT = this.getFont("Pokemon");
 	}
 
 	public final Font registerFont(String name) {
@@ -267,4 +267,9 @@ public class GuiRenderer extends Renderer {
 		this.toast(str, GuiRenderer.DEFAULT_FONT, r, g, b, a, time);
 	}
 
+	public void onWindowResize(int width, int height) {
+		for (Gui gui : this.guis) {
+			gui.onWindowResized(width, height);
+		}
+	}
 }

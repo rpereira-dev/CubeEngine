@@ -59,9 +59,11 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered
 
 	@Override
 	public void invokeMousePress(GLFWWindow window, int button, int mods) {
-		this.getWindow().setCursor(false);
-		this.setCenter(this.getLookCoords());
-		this.setDistanceFromCenter((float) Vector3f.distance(this.getCenter(), this.getPosition()));
+		if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+			this.getWindow().setCursor(false);
+			this.setCenter(this.getLookCoords());
+			this.setDistanceFromCenter((float) Vector3f.distance(this.getCenter(), this.getPosition()));
+		}
 	}
 
 	@Override

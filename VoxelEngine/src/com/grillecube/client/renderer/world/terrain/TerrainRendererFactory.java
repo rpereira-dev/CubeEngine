@@ -6,20 +6,20 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.event.renderer.EventTerrainList;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.camera.Camera;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
-import com.grillecube.client.renderer.event.EventTerrainList;
 import com.grillecube.client.renderer.world.particles.ParticleCube;
 import com.grillecube.common.Logger;
 import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.event.world.EventWorldDespawnTerrain;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.events.EventWorldDespawnTerrain;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class TerrainRendererFactory {

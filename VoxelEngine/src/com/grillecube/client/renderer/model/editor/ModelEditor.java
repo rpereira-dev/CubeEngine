@@ -1,8 +1,10 @@
 package com.grillecube.client.renderer.model.editor;
 
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.components.GuiViewWorld;
 import com.grillecube.client.renderer.model.ModelInitializer;
+import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiViewToolbox;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.editor.mesher.ModelMesher;
 import com.grillecube.client.renderer.model.editor.mesher.ModelMesherCull;
@@ -51,11 +53,25 @@ public class ModelEditor {
 	}
 
 	private void prepareEngine(VoxelEngineClient engine) {
-		engine.getRenderer().setCamera(new ModelEditorCamera(engine.getGLFWWindow()));
+
 		engine.setWorld(ModelEditorMod.WORLD_ID);
+
 		engine.getGLFWWindow().swapInterval(1);
 		engine.getGLFWWindow().setScreenPosition(100, 100);
-		engine.getRenderer().getGuiRenderer().addGui(new GuiViewWorld());
+
+		CameraProjectiveWorld camera = new ModelEditorCamera(engine.getGLFWWindow());
+		engine.getRenderer().setCamera(camera);
+
+		GuiViewToolbox toolbox = new GuiViewToolbox();
+		toolbox.setBox(0.0f, 0, 0.25f, 1.0f, 0);
+		engine.getRenderer().getGuiRenderer().addGui(toolbox);
+
+		GuiViewWorld world = new GuiViewWorld();
+		world.setBox(0.25f, 0, 0.75f, 1.0f, 0);
+		engine.getRenderer().getGuiRenderer().addGui(world);
+
+		engine.getRenderer().getCamera().getPicker().setGuiViewWorldRelative(world);
+
 		newModel(engine);
 	}
 

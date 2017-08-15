@@ -4,7 +4,6 @@ import com.grillecube.client.renderer.blocks.BlockRendererCube;
 import com.grillecube.client.renderer.blocks.BlockRendererLiquid;
 import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.client.resources.ResourceManagerClient;
-import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.mod.IModResource;
 import com.grillecube.common.mod.Mod;
@@ -12,6 +11,7 @@ import com.grillecube.common.resources.BlockManager;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.block.Block;
+import com.grillecube.common.world.block.Blocks;
 
 public class ClientBlockRenderers implements IModResource {
 	public static final int AIR_ID = 0;

@@ -1,12 +1,13 @@
-package com.grillecube.common.world.events;
+package com.grillecube.common.event.world;
 
+import com.grillecube.common.world.EventWorld;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.terrain.Terrain;
 
-public class EventWorldDespawnTerrain extends EventWorld {
+public class EventWorldSpawnTerrain extends EventWorld {
 	private Terrain _terrain;
 
-	public EventWorldDespawnTerrain(World world, Terrain terrain) {
+	public EventWorldSpawnTerrain(World world, Terrain terrain) {
 		super(world);
 		this._terrain = terrain;
 	}

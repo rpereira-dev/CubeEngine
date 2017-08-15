@@ -5,11 +5,11 @@ import java.util.Stack;
 import com.grillecube.client.renderer.world.terrain.BlockFace;
 import com.grillecube.client.renderer.world.terrain.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.terrain.TerrainMesher;
-import com.grillecube.common.defaultmod.Blocks;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.BlockLiquid;
+import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.block.instances.BlockInstanceLiquid;
 import com.grillecube.common.world.terrain.Terrain;
 

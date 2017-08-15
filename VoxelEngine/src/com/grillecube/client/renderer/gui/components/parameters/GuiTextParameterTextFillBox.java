@@ -15,6 +15,7 @@ public class GuiTextParameterTextFillBox extends GuiParameter<GuiText> {
 		if (fontModel.getTextWidth() == 0 || fontModel.getTextHeight() == 0) {
 			return;
 		}
+		// System.out.println(guiText.getTotalAspectRatio());
 
 		float scalex = 2.0f * guiText.getBoxWidth() / fontModel.getTextWidth();
 		float scaley = 2.0f * guiText.getBoxHeight() / fontModel.getTextHeight();
@@ -28,7 +29,6 @@ public class GuiTextParameterTextFillBox extends GuiParameter<GuiText> {
 		float rcx = 2.0f * guiText.getBoxCenterX() - 1.0f;
 		float rcy = 2.0f * guiText.getBoxCenterY() - 1.0f;
 		float rcz = 0;
-
 		fontModel.set(x, y, 0.0f, scale, scale, 1.0f, 0.0f, 0.0f, rot, rcx, rcy, rcz);
 	}
 }

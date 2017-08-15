@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.event;
+package com.grillecube.client.event.world;
 
 import com.grillecube.common.event.Event;
 

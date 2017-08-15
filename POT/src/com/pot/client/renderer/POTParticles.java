@@ -4,7 +4,7 @@ import java.util.Random;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.grillecube.client.renderer.event.EventPreRender;
+import com.grillecube.client.event.renderer.EventPreRender;
 import com.grillecube.client.renderer.world.particles.ParticleBillboarded;
 import com.grillecube.client.renderer.world.particles.ParticleRenderer;
 import com.grillecube.client.renderer.world.particles.TextureSprite;
