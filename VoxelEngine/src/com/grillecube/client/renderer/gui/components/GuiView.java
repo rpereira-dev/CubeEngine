@@ -11,4 +11,5 @@ public abstract class GuiView extends Gui {
 	public GuiView() {
 		super();
 	}
+
 }

@@ -7,14 +7,15 @@ import com.grillecube.client.renderer.gui.font.FontModel;
  * a parameter which recalculate the box dimensions automatically when changing
  * the text or the font size
  */
-public class GuiTextParameterTextCenterYBox extends GuiParameter<GuiText> {
+public class GuiTextParameterTextAlignRight extends GuiParameter<GuiText> {
+
 	private final float offset;
 
-	public GuiTextParameterTextCenterYBox() {
+	public GuiTextParameterTextAlignRight() {
 		this(0.0f);
 	}
 
-	public GuiTextParameterTextCenterYBox(float offset) {
+	public GuiTextParameterTextAlignRight(float offset) {
 		super();
 		this.offset = offset;
 	}
@@ -22,7 +23,7 @@ public class GuiTextParameterTextCenterYBox extends GuiParameter<GuiText> {
 	@Override
 	public void run(GuiText guiText) {
 		FontModel fontModel = guiText.getFontModel();
-		float y = 2.0f * guiText.getBoxCenterY() - guiText.getTextHeight() - 1.0f + offset;
-		fontModel.setPosition(fontModel.getX(), y, 1.0f);
+		float x = 1.0f - fontModel.getTextWidth() * fontModel.getScaleX() + this.offset;
+		fontModel.setPosition(x, fontModel.getY(), 1.0f);
 	}
 }

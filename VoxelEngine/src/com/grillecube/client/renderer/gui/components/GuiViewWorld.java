@@ -13,18 +13,10 @@ public class GuiViewWorld extends GuiView {
 	}
 
 	@Override
-	public void onAddedTo(GuiRenderer renderer) {
+	protected void onInitialized(GuiRenderer renderer) {
 		this.txWorld = new GuiTexture();
 		this.txWorld.setTexture(VoxelEngineClient.instance().getRenderer().getFBOTexture(), 0.0f, 0.0f, 1.0f, 1.0f);
 		this.addChild(this.txWorld);
-	}
-
-	@Override
-	public void onRemovedFrom(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onInitialized(GuiRenderer renderer) {
 	}
 
 	@Override

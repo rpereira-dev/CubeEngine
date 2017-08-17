@@ -196,11 +196,13 @@ public class GuiTextPrompt2 extends GuiText implements GLFWListenerChar, GLFWLis
 	}
 
 	@Override
-	protected void onInitialized(GuiRenderer renderer) {
+	protected void onInitialized(GuiRenderer guiRenderer) {
+		this.addListeners(guiRenderer.getParent().getGLFWWindow());
 	}
 
 	@Override
 	protected void onDeinitialized(GuiRenderer renderer) {
+		this.removeListeners();
 	}
 
 	@Override
@@ -219,16 +221,6 @@ public class GuiTextPrompt2 extends GuiText implements GLFWListenerChar, GLFWLis
 	private final void removeListeners() {
 		this.glfwWindow.removeCharListener(this);
 		this.glfwWindow.removeKeyPressListener(this);
-	}
-
-	@Override
-	public void onAddedTo(GuiRenderer guiRenderer) {
-		this.addListeners(guiRenderer.getParent().getGLFWWindow());
-	}
-
-	@Override
-	public void onRemovedFrom(GuiRenderer guiRenderer) {
-		this.removeListeners();
 	}
 
 	@Override

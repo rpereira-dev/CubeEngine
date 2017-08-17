@@ -14,14 +14,14 @@
 
 package com.grillecube.client.renderer.camera;
 
-import com.grillecube.client.renderer.gui.components.GuiViewWorld;
+import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 
 public class CameraPicker {
 
-	private GuiViewWorld guiViewWorld;
+	private Gui guiRelative;
 	private final CameraProjective camera;
 	private Vector3f ray; // world space ray
 
@@ -30,8 +30,8 @@ public class CameraPicker {
 		this.ray = new Vector3f();
 	}
 
-	public final void setGuiViewWorldRelative(GuiViewWorld guiViewWorld) {
-		this.guiViewWorld = guiViewWorld;
+	public final void setGuiRelative(Gui guiRelative) {
+		this.guiRelative = guiRelative;
 	}
 
 	public void update() {
@@ -39,9 +39,9 @@ public class CameraPicker {
 		float mouseX = (float) (this.getMouseX() / this.camera.getWindow().getWidth());
 		float mouseY = (float) (1.0f - this.getMouseY() / this.camera.getWindow().getHeight());
 
-		if (this.guiViewWorld != null) {
+		if (this.guiRelative != null) {
 			Vector4f mouse = new Vector4f(mouseX, mouseY, 0.0f, 1.0f);
-			Matrix4f windowToGuiChangeOfBasis = this.guiViewWorld.getWindowToGuiChangeOfBasis();
+			Matrix4f windowToGuiChangeOfBasis = this.guiRelative.getWindowToGuiChangeOfBasis();
 			if (windowToGuiChangeOfBasis != null) {
 				Matrix4f.transform(windowToGuiChangeOfBasis, mouse, mouse);
 				mouseX = mouse.x;

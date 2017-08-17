@@ -15,11 +15,15 @@
 package com.grillecube.client.renderer.gui.components;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
+import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.animations.GuiAnimation;
 import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerChar;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerKeyPress;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseExit;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseHover;
@@ -79,6 +83,8 @@ public abstract class Gui {
 	private ArrayList<GuiListenerMouseExit<?>> listeners_mouse_exit;
 	private ArrayList<GuiListenerMouseLeftRelease<?>> listeners_mouse_left_release;
 	private ArrayList<GuiListenerMouseLeftPress<?>> listeners_mouse_left_press;
+	private ArrayList<GuiListenerKeyPress<?>> listeners_key_press;
+	private ArrayList<GuiListenerChar<?>> listeners_char;
 
 	public static final int STATE_INITIALIZED = (1 << 0);
 	public static final int STATE_MOUSE_IN = (1 << 1);
@@ -86,10 +92,18 @@ public abstract class Gui {
 	public static final int STATE_FOCUS_REQUESTED = (1 << 3);
 	public static final int STATE_LEFT_PRESSED = (1 << 4);
 
+	public static final Comparator<? super Gui> WEIGHT_COMPARATOR = new Comparator<Gui>() {
+		@Override
+		public int compare(Gui left, Gui right) {
+			return (left.getWeight() - right.getWeight());
+		}
+	};
+
 	/** gui state */
 	private int state;
-	private float localAspectRatio;
-	private float totalAspectRatio;
+	private float localAspectRatio = 1.0f;
+	private float totalAspectRatio = 1.0f;
+	private int weight;
 
 	public Gui() {
 		this.children = null;
@@ -110,8 +124,26 @@ public abstract class Gui {
 		this.listeners_mouse_exit = null;
 		this.listeners_mouse_left_release = null;
 		this.listeners_mouse_left_press = null;
+		this.listeners_key_press = null;
+		this.listeners_char = null;
 		this.state = 0;
 
+	}
+
+	/** a listener to the mouse hovering the gui */
+	public void addListener(GuiListenerKeyPress<?> listener) {
+		if (this.listeners_key_press == null) {
+			this.listeners_key_press = new ArrayList<GuiListenerKeyPress<?>>();
+		}
+		this.listeners_key_press.add(listener);
+	}
+
+	/** a listener to the mouse hovering the gui */
+	public void addListener(GuiListenerChar<?> listener) {
+		if (this.listeners_char == null) {
+			this.listeners_char = new ArrayList<GuiListenerChar<?>>();
+		}
+		this.listeners_char.add(listener);
 	}
 
 	/** a listener to the mouse hovering the gui */
@@ -152,6 +184,22 @@ public abstract class Gui {
 			this.listeners_mouse_left_press = new ArrayList<GuiListenerMouseLeftPress<?>>();
 		}
 		this.listeners_mouse_left_press.add(listener);
+	}
+
+	/** a listener to the mouse hovering the gui */
+	public void removeListener(GuiListenerKeyPress<?> listener) {
+		if (this.listeners_key_press == null) {
+			return;
+		}
+		this.listeners_key_press.remove(listener);
+	}
+
+	/** a listener to the mouse hovering the gui */
+	public void removeListener(GuiListenerChar<?> listener) {
+		if (this.listeners_char == null) {
+			return;
+		}
+		this.listeners_char.remove(listener);
 	}
 
 	/** a listener to the mouse hovering the gui */
@@ -308,6 +356,14 @@ public abstract class Gui {
 	}
 
 	public final void setBox(float x, float y, float width, float height, float rot, boolean runParameters) {
+
+		if (width == 0.0f) {
+			width = 0.000000000001f;
+		}
+		if (height == 0.0f) {
+			height = 0.000000000001f;
+		}
+
 		// positions
 		this.boxPos.set(x, y);
 		this.boxSize.set(width, height);
@@ -389,9 +445,15 @@ public abstract class Gui {
 	}
 
 	/** initialize the gui */
-	private final void initialize(GuiRenderer renderer) {
+	protected final void initialize(GuiRenderer renderer) {
 		this.setState(STATE_INITIALIZED);
 		this.onInitialized(renderer);
+
+		if (this.children != null) {
+			for (Gui gui : this.children) {
+				gui.initialize(renderer);
+			}
+		}
 	}
 
 	/** initialize the gui: this function is call in opengl main thread */
@@ -402,8 +464,15 @@ public abstract class Gui {
 		if (!this.hasState(STATE_INITIALIZED)) {
 			return;
 		}
+
 		this.unsetState(STATE_INITIALIZED);
 		this.onDeinitialized(renderer);
+
+		if (this.children != null) {
+			for (Gui gui : this.children) {
+				gui.deinitialize(renderer);
+			}
+		}
 	}
 
 	/** deinitialize the gui: this function is call in opengl main thread */
@@ -453,7 +522,23 @@ public abstract class Gui {
 		}
 	}
 
-	static int i = 0;
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public final void onCharPressed(GLFWWindow window, int codepoint) {
+		if (this.listeners_char != null) {
+			for (GuiListenerChar listener : this.listeners_char) {
+				listener.invokeKeyPress(this, window, codepoint);
+			}
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public final void onKeyPressed(GLFWWindow glfwWindow, int key, int scancode, int mods) {
+		if (this.listeners_key_press != null) {
+			for (GuiListenerKeyPress listener : this.listeners_key_press) {
+				listener.invokeKeyPress(this, glfwWindow, key, scancode, mods);
+			}
+		}
+	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void updateState(float x, float y, boolean pressed) {
@@ -547,6 +632,11 @@ public abstract class Gui {
 		}
 		for (GuiParameter<Gui> param : this.params) {
 			param.run(this);
+		}
+		if (this.children != null) {
+			for (Gui child : this.children) {
+				child.runParameters(); // TODO keep this?
+			}
 		}
 	}
 
@@ -643,6 +733,7 @@ public abstract class Gui {
 		gui.onAddedTo(this);
 		gui.updateTransformationMatrices(this.guiToWindowChangeOfBasis);
 		gui.updateAspectRatio(this.getTotalAspectRatio());
+		gui.setWeight(this.getWeight() + 1);
 	}
 
 	/** remove a child from this gui */
@@ -656,12 +747,6 @@ public abstract class Gui {
 		}
 		gui.onRemovedFrom(gui);
 	}
-
-	/** called when this gui is added to the guirenderer */
-	public abstract void onAddedTo(GuiRenderer guiRenderer);
-
-	/** called when this gui is removed from the guirenderer */
-	public abstract void onRemovedFrom(GuiRenderer guiRenderer);
 
 	/** called when this gui is added to another gui */
 	public abstract void onAddedTo(Gui gui);
@@ -727,6 +812,18 @@ public abstract class Gui {
 				gui.onWindowResized(width, height);
 			}
 		}
+	}
+
+	public final int getWeight() {
+		return (this.weight);
+	}
+
+	/**
+	 * gui weight (the greater the weight is, the most this gui will be placed
+	 * in foreground layers). This weight is relative to the window
+	 */
+	public final void setWeight(int weight) {
+		this.weight = weight;
 	}
 
 }

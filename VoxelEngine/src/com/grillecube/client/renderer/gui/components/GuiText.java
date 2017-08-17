@@ -29,12 +29,11 @@ public abstract class GuiText extends Gui {
 	public GuiText() {
 		super();
 		this.fontModel = new FontModel(GuiRenderer.DEFAULT_FONT);
-		this.fontModel.setAspect(1 / 1.6f);
 	}
 
 	/** set text to render */
 	public final void setText(String str) {
-		if (this.fontModel.getText().equals(str)) {
+		if (this.fontModel.getText() != null && this.fontModel.getText().equals(str)) {
 			return;
 		}
 		this.fontModel.setText(str);
@@ -90,6 +89,7 @@ public abstract class GuiText extends Gui {
 
 	public final void setFontSize(float x, float y) {
 		this.fontModel.setScale(x, y, 1.0f);
+		this.runParameters();
 	}
 
 	public FontModel getFontModel() {
@@ -99,19 +99,12 @@ public abstract class GuiText extends Gui {
 	@Override
 	protected void onInitialized(GuiRenderer guiRenderer) {
 		this.fontModel.initialize();
+		this.resizeFontModelAspect(1 / 1.60f);
 	}
 
 	@Override
 	protected void onDeinitialized(GuiRenderer guiRenderer) {
 		this.fontModel.deinitialize();
-	}
-
-	@Override
-	public void onAddedTo(GuiRenderer guiRenderer) {
-	}
-
-	@Override
-	public void onRemovedFrom(GuiRenderer guiRenderer) {
 	}
 
 	@Override

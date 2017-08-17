@@ -1,6 +1,8 @@
 package com.grillecube.client;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -14,6 +16,7 @@ import com.grillecube.client.sound.ALH;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.World;
 
@@ -39,6 +42,8 @@ public class VoxelEngineClient extends VoxelEngine {
 		// init opengl
 		GLH.glhInit();
 		this.glContext = GLH.glhCreateContext(GLH.glhCreateWindow());
+		File[] files = new File(R.getResPath("textures/blocks/")).listFiles();
+		this.getGLFWWindow().setIcon(files[new Random().nextInt(files.length)]);
 		GLH.glhSetContext(this.glContext);
 
 		Logger.get().log(Logger.Level.FINE, "OpenGL initiated.");

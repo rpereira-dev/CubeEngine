@@ -251,4 +251,8 @@ public class WorldRenderer extends Renderer {
 			renderer.getTasks(engine, tasks, world, camera);
 		}
 	}
+
+	public ModelRenderer getModelRenderer() {
+		return (this.modelRenderer);
+	}
 }

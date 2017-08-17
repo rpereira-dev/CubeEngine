@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 
+import com.grillecube.client.opengl.GLFWListenerChar;
 import com.grillecube.client.opengl.GLFWListenerKeyPress;
 import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.opengl.GLH;
@@ -29,6 +30,7 @@ import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
+import com.grillecube.client.renderer.gui.components.GuiView;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAdjustBox;
 import com.grillecube.client.renderer.gui.font.Font;
 import com.grillecube.client.renderer.gui.font.FontModel;
@@ -50,11 +52,17 @@ public class GuiRenderer extends Renderer {
 	/** Fonts */
 	private Map<String, Font> fonts;
 
-	/** listener */
-	private GLFWListenerKeyPress keyListeners;
+	/** the main gui, parent of every other guis */
+	private Gui mainGui;
 
-	/** view */
-	private ArrayList<Gui> guis;
+	/** gui rendering list (sorted by layers) */
+	private ArrayList<Gui> renderingList;
+	// private Gui guiFocused;
+	// private int guiFocusedIndex;
+
+	/** listeners */
+	private GLFWListenerChar charListener;
+	private GLFWListenerKeyPress keyListener;
 
 	public GuiRenderer(MainRenderer renderer) {
 		super(renderer);
@@ -66,31 +74,60 @@ public class GuiRenderer extends Renderer {
 		this.programColoredQuad = new ProgramColoredQuad();
 		this.programTexturedQuad = new ProgramTexturedQuad();
 		this.programFont = new ProgramFont();
-		this.guis = new ArrayList<Gui>();
+		this.mainGui = new GuiView() {
+
+			@Override
+			protected void onInitialized(GuiRenderer renderer) {
+			}
+
+			@Override
+			protected void onDeinitialized(GuiRenderer renderer) {
+			}
+
+			@Override
+			protected void onUpdate(float x, float y, boolean pressed) {
+			}
+
+			@Override
+			public void onAddedTo(Gui gui) {
+			}
+
+			@Override
+			public void onRemovedFrom(Gui gui) {
+			}
+
+		};
+		this.renderingList = new ArrayList<Gui>();
 		this.loadFonts();
 		this.createListeners();
 	}
 
 	@Override
 	public void deinitialize() {
-		for (Gui gui : this.guis) {
-			gui.deinitialize(this);
-		}
+		this.mainGui.deinitialize(this);
 		this.fonts.clear();
 		this.programColoredQuad.delete();
 		this.programTexturedQuad.delete();
 		this.programFont.delete();
-		this.getParent().getGLFWWindow().removeKeyPressListener(this.keyListeners);
+		this.getParent().getGLFWWindow().removeKeyPressListener(this.keyListener);
+		this.getParent().getGLFWWindow().removeCharListener(this.charListener);
 	}
 
 	private final void createListeners() {
-		this.keyListeners = new GLFWListenerKeyPress() {
+		this.keyListener = new GLFWListenerKeyPress() {
 			@Override
 			public void invokeKeyPress(GLFWWindow glfwWindow, int key, int scancode, int mods) {
-				// TODO call key press in focused gui
+				mainGui.onKeyPressed(glfwWindow, key, scancode, mods);
 			}
 		};
-		this.getParent().getGLFWWindow().addKeyPressListener(this.keyListeners);
+
+		this.charListener = new GLFWListenerChar() {
+			@Override
+			public void invokeChar(GLFWWindow window, int codepoint) {
+				mainGui.onCharPressed(window, codepoint);
+			}
+		};
+		this.getParent().getGLFWWindow().addCharListener(this.charListener);
 	}
 
 	/** load every fonts */
@@ -128,8 +165,24 @@ public class GuiRenderer extends Renderer {
 
 	@Override
 	public void render() {
-		for (Gui gui : this.guis) {
+		// sort the guis by there weights
+		this.renderingList.clear();
+		this.addGuisToRenderingList(this.mainGui);
+		this.renderingList.sort(Gui.WEIGHT_COMPARATOR);
+
+		// render them in the correct order
+		for (Gui gui : this.renderingList) {
 			gui.render(this);
+		}
+	}
+
+	/** a recursive helper to generate rendering list */
+	private final void addGuisToRenderingList(Gui parent) {
+		if (parent.getChildren() != null) {
+			for (Gui child : parent.getChildren()) {
+				this.renderingList.add(child);
+				this.addGuisToRenderingList(child);
+			}
 		}
 	}
 
@@ -156,58 +209,38 @@ public class GuiRenderer extends Renderer {
 
 		GLFWWindow window = this.getParent().getGLFWWindow();
 		float mx = (float) (window.getMouseX() / window.getWidth());
-		float my = (float) (window.getMouseY() / window.getHeight());
+		float my = (float) (1.0f - window.getMouseY() / window.getHeight());
 		boolean pressed = window.isMouseLeftPressed();
-
-		for (Gui gui : this.guis) {
-			gui.update(mx, 1 - my, pressed);
-		}
-
-		// TODO
-		// {
-		// if (gui != this.guiFocused && gui.hasFocusRequest()) {
-		// this.setGuiFocused(gui);
-		// }
-		// }
-		//
-		// if (this.guiFocused != null && !this.guiFocused.hasFocusRequest()) {
-		// this.setGuiFocused(null);
-		// }
-		// this.onUpdate();
-		// view.update();
+		this.mainGui.update(mx, my, pressed);
 	}
 
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<Callable<Taskable>> tasks) {
-		tasks.add(engine.new Callable<Taskable>() {
-
-			@Override
-			public Taskable call() throws Exception {
-				updateViews();
-				return (GuiRenderer.this);
-			}
-
-			@Override
-			public String getName() {
-				return ("GuiRenderer guis update");
-			}
-		});
+		// TODO : generate rendering list here
+		this.updateViews();
+		// tasks.add(engine.new Callable<Taskable>() {
+		//
+		// @Override
+		// public Taskable call() throws Exception {
+		// updateViews();
+		// return (GuiRenderer.this);
+		// }
+		//
+		// @Override
+		// public String getName() {
+		// return ("GuiRenderer guis update");
+		// }
+		// });
 	}
 
 	/** add a view to render */
 	public final void addGui(Gui gui) {
-		this.guis.add(gui);
-		gui.onAddedTo(this);
+		this.mainGui.addChild(gui);
 	}
 
 	/** remove a view to render */
 	public final void removeGui(Gui gui) {
-		this.guis.remove(gui);
-		gui.onRemovedFrom(this);
-	}
-
-	public Gui getTopGui() {
-		return (this.guis.size() > 0 ? this.guis.get(0) : null);
+		this.mainGui.removeChild(gui);
 	}
 
 	/** toast a message on the screen */
@@ -268,8 +301,6 @@ public class GuiRenderer extends Renderer {
 	}
 
 	public void onWindowResize(int width, int height) {
-		for (Gui gui : this.guis) {
-			gui.onWindowResized(width, height);
-		}
+		this.mainGui.onWindowResized(width, height);
 	}
 }

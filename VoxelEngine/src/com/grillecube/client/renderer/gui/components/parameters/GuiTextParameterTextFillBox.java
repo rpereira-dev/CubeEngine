@@ -8,6 +8,18 @@ import com.grillecube.client.renderer.gui.font.FontModel;
  * two axis (x or y), and then resize the other one
  */
 public class GuiTextParameterTextFillBox extends GuiParameter<GuiText> {
+
+	private final float correction;
+
+	public GuiTextParameterTextFillBox(float correction) {
+		super();
+		this.correction = correction;
+	}
+
+	public GuiTextParameterTextFillBox() {
+		this(1.0f);
+	}
+
 	@Override
 	public void run(GuiText guiText) {
 		FontModel fontModel = guiText.getFontModel();
@@ -19,7 +31,7 @@ public class GuiTextParameterTextFillBox extends GuiParameter<GuiText> {
 
 		float scalex = 2.0f * guiText.getBoxWidth() / fontModel.getTextWidth();
 		float scaley = 2.0f * guiText.getBoxHeight() / fontModel.getTextHeight();
-		float scale = scalex < scaley ? scalex : scaley;
+		float scale = (scalex < scaley ? scalex : scaley) * this.correction;
 
 		float rot = guiText.getBoxRotation();
 

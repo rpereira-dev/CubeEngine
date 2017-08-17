@@ -77,7 +77,7 @@ public class FontModel {
 
 	public FontModel(Font font) {
 		this.state = 0;
-		this.aspect = 1 / 1.6f;
+		this.aspect = 1.0f;
 		this.text = new String();
 		this.textChars = new ArrayList<FontChar>();
 		this.font = font;
@@ -143,14 +143,15 @@ public class FontModel {
 	}
 
 	private final void updateFontChars() {
+
+		this.textChars.clear();
+
 		if (this.font == null || this.text == null || this.text.length() == 0) {
-			this.textChars = null;
 			this.textWidth = 0;
 			this.textHeight = 0;
 			return;
 		}
 
-		this.textChars.clear();
 		int length = this.text.length();
 
 		float maxwidth = 0;

@@ -125,7 +125,6 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 
 		this.initialiseDefaultVAO();
 		this.initializeMainFBO();
-		this.resizeMainFBO(this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
 
 		this.worldRenderer = new WorldRenderer(this);
 		this.guiRenderer = new GuiRenderer(this);
@@ -137,7 +136,8 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		Logger.get().log(Level.FINE, "Initializing " + this.guiRenderer.getClass().getSimpleName());
 		GLH.glhCheckError("pre guirenderer starts");
 		this.guiRenderer.initialize();
-		// this.guiRenderer.addView(new GuiViewDefault());
+		this.invokeResize(this.getGLFWWindow(), this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
+
 		GLH.glhCheckError("post guirenderer starts");
 
 		this.finalProcessProgram = new GLProgramPostProcessing(R.getResPath("shaders/post_process/post_processing.fs"));

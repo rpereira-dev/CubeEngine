@@ -42,14 +42,6 @@ public class GuiTexture extends Gui {
 	}
 
 	@Override
-	public void onAddedTo(GuiRenderer guiRenderer) {
-	}
-
-	@Override
-	public void onRemovedFrom(GuiRenderer guiRenderer) {
-	}
-
-	@Override
 	public void onAddedTo(Gui gui) {
 	}
 

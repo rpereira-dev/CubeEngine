@@ -1,12 +1,12 @@
-package com.grillecube.client.renderer.model.editor.gui;
+package com.grillecube.client.renderer.model.editor.gui.components;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiColoredQuad;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
+import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAlignLeft;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterYBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
 
 public class GuiLabelEditor extends Gui {
 
@@ -16,25 +16,21 @@ public class GuiLabelEditor extends Gui {
 	public GuiLabelEditor() {
 		super();
 		this.guiColoredQuad = new GuiColoredQuad();
-		this.guiColoredQuad.setBox(0, 0, 1, 1, 0);
-		this.guiColoredQuad.setColor(0.2f, 0.2f, 0.2f, 0.5f);
+		this.guiColoredQuad.setColor(0.0f, 0.0f, 0.0f, 0.0f);
 		this.addChild(this.guiColoredQuad);
 
 		this.guiLabel = new GuiLabel();
-		this.guiLabel.setBox(0.05f, 0.05f, 0.90f, 0.90f, 0);
 		this.guiLabel.setPosition(0.0f, 0.0f);
 		this.guiLabel.setText("Hello world");
-		this.guiLabel.addParameter(new GuiTextParameterTextFillBox());
+		this.guiLabel.setFontColor(0, 0, 0, 1.0f);
+		this.guiLabel.addParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.guiLabel.addParameter(new GuiTextParameterTextCenterYBox());
-		this.guiLabel.addListener(new GuiListenerMouseEnter<GuiLabel>() {
-
-			@Override
-			public void invokeMouseEnter(GuiLabel gui, double mousex, double mousey) {
-				System.out.println("in");
-			}
-
-		});
+		this.guiLabel.addParameter(new GuiTextParameterTextAlignLeft(0.1f));
 		this.addChild(this.guiLabel);
+	}
+
+	public final void setText(String value) {
+		this.guiLabel.setText(value);
 	}
 
 	public final GuiLabel getLabel() {
@@ -55,14 +51,6 @@ public class GuiLabelEditor extends Gui {
 
 	@Override
 	protected void onUpdate(float x, float y, boolean pressed) {
-	}
-
-	@Override
-	public void onAddedTo(GuiRenderer guiRenderer) {
-	}
-
-	@Override
-	public void onRemovedFrom(GuiRenderer guiRenderer) {
 	}
 
 	@Override

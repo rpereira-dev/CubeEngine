@@ -2,6 +2,7 @@ package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.maths.Vector4f;
 
 public class GuiColoredQuad extends Gui {
 
@@ -15,6 +16,10 @@ public class GuiColoredQuad extends Gui {
 		super();
 	}
 
+	public final void setColor(Vector4f rgba) {
+		this.setColor(rgba.x, rgba.y, rgba.z, rgba.w);
+	}
+
 	public final void setColor(float r, float g, float b, float a) {
 		this.r = r;
 		this.g = g;
@@ -26,14 +31,6 @@ public class GuiColoredQuad extends Gui {
 	protected void onRender(GuiRenderer guiRenderer) {
 		Matrix4f matrix = super.getGuiToGLChangeOfBasis();
 		guiRenderer.renderColoredQuad(this.r, this.g, this.b, this.a, matrix);
-	}
-
-	@Override
-	public void onAddedTo(GuiRenderer guiRenderer) {
-	}
-
-	@Override
-	public void onRemovedFrom(GuiRenderer guiRenderer) {
 	}
 
 	@Override

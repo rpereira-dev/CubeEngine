@@ -2,7 +2,6 @@ package com.pot.client.renderer.model;
 
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelInitializer;
-import com.grillecube.client.renderer.model.collada.ColladaModelInitializer;
 import com.grillecube.client.renderer.model.json.JSONModelInitializer;
 import com.grillecube.client.resources.ModelManager;
 import com.grillecube.client.resources.ResourceManagerClient;
@@ -28,11 +27,6 @@ public class POTModels implements IModResource {
 	public static final int registerJSONModel(ResourceManager manager, String dirpath,
 			Class<? extends Entity> entityClass) {
 		return (registerModel(manager, new JSONModelInitializer(dirpath), entityClass));
-	}
-
-	public static final int registerColladaModel(ResourceManager manager, String dirpath,
-			Class<? extends Entity> entityClass) {
-		return (registerModel(manager, new ColladaModelInitializer(dirpath), entityClass));
 	}
 
 	public static final int registerModel(ResourceManager manager, ModelInitializer modelInitializer,

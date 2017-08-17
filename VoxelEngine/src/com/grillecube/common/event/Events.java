@@ -28,7 +28,7 @@ public class Events implements IModResource {
 
 		// engine events
 		eventManager.registerEvent(EventGetTasks.class);
-		eventManager.registerEvent(EventPostLoop.class);
+		eventManager.registerEvent(EventPreLoop.class);
 		eventManager.registerEvent(EventPostLoop.class);
 	}
 

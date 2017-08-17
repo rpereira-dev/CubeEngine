@@ -14,6 +14,10 @@
 
 package com.grillecube.client.opengl;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 
@@ -21,6 +25,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
@@ -29,6 +34,7 @@ import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL11;
 
 import com.grillecube.client.opengl.object.GLObject;
+import com.grillecube.client.opengl.object.ImageUtils;
 
 /**
  * 
@@ -55,7 +61,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 	private int _screeny;
 
 	/** window pointer */
-	private long _ptr;
+	private long windowPtr;
 
 	/** window size (in pixels) */
 	private int width;
@@ -122,8 +128,8 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
 		}
 
-		this._ptr = GLFW.glfwCreateWindow(width, height, title, 0, 0);
-		if (this._ptr == 0) {
+		this.windowPtr = GLFW.glfwCreateWindow(width, height, title, 0, 0);
+		if (this.windowPtr == 0) {
 			System.err.println("Couldnt create glfw window");
 			return;
 		}
@@ -189,7 +195,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 				GLFWWindow.this.invokeWindowResize(width, height);
 			}
 		};
-		GLFW.glfwSetWindowSizeCallback(this._ptr, this._resize_callback);
+		GLFW.glfwSetWindowSizeCallback(this.windowPtr, this._resize_callback);
 
 		this._focus_callback = new GLFWWindowFocusCallback() {
 			@Override
@@ -197,7 +203,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 				_focus = focused;
 			}
 		};
-		GLFW.glfwSetWindowFocusCallback(this._ptr, this._focus_callback);
+		GLFW.glfwSetWindowFocusCallback(this.windowPtr, this._focus_callback);
 
 	}
 
@@ -346,7 +352,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 				GLFWWindow.this.invokeCharListener(codepoint);
 			}
 		};
-		GLFW.glfwSetCharCallback(this._ptr, this._callback_char);
+		GLFW.glfwSetCharCallback(this.windowPtr, this._callback_char);
 
 		this._callback_key = new GLFWKeyCallback() {
 			@Override
@@ -358,7 +364,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 				}
 			}
 		};
-		GLFW.glfwSetKeyCallback(this._ptr, this._callback_key);
+		GLFW.glfwSetKeyCallback(this.windowPtr, this._callback_key);
 	}
 
 	private void initMouseEvents() {
@@ -389,9 +395,9 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 				}
 			}
 		};
-		GLFW.glfwSetScrollCallback(this._ptr, this._callback_scroll);
-		GLFW.glfwSetCursorPosCallback(this._ptr, this._callback_cursor_pos);
-		GLFW.glfwSetMouseButtonCallback(this._ptr, this._callback_mouse_button);
+		GLFW.glfwSetScrollCallback(this.windowPtr, this._callback_scroll);
+		GLFW.glfwSetCursorPosCallback(this.windowPtr, this._callback_cursor_pos);
+		GLFW.glfwSetMouseButtonCallback(this.windowPtr, this._callback_mouse_button);
 	}
 
 	/** in pixels */
@@ -402,11 +408,11 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 	/** enable or disable cursor */
 	public void setCursor(boolean enable) {
 		int value = (enable) ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_DISABLED;
-		GLFW.glfwSetInputMode(this._ptr, GLFW.GLFW_CURSOR, value);
+		GLFW.glfwSetInputMode(this.windowPtr, GLFW.GLFW_CURSOR, value);
 	}
 
 	public boolean isCursorEnabled() {
-		return (GLFW.glfwGetInputMode(this._ptr, GLFW.GLFW_CURSOR) != GLFW.GLFW_CURSOR_DISABLED);
+		return (GLFW.glfwGetInputMode(this.windowPtr, GLFW.GLFW_CURSOR) != GLFW.GLFW_CURSOR_DISABLED);
 	}
 
 	/** center the mouse on the screen */
@@ -416,12 +422,12 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 
 	/** set cursor position */
 	public void setCursorPos(double x, double y) {
-		GLFW.glfwSetCursorPos(this._ptr, x, y);
+		GLFW.glfwSetCursorPos(this.windowPtr, x, y);
 	}
 
 	/** set window title */
 	public void setTitle(String title) {
-		GLFW.glfwSetWindowTitle(this._ptr, title);
+		GLFW.glfwSetWindowTitle(this.windowPtr, title);
 	}
 
 	/** enable or disable vsync (0 == disable, 1 == enable) */
@@ -432,7 +438,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 	/** stop the window */
 	@Override
 	public void delete() {
-		GLFW.glfwDestroyWindow(this._ptr);
+		GLFW.glfwDestroyWindow(this.windowPtr);
 	}
 
 	public float getAspectRatio() {
@@ -463,7 +469,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 	}
 
 	public void update() {
-		GLFW.glfwGetCursorPos(this._ptr, this.bufferX, this.bufferY);
+		GLFW.glfwGetCursorPos(this.windowPtr, this.bufferX, this.bufferY);
 		this.mouseX = this.bufferX.get();
 		this.mouseY = this.bufferY.get();
 		this.bufferX.clear();
@@ -496,7 +502,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 
 	/** should be call after rendering */
 	public void flushScreen() {
-		GLFW.glfwSwapBuffers(this._ptr);
+		GLFW.glfwSwapBuffers(this.windowPtr);
 		GLFW.glfwPollEvents();
 
 		this.prevmouseX = this.mouseX;
@@ -521,12 +527,12 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 
 	/** return true if glfw was close-requested */
 	public boolean shouldClose() {
-		return (GLFW.glfwWindowShouldClose(this._ptr));
+		return (GLFW.glfwWindowShouldClose(this.windowPtr));
 	}
 
 	/** get window GLFW pointer */
 	public long getPointer() {
-		return (this._ptr);
+		return (this.windowPtr);
 	}
 
 	/** get mouse X coordinate */
@@ -606,7 +612,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 	}
 
 	public void close() {
-		GLFW.glfwSetWindowShouldClose(this._ptr, true);
+		GLFW.glfwSetWindowShouldClose(this.windowPtr, true);
 	}
 
 	public boolean hasFocus() {
@@ -617,5 +623,38 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 		if (focus) {
 			GLFW.glfwFocusWindow(this.getPointer());
 		}
+	}
+
+	/** set the icon of this window */
+	public void setIcon(File file) {
+		this.setIcon(file.getAbsolutePath());
+	}
+
+	/** set the icon of this window */
+	public void setIcon(String imagePath) {
+		BufferedImage bufferedImage = ImageUtils.readImage(imagePath);
+		int imwidth = bufferedImage.getWidth();
+		int imheight = bufferedImage.getHeight();
+		GLFWImage image = GLFWImage.malloc();
+		ByteBuffer pixels = BufferUtils.createByteBuffer(imwidth * imheight * 4);
+		for (int y = 0; y < imheight; y++) {
+			for (int x = 0; x < imwidth; x++) {
+				Color color = new Color(bufferedImage.getRGB(x, y), true);
+				pixels.put((byte) color.getRed());
+				pixels.put((byte) color.getGreen());
+				pixels.put((byte) color.getBlue());
+				pixels.put((byte) color.getAlpha());
+			}
+		}
+		pixels.flip();
+		image.set(imwidth, imheight, pixels);
+
+		GLFWImage.Buffer images = GLFWImage.malloc(1);
+		images.put(0, image);
+
+		GLFW.glfwSetWindowIcon(this.windowPtr, images);
+
+		images.free();
+		image.free();
 	}
 }

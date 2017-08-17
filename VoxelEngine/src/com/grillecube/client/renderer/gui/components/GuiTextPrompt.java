@@ -57,26 +57,6 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 	}
 
 	@Override
-	public void onAddedTo(GuiRenderer guiRenderer) {
-		super.onAddedTo(guiRenderer);
-		this.glfwWindow = guiRenderer.getParent().getGLFWWindow();
-		if (this.glfwWindow != null) {
-			this.glfwWindow.addCharListener(this);
-			this.glfwWindow.addKeyPressListener(this);
-		}
-	}
-
-	@Override
-	public void onRemovedFrom(GuiRenderer guiRenderer) {
-		super.onRemovedFrom(guiRenderer);
-		if (this.glfwWindow != null) {
-			this.glfwWindow.removeCharListener(this);
-			this.glfwWindow.removeKeyPressListener(this);
-			this.glfwWindow = null;
-		}
-	}
-
-	@Override
 	public void invokeChar(GLFWWindow glfwWindow, int codepoint) {
 
 		if (!this.hasFocus()) {

@@ -6,7 +6,7 @@ public class LangManager extends GenericManager<HashMap<String, String>> {
 
 	private static LangManager _instance;
 
-	private HashMap<String, String> _lang;
+	private HashMap<String, String> lang;
 
 	public static int FR_FR;
 	public static int EN_US;
@@ -53,16 +53,16 @@ public class LangManager extends GenericManager<HashMap<String, String>> {
 
 	/** set the language to be use */
 	public void setLang(int langID) {
-		this._lang = this.getObjectByID(langID);
+		this.lang = this.getObjectByID(langID);
 	}
 
 	/** get the string with the given id */
 	public String getString(String strid) {
-		if (this._lang == null || strid == null || strid.length() == 0) {
+		if (this.lang == null || strid == null || strid.length() == 0) {
 			return (null);
 		}
 
-		return (this._lang.get(strid));
+		return (this.lang.get(strid));
 	}
 
 	private static String capitalizeStr(String str) {

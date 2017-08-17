@@ -20,6 +20,7 @@ import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAdjustBox;
+import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAlignLeft;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
@@ -121,38 +122,23 @@ public class GuiViewDebug extends GuiView {
 
 	@Override
 	protected void onInitialized(GuiRenderer renderer) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected void onDeinitialized(GuiRenderer renderer) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void onAddedTo(GuiRenderer renderer) {
 		this.label = new GuiLabel();
 		this.label.setFontSize(0.65f, 0.65f);
 		this.label.setFontColor(Gui.COLOR_BLUE);
+		this.label.addParameter(new GuiTextParameterTextAlignLeft(0.0f));
 		this.label.addParameter(new GuiTextParameterTextAdjustBox());
 		this.addChild(this.label);
 	}
 
 	@Override
-	public void onRemovedFrom(GuiRenderer renderer) {
-		// TODO Auto-generated method stub
+	protected void onDeinitialized(GuiRenderer renderer) {
 	}
 
 	@Override
 	public void onAddedTo(Gui gui) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onRemovedFrom(Gui gui) {
-		// TODO Auto-generated method stub
-
 	}
 }

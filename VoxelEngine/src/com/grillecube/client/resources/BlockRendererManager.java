@@ -144,7 +144,12 @@ public class BlockRendererManager extends GenericManager<String> {
 
 	private void exportTextureAtlas(String label, BufferedImage atlas) {
 		try {
-			ImageIO.write(atlas, "png", new File(R.getResPath("textures/blocks/atlas_" + label + ".png")));
+			File file = new File(R.getResPath("textures/block_atlas/" + label + ".png"));
+			if (!file.exists()) {
+				file.mkdirs();
+				file.createNewFile();
+			}
+			ImageIO.write(atlas, "png", file);
 		} catch (IOException e) {
 			Logger.get().log(Logger.Level.WARNING, "Cant save texture atlas: " + e.getMessage());
 		}

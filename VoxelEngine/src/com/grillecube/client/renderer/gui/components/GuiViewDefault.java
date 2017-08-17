@@ -6,7 +6,19 @@ public class GuiViewDefault extends GuiView {
 	private GuiLabel label;
 
 	@Override
-	public void onAddedTo(GuiRenderer renderer) {
+	public void onAddedTo(Gui gui) {
+	}
+
+	@Override
+	public void onRemovedFrom(Gui gui) {
+	}
+
+	@Override
+	protected void onUpdate(float x, float y, boolean mouse_in) {
+	}
+
+	@Override
+	protected void onInitialized(GuiRenderer renderer) {
 		this.label = new GuiLabel();
 		this.label.setPosition(-1, 1);
 		// this.label.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
@@ -23,26 +35,6 @@ public class GuiViewDefault extends GuiView {
 		this.label.addText("\n");
 		this.label.addText("Have fun using VoxelEngine 3D!");
 		this.addChild(this.label);
-	}
-
-	@Override
-	public void onRemovedFrom(GuiRenderer guiRenderer) {
-	}
-
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
-	}
-
-	@Override
-	protected void onUpdate(float x, float y, boolean mouse_in) {
-	}
-
-	@Override
-	protected void onInitialized(GuiRenderer renderer) {
 	}
 
 	@Override
