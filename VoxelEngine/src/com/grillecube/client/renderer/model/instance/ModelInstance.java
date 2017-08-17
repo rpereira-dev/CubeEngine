@@ -19,7 +19,7 @@ import java.util.Iterator;
 
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelSkeleton;
-import com.grillecube.client.renderer.model.animation.ModelAnimation;
+import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 import com.grillecube.common.world.entity.Entity;
 
 public class ModelInstance {
@@ -48,7 +48,7 @@ public class ModelInstance {
 		this.animationInstances = new ArrayList<AnimationInstance>();
 
 		// init animations
-		ModelAnimation modelAnimation = model.getAnimation(0);
+		ModelSkeletonAnimation modelAnimation = model.getAnimation(0);
 		if (modelAnimation != null) {
 			AnimationInstance instance = new AnimationInstance(modelAnimation);
 			instance.loop();

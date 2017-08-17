@@ -17,7 +17,7 @@ import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.animation.BoneTransform;
 import com.grillecube.client.renderer.model.animation.KeyFrame;
-import com.grillecube.client.renderer.model.animation.ModelAnimation;
+import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 import com.grillecube.common.JSONHelper;
 import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
@@ -257,7 +257,7 @@ public class JSONModelInitializer implements ModelInitializer {
 				keyFrames.add(keyFrame);
 			}
 
-			ModelAnimation modelAnimation = new ModelAnimation(name, duration, keyFrames);
+			ModelSkeletonAnimation modelAnimation = new ModelSkeletonAnimation(name, duration, keyFrames);
 			model.addAnimation(modelAnimation);
 		}
 	}

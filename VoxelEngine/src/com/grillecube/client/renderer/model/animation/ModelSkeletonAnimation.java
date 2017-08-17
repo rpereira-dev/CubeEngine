@@ -2,7 +2,7 @@ package com.grillecube.client.renderer.model.animation;
 
 import java.util.ArrayList;
 
-public class ModelAnimation {
+public class ModelSkeletonAnimation {
 
 	/** the animation name */
 	private final String name;
@@ -13,7 +13,7 @@ public class ModelAnimation {
 	/** animation length */
 	private final long duration;
 
-	public ModelAnimation(String name, long duration, ArrayList<KeyFrame> keyFrames) {
+	public ModelSkeletonAnimation(String name, long duration, ArrayList<KeyFrame> keyFrames) {
 		this.name = name;
 		this.duration = duration;
 		this.keyFrames = keyFrames;

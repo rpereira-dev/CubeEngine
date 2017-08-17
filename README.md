@@ -6,10 +6,6 @@ A Game engine for Voxel games, using OpenGL, GLFW, OpenAL, Netty
 
 -----------------------------------------------------------------------
 
-N.B: Project temporaly paused. Currently, this is an important year of my studies, and I won't have any more time to work on it.
-
------------------------------------------------------------------------
-
 ## HOW TO USE ##
         - >> git clone https://github.com/toss-dev/VoxelEngine.git
 
@@ -20,12 +16,11 @@ N.B: Project temporaly paused. Currently, this is an important year of my studie
 Then in Eclipse, import the project
 (You can also import the gradle project directly if you are using the Eclipse plugin)
 
-You now have 4 projects:
+You now have 3 projects:
 
 - VoxelEngine is the core engine
 - POT is a game implementation
 - Mod sample : a mod example, which will be imported by POT on launch
-- Model Editor : the Model Editor tools
 
 
 
@@ -43,28 +38,19 @@ Bot(tom): y-    ;    Top: y+
 
 # Terrains
 
-Terrains are chunks of the world. They are 16x16x16 blocks. They are a sort of six-trees, as each terrain contains pointer to the neighbors terrains (left, right, front, back, top, bot...). They contains 2 16x16x16 arrays (unidimensional for optimisation), one for each block light value (1 byte per block), and 1 for block ids (2 bytes per blocks). If the light value array is null, it means no block are emetting lights nearly. If the block id array is empty, it means the terrain is full of air. (This null values are key point in memory management)
+Terrains are chunks of the world. They are 16x16x16 blocks. They contains 2 16x16x16 arrays (unidimensional for optimisation), one for each block light value (1 byte per block), and 1 for block ids (2 bytes per blocks). If the light value array is null, it means no block are emetting lights nearly. If the block id array is empty, it means the terrain is full of air. (This null values are key point in memory management)
 
-Moreover, each terrains has a list of 'BlockInstance', which contains... blocks instances (see bellow
+Moreover, each terrains has a list of 'BlockInstance', which contains... blocks instances (see bellow)
 
 # Terrains meshes
 
-They are basically 1 gl vao and one gl vbo. A meshing algorythm fill a stack of vertex for each visible faces, which are then push to the vbo. Only visible faces data are push to the vbo. This is a crucial point!
+They are basically 1 gl vao and one gl vbo. Various meshing algorithm should be implemented.
 
-i.e: let [1] be a block at coordinates (0:0;0), and [2], à block at (0,1,0). Then the top face of [1] and the bottom face of [2] aren't visible, and so arent push to the stack, to the vbo, and so they are not rendered by opengl!
+Currently, I'm using the 'greedy' meshing algorithm (see https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/)
 
-The vertices pushed per faces depends on the block type (via Java function overload). Every block are cubes by default, but you can override the meshing function to generate any block mesh (i.e, liquid blocks are doing this
+When building a mesh, the Mesher iterates through all terrain's block, and get it 'BlockRenderer'.
 
-
-A mesh vertex contains 10 floats: positions (x, y, z), normals (x, y, z), texture coordinates (uvx, uvy), light value, reflection value
-
-Positions are relative to the terrain ([0,16]). And are transformed (scaled and translated) by a matrix gpu-side
-
-Normals: no need to normalise them, gpu will do it
-
-Texture coordinates depends on the texture registered on engine initialisation, some utilitaires functions are implemented 
-
-The light value depends on the light value of the block, and on ambiant occlusion
+A 'BlockRenderer' is an interface which is supposed to push a specific block vertices to the vertex stack, when the mesher meshes it.
 
 # Block
 
@@ -97,7 +83,9 @@ Algorithm:
 
 # Light
 
-//TODO
+The light system is based on SOA implementations (https://www.seedofandromeda.com/blogs/29-fast-flood-fill-lighting-in-a-blocky-voxel-game-pt-1)
+
+It is a flood filling algorithms, applied on byte arrays. The distinction between sunlight (ambiant lighting), and blocklights (lights) is made.
 
 # Particles
 
@@ -117,16 +105,25 @@ Supporting day/night cycles
 Climatic effects can be simulated using particles (dust, pollen, rain...)
 
 # Models
-- A 'Model' is contains all the data of a model, which is basically severals 'ModelPart', 'ModelSkin', 'ModelAnimation', 'ModelAttachementPoint'
-- A 'ModelPart' contains the mesh (VAO/VBO) of a model's part (i.e, arm, leg...). It also contains a list of 'ModelPartAttachmentPoint'
-- A 'ModelSkin' simply has a name, and a list of 'ModelPartSkin', one for each models part
-- A 'ModelSkinPart' is linked to one of the 'ModelPart' and is simply a VBO (which is set as the color attribute when rendering the 'ModelPart')
-- A 'ModelAnimation' represents a single animation of the global model (i.e dance, run, ...). It has a name and a list of 'ModelPartAnimation', and the global duration
-- A 'ModelPartAnimation' is linked to a 'ModelAnimation' and a 'ModelPart', so when an animation is played, each part can have it own animation-transformation. It contains a list of 'ModelAnimationFrame'
-- 'ModelAnimationFrame' is basically a key frame, it contains attributes: 'time', 'translation, 'rotation', 'rotation offset', 'scale'. Those key frames are interpolated on their time when the animation is playing 
-- 'ModelAttachementPoint' : TODO
-- 'ModelPartAttachmentPoint': TODO
-- 'ModelInstance', and all the classes like 'ModelXInstance' ('ModelPartInstance', 'ModelAnimationInstance'...) represents an instance of X. Then the global 'Model' is only allocated once, and only some specifix instance - required attributes are allocated. It allows to create, as an example, 10000 butterflies without having any memory issues
+3D models implementation is based on Skeleton system.
+The mesh vertex format is:
+
+(x, y, z, ux, uy, vx, vy, nx, ny, nz , b1, b2, b3, w1, w2, w3)
+('position', 'texture coordinates', 'normal', 'bones', 'weights')
+
+Each bones 'bn' correspond to the ID of a bone on the skeleton, and the corresponding weight 'wn' is a factor on how much does the bone transformation affect this vertex. (so when animating, the mesh stays static, the bones are transformed, and then we apply the same transformation to vertices but using these weights)
+
+
+- A 'Model' contains all the data of a model, which is basically a 'ModelSkeleton', a 'ModelMesh', 'List<ModelAnimation>', 'List<ModelSkin>'
+- 'ModelMesh' : contains the mesh (VAO/VBO) of the whole model
+- 'ModelSkin' simply has a name, and a texture.
+- 'ModelSkeletonAnimation' represents a single animation for a skeleton (i.e dance, run, ...). It has a name and a list of Key frames for transformed bones at given times.
+
+The ModelRenderer is only able to render 'ModelInstance', which are instances of a Model. This 'instance' system allows to get hundred of instances of the same model without performance loss.
+
+You should consider binding your model to a specific Entity, using the ModelManager and EntityManager on program initialization. (so when this Entity spawns, a new 'ModelInstance' is automatically bound to it), and so whole rendering process does the job independantly
+
+However, you can also dynamically bind an Entity and a Model, by creating a new 'ModelInstance', and add it to the ModelManager. (you should really not be doing this)
 
 # Entities
 An entity is an (moving) object of the world.
@@ -162,15 +159,18 @@ The WorldRenderer contains some 'Renderer', which are object which render parts 
 They are allocated when they are needed, and deallocated when they arent anymore properly
 For example, there is the ModelRenderer (which render every entity's model), the SkyRenderer, which render the sky, the TerrainRenderer...
 Any modder can register new world renderer if needed.
-First, the world is rendered to 2 FBOs, which are used for water reflection / refraction. (using clipping planes to optimize it)
-Then, the world is rendered to a 3rd FBO.
-Then the engine process the post processing effects to the 3rd FBO
-Finally, the final image hold by the 3'FBO (fbo's texture) is rendered to the screen
+The world is rendered to it own FBO and texture. It can be displayed using a 'GuiTexture' for example.
 
 • Gui Renderer:
 
-The engine implements a whole set of GUI objects.
-It can, for now, render labels (text), buttons, textures.
+Every concrete rendering are done here.
+
+# GUI System
+
+The engine implements it own GUI system, and a preset of GUI objects.
+The system is based on parent/child hierarchy. (coordinates are always relative to the parent)
+Each objects have a weight, which determines it layer when rendering.
+Events are handled properly.
 New font can easily be added to the game (one line of code), by using the hiero jar file (font generator), in the 'com.grillecube.renderer.gui.font' package
 
 # Sounds

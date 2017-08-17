@@ -2,7 +2,7 @@ package com.grillecube.client.renderer.model;
 
 import java.util.ArrayList;
 
-import com.grillecube.client.renderer.model.animation.ModelAnimation;
+import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 
 public class Model {
 
@@ -19,7 +19,7 @@ public class Model {
 	private ModelSkeleton skeleton;
 
 	/** the model animations */
-	private ArrayList<ModelAnimation> animations;
+	private ArrayList<ModelSkeletonAnimation> animations;
 
 	/** the skin list for this model */
 	private ArrayList<ModelSkin> skins;
@@ -36,7 +36,7 @@ public class Model {
 		this.mesh = new ModelMesh();
 		this.skeleton = new ModelSkeleton();
 		this.skins = new ArrayList<ModelSkin>();
-		this.animations = new ArrayList<ModelAnimation>();
+		this.animations = new ArrayList<ModelSkeletonAnimation>();
 	}
 
 	/** initialize this model, to be called in a gl context */
@@ -117,12 +117,12 @@ public class Model {
 	}
 
 	/** add an animation to the model */
-	public void addAnimation(ModelAnimation animation) {
+	public void addAnimation(ModelSkeletonAnimation animation) {
 		this.animations.add(animation);
 	}
 
 	/** get the animations this model can play */
-	public ModelAnimation getAnimation(int id) {
+	public ModelSkeletonAnimation getAnimation(int id) {
 		if (id < 0 || id >= this.animations.size()) {
 			return (null);
 		}

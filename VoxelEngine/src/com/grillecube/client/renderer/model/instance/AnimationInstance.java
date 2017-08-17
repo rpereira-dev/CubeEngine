@@ -3,12 +3,12 @@ package com.grillecube.client.renderer.model.instance;
 import java.util.ArrayList;
 
 import com.grillecube.client.renderer.model.animation.KeyFrame;
-import com.grillecube.client.renderer.model.animation.ModelAnimation;
+import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 
 public class AnimationInstance {
 
 	/** the animation */
-	private final ModelAnimation animation;
+	private final ModelSkeletonAnimation animation;
 
 	/** the begin time */
 	private long time;
@@ -20,7 +20,7 @@ public class AnimationInstance {
 	private static final int STATE_STOP = 3;
 	private byte state;
 
-	public AnimationInstance(ModelAnimation animation) {
+	public AnimationInstance(ModelSkeletonAnimation animation) {
 		this.animation = animation;
 		this.time = 0;
 		this.state = STATE_NONE;

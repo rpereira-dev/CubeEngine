@@ -1,2 +1,2 @@
-include "VoxelEngine", "POT", "ModSample", "ModelEditor"
+include "VoxelEngine", "POT", "ModSample"
 
