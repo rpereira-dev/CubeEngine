@@ -394,11 +394,16 @@ public abstract class Gui {
 
 	private void updateAspectRatio(float parentAspectRatio) {
 		this.totalAspectRatio = parentAspectRatio * this.localAspectRatio;
+		this.onAspectRatioUpdate();
 		if (this.children != null) {
 			for (Gui gui : this.children) {
 				gui.updateAspectRatio(this.totalAspectRatio);
 			}
 		}
+	}
+
+	protected void onAspectRatioUpdate() {
+		// TODO Auto-generated method stub
 	}
 
 	protected void onBoxSet(float x, float y, float width, float height, float rot) {
@@ -550,7 +555,7 @@ public abstract class Gui {
 			// raise hover event
 			if (this.listeners_mouse_hover != null) {
 				for (GuiListenerMouseHover listener : this.listeners_mouse_hover) {
-					listener.invokeMouseHover(this, x, y);
+					listener.invokeMouseHover(this, pressed, x, y);
 				}
 			}
 		}

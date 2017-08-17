@@ -14,6 +14,7 @@
 
 package com.grillecube.client.renderer.gui.components;
 
+import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.font.FontModel;
@@ -99,7 +100,7 @@ public abstract class GuiText extends Gui {
 	@Override
 	protected void onInitialized(GuiRenderer guiRenderer) {
 		this.fontModel.initialize();
-		this.resizeFontModelAspect(1 / 1.60f);
+		this.resizeFontModelAspect(this.getWindowAspectRatio());
 	}
 
 	@Override
@@ -131,6 +132,15 @@ public abstract class GuiText extends Gui {
 	 */
 	public float getTextHeight() {
 		return (this.getFontModel().getTextHeight() * this.getFontModel().getScaleY() * 0.5f);
+	}
+
+	@Override
+	protected void onAspectRatioUpdate() {
+		this.resizeFontModelAspect(this.getWindowAspectRatio());
+	}
+
+	private float getWindowAspectRatio() {
+		return (GLH.glhGetWindow() == null ? 1 / 1.6f : GLH.glhGetWindow().getAspectRatio());
 	}
 
 	@Override

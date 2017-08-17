@@ -106,6 +106,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 	private boolean _mouse_is_in;
 
 	private boolean _focus;
+	private float aspectRatio;
 
 	public GLFWWindow() {
 	}
@@ -136,6 +137,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 
 		this.width = width;
 		this.height = height;
+		this.aspectRatio = width / (float) height;
 
 		this.mouseX = width / 2;
 		this.mouseY = height / 2;
@@ -442,13 +444,14 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 	}
 
 	public float getAspectRatio() {
-		return (this.width / (float) this.height);
+		return (this.aspectRatio);
 	}
 
 	public void resize(int width, int height) {
 		GL11.glViewport(0, 0, width, height);
 		this.width = width;
 		this.height = height;
+		this.aspectRatio = this.width / (float) this.height;
 	}
 
 	public int getWidth() {

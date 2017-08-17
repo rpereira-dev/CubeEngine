@@ -12,6 +12,7 @@ public class GuiButtonEditor extends GuiLabelEditor {
 
 	public GuiButtonEditor() {
 		super();
+		super.getBackground().setColor(OUT_COLOR);
 		super.getBackground().addListener(new GuiListenerMouseEnter<GuiColoredQuad>() {
 			@Override
 			public void invokeMouseEnter(GuiColoredQuad gui, double mousex, double mousey) {
