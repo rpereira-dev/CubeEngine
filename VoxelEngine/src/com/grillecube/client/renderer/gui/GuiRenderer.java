@@ -166,9 +166,6 @@ public class GuiRenderer extends Renderer {
 	@Override
 	public void render() {
 		// sort the guis by there weights
-		this.renderingList.clear();
-		this.addGuisToRenderingList(this.mainGui);
-		this.renderingList.sort(Gui.WEIGHT_COMPARATOR);
 
 		// render them in the correct order
 		for (Gui gui : this.renderingList) {
@@ -211,6 +208,11 @@ public class GuiRenderer extends Renderer {
 		float mx = (float) (window.getMouseX() / window.getWidth());
 		float my = (float) (1.0f - window.getMouseY() / window.getHeight());
 		boolean pressed = window.isMouseLeftPressed();
+
+		this.renderingList.clear();
+		this.addGuisToRenderingList(this.mainGui);
+		this.renderingList.sort(Gui.WEIGHT_COMPARATOR);
+
 		this.mainGui.update(mx, my, pressed);
 	}
 

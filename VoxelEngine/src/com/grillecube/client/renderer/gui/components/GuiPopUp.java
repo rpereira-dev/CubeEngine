@@ -5,7 +5,7 @@ import com.grillecube.common.maths.Vector4f;
 
 public class GuiPopUp extends GuiView {
 
-	private static final Vector4f BG_COLOR = new Vector4f(0.0f, 0.0f, 0.0f, 0.2f);
+	private static final Vector4f BG_COLOR = new Vector4f(0.0f, 0.0f, 0.0f, 0.5f);
 
 	private final GuiColoredQuad bg;
 	private final GuiWindow popUpWindow;
@@ -18,7 +18,7 @@ public class GuiPopUp extends GuiView {
 		this.addChild(this.bg);
 
 		this.popUpWindow = new GuiWindow();
-		this.popUpWindow.setBox(0.25f, 0.25f, 0.5f, 0.5f, 0);
+		this.popUpWindow.setBox(0.15f, 0.15f, 0.70f, 0.70f, 0);
 		this.addChild(this.popUpWindow);
 	}
 

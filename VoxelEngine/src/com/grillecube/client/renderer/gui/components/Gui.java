@@ -91,11 +91,12 @@ public abstract class Gui {
 	public static final int STATE_FOCUSED = (1 << 2);
 	public static final int STATE_FOCUS_REQUESTED = (1 << 3);
 	public static final int STATE_LEFT_PRESSED = (1 << 4);
+	public static final int STATE_VISIBLE = (1 << 5);
 
 	public static final Comparator<? super Gui> WEIGHT_COMPARATOR = new Comparator<Gui>() {
 		@Override
 		public int compare(Gui left, Gui right) {
-			return (left.getWeight() - right.getWeight());
+			return (-left.getWeight() + right.getWeight());
 		}
 	};
 
@@ -127,7 +128,7 @@ public abstract class Gui {
 		this.listeners_key_press = null;
 		this.listeners_char = null;
 		this.state = 0;
-
+		this.setVisible(true);
 	}
 
 	/** a listener to the mouse hovering the gui */
@@ -431,17 +432,16 @@ public abstract class Gui {
 	 * @param program
 	 */
 	public final void render(GuiRenderer renderer) {
+
+		if (!this.isVisible()) {
+			return;
+		}
+
 		if (!this.isInitialized()) {
 			this.initialize(renderer);
 		}
 
 		this.onRender(renderer);
-
-		if (this.children != null) {
-			for (Gui child : this.children) {
-				child.render(renderer);
-			}
-		}
 	}
 
 	/** do the rendering of this gui */
@@ -501,7 +501,8 @@ public abstract class Gui {
 		this.updateAnimations();
 
 		if (this.children != null) {
-			for (Gui child : this.children) {
+			for (int i = 0; i < this.children.size(); i++) {
+				Gui child = this.children.get(i);
 				child.update(x, y, pressed);
 			}
 		}
@@ -517,12 +518,6 @@ public abstract class Gui {
 					continue;
 				}
 				++i;
-			}
-		}
-
-		if (this.children != null) {
-			for (Gui child : this.children) {
-				child.updateAnimations();
 			}
 		}
 	}
@@ -831,4 +826,15 @@ public abstract class Gui {
 		this.weight = weight;
 	}
 
+	public void setVisible(boolean b) {
+		if (b) {
+			this.setState(STATE_VISIBLE);
+		} else {
+			this.unsetState(STATE_VISIBLE);
+		}
+	}
+
+	public boolean isVisible() {
+		return (this.hasState(STATE_VISIBLE));
+	}
 }

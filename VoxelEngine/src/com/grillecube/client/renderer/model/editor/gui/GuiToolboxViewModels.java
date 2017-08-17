@@ -1,17 +1,13 @@
 package com.grillecube.client.renderer.model.editor.gui;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.grillecube.client.VoxelEngineClient;
-import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
-import com.grillecube.client.renderer.gui.components.GuiSliderBar;
-import com.grillecube.client.renderer.gui.components.GuiSliderBarValues;
+import com.grillecube.client.renderer.gui.components.GuiPopUp;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftPress;
 import com.grillecube.client.renderer.model.ModelInitializer;
 import com.grillecube.client.renderer.model.editor.gui.components.GuiButtonEditor;
 import com.grillecube.client.renderer.model.editor.gui.components.GuiLabelEditor;
-import com.grillecube.client.renderer.model.editor.gui.components.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.editor.mesher.ModelMesher;
 import com.grillecube.client.renderer.model.editor.mesher.ModelMesherCull;
@@ -41,9 +37,20 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 		this.addChild(this.title);
 
 		this.newModelButton = new GuiButtonEditor();
-		this.newModelButton.setText("New modelaa");
+		this.newModelButton.setText("New model");
 		this.newModelButton.setBox(0, 0.85f, 1, 0.05f, 0);
 		this.addChild(this.newModelButton);
+
+		this.newModelButton.addListener(new GuiListenerMouseLeftPress<GuiButtonEditor>() {
+
+			@Override
+			public void invokeMouseLeftPress(GuiButtonEditor gui, double mousex, double mousey) {
+				GuiPopUp modelPreview = new GuiPopUp();
+
+				// TODO make this cleaner
+				getParent().getParent().getChildren().get(1).addChild(modelPreview);
+			}
+		});
 	}
 
 	private final void newModel(VoxelEngineClient engine) {
@@ -77,10 +84,6 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 
 	@Override
 	protected void onUpdate(float x, float y, boolean pressed) {
-		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_C)) {
-			this.deinitialize(VoxelEngineClient.instance().getRenderer().getGuiRenderer());
-			this.initialize(VoxelEngineClient.instance().getRenderer().getGuiRenderer());
-		}
 	}
 
 	@Override
