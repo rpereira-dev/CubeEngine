@@ -21,10 +21,7 @@ public class GuiToolbox extends Gui {
 	public GuiToolbox() {
 		super();
 		this.guiViews = new ArrayList<GuiView>();
-	}
 
-	@Override
-	protected void onInitialized(GuiRenderer renderer) {
 		// background
 		this.bg = new GuiColoredQuad();
 		this.bg.setBox(0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
@@ -34,6 +31,10 @@ public class GuiToolbox extends Gui {
 		// model creation
 		this.guiViews.add(new GuiToolboxViewModels());
 		this.selectView(0);
+	}
+
+	@Override
+	protected void onInitialized(GuiRenderer renderer) {
 	}
 
 	private void selectView(int i) {

@@ -139,17 +139,17 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 	}
 
 	private void setFontModelText(String str) {
-		if (this.getFontModel().getText().equals(str)) {
-			return;
-		}
-		ArrayList<FontChar> chars = super.getFontModel().getFontChar();
-		for (FontChar ch : chars) {
-			if (ch.ascii == '|') {
-				ch.xadvance = 0;
-				ch.xoffset = 0;
-			}
-		}
-		this.getFontModel().setText(str);
+//		if (this.getFontModel().getText().equals(str)) {
+//			return;
+//		}
+//		ArrayList<FontChar> chars = super.getFontModel().getFontChar();
+//		for (FontChar ch : chars) {
+		// if (ch.ascii == '|') {
+		// ch.xadvance = 0;
+		// ch.xoffset = 0;
+		// }
+		// }
+//		this.getFontModel().setText(str);
 		this.runParameters();
 	}
 
@@ -169,16 +169,16 @@ public class GuiTextPrompt extends GuiLabel implements GLFWListenerChar, GLFWLis
 		this.setFontModelText(this.getHint());
 	}
 
-	@Override
-	protected void onTextChanged(String str) {
-		this.text = str;
-	}
+//	@Override
+//	protected void onTextChanged(String str) {
+//		this.text = str;
+//	}
 
 	/** return the text held by this prompt */
-	@Override
-	public final String getText() {
-		return (this.text);
-	}
+//	@Override
+//	public final String getText() {
+//		return (this.text);
+//	}
 
 	/** get the hint */
 	public final String getHint() {

@@ -1,87 +1,133 @@
 package com.grillecube.client.renderer.gui.components;
 
+import java.util.ArrayList;
+
 import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.listeners.GuiSliderBarListenerValueChanged;
 
 /** a slider bar */
-public abstract class GuiSliderBar<T> extends Gui {
+public class GuiSliderBar extends Gui {
 
-	/** the values and renderer for this slider */
-	private GuiSliderBarValues<T> values;
-	private GuiSliderBarRenderer<T> renderer;
+	/** listeners */
+	private ArrayList<GuiSliderBarListenerValueChanged> guiSliderBarListenersValueChanged;
+
+	/** the objects hold */
+	private final ArrayList<Object> values;
+
+	/** selected index */
+	private int selectedIndex;
 
 	public GuiSliderBar() {
-		this(null, null);
-	}
-
-	public GuiSliderBar(GuiSliderBarValues<T> values, GuiSliderBarRenderer<T> renderer) {
 		super();
-		this.setHolder(values);
-		this.setRenderer(renderer);
+		this.selectedIndex = 0;
+		this.values = new ArrayList<Object>();
 	}
 
-	/**
-	 * set the value values
-	 * 
-	 * @param values
-	 */
-	public final void setHolder(GuiSliderBarValues<T> values) {
-		if (this.values != null) {
-			this.values.onDetachedFrom(this);
+	public final void addListener(GuiSliderBarListenerValueChanged guiSliderBarListenerValueChanged) {
+		if (this.guiSliderBarListenersValueChanged == null) {
+			this.guiSliderBarListenersValueChanged = new ArrayList<GuiSliderBarListenerValueChanged>();
 		}
-		this.values = values;
-		if (this.values != null) {
-			this.values.onAttachedTo(this);
-		}
+		this.guiSliderBarListenersValueChanged.add(guiSliderBarListenerValueChanged);
 	}
 
-	/**
-	 * set the renderer
-	 * 
-	 * @param renderer
-	 */
-	public final void setRenderer(GuiSliderBarRenderer<T> renderer) {
-		if (this.renderer != null) {
-			this.renderer.onDetachedFrom(this);
-		}
-		this.renderer = renderer;
-		if (this.renderer != null) {
-			this.renderer.onAttachedTo(this);
+	/** add all values to the list */
+	public final void addValues(Object[] objects) {
+		for (Object object : objects) {
+			this.addValue(object);
 		}
 	}
 
-	public final GuiSliderBarValues<T> getValues() {
+	/** add a value to the list */
+	public final void addValue(Object object) {
+		this.values.add(object);
+	}
+
+	/** remove all values from the list */
+	public final void removeValues(Object[] objects) {
+		for (Object object : objects) {
+			this.removeValue(object);
+		}
+	}
+
+	/** remove a value from the list */
+	public final void removeValue(Object object) {
+		this.values.remove(object);
+	}
+
+	/** remove all values from the list */
+	public final void removeValues() {
+		this.values.clear();
+	}
+
+	/** get all values from the list */
+	public final ArrayList<Object> getValues() {
 		return (this.values);
 	}
 
-	public final GuiSliderBarRenderer<T> getRenderer() {
-		return (this.renderer);
+	/** select the value at given index */
+	public final Object select(int selectedIndex) {
+		if (this.values.size() == 0) {
+			return (null);
+		}
+		if (selectedIndex < 0) {
+			selectedIndex = 0;
+		} else if (selectedIndex >= this.values.size()) {
+			selectedIndex = this.values.size() - 1;
+		}
+		this.selectedIndex = selectedIndex;
+		Object value = this.values.get(this.selectedIndex);
+		if (this.guiSliderBarListenersValueChanged != null) {
+			for (GuiSliderBarListenerValueChanged listener : this.guiSliderBarListenersValueChanged) {
+				listener.invokeSliderBarValueChanged(this, selectedIndex, value);
+			}
+		}
+
+		return (value);
+	}
+
+	/** select the value at given index */
+	public final Object select(float percent) {
+		return (this.select((int) (this.values.size() * percent)));
+	}
+
+	/** @see GuiSliderBarValues#select(float) */
+	public final Object select(double percent) {
+		return (this.select((float) percent));
+	}
+
+	/** get the selected value */
+	public final Object getSelectedValue() {
+		if (this.selectedIndex < 0 || this.selectedIndex >= this.values.size()) {
+			return (null);
+		}
+		return (this.values.get(this.selectedIndex));
+	}
+
+	/** get the percent progression of the selected value */
+	public final float getPercent() {
+		if (this.values.size() == 0) {
+			return (0);
+		}
+		return ((this.selectedIndex + 1) / (float) this.values.size());
 	}
 
 	@Override
 	protected void onInitialized(GuiRenderer renderer) {
-		this.renderer.onInitialized(renderer, this);
 	}
 
 	@Override
 	protected void onDeinitialized(GuiRenderer renderer) {
-		this.renderer.onDeinitialized(renderer, this);
 	}
 
 	@Override
 	protected void onUpdate(float x, float y, boolean pressed) {
-		this.renderer.onUpdate(x, y, pressed, this);
-	}
-
-	/**
-	 * a callback when a value is selected
-	 */
-	protected void onValueChanged() {
-		this.renderer.onValueChanged(this);
+		if (pressed) {
+			this.select(x);
+		}
 	}
 
 	/** do the rendering of this gui */
 	protected void onRender(GuiRenderer guiRenderer) {
-		this.renderer.onRender(guiRenderer, this);
 	}
 
 	@Override
@@ -90,5 +136,29 @@ public abstract class GuiSliderBar<T> extends Gui {
 
 	@Override
 	public void onRemovedFrom(Gui gui) {
+	}
+
+	/** VALUES HELPER */
+
+	public static final Integer[] intRange(int min, int max, int n) {
+		int step = (max - min) / (n - 1);
+		Integer[] values = new Integer[n];
+		for (int i = 0; i < n; i++) {
+			values[i] = new Integer(min + i * step);
+		}
+		return (values);
+	}
+
+	public static final Float[] floatRange(float min, float max, float step) {
+		return (floatRange(min, max, (max - min) / step));
+	}
+
+	public static final Float[] floatRange(float min, float max, int n) {
+		float step = (max - min) / (float) (n - 1);
+		Float[] values = new Float[n];
+		for (int i = 0; i < n; i++) {
+			values[i] = new Float(min + i * step);
+		}
+		return (values);
 	}
 }

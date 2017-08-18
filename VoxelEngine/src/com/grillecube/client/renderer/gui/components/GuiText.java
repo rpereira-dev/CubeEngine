@@ -22,7 +22,7 @@ import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 
-public abstract class GuiText extends Gui {
+public class GuiText extends Gui {
 
 	/** the font model for this text */
 	private final FontModel fontModel;

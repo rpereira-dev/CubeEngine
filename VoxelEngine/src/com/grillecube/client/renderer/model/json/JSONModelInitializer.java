@@ -18,11 +18,11 @@ import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.animation.BoneTransform;
 import com.grillecube.client.renderer.model.animation.KeyFrame;
 import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
-import com.grillecube.common.JSONHelper;
 import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Quaternion;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.utils.JSONHelper;
 
 public class JSONModelInitializer implements ModelInitializer {
 

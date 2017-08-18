@@ -57,6 +57,17 @@ public abstract class Gui {
 	public static final Vector4f COLOR_RED = new Vector4f(176 / 255.0f, 23 / 255.0f, 31 / 255.0f, 1.0f);
 	public static final Vector4f COLOR_DARK_MAGENTA = new Vector4f(139 / 255.0f, 0 / 255.0f, 139 / 255.0f, 1.0f);
 
+	/** mouse states (using bitwise operations) */
+	public static final int STATE_INITIALIZED = (1 << 0);
+	public static final int STATE_HOVERED = (1 << 1);
+	public static final int STATE_FOCUSED = (1 << 2);
+	public static final int STATE_FOCUS_REQUESTED = (1 << 3);
+	public static final int STATE_LEFT_PRESSED = (1 << 4);
+	public static final int STATE_VISIBLE = (1 << 5);
+	private static final int STATE_SELECTED = (1 << 6);
+	private static final int STATE_SELECTABLE = (1 << 7);
+	private static final int STATE_ENABLED = (1 << 8);
+
 	/** the transformation matrix, relative to the parent */
 	private final Matrix4f guiToParentChangeOfBasis;
 	private final Matrix4f guiToWindowChangeOfBasis;
@@ -85,13 +96,6 @@ public abstract class Gui {
 	private ArrayList<GuiListenerMouseLeftPress<?>> listeners_mouse_left_press;
 	private ArrayList<GuiListenerKeyPress<?>> listeners_key_press;
 	private ArrayList<GuiListenerChar<?>> listeners_char;
-
-	public static final int STATE_INITIALIZED = (1 << 0);
-	public static final int STATE_MOUSE_IN = (1 << 1);
-	public static final int STATE_FOCUSED = (1 << 2);
-	public static final int STATE_FOCUS_REQUESTED = (1 << 3);
-	public static final int STATE_LEFT_PRESSED = (1 << 4);
-	public static final int STATE_VISIBLE = (1 << 5);
 
 	public static final Comparator<? super Gui> WEIGHT_COMPARATOR = new Comparator<Gui>() {
 		@Override
@@ -129,6 +133,9 @@ public abstract class Gui {
 		this.listeners_char = null;
 		this.state = 0;
 		this.setVisible(true);
+		this.setSelected(false);
+		this.setSelectable(false);
+		this.setEnabled(true);
 	}
 
 	/** a listener to the mouse hovering the gui */
@@ -433,10 +440,6 @@ public abstract class Gui {
 	 */
 	public final void render(GuiRenderer renderer) {
 
-		if (!this.isVisible()) {
-			return;
-		}
-
 		if (!this.isInitialized()) {
 			this.initialize(renderer);
 		}
@@ -494,6 +497,11 @@ public abstract class Gui {
 	 *            : if mouse is left pressed
 	 */
 	public final void update(float x, float y, boolean pressed) {
+
+		if (!this.isEnabled()) {
+			return;
+		}
+
 		Vector4f mouse = new Vector4f(x, y, 0.0f, 1.0f);
 		Matrix4f.transform(this.windowToGuiChangeOfBasis, mouse, mouse);
 		this.updateState(mouse.x, mouse.y, pressed);
@@ -501,15 +509,13 @@ public abstract class Gui {
 		this.updateAnimations();
 
 		if (this.children != null) {
-			for (int i = 0; i < this.children.size(); i++) {
-				Gui child = this.children.get(i);
+			for (Gui child : this.children) {
 				child.update(x, y, pressed);
 			}
 		}
 	}
 
 	private void updateAnimations() {
-
 		if (this.animations != null) {
 			for (int i = 0; i < this.animations.size(); i++) {
 				GuiAnimation<Gui> animation = this.animations.get(i);
@@ -556,8 +562,8 @@ public abstract class Gui {
 		}
 
 		// if mouse is not in the gui bounding box, but used to be
-		if (this.hasState(STATE_MOUSE_IN) && !mouse_in) {
-			this.unsetState(STATE_MOUSE_IN);
+		if (this.isHovered() && !mouse_in) {
+			this.setHovered(false);
 
 			// raise exit event
 			if (this.listeners_mouse_exit != null) {
@@ -565,9 +571,9 @@ public abstract class Gui {
 					listener.invokeMouseExit(this, x, y);
 				}
 			}
-		} else if (!this.hasState(STATE_MOUSE_IN) && mouse_in) {
+		} else if (!this.isHovered() && mouse_in) {
 			// if mouse is in the gui bounding box, but wasnt earlier
-			this.setState(STATE_MOUSE_IN);
+			this.setHovered(true);
 
 			if (this.listeners_mouse_enter != null) {
 				for (GuiListenerMouseEnter listener : this.listeners_mouse_enter) {
@@ -576,13 +582,19 @@ public abstract class Gui {
 			}
 		}
 
-		if (this.hasState(STATE_LEFT_PRESSED) && !pressed) {
-			this.unsetState(STATE_LEFT_PRESSED);
+		if (this.isLeftPressed() && !pressed) {
+			this.setLeftPressed(false);
 
 			if (this.listeners_mouse_left_release != null) {
 				for (GuiListenerMouseLeftRelease listener : this.listeners_mouse_left_release) {
 					listener.invokeMouseLeftRelease(this, x, y);
 				}
+			}
+
+			if (this.isSelectable()) {
+				this.setSelected(!this.isSelected());
+			} else {
+				this.setSelected(false);
 			}
 
 		} else if (!this.hasState(STATE_LEFT_PRESSED) && pressed && this.isHovered()) {
@@ -592,19 +604,63 @@ public abstract class Gui {
 					listener.invokeMouseLeftPress(this, x, y);
 				}
 			}
+
+			if (!this.isSelectable()) {
+				this.setSelected(true);
+			}
 		}
 	}
 
-	protected abstract void onUpdate(float x, float y, boolean pressed);
+	public void setVisible(boolean visible) {
+		this.setState(STATE_VISIBLE, visible);
+	}
+
+	public final void setEnabled(boolean enabled) {
+		this.setState(STATE_ENABLED, enabled);
+	}
+
+	public final void setSelectable(boolean isSelectable) {
+		this.setState(STATE_SELECTABLE, isSelectable);
+	}
+
+	public final void setSelected(boolean isSelected) {
+		this.setState(STATE_SELECTED, isSelected);
+	}
+
+	public final void setHovered(boolean isHovered) {
+		this.setState(STATE_HOVERED, isHovered);
+	}
+
+	public final void setLeftPressed(boolean isLeftPressed) {
+		this.setState(STATE_LEFT_PRESSED, isLeftPressed);
+	}
+
+	public final boolean isSelectable() {
+		return (this.hasState(STATE_SELECTABLE));
+	}
+
+	public final boolean isSelected() {
+		return (this.hasState(STATE_SELECTED));
+	}
+
+	public final boolean isEnabled() {
+		return (this.hasState(STATE_ENABLED));
+	}
+
+	public final boolean isVisible() {
+		return (this.hasState(STATE_VISIBLE));
+	}
 
 	/** return true if the mouse cursor is inside this gui */
 	public final boolean isHovered() {
-		return (this.hasState(STATE_MOUSE_IN));
+		return (this.hasState(STATE_HOVERED));
 	}
 
 	public boolean isLeftPressed() {
 		return (this.hasState(STATE_LEFT_PRESSED));
 	}
+
+	protected abstract void onUpdate(float x, float y, boolean pressed);
 
 	@SuppressWarnings("unchecked")
 	public void addParameter(GuiParameter<?> parameter) {
@@ -725,15 +781,19 @@ public abstract class Gui {
 
 	/** add a child to this gui */
 	public final void addChild(Gui gui) {
+		this.addChild(this.children == null ? 0 : this.children.size(), gui);
+	}
+
+	public final void addChild(int position, Gui gui) {
 		gui.parent = this;
 		if (this.children == null) {
 			this.children = new ArrayList<Gui>();
 		}
-		this.children.add(gui);
-		gui.onAddedTo(this);
+		this.children.add(position, gui);
 		gui.updateTransformationMatrices(this.guiToWindowChangeOfBasis);
 		gui.updateAspectRatio(this.getTotalAspectRatio());
 		gui.setWeight(this.getWeight() + 1);
+		gui.onAddedTo(this);
 	}
 
 	/** remove a child from this gui */
@@ -765,6 +825,14 @@ public abstract class Gui {
 
 	private final void setState(int state) {
 		this.state = this.state | state;
+	}
+
+	private final void setState(int state, boolean enabled) {
+		if (enabled) {
+			this.setState(state);
+		} else {
+			this.unsetState(state);
+		}
 	}
 
 	private final void unsetState(int state) {
@@ -824,17 +892,5 @@ public abstract class Gui {
 	 */
 	public final void setWeight(int weight) {
 		this.weight = weight;
-	}
-
-	public void setVisible(boolean b) {
-		if (b) {
-			this.setState(STATE_VISIBLE);
-		} else {
-			this.unsetState(STATE_VISIBLE);
-		}
-	}
-
-	public boolean isVisible() {
-		return (this.hasState(STATE_VISIBLE));
 	}
 }

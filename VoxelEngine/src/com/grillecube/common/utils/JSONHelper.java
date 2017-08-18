@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.common;
+package com.grillecube.common.utils;
 
 import java.io.File;
 import java.io.FileWriter;

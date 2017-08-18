@@ -165,8 +165,6 @@ public class GuiRenderer extends Renderer {
 
 	@Override
 	public void render() {
-		// sort the guis by there weights
-
 		// render them in the correct order
 		for (Gui gui : this.renderingList) {
 			gui.render(this);
@@ -177,8 +175,10 @@ public class GuiRenderer extends Renderer {
 	private final void addGuisToRenderingList(Gui parent) {
 		if (parent.getChildren() != null) {
 			for (Gui child : parent.getChildren()) {
-				this.renderingList.add(child);
-				this.addGuisToRenderingList(child);
+				if (child.isVisible()) {
+					this.renderingList.add(child);
+					this.addGuisToRenderingList(child);
+				}
 			}
 		}
 	}

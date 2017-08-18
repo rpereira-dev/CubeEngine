@@ -6,11 +6,12 @@ import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiSliderBar;
-import com.grillecube.client.renderer.gui.components.GuiSliderBarValues;
+import com.grillecube.client.renderer.gui.components.GuiText;
 import com.grillecube.client.renderer.gui.components.GuiTextPrompt2;
 import com.grillecube.client.renderer.gui.components.GuiTexture;
 import com.grillecube.client.renderer.gui.components.GuiView;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAlignLeft;
+import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterYBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
@@ -46,10 +47,10 @@ public class TestGui {
 			}
 
 			private void addGuiSliderBar() {
-				GuiSliderBar<Float> guiSliderBar = new GuiSliderBarEditor<Float>();
+				GuiSliderBarEditor guiSliderBar = new GuiSliderBarEditor();
 				guiSliderBar.setBox(0.25f, 0.75f, 0.5f, 0.10f, 0.0f);
-				Float[] floats = GuiSliderBarValues.floatRange(0, 1000, 1001);
-				guiSliderBar.setHolder(new GuiSliderBarValues<Float>(floats));
+				Float[] floats = GuiSliderBar.floatRange(0, 1000, 1001);
+				guiSliderBar.addValues(floats);
 				this.addChild(guiSliderBar);
 			}
 
@@ -88,22 +89,21 @@ public class TestGui {
 
 			private void addGuiLabel() {
 				GuiLabel lbl = new GuiLabel();
-				lbl.setPosition(0.0f, 0.0f);
-				lbl.setText("Hello world");
 				lbl.setFontColor(1, 1, 1, 1.0f);
-				lbl.addParameter(new GuiTextParameterTextFillBox(0.75f));
-				lbl.addParameter(new GuiTextParameterTextCenterYBox());
-				lbl.addParameter(new GuiTextParameterTextAlignLeft(0.1f));
-				lbl.addListener(new GuiListenerMouseEnter<GuiLabel>() {
+				lbl.setText("this is a sample string");
+				lbl.setBox(0, 0, 0.5f, 0.5f, 0);
+				lbl.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
+				lbl.addTextParameter(new GuiTextParameterTextCenterBox());
+				lbl.getGuiText().addListener(new GuiListenerMouseEnter<GuiText>() {
 					@Override
-					public void invokeMouseEnter(GuiLabel gui, double mousex, double mousey) {
+					public void invokeMouseEnter(GuiText gui, double mousex, double mousey) {
 						Logger.get().log(Logger.Level.DEBUG, "in");
 					}
 				});
 
-				lbl.addListener(new GuiListenerMouseExit<GuiLabel>() {
+				lbl.getGuiText().addListener(new GuiListenerMouseExit<GuiText>() {
 					@Override
-					public void invokeMouseExit(GuiLabel gui, double mousex, double mousey) {
+					public void invokeMouseExit(GuiText gui, double mousex, double mousey) {
 						Logger.get().log(Logger.Level.DEBUG, "out");
 					}
 				});

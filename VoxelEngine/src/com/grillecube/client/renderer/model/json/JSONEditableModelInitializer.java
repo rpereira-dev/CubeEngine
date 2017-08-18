@@ -10,8 +10,8 @@ import org.json.JSONObject;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.editor.mesher.BlockData;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
-import com.grillecube.common.JSONHelper;
 import com.grillecube.common.Logger;
+import com.grillecube.common.utils.JSONHelper;
 
 public class JSONEditableModelInitializer extends JSONModelInitializer {
 

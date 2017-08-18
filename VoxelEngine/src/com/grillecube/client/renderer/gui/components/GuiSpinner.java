@@ -1,80 +1,139 @@
 package com.grillecube.client.renderer.gui.components;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftPress;
+import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerAdd;
+import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerExpanded;
+import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerRemove;
+import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerSorted;
 
 /** a slider bar */
-public abstract class GuiSpinner<T> extends Gui {
+public abstract class GuiSpinner extends Gui {
 
-	/** the values and renderer for this slider */
-	private GuiSpinnerValues<T> values;
-	private GuiSpinnerRenderer<T> renderer;
+	private static final GuiListenerMouseLeftPress<GuiSpinner> LISTENER = new GuiListenerMouseLeftPress<GuiSpinner>() {
+		@Override
+		public void invokeMouseLeftPress(GuiSpinner guiSpinner, double mousex, double mousey) {
+			guiSpinner.expand();
+		}
+	};
+
+	/** listeners */
+	private ArrayList<GuiSpinnerListenerExpanded> guiSpinnerListenersExpanded;
+	private ArrayList<GuiSpinnerListenerAdd> guiSpinnerListenersAdd;
+	private ArrayList<GuiSpinnerListenerRemove> guiSpinnerListenersRemove;
+	private ArrayList<GuiSpinnerListenerSorted> guiSpinnerListenersSorted;
+
+	/** the objects hold */
+	private final ArrayList<Object> values;
+
+	/** true if this spinner is expanded */
+	private boolean expanded;
 
 	public GuiSpinner() {
-		this(null, null);
-	}
-
-	public GuiSpinner(GuiSpinnerValues<T> values, GuiSpinnerRenderer<T> renderer) {
 		super();
-		this.setHolder(values);
-		this.setRenderer(renderer);
+		this.values = new ArrayList<Object>();
+		this.expanded = false;
+		this.addListener(LISTENER);
 	}
 
-	/**
-	 * set the value values
-	 * 
-	 * @param values
-	 */
-	public final void setHolder(GuiSpinnerValues<T> values) {
-		if (this.values != null) {
-			this.values.onDetachedFrom(this);
-		}
-		this.values = values;
-		if (this.values != null) {
-			this.values.onAttachedTo(this);
+	/** expands the gui spinner */
+	public final void expand() {
+		this.expanded = !this.expanded;
+		if (this.guiSpinnerListenersExpanded != null) {
+			for (GuiSpinnerListenerExpanded listener : this.guiSpinnerListenersExpanded) {
+				listener.invokeSpinnerExpanded(this, this.expanded);
+			}
 		}
 	}
 
-	/**
-	 * set the renderer
-	 * 
-	 * @param renderer
-	 */
-	public final void setRenderer(GuiSpinnerRenderer<T> renderer) {
-		if (this.renderer != null) {
-			this.renderer.onDetachedFrom(this);
-		}
-		this.renderer = renderer;
-		if (this.renderer != null) {
-			this.renderer.onAttachedTo(this);
+	/** add a value to the spinner */
+	public final void add(Object value) {
+		this.values.add(value);
+		if (this.guiSpinnerListenersAdd != null) {
+			for (GuiSpinnerListenerAdd listener : this.guiSpinnerListenersAdd) {
+				listener.invokeSpinnerAddObject(this, value);
+			}
 		}
 	}
 
-	public final GuiSpinnerValues<T> getValues() {
+	/** add a value to the spinner */
+	public final void remove(Object value) {
+		int index = this.values.indexOf(value);
+		if (index == -1) {
+			return;
+		}
+		this.values.remove(index);
+		if (this.guiSpinnerListenersRemove != null) {
+			for (GuiSpinnerListenerRemove listener : this.guiSpinnerListenersRemove) {
+				listener.invokeSpinnerRemoveObject(this, value, index);
+			}
+		}
+	}
+
+	/** sort the spinner */
+	public final void sort(Comparator<Object> comparator) {
+		this.values.sort(comparator);
+		if (this.guiSpinnerListenersSorted != null) {
+			for (GuiSpinnerListenerSorted listener : this.guiSpinnerListenersSorted) {
+				listener.invokeSpinnerSorted(this);
+			}
+		}
+	}
+
+	public final void addListener(GuiSpinnerListenerAdd listener) {
+		if (this.guiSpinnerListenersAdd == null) {
+			this.guiSpinnerListenersAdd = new ArrayList<GuiSpinnerListenerAdd>();
+		}
+		this.guiSpinnerListenersAdd.add(listener);
+	}
+
+	public final void addListener(GuiSpinnerListenerRemove listener) {
+		if (this.guiSpinnerListenersRemove == null) {
+			this.guiSpinnerListenersRemove = new ArrayList<GuiSpinnerListenerRemove>();
+		}
+		this.guiSpinnerListenersRemove.add(listener);
+	}
+
+	public final void addListener(GuiSpinnerListenerExpanded listener) {
+		if (this.guiSpinnerListenersExpanded == null) {
+			this.guiSpinnerListenersExpanded = new ArrayList<GuiSpinnerListenerExpanded>();
+		}
+		this.guiSpinnerListenersExpanded.add(listener);
+	}
+
+	public final void addListener(GuiSpinnerListenerSorted listener) {
+		if (this.guiSpinnerListenersSorted == null) {
+			this.guiSpinnerListenersSorted = new ArrayList<GuiSpinnerListenerSorted>();
+		}
+		this.guiSpinnerListenersSorted.add(listener);
+	}
+
+	public final boolean isExpanded() {
+		return (this.expanded);
+	}
+
+	/** get the objets */
+	public final ArrayList<Object> getValues() {
 		return (this.values);
-	}
-
-	public final GuiSpinnerRenderer<T> getRenderer() {
-		return (this.renderer);
 	}
 
 	@Override
 	protected void onInitialized(GuiRenderer renderer) {
-		this.renderer.onInitialized(renderer, this);
 	}
 
 	@Override
 	protected void onDeinitialized(GuiRenderer renderer) {
-		this.renderer.onDeinitialized(renderer, this);
 	}
 
 	@Override
 	protected void onUpdate(float x, float y, boolean pressed) {
-		this.renderer.onUpdate(x, y, pressed, this);
 	}
 
 	/** do the rendering of this gui */
 	protected void onRender(GuiRenderer guiRenderer) {
-		this.renderer.onRender(guiRenderer, this);
 	}
 
 	@Override
@@ -86,15 +145,14 @@ public abstract class GuiSpinner<T> extends Gui {
 	}
 
 	/**
-	 * a callback when a value is added (and is now the last item of the
-	 * GuiSpinnerValues)
+	 * @return the number of object hold by this spinner
 	 */
-	protected void onValueAdded() {
+	public final int count() {
+		return (this.values.size());
 	}
 
-	/**
-	 * a callback when values are sorted
-	 */
-	protected void onValuesSorted() {
+	/** get the value at given index */
+	public final Object get(int index) {
+		return (this.values.get(index));
 	}
 }
