@@ -4,8 +4,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 
-import com.grillecube.client.opengl.GLH;
-
 public class GLFrameBuffer implements GLObject {
 	private int _id;
 

@@ -6,6 +6,8 @@ import com.grillecube.common.maths.Vector3f;
 
 public class EditableModel extends Model {
 
+	public static final ModelMesher DEFAULT_MODEL_MESHER = new ModelMesherCull();
+
 	/**
 	 * the size of a single block of this model (N.B: a terrain block size is
 	 * 1.0f)
@@ -14,6 +16,12 @@ public class EditableModel extends Model {
 
 	/** the data of each blocks of this model (null if empty block) */
 	private BlockData[][][] blocksData;
+
+	/** the mesher to be used for this model */
+	private ModelMesher modelMesher;
+
+	/** true of false whether this model should be remeshed */
+	private boolean needUpdate;
 
 	/**
 	 * the model origin (the origin coordinates, in the model referential), so
@@ -31,6 +39,7 @@ public class EditableModel extends Model {
 		this.blockSizeUnit = 1.0f;
 		this.blocksData = new BlockData[0][0][0];
 		this.origin = new Vector3f(0, 0, 0);
+		this.modelMesher = DEFAULT_MODEL_MESHER;
 	}
 
 	/** @see ModelBuildingData#origin */
@@ -125,4 +134,7 @@ public class EditableModel extends Model {
 		this.blocksData = blocksData;
 	}
 
+	public final void generate() {
+		this.modelMesher.generate(this);
+	}
 }

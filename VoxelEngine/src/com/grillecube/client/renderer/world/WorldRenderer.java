@@ -36,6 +36,7 @@ import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.world.World;
 
+//TODO : rebuild this so it has a main function render(World world, Camera camera) to render a world
 public class WorldRenderer extends Renderer {
 
 	/** a clipping plane that does not clip anything */

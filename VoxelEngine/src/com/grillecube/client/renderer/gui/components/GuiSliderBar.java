@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer.gui.components;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.listeners.GuiSliderBarListenerValueChanged;
@@ -31,7 +32,7 @@ public class GuiSliderBar extends Gui {
 	}
 
 	/** add all values to the list */
-	public final void addValues(Object[] objects) {
+	public final void addValues(Object... objects) {
 		for (Object object : objects) {
 			this.addValue(object);
 		}
@@ -39,11 +40,14 @@ public class GuiSliderBar extends Gui {
 
 	/** add a value to the list */
 	public final void addValue(Object object) {
+		if (this.values.size() == 0) {
+			this.select(0);
+		}
 		this.values.add(object);
 	}
 
 	/** remove all values from the list */
-	public final void removeValues(Object[] objects) {
+	public final void removeValues(Object... objects) {
 		for (Object object : objects) {
 			this.removeValue(object);
 		}
@@ -57,6 +61,11 @@ public class GuiSliderBar extends Gui {
 	/** remove all values from the list */
 	public final void removeValues() {
 		this.values.clear();
+	}
+
+	/** sort the values */
+	public final void sort(Comparator<Object> cmp) {
+		this.values.sort(cmp);
 	}
 
 	/** get all values from the list */
@@ -83,6 +92,10 @@ public class GuiSliderBar extends Gui {
 		}
 
 		return (value);
+	}
+
+	public final Object select(Object object) {
+		return (this.select(this.values.indexOf(object)));
 	}
 
 	/** select the value at given index */
@@ -121,7 +134,7 @@ public class GuiSliderBar extends Gui {
 
 	@Override
 	protected void onUpdate(float x, float y, boolean pressed) {
-		if (pressed) {
+		if (super.isLeftPressed()) {
 			this.select(x);
 		}
 	}

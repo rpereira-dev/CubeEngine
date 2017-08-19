@@ -7,8 +7,10 @@ import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftPress;
 import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerAdd;
 import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerExpanded;
+import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerPick;
 import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerRemove;
 import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerSorted;
+import com.grillecube.common.utils.Pair;
 
 /** a slider bar */
 public abstract class GuiSpinner extends Gui {
@@ -25,17 +27,22 @@ public abstract class GuiSpinner extends Gui {
 	private ArrayList<GuiSpinnerListenerAdd> guiSpinnerListenersAdd;
 	private ArrayList<GuiSpinnerListenerRemove> guiSpinnerListenersRemove;
 	private ArrayList<GuiSpinnerListenerSorted> guiSpinnerListenersSorted;
+	private ArrayList<GuiSpinnerListenerPick> guiSpinnerListenersPick;
 
 	/** the objects hold */
-	private final ArrayList<Object> values;
+	private final ArrayList<Pair<Object, String>> values;
 
 	/** true if this spinner is expanded */
 	private boolean expanded;
 
+	/** the currently selected index */
+	private int selectedIndex;
+
 	public GuiSpinner() {
 		super();
-		this.values = new ArrayList<Object>();
+		this.values = new ArrayList<Pair<Object, String>>();
 		this.expanded = false;
+		this.selectedIndex = 0;
 		this.addListener(LISTENER);
 	}
 
@@ -51,10 +58,15 @@ public abstract class GuiSpinner extends Gui {
 
 	/** add a value to the spinner */
 	public final void add(Object value) {
-		this.values.add(value);
+		this.add(value, value.toString());
+	}
+
+	/** add a value, and the given string name id to be shown */
+	public final void add(Object value, String name) {
+		this.values.add(new Pair<Object, String>(value, name));
 		if (this.guiSpinnerListenersAdd != null) {
 			for (GuiSpinnerListenerAdd listener : this.guiSpinnerListenersAdd) {
-				listener.invokeSpinnerAddObject(this, value);
+				listener.invokeSpinnerAddObject(this, this.values.size() - 1);
 			}
 		}
 	}
@@ -65,10 +77,14 @@ public abstract class GuiSpinner extends Gui {
 		if (index == -1) {
 			return;
 		}
+		this.remove(index);
+	}
+
+	public final void remove(int index) {
 		this.values.remove(index);
 		if (this.guiSpinnerListenersRemove != null) {
 			for (GuiSpinnerListenerRemove listener : this.guiSpinnerListenersRemove) {
-				listener.invokeSpinnerRemoveObject(this, value, index);
+				listener.invokeSpinnerRemoveObject(this, index);
 			}
 		}
 	}
@@ -79,6 +95,16 @@ public abstract class GuiSpinner extends Gui {
 		if (this.guiSpinnerListenersSorted != null) {
 			for (GuiSpinnerListenerSorted listener : this.guiSpinnerListenersSorted) {
 				listener.invokeSpinnerSorted(this);
+			}
+		}
+	}
+
+	/** pick the given index */
+	public final void pick(int index) {
+		this.selectedIndex = index;
+		if (this.guiSpinnerListenersPick != null) {
+			for (GuiSpinnerListenerPick listener : this.guiSpinnerListenersPick) {
+				listener.invokeSpinnerIndexPick(this, index);
 			}
 		}
 	}
@@ -111,12 +137,19 @@ public abstract class GuiSpinner extends Gui {
 		this.guiSpinnerListenersSorted.add(listener);
 	}
 
+	public final void addListener(GuiSpinnerListenerPick listener) {
+		if (this.guiSpinnerListenersPick == null) {
+			this.guiSpinnerListenersPick = new ArrayList<GuiSpinnerListenerPick>();
+		}
+		this.guiSpinnerListenersPick.add(listener);
+	}
+
 	public final boolean isExpanded() {
 		return (this.expanded);
 	}
 
 	/** get the objets */
-	public final ArrayList<Object> getValues() {
+	public final ArrayList<Pair<Object, String>> getValues() {
 		return (this.values);
 	}
 
@@ -152,7 +185,20 @@ public abstract class GuiSpinner extends Gui {
 	}
 
 	/** get the value at given index */
-	public final Object get(int index) {
-		return (this.values.get(index));
+	public final Object getObject(int index) {
+		return (this.values.get(index).left);
+	}
+
+	/** get the name at given index */
+	public final String getName(int index) {
+		return (this.values.get(index).right);
+	}
+
+	public final Object getSelectedObject() {
+		return (this.values.get(this.selectedIndex).left);
+	}
+
+	public final String getSelectedName() {
+		return (this.values.get(this.selectedIndex).right);
 	}
 }

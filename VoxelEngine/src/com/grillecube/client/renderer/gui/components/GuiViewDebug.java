@@ -19,8 +19,6 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAdjustBox;
-import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAlignLeft;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
@@ -32,6 +30,10 @@ public class GuiViewDebug extends GuiView {
 
 	public GuiViewDebug() {
 		super();
+		this.label = new GuiLabel();
+		this.label.setFontSize(0.65f, 0.65f);
+		this.label.setFontColor(Gui.COLOR_BLUE);
+		this.addChild(this.label);
 	}
 
 	@Override
@@ -117,17 +119,11 @@ public class GuiViewDebug extends GuiView {
 		builder.append("\nVertex drawn: ");
 		builder.append(GLH.glhGetContext().getVerticesDrawn());
 		this.label.setText(builder.toString());
-		this.label.setPosition(0.0f, 1.0f - this.label.getTextHeight());
+		this.label.setBoxPosition(0.0f, 1.0f - this.label.getTextHeight());
 	}
 
 	@Override
 	protected void onInitialized(GuiRenderer renderer) {
-		this.label = new GuiLabel();
-		this.label.setFontSize(0.65f, 0.65f);
-		this.label.setFontColor(Gui.COLOR_BLUE);
-		this.label.addParameter(new GuiTextParameterTextAlignLeft(0.0f));
-		this.label.addParameter(new GuiTextParameterTextAdjustBox());
-		this.addChild(this.label);
 	}
 
 	@Override

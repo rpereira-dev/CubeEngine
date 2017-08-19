@@ -54,7 +54,6 @@ public class Model {
 		this.mesh.deinitialize();
 
 		this.skeleton = null;
-		this.mesh = null;
 		this.skins = null;
 		this.animations = null;
 	}

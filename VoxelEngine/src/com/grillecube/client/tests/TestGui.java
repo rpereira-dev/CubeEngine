@@ -5,18 +5,16 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
+import com.grillecube.client.renderer.gui.components.GuiPrompt;
 import com.grillecube.client.renderer.gui.components.GuiSliderBar;
 import com.grillecube.client.renderer.gui.components.GuiText;
-import com.grillecube.client.renderer.gui.components.GuiTextPrompt2;
 import com.grillecube.client.renderer.gui.components.GuiTexture;
 import com.grillecube.client.renderer.gui.components.GuiView;
-import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAlignLeft;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
-import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterYBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseExit;
-import com.grillecube.client.renderer.model.editor.gui.components.GuiSliderBarEditor;
+import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.common.Logger;
 import com.grillecube.common.resources.R;
 
@@ -32,10 +30,10 @@ public class TestGui {
 
 			@Override
 			protected void onInitialized(GuiRenderer renderer) {
-				this.addGuiTexture();
-				this.addGuiLabel();
+				// this.addGuiTexture();
+				// this.addGuiLabel();
 				this.addGuiTextPrompt();
-				this.addGuiSliderBar();
+				// this.addGuiSliderBar();
 			}
 
 			@Override
@@ -77,13 +75,12 @@ public class TestGui {
 			}
 
 			private void addGuiTextPrompt() {
-				GuiTextPrompt2 lbl = new GuiTextPrompt2();
-				lbl.setPosition(0.0f, 0.0f);
-				lbl.setText("Hello world");
+				GuiPrompt lbl = new GuiPrompt();
 				lbl.setFontColor(1, 1, 1, 1.0f);
-				lbl.addParameter(new GuiTextParameterTextFillBox(0.75f));
-				lbl.addParameter(new GuiTextParameterTextCenterYBox());
-				lbl.addParameter(new GuiTextParameterTextAlignLeft(0.1f));
+				lbl.setBox(0, 0.5f, 0.5f, 0.5f, 0);
+				lbl.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
+				lbl.addTextParameter(new GuiTextParameterTextCenterBox());
+
 				this.addChild(lbl);
 			}
 

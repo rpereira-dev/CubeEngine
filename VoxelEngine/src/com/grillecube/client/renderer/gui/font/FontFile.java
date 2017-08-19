@@ -35,6 +35,9 @@ public class FontFile {
 	private static final int DESIRED_PADDING = 6;
 	private static final FontChar DEFAULT_FONT_CHAR = new FontChar();
 
+	private static final char CURSOR_CHAR_APPEARENCE = '|';
+	public static final char CURSOR_CHAR = (int) 128;
+
 	private int[] _padding;
 	private int _padding_width;
 	private int _padding_height;
@@ -44,7 +47,8 @@ public class FontFile {
 	private int line_height;
 
 	public FontFile(String filepath) {
-		this._chars = new FontChar[128];
+		// + 1 for the cursor char (copy of '|' but with no offset
+		this._chars = new FontChar[128 + 1];
 
 		File file = new File(filepath);
 		if (!file.exists()) {
@@ -54,6 +58,9 @@ public class FontFile {
 
 		try {
 			this.parseFile(file);
+			this._chars[CURSOR_CHAR] = this._chars[CURSOR_CHAR_APPEARENCE].clone();
+			this._chars[CURSOR_CHAR].xadvance = 0;
+			this._chars[CURSOR_CHAR].xoffset = 0;
 		} catch (Exception e) {
 			Logger.get().log(Logger.Level.WARNING, "Wrong FontFile formatting: " + filepath, e.getLocalizedMessage());
 		}

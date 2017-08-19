@@ -13,8 +13,8 @@ public class GuiTextParameterTextAdjustBox extends GuiParameter<GuiText> {
 		FontModel fontModel = guiText.getFontModel();
 		float x = (fontModel.getPosition().x + 1) * 0.5f;
 		float y = (fontModel.getPosition().y + 1) * 0.5f;
-		float width = fontModel.getTextWidth() * fontModel.getScaleX() * 0.5f;
-		float height = fontModel.getTextHeight() * fontModel.getScaleY() * 0.5f;
+		float width = guiText.getTextWidth();
+		float height = guiText.getTextHeight();
 		float rot = fontModel.getRotationZ();
 		guiText.setBox(x, y, width, height, rot, false);
 	}

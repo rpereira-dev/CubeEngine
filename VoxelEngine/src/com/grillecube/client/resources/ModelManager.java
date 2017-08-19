@@ -77,19 +77,29 @@ public class ModelManager extends GenericManager<Model> {
 				if (modelInstance == null) {
 					return;
 				}
-
-				Model model = modelInstance.getModel();
-				ArrayList<ModelInstance> modelInstances = modelsModelInstances.get(model);
-				modelInstances.remove(modelInstance);
-
-				if (modelInstances.size() == 0) {
-					modelsModelInstances.remove(modelInstance.getModel());
-					model.deinitialize();
-				}
-
-				entitiesModelInstance.remove(entity);
+				removeModelInstance(modelInstance);
 			}
 		});
+	}
+
+	/** remove every model instances */
+	public final void removeModelInstances() {
+		for (ModelInstance modelInstance : this.entitiesModelInstance.values()) {
+			this.removeModelInstance(modelInstance);
+		}
+	}
+
+	/** remove the given model instance */
+	public final void removeModelInstance(ModelInstance modelInstance) {
+		Model model = modelInstance.getModel();
+		ArrayList<ModelInstance> modelInstances = this.modelsModelInstances.get(model);
+		modelInstances.remove(modelInstance);
+
+		if (modelInstances.size() == 0) {
+			this.modelsModelInstances.remove(modelInstance.getModel());
+			model.deinitialize();
+		}
+		this.entitiesModelInstance.remove(modelInstance.getEntity());
 	}
 
 	/**

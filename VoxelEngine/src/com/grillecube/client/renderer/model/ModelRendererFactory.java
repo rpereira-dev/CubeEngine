@@ -23,7 +23,7 @@ public class ModelRendererFactory {
 	private ModelManager modelManager;
 
 	/** the entity in frustum list */
-	private HashMap<Model, ArrayList<ModelInstance>> entitiesInFrustum;
+	private HashMap<Model, ArrayList<ModelInstance>> renderingList;
 
 	/** event */
 	private EventEntityList eventEntityList;
@@ -31,7 +31,7 @@ public class ModelRendererFactory {
 	public ModelRendererFactory(MainRenderer mainRenderer) {
 		this.mainRenderer = mainRenderer;
 		this.modelManager = mainRenderer.getResourceManager().getModelManager();
-		this.entitiesInFrustum = new HashMap<Model, ArrayList<ModelInstance>>();
+		this.renderingList = new HashMap<Model, ArrayList<ModelInstance>>();
 		this.eventEntityList = new EventEntityList();
 	}
 
@@ -49,14 +49,14 @@ public class ModelRendererFactory {
 
 	private void updateEntitiesInFrustum(World world, CameraProjective camera) {
 
-		this.entitiesInFrustum.clear();
+		this.renderingList.clear();
 
 		// for each entity of the world (maybe we can do better here?)
 		Collection<Entity> entities = world.getEntityStorage().getEntities();
 		for (Entity entity : entities) {
 
 			ModelInstance modelInstance = this.modelManager.getModelInstance(entity);
-			if (modelInstance == null) {
+			if (modelInstance == null || modelInstance.getEntity().isVisible()) {
 				continue;
 			}
 			modelInstance.update();
@@ -69,10 +69,10 @@ public class ModelRendererFactory {
 			// continue;
 			// }
 
-			ArrayList<ModelInstance> instances = this.entitiesInFrustum.get(modelInstance.getModel());
+			ArrayList<ModelInstance> instances = this.renderingList.get(modelInstance.getModel());
 			if (instances == null) {
 				instances = new ArrayList<ModelInstance>(1);
-				this.entitiesInFrustum.put(modelInstance.getModel(), instances);
+				this.renderingList.put(modelInstance.getModel(), instances);
 			}
 			VoxelEngineClient.instance().getRenderer().getWorldRenderer().getLineRenderer()
 					.addBox(modelInstance.getEntity().getBoundingBox());
@@ -86,8 +86,8 @@ public class ModelRendererFactory {
 	}
 
 	/** get the last calculated entities in frustum */
-	public HashMap<Model, ArrayList<ModelInstance>> getEntitiesInFrustum() {
-		return (this.entitiesInFrustum);
+	public HashMap<Model, ArrayList<ModelInstance>> getRenderingList() {
+		return (this.renderingList);
 	}
 
 	public void deinitialize() {

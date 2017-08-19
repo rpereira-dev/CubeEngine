@@ -1,6 +1,5 @@
 package com.pot.server;
 
-import com.grillecube.client.opengl.GLH;
 import com.grillecube.common.ModSample;
 import com.grillecube.server.VoxelEngineServer;
 import com.pot.common.ModPOT;
@@ -19,11 +18,6 @@ public class Main {
 
 		// load resources (mods)
 		engine.load();
-
-		if (true) {
-			GLH.glhInit();
-			return;
-		}
 
 		/* prepare engine before looping */
 

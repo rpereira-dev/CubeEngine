@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.model.editor.gui.components;
+package com.grillecube.client.renderer.model.editor.gui;
 
 import com.grillecube.client.renderer.gui.components.GuiColoredQuad;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
@@ -24,8 +24,6 @@ public class GuiSliderBarEditor extends GuiSliderBar implements GuiSliderBarList
 		this.addChild(this.selected);
 
 		this.guiLabel = new GuiLabel();
-		this.guiLabel.setPosition(0.0f, 0.0f);
-		this.guiLabel.setText("Hello world");
 		this.guiLabel.setFontColor(1, 1, 1, 1.0f);
 		this.guiLabel.getGuiText().addParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.guiLabel.getGuiText().addParameter(new GuiTextParameterTextCenterBox());
@@ -39,5 +37,9 @@ public class GuiSliderBarEditor extends GuiSliderBar implements GuiSliderBarList
 		float width = this.getPercent();
 		this.selected.setBox(0, 0, width, 1, 0);
 		this.guiLabel.setText(this.getSelectedValue().toString());
+	}
+
+	public void setText(String title) {
+		this.guiLabel.setText(title);
 	}
 }

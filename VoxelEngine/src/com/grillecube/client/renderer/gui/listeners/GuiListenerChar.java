@@ -4,5 +4,5 @@ import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.renderer.gui.components.Gui;
 
 public interface GuiListenerChar<T extends Gui> {
-	public void invokeKeyPress(T gui, GLFWWindow window, int codepoint);
+	public void invokeCharPress(T gui, GLFWWindow window, int codepoint);
 }

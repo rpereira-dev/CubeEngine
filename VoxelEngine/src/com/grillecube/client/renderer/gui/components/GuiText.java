@@ -100,7 +100,7 @@ public class GuiText extends Gui {
 	@Override
 	protected void onInitialized(GuiRenderer guiRenderer) {
 		this.fontModel.initialize();
-		this.resizeFontModelAspect(this.getWindowAspectRatio());
+		this.resizeFontModelAspect(this.getWindowAspectRatio(), true);
 	}
 
 	@Override
@@ -135,8 +135,8 @@ public class GuiText extends Gui {
 	}
 
 	@Override
-	protected void onAspectRatioUpdate() {
-		this.resizeFontModelAspect(this.getWindowAspectRatio());
+	protected void onAspectRatioUpdate(boolean runParameters) {
+		this.resizeFontModelAspect(this.getWindowAspectRatio(), runParameters);
 	}
 
 	private float getWindowAspectRatio() {
@@ -146,13 +146,15 @@ public class GuiText extends Gui {
 	@Override
 	public void onWindowResized(int width, int height) {
 		super.onWindowResized(width, height);
-		this.resizeFontModelAspect(width / (float) height);
+		this.resizeFontModelAspect(width / (float) height, true);
 	}
 
-	private void resizeFontModelAspect(float windowAspect) {
+	private void resizeFontModelAspect(float windowAspect, boolean runParameters) {
 		if (this.getFontModel() != null) {
 			this.getFontModel().setAspect(windowAspect * this.getTotalAspectRatio());
-			this.runParameters();
+			if (runParameters) {
+				this.runParameters();
+			}
 		}
 	}
 }

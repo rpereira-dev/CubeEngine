@@ -50,6 +50,11 @@ public abstract class Entity {
 			new EntityPhysicRotateRight(), new EntityPhysicGravity(), new EntityPhysicAirFriction(),
 			new EntityPhysicJumping() };
 
+	private static final int STATE_VISIBLE = (1 << 0);
+
+	/** entity state */
+	private int state;
+
 	/** entity's world */
 	private World world;
 
@@ -113,6 +118,8 @@ public abstract class Entity {
 		this.width = DEFAULT_DIMENSION;
 		this.height = DEFAULT_DIMENSION;
 		this.depth = DEFAULT_DIMENSION;
+
+		this.setState(Entity.STATE_VISIBLE);
 
 		this.addAI(new EntityAIIdle(this));
 
@@ -337,16 +344,41 @@ public abstract class Entity {
 		return (this.weight);
 	}
 
-	public boolean hasState(int stateID) {
-		return (this.physics[stateID].isSet());
+	private final boolean hasState(int state) {
+		return ((this.state & state) == state);
 	}
 
-	public void enablePhysic(int stateID) {
-		this.physics[stateID].enable(this);
+	private final void setState(int state) {
+		this.state = this.state | state;
 	}
 
-	public void disablePhysic(int stateID) {
-		this.physics[stateID].disable(this);
+	private final void setState(int state, boolean enabled) {
+		if (enabled) {
+			this.setState(state);
+		} else {
+			this.unsetState(state);
+		}
+	}
+
+	private final void unsetState(int state) {
+		this.state = this.state & ~state;
+	}
+
+	@SuppressWarnings("unused")
+	private final void swapState(int state) {
+		this.state = this.state ^ state;
+	}
+
+	public boolean hasPhysicEnabled(int physicID) {
+		return (this.physics[physicID].isSet());
+	}
+
+	public void enablePhysic(int physicID) {
+		this.physics[physicID].enable(this);
+	}
+
+	public void disablePhysic(int physicID) {
+		this.physics[physicID].disable(this);
 	}
 
 	/**
@@ -423,5 +455,9 @@ public abstract class Entity {
 	/** @return : entity width */
 	public float getDepth() {
 		return (this.depth);
+	}
+
+	public final boolean isVisible() {
+		return (this.hasState(STATE_VISIBLE));
 	}
 }

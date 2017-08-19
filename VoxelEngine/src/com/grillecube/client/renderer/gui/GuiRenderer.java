@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import com.grillecube.client.opengl.GLFWListenerChar;
 import com.grillecube.client.opengl.GLFWListenerKeyPress;
@@ -120,6 +121,7 @@ public class GuiRenderer extends Renderer {
 				mainGui.onKeyPressed(glfwWindow, key, scancode, mods);
 			}
 		};
+		this.getParent().getGLFWWindow().addKeyPressListener(this.keyListener);
 
 		this.charListener = new GLFWListenerChar() {
 			@Override
@@ -305,4 +307,19 @@ public class GuiRenderer extends Renderer {
 	public void onWindowResize(int width, int height) {
 		this.mainGui.onWindowResized(width, height);
 	}
+
+	/**
+	 * wrappers for tinyfd library
+	 * 
+	 * @param title
+	 *            : dialog title
+	 * @param defaultPath
+	 *            : dialog default path
+	 * @return
+	 */
+	public static final String dialogSelectFolder(String title, String defaultPath) {
+		return (TinyFileDialogs.tinyfd_selectFolderDialog(title, defaultPath));
+	}
+
+	// TODO : more dialogs
 }

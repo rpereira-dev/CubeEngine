@@ -39,7 +39,7 @@ public class ModelRenderer extends RendererWorld {
 	private ModelRendererFactory factory;
 
 	/** model instances to be rendered, ordered by model */
-	private HashMap<Model, ArrayList<ModelInstance>> entitiesInFrustum;
+	private HashMap<Model, ArrayList<ModelInstance>> renderingList;
 
 	public ModelRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
@@ -48,7 +48,7 @@ public class ModelRenderer extends RendererWorld {
 	@Override
 	public void initialize() {
 		this.programModel = new ProgramModel();
-		this.entitiesInFrustum = new HashMap<Model, ArrayList<ModelInstance>>();
+		this.renderingList = new HashMap<Model, ArrayList<ModelInstance>>();
 		this.factory = new ModelRendererFactory(this.getParent());
 	}
 
@@ -58,7 +58,7 @@ public class ModelRenderer extends RendererWorld {
 		GLH.glhDeleteObject(this.programModel);
 		this.programModel = null;
 
-		this.entitiesInFrustum = null;
+		this.renderingList = null;
 
 		this.factory.deinitialize();
 		this.factory = null;
@@ -81,7 +81,7 @@ public class ModelRenderer extends RendererWorld {
 	@Override
 	public void preRender() {
 		// get the next model rendering list
-		this.entitiesInFrustum = this.factory.getEntitiesInFrustum();
+		this.renderingList = this.factory.getRenderingList();
 	}
 
 	/** render world terrains */
@@ -92,7 +92,7 @@ public class ModelRenderer extends RendererWorld {
 
 	private void render(CameraProjective camera) {
 
-		if (this.entitiesInFrustum == null) {
+		if (this.renderingList == null) {
 			return;
 		}
 
@@ -112,7 +112,7 @@ public class ModelRenderer extends RendererWorld {
 			this.programModel.loadCamera(camera);
 
 			// for each entity to render
-			for (ArrayList<ModelInstance> models : this.entitiesInFrustum.values()) {
+			for (ArrayList<ModelInstance> models : this.renderingList.values()) {
 				if (models.size() > 0) {
 					Model model = models.get(0).getModel();
 					ModelMesh mesh = model.getMesh();

@@ -14,7 +14,6 @@ import com.grillecube.common.event.Event;
 import com.grillecube.common.event.EventGetTasks;
 import com.grillecube.common.event.EventPostLoop;
 import com.grillecube.common.event.EventPreLoop;
-import com.grillecube.common.mod.Mod;
 import com.grillecube.common.mod.ModLoader;
 import com.grillecube.common.network.INetwork;
 import com.grillecube.common.resources.ResourceManager;

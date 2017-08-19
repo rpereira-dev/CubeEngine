@@ -93,8 +93,7 @@ public class SkyRenderer extends RendererWorld {
 	@Override
 	public void preRender() {
 		World world = this.getWorld();
-
-		this.ambientParticle(world);
+		// this.ambientParticle(world);
 		if (world.getWeather().isRaining()) {
 			this.rainParticles(world, world.getWeather().getRainStrength());
 		}

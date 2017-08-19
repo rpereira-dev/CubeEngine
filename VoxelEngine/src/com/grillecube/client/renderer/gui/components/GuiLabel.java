@@ -68,10 +68,6 @@ public class GuiLabel extends Gui {
 		this.guiText.setFontColor(color);
 	}
 
-	public void setPosition(float x, float y) {
-		this.guiText.setPosition(x, y);
-	}
-
 	@Override
 	protected void onInitialized(GuiRenderer renderer) {
 	}

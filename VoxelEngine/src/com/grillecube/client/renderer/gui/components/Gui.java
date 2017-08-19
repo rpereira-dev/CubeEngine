@@ -16,6 +16,7 @@ package com.grillecube.client.renderer.gui.components;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
@@ -74,6 +75,9 @@ public abstract class Gui {
 	private final Matrix4f windowToGuiChangeOfBasis;
 	private final Matrix4f guiToGLChangeOfBasis;
 
+	/** gui custom attributes */
+	private HashMap<String, Object> attributes;
+
 	/** this rectangle relative to opengl axis (-1;-1) to (1;1) */
 	private final Vector2f boxPos;
 	private final Vector2f boxSize;
@@ -82,6 +86,7 @@ public abstract class Gui {
 
 	/** guis of this view */
 	private ArrayList<Gui> children;
+	private final ArrayList<GuiTask> tasks;
 	private Gui parent;
 
 	private ArrayList<GuiParameter<Gui>> params;
@@ -132,6 +137,7 @@ public abstract class Gui {
 		this.listeners_key_press = null;
 		this.listeners_char = null;
 		this.state = 0;
+		this.tasks = new ArrayList<GuiTask>();
 		this.setVisible(true);
 		this.setSelected(false);
 		this.setSelectable(false);
@@ -391,7 +397,7 @@ public abstract class Gui {
 
 		// aspect ratio
 		this.localAspectRatio = this.getBoxWidth() / this.getBoxHeight();
-		this.updateAspectRatio(this.getParent() == null ? 1.0f : this.getParent().getTotalAspectRatio());
+		this.updateAspectRatio(this.getParent() == null ? 1.0f : this.getParent().getTotalAspectRatio(), runParameters);
 
 		this.onBoxSet(x, y, width, height, rot);
 
@@ -400,17 +406,17 @@ public abstract class Gui {
 		}
 	}
 
-	private void updateAspectRatio(float parentAspectRatio) {
+	private void updateAspectRatio(float parentAspectRatio, boolean runParameters) {
 		this.totalAspectRatio = parentAspectRatio * this.localAspectRatio;
-		this.onAspectRatioUpdate();
+		this.onAspectRatioUpdate(runParameters);
 		if (this.children != null) {
 			for (Gui gui : this.children) {
-				gui.updateAspectRatio(this.totalAspectRatio);
+				gui.updateAspectRatio(this.totalAspectRatio, runParameters);
 			}
 		}
 	}
 
-	protected void onAspectRatioUpdate() {
+	protected void onAspectRatioUpdate(boolean runParameters) {
 		// TODO Auto-generated method stub
 	}
 
@@ -483,6 +489,10 @@ public abstract class Gui {
 		}
 	}
 
+	public final void deinitialize() {
+		this.deinitialize(null);
+	}
+
 	/** deinitialize the gui: this function is call in opengl main thread */
 	protected abstract void onDeinitialized(GuiRenderer renderer);
 
@@ -513,6 +523,22 @@ public abstract class Gui {
 				child.update(x, y, pressed);
 			}
 		}
+
+		for (int i = 0; i < this.tasks.size(); i++) {
+			this.tasks.get(i).run();
+		}
+		this.tasks.clear();
+		this.tasks.trimToSize();
+	}
+
+	/** a task to be run at the end of the gui update */
+	public interface GuiTask {
+		public void run();
+	}
+
+	/** add a task to be run at the end of the gui update */
+	public final void addTask(GuiTask task) {
+		this.tasks.add(task);
 	}
 
 	private void updateAnimations() {
@@ -532,7 +558,12 @@ public abstract class Gui {
 	public final void onCharPressed(GLFWWindow window, int codepoint) {
 		if (this.listeners_char != null) {
 			for (GuiListenerChar listener : this.listeners_char) {
-				listener.invokeKeyPress(this, window, codepoint);
+				listener.invokeCharPress(this, window, codepoint);
+			}
+		}
+		if (this.children != null) {
+			for (Gui child : this.children) {
+				child.onCharPressed(window, codepoint);
 			}
 		}
 	}
@@ -542,6 +573,11 @@ public abstract class Gui {
 		if (this.listeners_key_press != null) {
 			for (GuiListenerKeyPress listener : this.listeners_key_press) {
 				listener.invokeKeyPress(this, glfwWindow, key, scancode, mods);
+			}
+		}
+		if (this.children != null) {
+			for (Gui child : this.children) {
+				child.onKeyPressed(glfwWindow, key, scancode, mods);
 			}
 		}
 	}
@@ -791,7 +827,7 @@ public abstract class Gui {
 		}
 		this.children.add(position, gui);
 		gui.updateTransformationMatrices(this.guiToWindowChangeOfBasis);
-		gui.updateAspectRatio(this.getTotalAspectRatio());
+		gui.updateAspectRatio(this.getTotalAspectRatio(), false);
 		gui.setWeight(this.getWeight() + 1);
 		gui.onAddedTo(this);
 	}
@@ -892,5 +928,16 @@ public abstract class Gui {
 	 */
 	public final void setWeight(int weight) {
 		this.weight = weight;
+	}
+
+	public final Object getAttribute(String attrID) {
+		return (this.attributes == null ? null : this.attributes.get(attrID));
+	}
+
+	public final void setAttribute(String attrID, Object attribute) {
+		if (this.attributes == null) {
+			this.attributes = new HashMap<String, Object>();
+			this.attributes.put(attrID, attribute);
+		}
 	}
 }

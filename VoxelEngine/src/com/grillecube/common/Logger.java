@@ -56,23 +56,23 @@ public class Logger {
 	}
 
 	public void log(Logger.Level level, String message) {
+		log(level, message, 3);
+	}
+
+	public void log(Logger.Level level, String message, int stackDepth) {
 		Thread thrd = Thread.currentThread();
 		StackTraceElement[] trace = thrd.getStackTrace();
-		StackTraceElement trace1 = trace.length > 2 ? trace[2] : trace[0];
-		StackTraceElement trace2 = trace.length > 3 ? trace[3] : trace[0];
-		StackTraceElement trace3 = trace.length > 4 ? trace[4] : trace[0];
-
-		this._print_stream.printf("%s[%s] [%s] [Thread: %s(%d)] [%s:%d] [%s:%d] [%s:%d]%s ", level.getColor(),
-				_date_format.format(_calendar.getTime()), level.getLabel(), thrd.getName(), thrd.getId(),
-				trace1.getFileName(), trace1.getLineNumber(), trace2.getFileName(), trace2.getLineNumber(),
-				trace3.getFileName(), trace3.getLineNumber(), ANSI_RESET);
-
-		// if (this._indentation != 0)
-		// {
-		// this._print_stream.printf("%" + (this._indentation * 4) + "s", "");
-		// }
-
-		this._print_stream.printf("%s\n", message);
+		StringBuilder stack = new StringBuilder();
+		int end = trace.length < stackDepth ? trace.length : stackDepth;
+		for (int i = 0; i < end; i++) {
+			if (trace[i].getFileName() == null) {
+				continue;
+			}
+			stack.append(" [" + trace[i].getFileName() + ":" + trace[i].getLineNumber() + "]");
+		}
+		this._print_stream.printf("%s[%s] [%s] [Thread: %s(%d)]" + stack.toString() + "%s %s\n", level.getColor(),
+				_date_format.format(_calendar.getTime()), level.getLabel(), thrd.getName(), thrd.getId(), ANSI_RESET,
+				message);
 	}
 
 	public void log(Logger.Level level, Object... objs) {

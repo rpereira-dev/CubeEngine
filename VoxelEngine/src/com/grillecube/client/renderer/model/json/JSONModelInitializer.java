@@ -1,5 +1,6 @@
 package com.grillecube.client.renderer.model.json;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class JSONModelInitializer implements ModelInitializer {
 	protected final String dirpath;
 
 	public JSONModelInitializer(String dirpath) {
-		this.dirpath = dirpath;
+		this.dirpath = dirpath.endsWith(File.separator) ? dirpath : dirpath + File.separator;
 	}
 
 	/** initializer override */
@@ -38,10 +39,11 @@ public class JSONModelInitializer implements ModelInitializer {
 
 		try {
 			// get the info file
-			JSONObject json = new JSONObject(JSONHelper.readFile(this.dirpath + "info.json"));
+			String infoFile = JSONHelper.readFile(this.dirpath + "info.json");
+			JSONObject json = new JSONObject(infoFile);
 			this.parseJSON(model, json);
 		} catch (Exception exception) {
-			exception.printStackTrace();
+			exception.printStackTrace(Logger.get().getPrintStream());
 		}
 	}
 

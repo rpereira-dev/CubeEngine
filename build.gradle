@@ -1,4 +1,4 @@
-project.ext.lwjglVersion = "3.1.1"
+project.ext.lwjglVersion = "3.1.2"
 
 subprojects {
     apply plugin: 'java'
@@ -32,6 +32,11 @@ subprojects {
         compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-windows"
         compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-linux"
         compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-macos"
+
+        compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:natives-windows"
+        compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:natives-linux"
+        compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:natives-macos"
 
 		compile "io.netty:netty-all:4.0.30.Final"
 		
