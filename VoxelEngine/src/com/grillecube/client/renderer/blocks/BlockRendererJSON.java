@@ -2,9 +2,9 @@ package com.grillecube.client.renderer.blocks;
 
 import java.util.Stack;
 
-import com.grillecube.client.renderer.world.terrain.BlockFace;
-import com.grillecube.client.renderer.world.terrain.TerrainMeshVertex;
-import com.grillecube.client.renderer.world.terrain.TerrainMesher;
+import com.grillecube.client.renderer.terrain.BlockFace;
+import com.grillecube.client.renderer.terrain.TerrainMeshVertex;
+import com.grillecube.client.renderer.terrain.TerrainMesher;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.terrain.Terrain;
 

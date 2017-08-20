@@ -11,11 +11,10 @@ import com.grillecube.common.event.EventCallback;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class EventManager extends GenericManager<EventHandler> {
 
-	private final HashMap<Class<? extends Event>, ArrayList<EventCallback>> events;
+	private HashMap<Class<? extends Event>, ArrayList<EventCallback>> events;
 
 	public EventManager(ResourceManager resource_manager) {
 		super(resource_manager);
-		this.events = new HashMap<Class<? extends Event>, ArrayList<EventCallback>>();
 	}
 
 	/** raise an event */
@@ -59,21 +58,24 @@ public class EventManager extends GenericManager<EventHandler> {
 	@Override
 	protected void onObjectRegistered(EventHandler object) {
 	}
-
+	
 	@Override
-	protected void onInitialized() {
+	public void onInitialized() {
+		this.events = new HashMap<Class<? extends Event>, ArrayList<EventCallback>>();
 	}
 
 	@Override
-	protected void onStopped() {
+	public void onLoaded() {
 	}
 
 	@Override
-	protected void onLoaded() {
+	protected void onDeinitialized() {
+		this.events.clear();
+		this.events = null;
 	}
 
 	@Override
-	protected void onCleaned() {
+	protected void onUnloaded() {
 		this.events.clear();
 	}
 }

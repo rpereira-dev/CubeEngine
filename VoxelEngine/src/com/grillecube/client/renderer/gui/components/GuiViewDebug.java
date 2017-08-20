@@ -14,9 +14,9 @@
 
 package com.grillecube.client.renderer.gui.components;
 
-import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
+import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.common.maths.Maths;
@@ -26,10 +26,12 @@ import com.grillecube.common.world.entity.Entity;
 
 public class GuiViewDebug extends GuiView {
 
-	private GuiLabel label;
+	private final GuiLabel label;
+	private final CameraProjective camera;
 
-	public GuiViewDebug() {
+	public GuiViewDebug(CameraProjective camera) {
 		super();
+		this.camera = camera;
 		this.label = new GuiLabel();
 		this.label.setFontSize(0.65f, 0.65f);
 		this.label.setFontColor(Gui.COLOR_BLUE);
@@ -43,7 +45,7 @@ public class GuiViewDebug extends GuiView {
 
 	private void updateText() {
 
-		CameraProjectiveWorld cam = VoxelEngineClient.instance().getRenderer().getCamera();
+		CameraProjective cam = this.camera;
 
 		Vector3f pos = cam.getPosition();
 		Vector3f look = cam.getViewVector();
@@ -90,8 +92,9 @@ public class GuiViewDebug extends GuiView {
 			builder.append(":");
 			builder.append(Maths.approximatate(look.z, 10.0f));
 
-			if (cam.getWorld() != null) {
-				Vector3i windex = cam.getWorld().getTerrainIndex(cam.getLookCoords());
+			if (cam instanceof CameraProjectiveWorld && ((CameraProjectiveWorld) cam).getWorld() != null) {
+				Vector3i windex = ((CameraProjectiveWorld) cam).getWorld()
+						.getTerrainIndex(((CameraProjectiveWorld) cam).getLookCoords());
 				builder.append("\n");
 				builder.append("Look index: ");
 				builder.append(windex.x);
@@ -99,16 +102,16 @@ public class GuiViewDebug extends GuiView {
 				builder.append(windex.y);
 				builder.append(":");
 				builder.append(windex.z);
-			}
 
-			Vector3f vec = cam.getLookCoords();
-			builder.append("\n");
-			builder.append("Block: ");
-			builder.append((int) (vec.x));
-			builder.append(":");
-			builder.append((int) (vec.y));
-			builder.append(":");
-			builder.append((int) (vec.z));
+				Vector3f vec = ((CameraProjectiveWorld) cam).getLookCoords();
+				builder.append("\n");
+				builder.append("Block: ");
+				builder.append((int) (vec.x));
+				builder.append(":");
+				builder.append((int) (vec.y));
+				builder.append(":");
+				builder.append((int) (vec.z));
+			}
 		}
 
 		builder.append("\nFPS: ");

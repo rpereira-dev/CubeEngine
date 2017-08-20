@@ -5,9 +5,9 @@ import java.util.Random;
 import org.lwjgl.glfw.GLFW;
 
 import com.grillecube.client.event.renderer.EventPreRender;
-import com.grillecube.client.renderer.world.particles.ParticleBillboarded;
-import com.grillecube.client.renderer.world.particles.ParticleRenderer;
-import com.grillecube.client.renderer.world.particles.TextureSprite;
+import com.grillecube.client.renderer.particles.ParticleBillboarded;
+import com.grillecube.client.renderer.particles.ParticleRenderer;
+import com.grillecube.client.renderer.particles.TextureSprite;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Side;
 import com.grillecube.common.event.EventCallback;
@@ -63,25 +63,28 @@ class PostRenderCallback extends EventCallback<EventPreRender> {
 			return;
 		}
 
-		ParticleRenderer renderer = event.getRenderer().getWorldRenderer().getParticleRenderer();
-
-		Random rng = event.getRenderer().getRNG();
-
-		if (event.getGLFWWindow().isKeyPressed(GLFW.GLFW_KEY_E)) {
-			pos.set(event.getRenderer().getCamera().getPosition());
-		}
-
-		if (rng.nextInt(4) != 3) {
-			return;
-		}
-
-		ParticleBillboarded p = new ParticleBillboarded(200, POTParticles.SPRITE_EXPLOSION, false);
-		p.setPositionVel(rng.nextInt(2) == 0 ? -rng.nextFloat() / 16 : rng.nextFloat() / 16,
-				rng.nextInt(2) == 0 ? -rng.nextFloat() / 16 : rng.nextFloat() / 16,
-				rng.nextInt(2) == 0 ? -rng.nextFloat() / 16 : rng.nextFloat() / 162);
-		p.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		p.setPosition(pos.x, pos.y, pos.z);
-		renderer.spawnParticle(p);
+		// ParticleRenderer renderer =
+		// event.getRenderer().getWorldRenderer().getParticleRenderer();
+		//
+		// Random rng = event.getRenderer().getRNG();
+		//
+		// if (event.getGLFWWindow().isKeyPressed(GLFW.GLFW_KEY_E)) {
+		// pos.set(event.getRenderer().getCamera().getPosition());
+		// }
+		//
+		// if (rng.nextInt(4) != 3) {
+		// return;
+		// }
+		//
+		// ParticleBillboarded p = new ParticleBillboarded(200,
+		// POTParticles.SPRITE_EXPLOSION, false);
+		// p.setPositionVel(rng.nextInt(2) == 0 ? -rng.nextFloat() / 16 :
+		// rng.nextFloat() / 16,
+		// rng.nextInt(2) == 0 ? -rng.nextFloat() / 16 : rng.nextFloat() / 16,
+		// rng.nextInt(2) == 0 ? -rng.nextFloat() / 16 : rng.nextFloat() / 162);
+		// p.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		// p.setPosition(pos.x, pos.y, pos.z);
+		// renderer.spawnParticle(p);
 	}
 
 }

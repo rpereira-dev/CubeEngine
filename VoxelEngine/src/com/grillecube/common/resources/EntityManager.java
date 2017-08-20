@@ -35,19 +35,19 @@ public class EntityManager extends GenericManager<Class<? extends Entity>> {
 	}
 
 	@Override
-	protected void onInitialized() {
+	public void onInitialized() {
 	}
 
 	@Override
-	protected void onStopped() {
+	public void onLoaded() {
 	}
 
 	@Override
-	protected void onCleaned() {
+	protected void onDeinitialized() {
 	}
 
 	@Override
-	protected void onLoaded() {
+	protected void onUnloaded() {
 	}
 
 	@Override

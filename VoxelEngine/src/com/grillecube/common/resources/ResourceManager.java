@@ -34,78 +34,88 @@ public abstract class ResourceManager {
 	private ArrayList<AssetsPack> assets;
 
 	/** World manager */
-	private final WorldManager worldManager;
+	private WorldManager worldManager;
 
 	/** Block manager */
-	private final BlockManager blockManager;
+	private BlockManager blockManager;
 
 	/** Block manager */
-	private final ItemManager itemManager;
+	private ItemManager itemManager;
 
 	/** Packets */
-	private final PacketManager packetManager;
+	private PacketManager packetManager;
 
 	/** Entities */
-	private final EntityManager entityManager;
+	private EntityManager entityManager;
 
 	/** events */
-	private final EventManager eventManager;
+	private EventManager eventManager;
 
 	/** lang manager */
-	private final LangManager langManager;
+	private LangManager langManager;
 
 	/** managers as a list */
-	private final ArrayList<GenericManager<?>> managers;
+	private ArrayList<GenericManager<?>> managers;
 
 	private VoxelEngine engine;
 
 	/** configuration */
-	private ResourceManager.Config _config;
+	private ResourceManager.Config config;
 
 	private static ResourceManager RESOURCE_MANAGER_INSTANCE;
 
 	public ResourceManager(VoxelEngine engine) {
 		RESOURCE_MANAGER_INSTANCE = this;
-
 		this.engine = engine;
+	}
+
+	/** initialize every game resources */
+	public final void initialize() {
+
+		Logger.get().log(Logger.Level.FINE, "* initializing resources manager");
+
 		this.assets = new ArrayList<AssetsPack>();
-
 		this.managers = new ArrayList<GenericManager<?>>();
-		
-		this.worldManager = new WorldManager(this);
-		this.blockManager = new BlockManager(this);
-		this.itemManager = new ItemManager(this);
-		this.entityManager = new EntityManager(this);
-		this.packetManager = new PacketManager(this);
-		this.eventManager = new EventManager(this);
-		this.langManager = new LangManager(this);
-
-		this.managers.add(this.blockManager);
-		this.managers.add(this.itemManager);
-		this.managers.add(this.entityManager);
-		this.managers.add(this.packetManager);
-		this.managers.add(this.eventManager);
-		this.managers.add(this.worldManager);
-		this.managers.add(this.langManager);
-
-		this.addResources(this.managers);
+		this.addManagers();
 
 		// prepare path
 		this.prepareEnginePath();
 
 		// create config
-		this._config = new ResourceManager.Config();
+		this.config = new ResourceManager.Config();
 
-		// initialize resources
-		Logger.get().log(Logger.Level.FINE, "initializing resources");
 		for (GenericManager<?> manager : this.managers) {
 			Logger.get().log(Logger.Level.FINE, manager.getClass().getSimpleName());
 			manager.initialize();
 		}
 	}
 
-	protected void addResources(ArrayList<GenericManager<?>> managers) {
+	protected void addManagers() {
 
+		this.worldManager = new WorldManager(this);
+		this.addManager(this.worldManager);
+
+		this.blockManager = new BlockManager(this);
+		this.addManager(this.blockManager);
+
+		this.itemManager = new ItemManager(this);
+		this.addManager(this.itemManager);
+
+		this.entityManager = new EntityManager(this);
+		this.addManager(this.entityManager);
+
+		this.packetManager = new PacketManager(this);
+		this.addManager(this.packetManager);
+
+		this.eventManager = new EventManager(this);
+		this.addManager(this.eventManager);
+
+		this.langManager = new LangManager(this);
+		this.addManager(this.langManager);
+	}
+
+	public void addManager(GenericManager<?> manager) {
+		this.managers.add(manager);
 	}
 
 	private void prepareEnginePath() {
@@ -139,29 +149,32 @@ public abstract class ResourceManager {
 		return (RESOURCE_MANAGER_INSTANCE);
 	}
 
-	public void clean() {
-		Logger.get().log(Logger.Level.FINE, "* Cleaning resources manager");
+	/** deinitilize every game resources */
+	public final void deinitialize() {
+		Logger.get().log(Logger.Level.FINE, "* Stopping resources manager");
 		for (GenericManager<?> manager : this.managers) {
 			Logger.get().log(Logger.Level.FINE, manager.getClass().getSimpleName());
-			manager.clean();
+			manager.deinitialize();
 		}
+		this.assets = null;
+		this.managers = null;
 	}
 
-	/** load every resources */
-	public void load() {
-		Logger.get().log(Logger.Level.FINE, "* Loading resources manager");
+	/** deinitilize every game resources */
+	public final void load() {
+		Logger.get().log(Logger.Level.FINE, "* Stopping resources manager");
 		for (GenericManager<?> manager : this.managers) {
 			Logger.get().log(Logger.Level.FINE, manager.getClass().getSimpleName());
 			manager.load();
 		}
 	}
 
-	/** load every game resources */
-	public void stop() {
+	/** deinitilize every game resources */
+	public final void unload() {
 		Logger.get().log(Logger.Level.FINE, "* Stopping resources manager");
 		for (GenericManager<?> manager : this.managers) {
 			Logger.get().log(Logger.Level.FINE, manager.getClass().getSimpleName());
-			manager.stop();
+			manager.deinitialize();
 		}
 	}
 
@@ -310,15 +323,9 @@ public abstract class ResourceManager {
 
 	}
 
-	public void update() {
-		for (GenericManager<?> manager : this.managers) {
-			manager.update();
-		}
-	}
-
 	/** get the config informations */
 	public Config getConfig() {
-		return (this._config);
+		return (this.config);
 	}
 
 	public class Config {
@@ -327,34 +334,34 @@ public abstract class ResourceManager {
 		public static final String CONFIG_FILE = ".config";
 
 		/** config **/
-		private HashMap<String, String> _config;
+		private HashMap<String, String> config;
 
 		public Config() {
 
-			this._config = new HashMap<String, String>(1024);
+			this.config = new HashMap<String, String>(1024);
 
 			// configuration stuff
 			String configpath = R.getResPath(CONFIG_FILE);
 			if (ResourceManager.fileExists(configpath)) {
-				ResourceManager.getConfigFile(configpath, this._config);
+				ResourceManager.getConfigFile(configpath, this.config);
 			} else {
-				ResourceManager.exportConfigFile(configpath, this._config);
+				ResourceManager.exportConfigFile(configpath, this.config);
 			}
 		}
 
 		/** get a config value */
 		public String get(String key, String default_value) {
-			String value = this._config.get(key);
+			String value = this.config.get(key);
 			return (value == null ? default_value : value);
 		}
 
 		/** set a new config value */
 		public void set(String key, String value) {
-			this._config.put(key, value);
+			this.config.put(key, value);
 		}
 
 		public boolean isSet(String key) {
-			return (this._config.get(key) != null);
+			return (this.config.get(key) != null);
 		}
 	}
 }

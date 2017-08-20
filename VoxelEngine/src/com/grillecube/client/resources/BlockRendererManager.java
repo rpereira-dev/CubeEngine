@@ -183,7 +183,8 @@ public class BlockRendererManager extends GenericManager<String> {
 	}
 
 	@Override
-	public void onStopped() {
+	public void onDeinitialized() {
+		this.destroyTextureAtlas();
 	}
 
 	@Override
@@ -192,7 +193,11 @@ public class BlockRendererManager extends GenericManager<String> {
 	}
 
 	@Override
-	public void onCleaned() {
+	public void onUnloaded() {
+		this.destroyTextureAtlas();
+	}
+
+	private final void destroyTextureAtlas() {
 		for (GLTexture texture : this.glTextureAtlas) {
 			if (texture != null) {
 				texture.delete();

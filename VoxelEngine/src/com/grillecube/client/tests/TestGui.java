@@ -23,7 +23,7 @@ public class TestGui {
 	public static void main(String[] args) {
 
 		VoxelEngineClient engine = new VoxelEngineClient();
-
+		engine.initialize();
 		engine.load();
 
 		GuiView guiView = new GuiView() {
@@ -126,6 +126,6 @@ public class TestGui {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		engine.stopAll();
+		engine.deinitialize();
 	}
 }

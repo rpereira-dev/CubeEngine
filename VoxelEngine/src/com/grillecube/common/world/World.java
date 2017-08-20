@@ -334,21 +334,6 @@ public abstract class World implements Taskable {
 	public BlockInstance getBlockInstance(float x, float y, float z) {
 		return (this.terrains.getBlockInstance(x, y, z));
 	}
-
-	/** called whenever this world is set as the current one */
-	public abstract void onSet();
-
-	/** called whenever this world is unset */
-	public abstract void onUnset();
-
-	public void set() {
-		this.onSet();
-	}
-
-	public void unset() {
-		this.onUnset();
-	}
-
 	// TODO: save and load
 
 	/**

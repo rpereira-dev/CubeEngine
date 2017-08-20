@@ -10,7 +10,7 @@ public class Main {
 		/* 1 */
 		// initialize engine
 		VoxelEngineServer engine = new VoxelEngineServer();
-
+		engine.initialize();
 		/* 2 */
 		// inject resources to be loaded
 		engine.getModLoader().injectMod(ModPOT.class);
@@ -31,6 +31,6 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		engine.stopAll();
+		engine.deinitialize();
 	}
 }

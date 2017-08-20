@@ -35,6 +35,8 @@ import com.grillecube.client.renderer.gui.components.GuiView;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAdjustBox;
 import com.grillecube.client.renderer.gui.font.Font;
 import com.grillecube.client.renderer.gui.font.FontModel;
+import com.grillecube.common.Logger;
+import com.grillecube.common.Logger.Level;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
@@ -71,6 +73,7 @@ public class GuiRenderer extends Renderer {
 
 	@Override
 	public void initialize() {
+		Logger.get().log(Level.FINE, "Initializing " + this.getClass().getSimpleName());
 		this.fonts = new HashMap<String, Font>();
 		this.programColoredQuad = new ProgramColoredQuad();
 		this.programTexturedQuad = new ProgramTexturedQuad();
@@ -110,8 +113,8 @@ public class GuiRenderer extends Renderer {
 		this.programColoredQuad.delete();
 		this.programTexturedQuad.delete();
 		this.programFont.delete();
-		this.getParent().getGLFWWindow().removeKeyPressListener(this.keyListener);
-		this.getParent().getGLFWWindow().removeCharListener(this.charListener);
+		this.getMainRenderer().getGLFWWindow().removeKeyPressListener(this.keyListener);
+		this.getMainRenderer().getGLFWWindow().removeCharListener(this.charListener);
 	}
 
 	private final void createListeners() {
@@ -121,7 +124,7 @@ public class GuiRenderer extends Renderer {
 				mainGui.onKeyPressed(glfwWindow, key, scancode, mods);
 			}
 		};
-		this.getParent().getGLFWWindow().addKeyPressListener(this.keyListener);
+		this.getMainRenderer().getGLFWWindow().addKeyPressListener(this.keyListener);
 
 		this.charListener = new GLFWListenerChar() {
 			@Override
@@ -129,7 +132,7 @@ public class GuiRenderer extends Renderer {
 				mainGui.onCharPressed(window, codepoint);
 			}
 		};
-		this.getParent().getGLFWWindow().addCharListener(this.charListener);
+		this.getMainRenderer().getGLFWWindow().addCharListener(this.charListener);
 	}
 
 	/** load every fonts */
@@ -154,23 +157,19 @@ public class GuiRenderer extends Renderer {
 	}
 
 	@Override
-	public void preRender() {
+	public void render() {
+
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-	}
 
-	@Override
-	public void postRender() {
-		GL11.glDisable(GL11.GL_BLEND);
-	}
-
-	@Override
-	public void render() {
 		// render them in the correct order
 		for (Gui gui : this.renderingList) {
 			gui.render(this);
 		}
+
+		GL11.glDisable(GL11.GL_BLEND);
+
 	}
 
 	/** a recursive helper to generate rendering list */
@@ -206,7 +205,7 @@ public class GuiRenderer extends Renderer {
 
 	private void updateViews() {
 
-		GLFWWindow window = this.getParent().getGLFWWindow();
+		GLFWWindow window = this.getMainRenderer().getGLFWWindow();
 		float mx = (float) (window.getMouseX() / window.getWidth());
 		float my = (float) (1.0f - window.getMouseY() / window.getHeight());
 		boolean pressed = window.isMouseLeftPressed();
@@ -261,7 +260,7 @@ public class GuiRenderer extends Renderer {
 				final GuiLabel thisGui = this;
 				this.timer--;
 				if (this.timer <= 0) {
-					GuiRenderer.this.getParent().addGLTask(new GLTask() {
+					GuiRenderer.this.getMainRenderer().addGLTask(new GLTask() {
 						@Override
 						public void run() {
 							GuiRenderer.this.removeGui(thisGui);
@@ -304,7 +303,8 @@ public class GuiRenderer extends Renderer {
 		this.toast(str, GuiRenderer.DEFAULT_FONT, r, g, b, a, time);
 	}
 
-	public void onWindowResize(int width, int height) {
+	/** a callback when the window is resized */
+	public void onWindowResize(GLFWWindow window, int width, int height) {
 		this.mainGui.onWindowResized(width, height);
 	}
 

@@ -1,7 +1,6 @@
 package com.grillecube.client.renderer.model.editor;
 
 import com.grillecube.client.VoxelEngineClient;
-import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
 
 public class ModelEditor {
@@ -19,6 +18,7 @@ public class ModelEditor {
 		/* 1 */
 		// initialize engine
 		VoxelEngineClient engine = new VoxelEngineClient();
+		engine.initialize();
 
 		/* 2 */
 		// inject resources to be loaded
@@ -38,18 +38,15 @@ public class ModelEditor {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		engine.stopAll();
+		engine.deinitialize();
 	}
 
 	private void prepareEngine(VoxelEngineClient engine) {
 
-		engine.setWorld(ModelEditorMod.WORLD_ID);
+		engine.loadWorld(ModelEditorMod.WORLD_ID);
 
 		engine.getGLFWWindow().swapInterval(1);
 		engine.getGLFWWindow().setScreenPosition(100, 100);
-
-		CameraProjectiveWorld camera = new ModelEditorCamera(engine.getGLFWWindow());
-		engine.getRenderer().setCamera(camera);
 
 		GuiModelEditor guiModelEditor = new GuiModelEditor();
 		engine.getRenderer().getGuiRenderer().addGui(guiModelEditor);

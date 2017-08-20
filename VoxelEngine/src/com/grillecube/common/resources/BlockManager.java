@@ -52,24 +52,22 @@ public class BlockManager extends GenericManager<Block> {
 
 	@Override
 	public void onInitialized() {
-
-	}
-
-	@Override
-	public void onStopped() {
 	}
 
 	@Override
 	public void onLoaded() {
-
 	}
 
 	@Override
-	public void onCleaned() {
-		super.clean();
+	protected void onDeinitialized() {
+	}
+
+	@Override
+	protected void onUnloaded() {
 	}
 
 	@Override
 	protected void onObjectRegistered(Block object) {
 	}
+
 }

@@ -17,33 +17,37 @@ import com.grillecube.common.world.entity.Entity;
 public class ModelManager extends GenericManager<Model> {
 
 	/** the model hashmap */
-	private final HashMap<Class<? extends Entity>, Integer> entitiesModels;
+	private HashMap<Class<? extends Entity>, Integer> entitiesModels;
 
 	/** the model instances using the given model */
-	private final HashMap<Model, ArrayList<ModelInstance>> modelsModelInstances;
+	private HashMap<Model, ArrayList<ModelInstance>> modelsModelInstances;
 
 	/** the model instances of the entities */
-	private final HashMap<Entity, ModelInstance> entitiesModelInstance;
+	private HashMap<Entity, ModelInstance> entitiesModelInstance;
 
 	/** the model manager */
 	public ModelManager(ResourceManager resourceManager) {
 		super(resourceManager);
+	}
+
+	@Override
+	protected final void onInitialized() {
 		this.entitiesModels = new HashMap<Class<? extends Entity>, Integer>();
 		this.modelsModelInstances = new HashMap<Model, ArrayList<ModelInstance>>();
 		this.entitiesModelInstance = new HashMap<Entity, ModelInstance>();
 	}
 
 	@Override
-	protected final void onInitialized() {
+	protected final void onDeinitialized() {
+		this.removeModelInstances();
+		this.entitiesModels = null;
+		this.modelsModelInstances = null;
+		this.entitiesModelInstance = null;
 	}
 
 	@Override
-	protected final void onStopped() {
-	}
-
-	@Override
-	protected final void onCleaned() {
-		this.entitiesModels.clear();
+	protected final void onUnloaded() {
+		this.removeModelInstances();
 	}
 
 	@Override

@@ -25,7 +25,7 @@ import com.grillecube.common.network.WrongPacketFormatException;
 import io.netty.buffer.ByteBuf;
 
 public class PacketManager extends GenericManager<PacketData> {
-	
+
 	public PacketManager(ResourceManager manager) {
 		super(manager);
 	}
@@ -39,7 +39,13 @@ public class PacketManager extends GenericManager<PacketData> {
 	public int registerPacket(Class<? extends Packet> packet_class) {
 		Logger.get().log(Level.FINE, "Registering packet: " + packet_class);
 		try {
-			packet_class.getDeclaredConstructor(ByteBuf.class); //try to get the constructor, if it doesnt exists, dont register the packet!			
+			packet_class.getDeclaredConstructor(ByteBuf.class); // try to get
+																// the
+																// constructor,
+																// if it doesnt
+																// exists, dont
+																// register the
+																// packet!
 			return (super.registerObject(new PacketData(packet_class)));
 		} catch (NoSuchMethodException e) {
 			Logger.get().log(Level.ERROR, "Byte buffer constructor not found! " + packet_class);
@@ -51,17 +57,20 @@ public class PacketManager extends GenericManager<PacketData> {
 	}
 
 	/**
-	 * register a listener to the given packet (which will be called when the packet is received)
+	 * register a listener to the given packet (which will be called when the
+	 * packet is received)
 	 * 
-	 * @param packetID : the packet
-	 * @param listener : the listener
+	 * @param packetID
+	 *            : the packet
+	 * @param listener
+	 *            : the listener
 	 */
 	public void addListenerToPacket(int packetID, PacketListener<? extends Packet> listener) {
 		if (listener == null) {
 			Logger.get().log(Level.WARNING, "Tried to add a null listener (see PacketManager.addListenerToPacket())");
 			return;
 		}
-		
+
 		PacketData data = super.getObjectByID(packetID);
 		if (data == null) {
 			Logger.get().log(Level.WARNING,
@@ -82,7 +91,8 @@ public class PacketManager extends GenericManager<PacketData> {
 	}
 
 	/** generate a new packet from it ID and the given bytebuffer */
-	public Packet getFromPacketID(int packetID, ByteBuf byteBuffer) throws NoSuchPacketException, WrongPacketFormatException {
+	public Packet getFromPacketID(int packetID, ByteBuf byteBuffer)
+			throws NoSuchPacketException, WrongPacketFormatException {
 		Class<? extends Packet> packet_class;
 		PacketData data = super.getObjectByID(packetID);
 		if (data == null) {
@@ -105,17 +115,22 @@ public class PacketManager extends GenericManager<PacketData> {
 	}
 
 	@Override
-	protected void onObjectRegistered(PacketData object) {}
+	protected void onObjectRegistered(PacketData object) {
+	}
 
 	@Override
-	protected void onInitialized() {}
+	public void onInitialized() {
+	}
 
 	@Override
-	protected void onStopped() {}
+	public void onLoaded() {
+	}
 
 	@Override
-	protected void onCleaned() {}
+	protected void onDeinitialized() {
+	}
 
 	@Override
-	protected void onLoaded() {}
+	protected void onUnloaded() {
+	}
 }

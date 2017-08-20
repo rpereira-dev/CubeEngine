@@ -1,8 +1,5 @@
 package com.grillecube.server;
 
-import java.util.ArrayList;
-
-import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.server.resources.ResourceManagerServer;
@@ -19,33 +16,11 @@ public class VoxelEngineServer extends VoxelEngine {
 	}
 
 	@Override
-	protected void preLoaded() {
+	protected void onInitialized() {
 	}
 
 	@Override
-	protected void postLoaded() {
-	}
-
-	@Override
-	protected void onLoopStart() {
-	}
-
-	@Override
-	protected void onLoopEnd() {
-	}
-
-	@Override
-	public void onLoop() {
-	}
-
-	@Override
-	protected void onStopped() {
-	}
-
-	@Override
-	protected void getTasks(ArrayList<Callable<Taskable>> tasks) {
-		// TODO Auto-generated method stub
-
+	protected void onDeinitialized() {
 	}
 
 	@SuppressWarnings("unchecked")

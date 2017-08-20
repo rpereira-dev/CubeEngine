@@ -14,32 +14,37 @@
 
 package com.grillecube.client.renderer;
 
+import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
 
 public abstract class Renderer implements Taskable {
-	private MainRenderer _main_renderer;
 
-	public Renderer(MainRenderer main_renderer) {
-		this._main_renderer = main_renderer;
-		Logger.get().log(Logger.Level.DEBUG, "instancing new " + this.getClass().getSimpleName());
+	private final MainRenderer mainRenderer;
+
+	public Renderer(MainRenderer mainRenderer) {
+		Logger.get().log(Logger.Level.FINE, "instancing new " + this.getClass().getSimpleName());
+		this.mainRenderer = mainRenderer;
 	}
 
-	public MainRenderer getParent() {
-		return (this._main_renderer);
+	public final MainRenderer getMainRenderer() {
+		return (this.mainRenderer);
 	}
 
 	/** call on initialization : load your shaders / and buffer heres */
 	public abstract void initialize();
 
+	/** call on deitniailiation : unload shaders / buffers */
 	public abstract void deinitialize();
 
-	/** called right before the world is rendered on each frames */
-	public abstract void preRender();
+	/** a callback when the window is resized */
+	public void onWindowResize(GLFWWindow window, int width, int height) {
+	}
 
-	/** main rendering function : draw your stuff here */
-	public abstract void render();
+	public void render() {
+	}
 
-	/** called right after the world is rendered on each frames */
-	public abstract void postRender();
+	public float getTimer() {
+		return (float) (this.getMainRenderer().getEngine().getTimer().getTime());
+	}
 }

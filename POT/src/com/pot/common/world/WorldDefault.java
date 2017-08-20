@@ -22,15 +22,6 @@ public class WorldDefault extends World {
 
 	public WorldDefault() {
 		super();
-	}
-
-	@Override
-	public String getName() {
-		return ("Default");
-	}
-
-	@Override
-	public void onSet() {
 		this.setWorldGenerator(new WorldGeneratorHoles());
 		for (int y = 6; y > 0; y--) {
 			for (int x = -4; x < 4; x++) {
@@ -48,10 +39,10 @@ public class WorldDefault extends World {
 				this.spawnEntity(entityTest);
 			}
 		}
-		// this.generateLights(); //TODO
 	}
 
 	@Override
-	public void onUnset() {
+	public String getName() {
+		return ("Default");
 	}
 }

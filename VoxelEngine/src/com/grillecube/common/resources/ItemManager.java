@@ -1,6 +1,11 @@
 package com.grillecube.common.resources;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.grillecube.common.Logger;
+import com.grillecube.common.event.Event;
+import com.grillecube.common.event.EventCallback;
 import com.grillecube.common.world.items.Item;
 
 public class ItemManager extends GenericManager<Item> {
@@ -15,25 +20,25 @@ public class ItemManager extends GenericManager<Item> {
 		super.registerObject(item);
 		return (item);
 	}
-	
+
 	@Override
 	protected void onObjectRegistered(Item item) {
 	}
 
 	@Override
-	protected void onInitialized() {		
+	public void onInitialized() {
 	}
 
 	@Override
-	protected void onStopped() {		
+	public void onLoaded() {
 	}
 
 	@Override
-	protected void onCleaned() {		
+	protected void onDeinitialized() {
 	}
 
 	@Override
-	protected void onLoaded() {		
+	protected void onUnloaded() {
 	}
 
 	/** get an item by it id */

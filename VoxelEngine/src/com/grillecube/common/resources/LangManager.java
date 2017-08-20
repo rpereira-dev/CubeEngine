@@ -17,23 +17,24 @@ public class LangManager extends GenericManager<HashMap<String, String>> {
 	}
 
 	@Override
-	protected void onInitialized() {
+	public void onInitialized() {
 	}
 
 	@Override
-	protected void onStopped() {
-	}
-
-	@Override
-	protected void onCleaned() {
-	}
-
-	@Override
-	protected void onLoaded() {
+	public void onLoaded() {
 		FR_FR = this.registerLang("fr_FR");
 		EN_US = this.registerLang("en_US");
-		// TODO add langs
 		this.setLang(EN_US);
+	}
+
+	@Override
+	protected void onDeinitialized() {
+		this.lang = null;
+	}
+
+	@Override
+	protected void onUnloaded() {
+		this.lang = null;
 	}
 
 	/** register a lang to the default voxel engine assets dir */

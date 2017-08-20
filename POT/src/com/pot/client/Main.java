@@ -15,6 +15,7 @@ public class Main {
 		/* 1 */
 		// initialize engine
 		VoxelEngineClient engine = new VoxelEngineClient();
+		engine.initialize();
 
 		/* 2 */
 		// inject resources to be loaded
@@ -35,7 +36,7 @@ public class Main {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		engine.stopAll();
+		engine.deinitialize();
 	}
 
 	private static void prepareEngine(VoxelEngineClient engine) {
@@ -57,12 +58,14 @@ public class Main {
 		// cam.setEntity(entity);
 		// engine.getRenderer().setCamera(cam);
 
-		engine.getRenderer().setCamera(new CameraPerspectiveWorldFree(engine.getGLFWWindow()));
-		engine.getRenderer().getCamera().setPosition(0.0f, 170.0f, -40.0f);
-		engine.setWorld(POTWorlds.DEFAULT);
+		engine.loadWorld(POTWorlds.DEFAULT);
 		engine.getGLFWWindow().swapInterval(1);
 		engine.getGLFWWindow().setScreenPosition(100, 100);
-		engine.getRenderer().getGuiRenderer().addGui(new GuiViewWorld());
-		engine.getRenderer().getGuiRenderer().addGui(new GuiViewDebug());
+
+		CameraPerspectiveWorldFree camera = new CameraPerspectiveWorldFree(engine.getGLFWWindow());
+		camera.setPosition(0.0f, 170.0f, -40.0f);
+
+		engine.getRenderer().getGuiRenderer().addGui(new GuiViewWorld(camera, POTWorlds.DEFAULT));
+		engine.getRenderer().getGuiRenderer().addGui(new GuiViewDebug(camera));
 	}
 }

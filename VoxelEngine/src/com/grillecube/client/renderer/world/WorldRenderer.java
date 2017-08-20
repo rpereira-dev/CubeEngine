@@ -14,87 +14,107 @@
 
 package com.grillecube.client.renderer.world;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL30;
 
+import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.opengl.GLH;
+import com.grillecube.client.opengl.object.GLFrameBuffer;
+import com.grillecube.client.opengl.object.GLProgramPostProcessing;
+import com.grillecube.client.opengl.object.GLRenderBuffer;
+import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
-import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
-import com.grillecube.client.renderer.model.ModelRenderer;
-import com.grillecube.client.renderer.world.lines.LineRenderer;
-import com.grillecube.client.renderer.world.particles.ParticleRenderer;
-import com.grillecube.client.renderer.world.sky.SkyRenderer;
-import com.grillecube.client.renderer.world.terrain.TerrainRenderer;
-import com.grillecube.client.sound.ALH;
+import com.grillecube.client.renderer.camera.CameraProjective;
+import com.grillecube.client.renderer.world.factories.LineRendererFactory;
+import com.grillecube.client.renderer.world.factories.ModelRendererFactory;
+import com.grillecube.client.renderer.world.factories.ParticleRendererFactory;
+import com.grillecube.client.renderer.world.factories.SkyRendererFactory;
+import com.grillecube.client.renderer.world.factories.TerrainRendererFactory;
+import com.grillecube.client.renderer.world.factories.WorldRendererFactory;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.world.World;
 
-//TODO : rebuild this so it has a main function render(World world, Camera camera) to render a world
 public class WorldRenderer extends Renderer {
 
-	/** a clipping plane that does not clip anything */
-	public static final Vector4f NO_CLIPPING = new Vector4f(0, 0, 0, 0);
-
-	/** sky renderer */
-	private SkyRenderer skyRenderer;
-
-	/** line renderer */
-	private LineRenderer lineRenderer;
-
-	/** main terrain renderer */
-	private TerrainRenderer terrainRenderer;
-
-	/** model view projection renderer */
-	private MVPRenderer mvpRenderer;
-
-	/** model renderer */
-	private ModelRenderer modelRenderer;
-
-	/** particles renderer */
-	private ParticleRenderer particleRenderer;
-
 	/** world to render */
-	private World _world;
+	private World world;
 
-	/** renderers */
-	private ArrayList<RendererWorld> renderers;
+	/** camera used to render the world */
+	private CameraProjective camera;
 
-	public WorldRenderer(MainRenderer main_renderer) {
-		super(main_renderer);
+	/** post processing shaders programs */
+	private GLProgramPostProcessing postProcessingProgram;
+
+	/** fbo */
+	private GLFrameBuffer fbo;
+	private GLTexture fboTexture;
+	private GLRenderBuffer fboDepthBuffer;
+
+	/** factories array list */
+	private ArrayList<WorldRendererFactory> factories;
+
+	private int width;
+
+	private int height;
+
+	public WorldRenderer(MainRenderer mainRenderer) {
+		super(mainRenderer);
+	}
+
+	public WorldRenderer(MainRenderer mainRenderer, World world, CameraProjective camera) {
+		this(mainRenderer);
+		this.setWorld(world);
+		this.setCamera(camera);
 	}
 
 	@Override
 	public void initialize() {
-
 		Logger.get().log(Logger.Level.DEBUG, "Initializing " + this.getClass().getSimpleName());
 
-		this.renderers = new ArrayList<RendererWorld>();
+		GLH.glhCheckError("pre worldrenderer fbo creation");
+		this.fbo = GLH.glhGenFBO();
+		this.fbo.bind();
+		this.fbo.createDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
 
-		this.skyRenderer = new SkyRenderer(this.getParent());
-		this.lineRenderer = new LineRenderer(this.getParent());
-		this.terrainRenderer = new TerrainRenderer(this.getParent());
-		this.modelRenderer = new ModelRenderer(this.getParent());
-		this.mvpRenderer = new MVPRenderer(this.getParent());
-		this.particleRenderer = new ParticleRenderer(this.getParent());
+		this.fboTexture = GLH.glhGenTexture();
+		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
+		this.fboTexture.parameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		this.fboTexture.parameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		this.fbo.createTextureAttachment(this.fboTexture, GL30.GL_COLOR_ATTACHMENT0);
 
-		this.renderers.add(this.skyRenderer);
-		this.renderers.add(this.lineRenderer);
-		this.renderers.add(this.terrainRenderer);
-		this.renderers.add(this.modelRenderer);
-		this.renderers.add(this.mvpRenderer);
-		this.renderers.add(this.particleRenderer);
+		this.fboDepthBuffer = GLH.glhGenRBO();
+		this.fboDepthBuffer.bind();
+		this.fboDepthBuffer.attachToFBO(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT);
 
-		for (RendererWorld renderer : this.renderers) {
-			Logger.get().log(Logger.Level.DEBUG, "Initializing " + renderer.getClass().getSimpleName());
-			renderer.initialize();
+		this.fbo.unbind();
+
+		GLH.glhCheckError("post worldrenderer fbo creation");
+
+		this.setPostProcessingProgram(null);
+		this.factories = new ArrayList<WorldRendererFactory>();
+		this.factories.add(new LineRendererFactory(this));
+		this.factories.add(new SkyRendererFactory(this));
+		this.factories.add(new TerrainRendererFactory(this));
+		this.factories.add(new ModelRendererFactory(this));
+		this.factories.add(new ParticleRendererFactory(this));
+
+		for (WorldRendererFactory factory : this.factories) {
+			factory.initialize();
 		}
+
+		// this.setPostProcessingProgram(new
+		// GLProgramPostProcessing(R.getResPath("shaders/post_process/blurv.fs")));
+		// this.setPostProcessingProgram(new
+		// GLProgramPostProcessing(R.getResPath("shaders/post_process/blurh.fs")));
+		// this.setPostProcessingProgram(new
+		// GLProgramPostProcessing(R.getResPath("shaders/post_process/drunk.fs")));
 	}
 
 	@Override
@@ -102,158 +122,128 @@ public class WorldRenderer extends Renderer {
 
 		Logger.get().log(Logger.Level.DEBUG, "Deinitializing " + this.getClass().getSimpleName());
 
-		for (RendererWorld renderer : this.renderers) {
-			Logger.get().log(Logger.Level.DEBUG, "Deinitializing " + renderer.getClass().getSimpleName());
-			renderer.deinitialize();
+		// remove fbo
+		GLH.glhDeleteObject(this.fbo);
+		GLH.glhDeleteObject(this.fboTexture);
+		GLH.glhDeleteObject(this.fboDepthBuffer);
+		this.fbo = null;
+		this.fboTexture = null;
+		this.fboDepthBuffer = null;
+
+		for (WorldRendererFactory factory : this.factories) {
+			factory.deinitialize();
 		}
+		this.factories = null;
 	}
 
-	private void onWorldSet(World world) {
-		for (RendererWorld renderer : this.renderers) {
-			renderer.onWorldSet(world);
-		}
+	public final void resizeFbo(int width, int height) {
+		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
+		this.fboTexture.image2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height, 0, GL11.GL_RGB,
+				GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
 
-	}
+		this.fboDepthBuffer.bind();
+		this.fboDepthBuffer.storage(GL11.GL_DEPTH_COMPONENT, width, height);
 
-	private void onWorldUnset(World world) {
-		for (RendererWorld renderer : this.renderers) {
-			renderer.onWorldUnset(world);
-		}
-	}
-
-	@Override
-	public void preRender() {
-
-		// pre render every renderer
-		for (RendererWorld renderer : this.renderers) {
-			renderer.preRender();
-			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + ".preRender()");
-		}
-
-		if (GLH.glhGetContext().getWindow().isKeyPressed(GLFW.GLFW_KEY_C)) {
-			this.getParent().getResourceManager().getSoundManager().playSoundAt(
-					ALH.alhLoadSound("C:/Users/Romain/AppData/Roaming/VoxelEngine/assets/POT/sounds/acoustic1.wav"),
-					this.getCamera().getPosition(), new Vector3f(0, 0, 0));
-		}
-	}
-
-	@Override
-	public void postRender() {
-		for (RendererWorld renderer : this.renderers) {
-			renderer.postRender();
-			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + ".postRender()");
-		}
+		this.width = width;
+		this.height = height;
 	}
 
 	/** render the given world */
 	@Override
 	public void render() {
 
-		// README : commented stuff are used to debug renderer. To see different
-		// performances
+		// if there is a world
+		if (this.getWorld() != null && this.getCamera() != null) {
+			// refresh fbo
+			this.getFBO().bind();
+			this.getFBO().clear();
 
-		GLH.glhCheckError("pre world renderer");
+			// TODO change viewport here to have it modular
+			this.getFBO().viewport(0, 0, this.width, this.height);
 
-		// long total = 0;
-		// long times[] = new long[this.renderers.size()];
-		//
-		// final world renderer
-		for (int i = 0; i < this.renderers.size(); i++) {
+			// DO THE RENDER HERE
+			for (WorldRendererFactory factory : this.factories) {
+				factory.render();
+			}
 
-			RendererWorld renderer = this.renderers.get(i);
+			// post processing effects
+			this.renderPostProcessingEffects();
 
-			// long time = System.nanoTime();
-			renderer.render();
-			// long difft = System.nanoTime() - time;
-			// times[i] = difft;
-			// total += difft;
-			//
-			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + ".render()");
-		}
-
-		// float ftotal = 0;
-		// for (int i = 0; i < this.renderers.size(); i++) {
-		//
-		// RendererWorld renderer = this.renderers.get(i);
-		// float ftime = times[i] / (float) total;
-		// ftotal += ftime;
-		// Logger.get().log(Logger.Level.DEBUG,
-		// renderer.getClass().getSimpleName(), ftime);
-		// }
-
-		// Logger.get().log(Logger.Level.DEBUG, "/" + ftotal);
-		// Logger.get().log(Logger.Level.DEBUG, " ");
-
-	}
-
-	public void setWorld(World world) {
-
-		World prevworld = this._world;
-		this._world = world;
-
-		// if we are setting a world and none was set before
-		if (prevworld == null && world != null) {
-			// initialize renderers
-			this.initialize();
-			this.onWorldSet(world);
-			// else if we are changing the world
-		} else if (prevworld != null && world != null) {
-
-			this.onWorldUnset(prevworld);
-			this.onWorldSet(world);
-
-			// else if we are setting a null world but one was set before
-		} else if (prevworld != null && world == null) {
-			this.onWorldUnset(prevworld);
-			this.deinitialize();
+			// unbind the fbo
+			this.getFBO().unbind();
 		}
 	}
 
-	public World getWorld() {
-		return (this._world);
-	}
+	private void renderPostProcessingEffects() {
 
-	/** return the default particle renderer */
-	public ParticleRenderer getParticleRenderer() {
-		return (this.particleRenderer);
-	}
+		if (this.postProcessingProgram != null) {
+			// bind the fbo texture to texture attachment 0
+			this.getFBOTexture().bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
 
-	public MVPRenderer getMVPRenderer() {
-		return (this.mvpRenderer);
-	}
-
-	public CameraProjectiveWorld getCamera() {
-		return (this.getParent().getCamera());
-	}
-
-	public TerrainRenderer getTerrainRenderer() {
-		return (this.terrainRenderer);
-	}
-
-	public LineRenderer getLineRenderer() {
-		return (this.lineRenderer);
-	}
-
-	public Collection<RendererWorld> getRenderers() {
-		return (this.renderers);
+			this.postProcessingProgram.useStart();
+			this.postProcessingProgram.loadUniforms(super.getTimer());
+			this.getMainRenderer().getDefaultVAO().bind();
+			GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
+			this.postProcessingProgram.useStop();
+		}
 	}
 
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<VoxelEngine.Callable<Taskable>> tasks) {
+		for (WorldRendererFactory factory : this.factories) {
+			tasks.add(engine.new Callable<Taskable>() {
+				@Override
+				public Taskable call() throws Exception {
+					factory.update();
+					return (WorldRenderer.this);
+				}
 
-		World world = this.getWorld();
-		CameraProjectiveWorld camera = this.getCamera();
-
-		if (world == null || camera == null) {
-			return;
-		}
-
-		for (RendererWorld renderer : this.getRenderers()) {
-			renderer.getTasks(engine, tasks, world, camera);
+				@Override
+				public String getName() {
+					return (factory.getClass().getSimpleName() + " update");
+				}
+			});
 		}
 	}
 
-	public ModelRenderer getModelRenderer() {
-		return (this.modelRenderer);
+	@Override
+	public void onWindowResize(GLFWWindow window, int width, int height) {
+		this.resizeFbo(width, height);
 	}
+
+	public final void setPostProcessingProgram(GLProgramPostProcessing program) {
+		this.postProcessingProgram = program;
+	}
+
+	public final GLFrameBuffer getFBO() {
+		return (this.fbo);
+	}
+
+	public final GLTexture getFBOTexture() {
+		return (this.fboTexture);
+	}
+
+	public final void setWorld(World world) {
+		this.world = world;
+	}
+
+	public final void setWorld(int worldID) {
+		this.setWorld(this.getMainRenderer().getResourceManager().getWorldManager().getWorld(worldID));
+	}
+
+	public final void setCamera(CameraProjective camera) {
+		this.camera = camera;
+	}
+
+	/** the world to be rendered */
+	public final World getWorld() {
+		return (this.world);
+	}
+
+	/** the camera use to render this world */
+	public final CameraProjective getCamera() {
+		return (this.camera);
+	}
+
+	// TODO : get factories
 }

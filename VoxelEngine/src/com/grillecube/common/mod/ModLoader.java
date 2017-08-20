@@ -142,6 +142,7 @@ public class ModLoader {
 		try {
 			IMod imod = (IMod) modClass.newInstance();
 			Mod mod = new Mod(imod, modInfo);
+			mod.initialize();
 			this.mods.add(mod);
 			Logger.get().log(Logger.Level.FINE, "Adding mod", mod);
 			return (true);
@@ -151,15 +152,8 @@ public class ModLoader {
 		}
 	}
 
-	/** initialize every mods */
-	public void initializeAll(ResourceManager manager) {
-		for (Mod mod : this.mods) {
-			mod.initialize();
-		}
-	}
-
 	/** deinitialize every mods and clean the mod list */
-	public void deinitializeAll(ResourceManager manager) {
+	public void deinitialize(ResourceManager manager) {
 		for (Mod mod : this.mods) {
 			mod.deinitialize();
 		}
@@ -167,19 +161,15 @@ public class ModLoader {
 	}
 
 	/** load every mod resources */
-	public void loadAll(ResourceManager manager) {
+	public void load(ResourceManager manager) {
 		for (Mod mod : this.mods) {
 			mod.loadResources(manager);
 		}
 	}
 
-	public void unloadAll(ResourceManager manager) {
+	public void unload(ResourceManager manager) {
 		for (Mod mod : this.mods) {
 			mod.unloadResources(manager);
 		}
-	}
-
-	public void stop(ResourceManager manager) {
-		this.deinitializeAll(manager);
 	}
 }

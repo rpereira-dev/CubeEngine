@@ -17,11 +17,10 @@ public abstract class GenericManager<T> {
 	private final ResourceManager _resource_manager;
 
 	/** objects */
-	private final ArrayList<T> objects;
+	private ArrayList<T> objects;
 
 	public GenericManager(final ResourceManager resource_manager) {
 		this._resource_manager = resource_manager;
-		this.objects = new ArrayList<T>();
 	}
 
 	public final ResourceManager getResourceManager() {
@@ -49,34 +48,36 @@ public abstract class GenericManager<T> {
 	protected abstract void onObjectRegistered(T object);
 
 	/** called once when program is started */
-	public void initialize() {
+	public final void initialize() {
+		this.objects = new ArrayList<T>();
 		this.onInitialized();
 	}
 
 	/** called once when program is stopped */
-	public void stop() {
+	public final void deinitialize() {
 		this.objects.clear();
-		this.onStopped();
+		this.objects = null;
+		this.onDeinitialized();
 	}
 
-	/** called when resources should be cleaned */
-	public void clean() {
-		this.objects.clear();
-		this.onCleaned();
-	}
-
-	/** called when resources should be loaded */
-	public void load() {
+	/** called every time the resource has to be loaded */
+	public final void load() {
 		this.onLoaded();
+	}
+
+	/** called every time the resource has to be unloaded */
+	public final void unload() {
+		this.objects.clear();
+		this.onUnloaded();
 	}
 
 	protected abstract void onInitialized();
 
-	protected abstract void onStopped();
-
-	protected abstract void onCleaned();
+	protected abstract void onDeinitialized();
 
 	protected abstract void onLoaded();
+
+	protected abstract void onUnloaded();
 
 	/** return the filepath for the given assets */
 	protected String getResource(String modid, String path) {
@@ -104,8 +105,5 @@ public abstract class GenericManager<T> {
 	/** return every registered objects */
 	public Collection<T> getObjects() {
 		return (this.objects);
-	}
-
-	public void update() {
 	}
 }

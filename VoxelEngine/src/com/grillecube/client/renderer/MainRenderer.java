@@ -14,14 +14,11 @@
 
 package com.grillecube.client.renderer;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL30;
 
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.event.renderer.EventPostRender;
@@ -29,24 +26,20 @@ import com.grillecube.client.event.renderer.EventPreRender;
 import com.grillecube.client.opengl.GLFWListenerResize;
 import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLFrameBuffer;
-import com.grillecube.client.opengl.object.GLProgramPostProcessing;
-import com.grillecube.client.opengl.object.GLRenderBuffer;
-import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.opengl.object.GLVertexArray;
 import com.grillecube.client.opengl.object.GLVertexBuffer;
-import com.grillecube.client.renderer.camera.CameraPerspectiveWorld;
-import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.world.WorldRenderer;
+import com.grillecube.client.renderer.lines.LineRenderer;
+import com.grillecube.client.renderer.model.ModelRenderer;
+import com.grillecube.client.renderer.particles.ParticleRenderer;
+import com.grillecube.client.renderer.sky.SkyRenderer;
+import com.grillecube.client.renderer.terrain.TerrainRenderer;
 import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Matrix4f;
-import com.grillecube.common.resources.R;
-import com.grillecube.common.world.World;
 
 public class MainRenderer implements Taskable, GLFWListenerResize {
 
@@ -73,17 +66,29 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	/** resource manager */
 	private VoxelEngineClient engine;
 
-	/** post processing shaders programs */
-	private GLProgramPostProcessing finalProcessProgram;
-	private GLProgramPostProcessing postProcessingProgram;
+	/** custom renderers */
+	private ArrayList<Renderer> customRenderers;
+	private ArrayList<Renderer> defaultRenderers;
 
-	/** camera */
-	private CameraProjectiveWorld camera;
-
-	/** default renderers */
-	private WorldRenderer worldRenderer;
+	/** GuiRenderer */
 	private GuiRenderer guiRenderer;
 
+	/** sky renderer */
+	private SkyRenderer skyRenderer;
+
+	/** line renderer */
+	private LineRenderer lineRenderer;
+
+	/** main terrain renderer */
+	private TerrainRenderer terrainRenderer;
+
+	/** model renderer */
+	private ModelRenderer modelRenderer;
+
+	/** particles renderer */
+	private ParticleRenderer particleRenderer;
+
+	/** tasks to be run in a gl context */
 	private ArrayList<GLTask> glTasks;
 
 	/** random number generator */
@@ -93,18 +98,13 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	private EventPreRender preRenderEvent;
 	private EventPostRender postRenderEvent;
 
-	/** main fbo */
-	private GLFrameBuffer fbo;
-	private GLTexture fboTexture;
-	private GLRenderBuffer fboDepthBuffer;
-
 	/** values */
 	private int verticesDrawn;
 	private int drawCalls;
 
 	/** default and simple vao (to use geometry shaders) */
-	private GLVertexArray _default_vao;
-	private GLVertexBuffer _default_vbo;
+	private GLVertexArray defaultVao;
+	private GLVertexBuffer defaultVbo;
 
 	private boolean toggle = true;
 
@@ -118,77 +118,80 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		GLH.glhCheckError("Pre mainrenderer initialization");
 		Logger.get().log(Level.FINE, "Initializing " + this.getClass().getSimpleName());
 
+		this.customRenderers = new ArrayList<Renderer>();
+		this.defaultRenderers = new ArrayList<Renderer>();
+
 		this.glTasks = new ArrayList<GLTask>();
 		this.rng = new Random();
 		this.preRenderEvent = new EventPreRender(this);
 		this.postRenderEvent = new EventPostRender(this);
 
 		this.initialiseDefaultVAO();
-		this.initializeMainFBO();
 
-		this.worldRenderer = new WorldRenderer(this);
+		this.terrainRenderer = new TerrainRenderer(this);
+		this.defaultRenderers.add(this.terrainRenderer);
+
+		this.skyRenderer = new SkyRenderer(this);
+		this.defaultRenderers.add(this.skyRenderer);
+
+		this.particleRenderer = new ParticleRenderer(this);
+		this.defaultRenderers.add(this.particleRenderer);
+
+		this.lineRenderer = new LineRenderer(this);
+		this.defaultRenderers.add(this.lineRenderer);
+
+		this.modelRenderer = new ModelRenderer(this);
+		this.defaultRenderers.add(this.modelRenderer);
+
 		this.guiRenderer = new GuiRenderer(this);
+		this.defaultRenderers.add(this.guiRenderer);
+
+		GLH.glhCheckError("pre renderer initialization");
+		for (Renderer renderer : this.defaultRenderers) {
+			renderer.initialize();
+			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + " initializes");
+		}
 
 		this.getGLFWWindow().addResizeListener(this);
-
-		Logger.get().log(Level.FINE, "Initializing " + this.getClass().getSimpleName());
-
-		Logger.get().log(Level.FINE, "Initializing " + this.guiRenderer.getClass().getSimpleName());
-		GLH.glhCheckError("pre guirenderer starts");
-		this.guiRenderer.initialize();
 		this.invokeResize(this.getGLFWWindow(), this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
-
-		GLH.glhCheckError("post guirenderer starts");
-
-		this.finalProcessProgram = new GLProgramPostProcessing(R.getResPath("shaders/post_process/post_processing.fs"));
-		this.setPostProcessingProgram(null);
-		// this.setPostProcessingProgram(new
-		// GLProgramPostProcessing(R.getResPath("shaders/post_process/blurv.fs")));
-		// this.setPostProcessingProgram(new
-		// GLProgramPostProcessing(R.getResPath("shaders/post_process/blurh.fs")));
-		// this.setPostProcessingProgram(new
-		// GLProgramPostProcessing(R.getResPath("shaders/post_process/drunk.fs")));
 
 		Logger.get().log(Level.FINE, "Done");
 		GLH.glhCheckError("post mainrenderer started");
 	}
 
-	/** the main fbo */
-	private void initializeMainFBO() {
+	public void deinitialize() {
+		this.getGLFWWindow().removeResizeListener(this);
 
-		GLH.glhCheckError("pre mainrenderer fbo creation");
+		GLH.glhCheckError("pre renderer deinitialization");
+		for (Renderer renderer : this.defaultRenderers) {
+			renderer.deinitialize();
+			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + " deinitializes");
+		}
 
-		this.fbo = GLH.glhGenFBO();
-		this.fbo.bind();
-		this.fbo.createDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
+		for (Renderer renderer : this.customRenderers) {
+			renderer.deinitialize();
+		}
 
-		this.fboTexture = GLH.glhGenTexture();
-		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
-		this.fboTexture.parameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		this.fboTexture.parameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		this.fbo.createTextureAttachment(this.fboTexture, GL30.GL_COLOR_ATTACHMENT0);
+		GLH.glhDeleteObject(this.defaultVao);
+		this.defaultVao = null;
 
-		this.fboDepthBuffer = GLH.glhGenRBO();
-		this.fboDepthBuffer.bind();
-		this.fboDepthBuffer.attachToFBO(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT);
-
-		this.fbo.unbind();
-		GLH.glhCheckError("post mainrenderer fbo creation");
+		GLH.glhDeleteObject(this.defaultVbo);
+		this.defaultVbo = null;
 	}
 
 	private void initialiseDefaultVAO() {
 		GLH.glhCheckError("pre default vao");
 
-		this._default_vao = GLH.glhGenVAO();
-		this._default_vbo = GLH.glhGenVBO();
+		this.defaultVao = GLH.glhGenVAO();
+		this.defaultVbo = GLH.glhGenVBO();
 
-		this._default_vao.bind();
-		this._default_vbo.bind(GL15.GL_ARRAY_BUFFER);
-		this._default_vao.enableAttribute(0);
-		this._default_vao.setAttribute(0, 1, GL11.GL_FLOAT, false, 0, 0);
+		this.defaultVao.bind();
+		this.defaultVbo.bind(GL15.GL_ARRAY_BUFFER);
+		this.defaultVao.enableAttribute(0);
+		this.defaultVao.setAttribute(0, 1, GL11.GL_FLOAT, false, 0, 0);
 
 		float[] points = { 0 };
-		this._default_vbo.bufferData(GL15.GL_ARRAY_BUFFER, points, GL15.GL_STATIC_DRAW);
+		this.defaultVbo.bufferData(GL15.GL_ARRAY_BUFFER, points, GL15.GL_STATIC_DRAW);
 
 		GLH.glhCheckError("post default vao");
 	}
@@ -196,38 +199,43 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	/** called whenever the window is resized */
 	@Override
 	public void invokeResize(GLFWWindow window, int width, int height) {
-		this.resizeMainFBO(width, height);
-		this.guiRenderer.onWindowResize(width, height);
+		for (Renderer renderer : this.defaultRenderers) {
+			renderer.onWindowResize(window, width, height);
+		}
+
+		for (Renderer renderer : this.customRenderers) {
+			renderer.onWindowResize(window, width, height);
+		}
 	}
 
-	private final void resizeMainFBO(int width, int height) {
-
-		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
-		this.fboTexture.image2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height, 0, GL11.GL_RGB,
-				GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
-
-		this.fboDepthBuffer.bind();
-		this.fboDepthBuffer.storage(GL11.GL_DEPTH_COMPONENT, width, height);
+	/** return the default particle renderer */
+	public final ParticleRenderer getParticleRenderer() {
+		return (this.particleRenderer);
 	}
 
-	public void deinitialize() {
-		this.getGLFWWindow().removeResizeListener(this);
+	/** terrain renderer */
+	public final TerrainRenderer getTerrainRenderer() {
+		return (this.terrainRenderer);
+	}
 
-		this.guiRenderer.deinitialize();
-		this.worldRenderer.deinitialize();
+	/** line renderer */
+	public final LineRenderer getLineRenderer() {
+		return (this.lineRenderer);
+	}
 
-		GLH.glhDeleteObject(this._default_vao);
-		this._default_vao = null;
+	/** font renderer */
+	public final GuiRenderer getGuiRenderer() {
+		return (this.guiRenderer);
+	}
 
-		GLH.glhDeleteObject(this._default_vbo);
-		this._default_vbo = null;
+	/** model renderer */
+	public final ModelRenderer getModelRenderer() {
+		return (this.modelRenderer);
+	}
 
-		GLH.glhDeleteObject(this.fbo);
-		GLH.glhDeleteObject(this.fboTexture);
-		GLH.glhDeleteObject(this.fboDepthBuffer);
-		this.fbo = null;
-		this.fboTexture = null;
-		this.fboDepthBuffer = null;
+	/** sky renderer */
+	public final SkyRenderer getSkyRenderer() {
+		return (this.skyRenderer);
 	}
 
 	/**
@@ -248,10 +256,10 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		}
 
 		// TODO move this somewhere else, if openal is thread safe
-		if (this.getCamera() != null) {
-			this.getCamera().update();
-			this.engine.getResourceManager().getSoundManager().update(this.getCamera());
-		}
+		// if (this.getCamera() != null) {
+		// this.getCamera().update();
+		// this.engine.getResourceManager().getSoundManager().update(this.getCamera());
+		// }
 
 		this.getResourceManager().getEventManager().invokeEvent(this.preRenderEvent);
 
@@ -259,43 +267,19 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		this.drawCalls = GLH.glhGetContext().resetDrawCalls();
 		this.verticesDrawn = GLH.glhGetContext().resetDrawVertices();
 
-		// if there is a world
-		if (this.getWorldRenderer().getWorld() != null && this.getCamera() != null) {
-			// render it
-			this.worldRenderer.preRender();
-
-			// refresh fbo
-			this.getFBO().bind();
-			this.getFBO().clear();
-			this.getFBO().viewport(0, 0, this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
-			this.worldRenderer.render();
-			this.renderPostProcessingEffects(); // post processing effects
-			this.getFBO().unbind(); // render the world to the main fbo
-
-			this.worldRenderer.postRender();
+		// render
+		GLH.glhCheckError("pre main renderer render");
+		for (Renderer renderer : this.customRenderers) {
+			renderer.render();
+			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + ".render()");
 		}
 
-		// render guis to default fbo
-		this.guiRenderer.preRender();
+		GL11.glViewport(0, 0, this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
 		this.guiRenderer.render();
-		this.guiRenderer.postRender();
+
+		GLH.glhCheckError("post gui renderer render");
 
 		this.getResourceManager().getEventManager().invokeEvent(this.postRenderEvent);
-	}
-
-	private void renderPostProcessingEffects() {
-
-		if (this.postProcessingProgram != null) {
-
-			// bind the fbo texture to texture attachment 0
-			this.getFBOTexture().bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
-
-			this.postProcessingProgram.useStart();
-			this.postProcessingProgram.loadUniforms(this);
-			this._default_vao.bind();
-			GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
-			this.postProcessingProgram.useStop();
-		}
 	}
 
 	/**
@@ -304,7 +288,7 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	 * should use it as a default VAO for geometry
 	 */
 	public GLVertexArray getDefaultVAO() {
-		return (this._default_vao);
+		return (this.defaultVao);
 	}
 
 	/** return the draw calls for the last frame */
@@ -322,26 +306,6 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		return (this.engine.getResourceManager());
 	}
 
-	/** get the camera */
-	public CameraProjectiveWorld getCamera() {
-		return (this.camera);
-	}
-
-	public void setCamera(CameraProjectiveWorld camera) {
-		Logger.get().log(Level.FINE, "Setting MainRenderer camera: " + camera);
-		this.camera = camera;
-	}
-
-	/** font renderer */
-	public GuiRenderer getGuiRenderer() {
-		return (this.guiRenderer);
-	}
-
-	/** get the world renderer */
-	public WorldRenderer getWorldRenderer() {
-		return (this.worldRenderer);
-	}
-
 	/** OpenGL tasks to be realized in main thread */
 	public interface GLTask {
 		public void run();
@@ -356,25 +320,6 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 		return (this.engine);
 	}
 
-	public void setWorld(World world) {
-		this.worldRenderer.setWorld(world);
-		if (this.camera != null && this.camera instanceof CameraPerspectiveWorld) {
-			((CameraPerspectiveWorld) this.camera).setWorld(world);
-		}
-	}
-
-	public void setPostProcessingProgram(GLProgramPostProcessing program) {
-		this.postProcessingProgram = program;
-	}
-
-	public GLFrameBuffer getFBO() {
-		return (this.fbo);
-	}
-
-	public GLTexture getFBOTexture() {
-		return (this.fboTexture);
-	}
-
 	public Random getRNG() {
 		return (this.rng);
 	}
@@ -386,8 +331,22 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<VoxelEngine.Callable<Taskable>> tasks) {
 
-		this.worldRenderer.getTasks(engine, tasks);
-		this.guiRenderer.getTasks(engine, tasks);
+		for (Renderer renderer : this.defaultRenderers) {
+			renderer.getTasks(engine, tasks);
+		}
+
+		for (Renderer renderer : this.customRenderers) {
+			renderer.getTasks(engine, tasks);
+		}
+	}
+
+	/** add a renderer to be use on the main rendering loop */
+	public final void addRenderer(Renderer renderer) {
+		this.customRenderers.add(renderer);
+	}
+
+	public final void removeRenderer(Renderer renderer) {
+		this.customRenderers.remove(renderer);
 	}
 
 	/** set to true of false weather you want to render or not */

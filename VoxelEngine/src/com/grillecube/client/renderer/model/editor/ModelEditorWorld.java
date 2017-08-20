@@ -6,13 +6,8 @@ import com.grillecube.common.world.terrain.Terrain;
 
 public class ModelEditorWorld extends World {
 
-	@Override
-	public String getName() {
-		return ("ModelEditorWorld");
-	}
-
-	@Override
-	public void onSet() {
+	public ModelEditorWorld() {
+		super();
 		this.setWorldGenerator(new WorldGeneratorFlat());
 		for (int x = -4; x < 4; x++) {
 			for (int z = -4; z < 4; z++) {
@@ -23,7 +18,7 @@ public class ModelEditorWorld extends World {
 	}
 
 	@Override
-	public void onUnset() {
-		// TODO Auto-generated method stub
+	public String getName() {
+		return ("ModelEditorWorld");
 	}
 }

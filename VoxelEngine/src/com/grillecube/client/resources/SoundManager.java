@@ -18,8 +18,6 @@ import com.grillecube.client.renderer.camera.CameraView;
 import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
 import com.grillecube.client.sound.ALSourcePool;
-import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.VoxelEngine.Side;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.GenericManager;
 import com.grillecube.common.resources.ResourceManager;
@@ -33,7 +31,7 @@ public class SoundManager extends GenericManager<String> {
 	}
 
 	/** sources pool */
-	private ALSourcePool _sound_pool;
+	private ALSourcePool soundPool;
 
 	public SoundManager(ResourceManager manager) {
 		super(manager);
@@ -42,34 +40,30 @@ public class SoundManager extends GenericManager<String> {
 
 	@Override
 	public void onInitialized() {
+		ALH.alhInit();
+	}
 
+	@Override
+	public void onDeinitialized() {
+		ALH.alhStop();
 	}
 
 	@Override
 	public void onLoaded() {
-		if (VoxelEngine.instance().getSide() == Side.CLIENT) {
-			this._sound_pool = ALH.alhGenSourcePool(32);
-		}
+		this.soundPool = ALH.alhGenSourcePool(32);
 	}
 
 	@Override
-	public void onCleaned() {
-		if (VoxelEngine.instance().getSide() == Side.CLIENT) {
-			this._sound_pool.stopAll();
-			this._sound_pool.destroy();
-		}
+	public void onUnloaded() {
+		this.soundPool.stopAll();
+		this.soundPool.destroy();
 	}
 
-	@Override
-	public void onStopped() {
-		if (VoxelEngine.instance().getSide() == Side.CLIENT) {
-			ALH.alhStop();
-		}
-	}
-	
 	/**
 	 * register a new sound
-	 * @param sound : the filename (it has to be in folder './assets/sounds/')
+	 * 
+	 * @param sound
+	 *            : the filename (it has to be in folder './assets/sounds/')
 	 * @return
 	 */
 	public int registerSound(String sound) {
@@ -81,17 +75,17 @@ public class SoundManager extends GenericManager<String> {
 	 * are
 	 */
 	public void playSound(ALSound sound) {
-		this._sound_pool.play(sound);
+		this.soundPool.play(sound);
 	}
 
 	/** play a sound relative to the listener */
 	public void playSoundAt(ALSound sound, Vector3f pos) {
-		this._sound_pool.playAt(sound, pos);
+		this.soundPool.playAt(sound, pos);
 	}
 
 	/** play a sound relative to the listener */
 	public void playSoundAt(ALSound sound, Vector3f pos, Vector3f velocity) {
-		this._sound_pool.playAt(sound, pos, velocity);
+		this.soundPool.playAt(sound, pos, velocity);
 	}
 
 	public void update(CameraView camera) {
@@ -100,5 +94,6 @@ public class SoundManager extends GenericManager<String> {
 	}
 
 	@Override
-	protected void onObjectRegistered(String object) {}
+	protected void onObjectRegistered(String object) {
+	}
 }

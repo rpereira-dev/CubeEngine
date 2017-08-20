@@ -2,7 +2,6 @@ package com.grillecube.client.event.renderer;
 
 import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
-import com.grillecube.client.renderer.camera.Camera;
 import com.grillecube.common.event.Event;
 
 public abstract class EventRender extends Event {
@@ -20,7 +19,4 @@ public abstract class EventRender extends Event {
 		return (this.renderer.getGLFWWindow());
 	}
 
-	public Camera getCamera() {
-		return (this.renderer.getCamera());
-	}
 }
