@@ -1,24 +1,9 @@
 package com.grillecube.client.renderer.gui.components;
 
-import com.grillecube.client.renderer.gui.GuiRenderer;
-
 public class GuiViewDefault extends GuiView {
 	private GuiLabel label;
 
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
-	}
-
-	@Override
-	protected void onUpdate(float x, float y, boolean mouse_in) {
-	}
-
-	@Override
-	protected void onInitialized(GuiRenderer renderer) {
+	public GuiViewDefault() {
 		this.label = new GuiLabel();
 		// this.label.addParameters(GuiLabel.PARAM_AUTO_ADJUST_RECT);
 
@@ -34,10 +19,5 @@ public class GuiViewDefault extends GuiView {
 		this.label.addText("\n");
 		this.label.addText("Have fun using VoxelEngine 3D!");
 		this.addChild(this.label);
-	}
-
-	@Override
-	protected void onDeinitialized(GuiRenderer renderer) {
-		// do not delete the texture, as it wasnt create by this object...
 	}
 }

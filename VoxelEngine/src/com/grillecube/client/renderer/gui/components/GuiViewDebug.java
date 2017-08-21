@@ -39,7 +39,7 @@ public class GuiViewDebug extends GuiView {
 	}
 
 	@Override
-	protected void onUpdate(float x, float y, boolean pressed) {
+	protected void onUpdate() {
 		this.updateText();
 	}
 

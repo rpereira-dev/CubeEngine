@@ -57,11 +57,10 @@ public class GuiRenderer extends Renderer {
 
 	/** the main gui, parent of every other guis */
 	private Gui mainGui;
+	private GuiInputManager guiInputManager;
 
 	/** gui rendering list (sorted by layers) */
 	private ArrayList<Gui> renderingList;
-	// private Gui guiFocused;
-	// private int guiFocusedIndex;
 
 	/** listeners */
 	private GLFWListenerChar charListener;
@@ -78,61 +77,23 @@ public class GuiRenderer extends Renderer {
 		this.programColoredQuad = new ProgramColoredQuad();
 		this.programTexturedQuad = new ProgramTexturedQuad();
 		this.programFont = new ProgramFont();
-		this.mainGui = new GuiView() {
-
-			@Override
-			protected void onInitialized(GuiRenderer renderer) {
-			}
-
-			@Override
-			protected void onDeinitialized(GuiRenderer renderer) {
-			}
-
-			@Override
-			protected void onUpdate(float x, float y, boolean pressed) {
-			}
-
-			@Override
-			public void onAddedTo(Gui gui) {
-			}
-
-			@Override
-			public void onRemovedFrom(Gui gui) {
-			}
-
-		};
+		this.mainGui = new GuiView();
+		this.guiInputManager = new GuiInputManager();
+		this.guiInputManager.initialize(this.getMainRenderer().getGLFWWindow(), this.mainGui);
 		this.renderingList = new ArrayList<Gui>();
 		this.loadFonts();
-		this.createListeners();
 	}
 
 	@Override
 	public void deinitialize() {
 		this.mainGui.deinitialize(this);
+		this.guiInputManager.deinitialize();
 		this.fonts.clear();
 		this.programColoredQuad.delete();
 		this.programTexturedQuad.delete();
 		this.programFont.delete();
-		this.getMainRenderer().getGLFWWindow().removeKeyPressListener(this.keyListener);
-		this.getMainRenderer().getGLFWWindow().removeCharListener(this.charListener);
-	}
-
-	private final void createListeners() {
-		this.keyListener = new GLFWListenerKeyPress() {
-			@Override
-			public void invokeKeyPress(GLFWWindow glfwWindow, int key, int scancode, int mods) {
-				mainGui.onKeyPressed(glfwWindow, key, scancode, mods);
-			}
-		};
-		this.getMainRenderer().getGLFWWindow().addKeyPressListener(this.keyListener);
-
-		this.charListener = new GLFWListenerChar() {
-			@Override
-			public void invokeChar(GLFWWindow window, int codepoint) {
-				mainGui.onCharPressed(window, codepoint);
-			}
-		};
-		this.getMainRenderer().getGLFWWindow().addCharListener(this.charListener);
+		this.getMainRenderer().getGLFWWindow().removeListener(this.keyListener);
+		this.getMainRenderer().getGLFWWindow().removeListener(this.charListener);
 	}
 
 	/** load every fonts */
@@ -203,29 +164,14 @@ public class GuiRenderer extends Renderer {
 		GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
 	}
 
-	private void updateViews() {
-
-		GLFWWindow window = this.getMainRenderer().getGLFWWindow();
-		float mx = (float) (window.getMouseX() / window.getWidth());
-		float my = (float) (1.0f - window.getMouseY() / window.getHeight());
-		boolean pressed = window.isMouseLeftPressed();
-
-		this.renderingList.clear();
-		this.addGuisToRenderingList(this.mainGui);
-		this.renderingList.sort(Gui.WEIGHT_COMPARATOR);
-
-		this.mainGui.update(mx, my, pressed);
-	}
-
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<Callable<Taskable>> tasks) {
-		// TODO : generate rendering list here
-		this.updateViews();
+		updateGuis();
 		// tasks.add(engine.new Callable<Taskable>() {
 		//
 		// @Override
 		// public Taskable call() throws Exception {
-		// updateViews();
+		// updateGuis();
 		// return (GuiRenderer.this);
 		// }
 		//
@@ -234,6 +180,17 @@ public class GuiRenderer extends Renderer {
 		// return ("GuiRenderer guis update");
 		// }
 		// });
+	}
+
+	private final void updateGuis() {
+		this.renderingList.clear();
+		this.addGuisToRenderingList(this.mainGui);
+		this.renderingList.sort(Gui.WEIGHT_COMPARATOR);
+
+		this.guiInputManager.update();
+		for (Gui gui : this.renderingList) {
+			gui.update();
+		}
 	}
 
 	/** add a view to render */

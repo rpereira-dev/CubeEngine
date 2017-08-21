@@ -1,21 +1,19 @@
 package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
 import com.grillecube.client.VoxelEngineClient;
-import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiPopUp;
 import com.grillecube.client.renderer.gui.components.GuiPrompt;
-import com.grillecube.client.renderer.gui.components.GuiSliderBar;
 import com.grillecube.client.renderer.gui.components.GuiSpinner;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAlignLeft;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftPress;
-import com.grillecube.client.renderer.gui.listeners.GuiSliderBarListenerValueChanged;
-import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerAdd;
-import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerPick;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftRelease;
+import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
+import com.grillecube.client.renderer.gui.event.GuiSpinnerEventAdd;
+import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
 import com.grillecube.client.renderer.model.ModelInitializer;
 import com.grillecube.client.renderer.model.editor.ModelEditorMod;
 import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
@@ -26,7 +24,6 @@ import com.grillecube.client.renderer.model.editor.mesher.ModelMesherCull;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.model.json.JSONEditableModelInitializer;
 import com.grillecube.client.resources.ModelManager;
-import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.Logger;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.world.World;
@@ -60,28 +57,25 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 		this.newModelButton.setText("New model");
 		this.addChild(this.newModelButton);
 
-		this.newModelButton.addListener(new GuiListenerMouseLeftPress<GuiButton>() {
+		this.newModelButton.addListener(new GuiListener<GuiEventMouseLeftRelease<GuiButton>>() {
 
 			@Override
-			public void invokeMouseLeftPress(GuiButton gui, double mousex, double mousey) {
-				GuiPopUp modelPreview = new GuiPopUp();
-
-				// TODO make this cleaner
-				getParent().getParent().getChildren().get(1).addChild(modelPreview);
+			public void invoke(GuiEventMouseLeftRelease<GuiButton> event) {
+				getParent().getParent().getChildren().get(1).addChild(new GuiPopUp());
 			}
 		});
 
 		// spinner list
 		this.modelList = new GuiSpinnerEditor();
-		this.modelList.addListener(new GuiSpinnerListenerAdd() {
+		this.modelList.addListener(new GuiListener<GuiSpinnerEventAdd<GuiSpinnerEditor>>() {
 			@Override
-			public void invokeSpinnerAddObject(GuiSpinner guiSpinner, int index) {
-				modelList.pick(index);
+			public void invoke(GuiSpinnerEventAdd<GuiSpinnerEditor> event) {
+				event.getGui().pick(event.getAddedIndex());
 			}
 		});
-		this.modelList.addListener(new GuiSpinnerListenerPick() {
+		this.modelList.addListener(new GuiListener<GuiSpinnerEventPick<GuiSpinnerEditor>>() {
 			@Override
-			public void invokeSpinnerIndexPick(GuiSpinner guiSpinner, int index) {
+			public void invoke(GuiSpinnerEventPick<GuiSpinnerEditor> event) {
 				onModelInstanceChanged();
 			}
 		});
@@ -104,9 +98,9 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 		this.modelBlockSizeUnit.setBox(0, 0.7f, 1.0f, 0.05f, 0);
 		this.modelBlockSizeUnit.addValues(0.125f, 0.250f, 0.5f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f,
 				10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f);
-		this.modelBlockSizeUnit.addListener(new GuiSliderBarListenerValueChanged() {
+		this.modelBlockSizeUnit.addListener(new GuiListener<GuiSliderBarEventValueChanged<GuiSliderBarEditor>>() {
 			@Override
-			public void invokeSliderBarValueChanged(GuiSliderBar guiSliderBar, int selectedIndex, Object value) {
+			public void invoke(GuiSliderBarEventValueChanged<GuiSliderBarEditor> event) {
 				onBlockSizeUnitChanged();
 			}
 		});
@@ -126,7 +120,7 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 	}
 
 	private final ModelInstance getSelectedModelInstance() {
-		return ((ModelInstance) (this.modelList.getSelectedObject()));
+		return ((ModelInstance) (this.modelList.getPickedObject()));
 	}
 
 	private final EditableModel getSelectedModel() {
@@ -164,21 +158,5 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 
 		ModelInstance modelInstance = new ModelInstance(editableModel, entity);
 		return (modelInstance);
-	}
-
-	@Override
-	protected void onDeinitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onUpdate(float x, float y, boolean pressed) {
-	}
-
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
 	}
 }

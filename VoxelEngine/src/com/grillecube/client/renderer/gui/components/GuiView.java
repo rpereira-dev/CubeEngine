@@ -6,10 +6,9 @@ package com.grillecube.client.renderer.gui.components;
  * @author Romain
  *
  */
-public abstract class GuiView extends Gui {
+public class GuiView extends Gui {
 
 	public GuiView() {
 		super();
 	}
-
 }

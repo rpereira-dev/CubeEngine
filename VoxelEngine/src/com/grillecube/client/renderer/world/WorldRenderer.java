@@ -31,7 +31,8 @@ import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.gui.components.Gui;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerAspectRatio;
+import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
+import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.world.factories.LineRendererFactory;
 import com.grillecube.client.renderer.world.factories.ModelRendererFactory;
 import com.grillecube.client.renderer.world.factories.ParticleRendererFactory;
@@ -45,7 +46,7 @@ import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.world.World;
 
-public class WorldRenderer extends Renderer implements GuiListenerAspectRatio<Gui> {
+public class WorldRenderer extends Renderer {
 
 	/** world to render */
 	private World world;
@@ -69,8 +70,16 @@ public class WorldRenderer extends Renderer implements GuiListenerAspectRatio<Gu
 	private int width;
 	private int height;
 
+	private GuiListener<GuiEventAspectRatio<Gui>> aspectRatioListener;
+
 	public WorldRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
+		this.aspectRatioListener = new GuiListener<GuiEventAspectRatio<Gui>>() {
+			@Override
+			public void invoke(GuiEventAspectRatio<Gui> event) {
+				resizeFbo();
+			}
+		};
 	}
 
 	public WorldRenderer(MainRenderer mainRenderer, World world, CameraProjective camera) {
@@ -153,8 +162,8 @@ public class WorldRenderer extends Renderer implements GuiListenerAspectRatio<Gu
 			Vector4f h = new Vector4f(0, 1.0f, 0.0f, 1.0f);
 			Matrix4f.transform(this.guiToMatch.getGuiToWindowChangeOfBasis(), w, w);
 			Matrix4f.transform(this.guiToMatch.getGuiToWindowChangeOfBasis(), h, h);
-			this.width = (int)((w.y - w.x) * W);
-			this.height = (int)((h.y - h.x) * H);
+			this.width = (int) ((w.y - w.x) * W);
+			this.height = (int) ((h.y - h.x) * H);
 		}
 
 		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
@@ -264,17 +273,12 @@ public class WorldRenderer extends Renderer implements GuiListenerAspectRatio<Gu
 
 	public final void matchGui(Gui gui) {
 		if (this.guiToMatch != null) {
-			this.guiToMatch.removeListener(this);
+			this.guiToMatch.removeListener(this.aspectRatioListener);
 		}
 		this.guiToMatch = gui;
 		if (this.guiToMatch != null) {
-			this.guiToMatch.addListener(this);
+			this.guiToMatch.addListener(this.aspectRatioListener);
 		}
-		this.resizeFbo();
-	}
-
-	@Override
-	public void invokeAspectRatioChanged(Gui gui, boolean runParameters) {
 		this.resizeFbo();
 	}
 }

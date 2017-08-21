@@ -3,52 +3,25 @@ package com.grillecube.client.renderer.gui.components;
 import org.lwjgl.glfw.GLFW;
 
 import com.grillecube.client.opengl.GLFWWindow;
+import com.grillecube.client.renderer.gui.event.GuiEventChar;
+import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
+import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.font.FontFile;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerChar;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerKeyPress;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftPress;
 import com.grillecube.common.maths.Vector4f;
 
 public class GuiPrompt extends GuiLabel {
 
-	private static final GuiListenerMouseLeftPress<GuiPrompt> FOCUS_LISTENER = new GuiListenerMouseLeftPress<GuiPrompt>() {
+	private static final GuiListener<GuiEventChar<GuiPrompt>> CHAR_LISTENER = new GuiListener<GuiEventChar<GuiPrompt>>() {
 		@Override
-		public void invokeMouseLeftPress(GuiPrompt gui, double mousex, double mousey) {
-			gui.setFocusRequest(true);
+		public void invoke(GuiEventChar<GuiPrompt> event) {
+			event.getGui().onChar(event.getGLFWWindow(), event.getCharacter());
 		}
 	};
 
-	private static final GuiListenerChar<GuiPrompt> CHAR_LISTENER = new GuiListenerChar<GuiPrompt>() {
+	private static final GuiListener<GuiEventKeyPress<GuiPrompt>> KEY_PRESS_LISTENER = new GuiListener<GuiEventKeyPress<GuiPrompt>>() {
 		@Override
-		public void invokeCharPress(GuiPrompt guiPrompt, GLFWWindow window, int codepoint) {
-			guiPrompt.addChar((char) codepoint);
-		}
-	};
-
-	private static final GuiListenerKeyPress<GuiPrompt> KEY_PRESS_LISTENER = new GuiListenerKeyPress<GuiPrompt>() {
-		@Override
-		public void invokeKeyPress(GuiPrompt gui, GLFWWindow glfwWindow, int key, int scancode, int mods) {
-			// if (!this.hasFocus()) { //TODO
-			// return;
-			// }
-
-			String text = gui.getHeldText();
-			if (text != null) {
-				if (key == GLFW.GLFW_KEY_BACKSPACE && gui.getCursor() > 0) {
-					gui.backspace();
-				} else if (key == GLFW.GLFW_KEY_DELETE && gui.getCursor() < text.length()) {
-					gui.delete();
-				} else if (key == GLFW.GLFW_KEY_LEFT && gui.cursor > 0) {
-					gui.moveCursor(-1);
-				} else if (key == GLFW.GLFW_KEY_RIGHT && gui.cursor < gui.getText().length()) {
-					gui.moveCursor(1);
-				}
-			}
-
-			if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER)
-					&& (mods & GLFW.GLFW_MOD_SHIFT) == GLFW.GLFW_MOD_SHIFT) {
-				gui.addChar('\n');
-			}
+		public void invoke(GuiEventKeyPress<GuiPrompt> event) {
+			event.getGui().onKeyPressed(event.getGLFWWindow(), event.getKey(), event.getScancode(), event.getMods());
 		}
 	};
 
@@ -78,13 +51,37 @@ public class GuiPrompt extends GuiLabel {
 
 	public GuiPrompt() {
 		super();
-		this.addListener(FOCUS_LISTENER);
 		this.addListener(CHAR_LISTENER);
 		this.addListener(KEY_PRESS_LISTENER);
 		this.charset = new String(DEFAULT_CHARSET);
 		this.maxChars = Integer.MAX_VALUE;
 		this.setHintColor(0.5f, 0.5f, 0.5f, 0.5f);
 		this.setHeldTextColor(Gui.COLOR_BLUE);
+	}
+
+	protected void onChar(GLFWWindow glfwWindow, char character) {
+		this.addChar(character);
+	}
+
+	protected void onKeyPressed(GLFWWindow glfwWindow, int key, int scancode, int mods) {
+
+		String text = this.getHeldText();
+		if (text != null) {
+			if (key == GLFW.GLFW_KEY_BACKSPACE && this.getCursor() > 0) {
+				this.backspace();
+			} else if (key == GLFW.GLFW_KEY_DELETE && this.getCursor() < text.length()) {
+				this.delete();
+			} else if (key == GLFW.GLFW_KEY_LEFT && this.getCursor() > 0) {
+				this.moveCursor(-1);
+			} else if (key == GLFW.GLFW_KEY_RIGHT && this.getCursor() < this.getText().length()) {
+				this.moveCursor(1);
+			}
+		}
+
+		if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER)
+				&& (mods & GLFW.GLFW_MOD_SHIFT) == GLFW.GLFW_MOD_SHIFT) {
+			this.addChar('\n');
+		}
 	}
 
 	/** delete the char at the 'right' of the cursor */
@@ -164,8 +161,7 @@ public class GuiPrompt extends GuiLabel {
 	}
 
 	@Override
-	public void onUpdate(float x, float y, boolean pressed) {
-		super.onUpdate(x, y, pressed);
+	public void onUpdate() {
 		this.updateCursor();
 	}
 

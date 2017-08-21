@@ -3,15 +3,10 @@ package com.grillecube.client.renderer.gui.components;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.listeners.GuiSliderBarListenerValueChanged;
+import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
 
 /** a slider bar */
 public class GuiSliderBar extends Gui {
-
-	/** listeners */
-	private ArrayList<GuiSliderBarListenerValueChanged> guiSliderBarListenersValueChanged;
-
 	/** the objects hold */
 	private final ArrayList<Object> values;
 
@@ -22,13 +17,6 @@ public class GuiSliderBar extends Gui {
 		super();
 		this.selectedIndex = 0;
 		this.values = new ArrayList<Object>();
-	}
-
-	public final void addListener(GuiSliderBarListenerValueChanged guiSliderBarListenerValueChanged) {
-		if (this.guiSliderBarListenersValueChanged == null) {
-			this.guiSliderBarListenersValueChanged = new ArrayList<GuiSliderBarListenerValueChanged>();
-		}
-		this.guiSliderBarListenersValueChanged.add(guiSliderBarListenerValueChanged);
 	}
 
 	/** add all values to the list */
@@ -73,6 +61,10 @@ public class GuiSliderBar extends Gui {
 		return (this.values);
 	}
 
+	public final Object getValue(int index) {
+		return (this.values.get(index));
+	}
+
 	/** select the value at given index */
 	public final Object select(int selectedIndex) {
 		if (this.values.size() == 0) {
@@ -83,15 +75,10 @@ public class GuiSliderBar extends Gui {
 		} else if (selectedIndex >= this.values.size()) {
 			selectedIndex = this.values.size() - 1;
 		}
+		int prevIndex = this.selectedIndex;
 		this.selectedIndex = selectedIndex;
-		Object value = this.values.get(this.selectedIndex);
-		if (this.guiSliderBarListenersValueChanged != null) {
-			for (GuiSliderBarListenerValueChanged listener : this.guiSliderBarListenersValueChanged) {
-				listener.invokeSliderBarValueChanged(this, selectedIndex, value);
-			}
-		}
-
-		return (value);
+		super.stackEvent(new GuiSliderBarEventValueChanged(this, prevIndex, this.getValue(prevIndex)));
+		return (this.getSelectedValue());
 	}
 
 	public final Object select(Object object) {
@@ -116,6 +103,11 @@ public class GuiSliderBar extends Gui {
 		return (this.values.get(this.selectedIndex));
 	}
 
+	/** get the selected value */
+	public final int getSelectedIndex() {
+		return (this.selectedIndex);
+	}
+
 	/** get the percent progression of the selected value */
 	public final float getPercent() {
 		if (this.values.size() == 0) {
@@ -125,30 +117,11 @@ public class GuiSliderBar extends Gui {
 	}
 
 	@Override
-	protected void onInitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onDeinitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onUpdate(float x, float y, boolean pressed) {
-		if (super.isLeftPressed()) {
-			this.select(x);
+	protected void onInputUpdate() {
+		// TODO : mouse press
+		if (super.isPressed()) {
+			this.select(this.getMouseX());
 		}
-	}
-
-	/** do the rendering of this gui */
-	protected void onRender(GuiRenderer guiRenderer) {
-	}
-
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
 	}
 
 	/** VALUES HELPER */

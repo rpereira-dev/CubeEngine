@@ -18,19 +18,19 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.animations.GuiAnimation;
 import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerAspectRatio;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerChar;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerKeyPress;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseExit;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseHover;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftPress;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftRelease;
+import com.grillecube.client.renderer.gui.event.GuiEvent;
+import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseEnter;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseExit;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseHover;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftPress;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftRelease;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseMove;
+import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector2f;
 import com.grillecube.common.maths.Vector4f;
@@ -50,6 +50,8 @@ import com.grillecube.common.maths.Vector4f;
  * @author Romain
  *
  */
+
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class Gui {
 
 	/** default colors */
@@ -63,12 +65,10 @@ public abstract class Gui {
 	public static final int STATE_INITIALIZED = (1 << 0);
 	public static final int STATE_HOVERED = (1 << 1);
 	public static final int STATE_FOCUSED = (1 << 2);
-	public static final int STATE_FOCUS_REQUESTED = (1 << 3);
-	public static final int STATE_LEFT_PRESSED = (1 << 4);
+	public static final int STATE_PRESSED = (1 << 3);
+	public static final int STATE_SELECTABLE = (1 << 4);
 	public static final int STATE_VISIBLE = (1 << 5);
-	private static final int STATE_SELECTED = (1 << 6);
-	private static final int STATE_SELECTABLE = (1 << 7);
-	private static final int STATE_ENABLED = (1 << 8);
+	private static final int STATE_ENABLED = (1 << 6);
 
 	/** the transformation matrix, relative to the parent */
 	private final Matrix4f guiToParentChangeOfBasis;
@@ -95,14 +95,9 @@ public abstract class Gui {
 	/** gui animations */
 	private ArrayList<GuiAnimation<Gui>> animations;
 
-	private ArrayList<GuiListenerMouseHover<?>> listeners_mouse_hover;
-	private ArrayList<GuiListenerMouseEnter<?>> listeners_mouse_enter;
-	private ArrayList<GuiListenerMouseExit<?>> listeners_mouse_exit;
-	private ArrayList<GuiListenerMouseLeftRelease<?>> listeners_mouse_left_release;
-	private ArrayList<GuiListenerMouseLeftPress<?>> listeners_mouse_left_press;
-	private ArrayList<GuiListenerKeyPress<?>> listeners_key_press;
-	private ArrayList<GuiListenerChar<?>> listeners_char;
-	private ArrayList<GuiListenerAspectRatio<?>> listeners_aspect_ratio;
+	/** hashmap: class of 'GuiEvent', and list of GuiListener<GuiEvent> */
+	private HashMap<Class<?>, ArrayList<GuiListener<?>>> listeners;
+	private ArrayList<GuiEvent<?>> stackedEvents;
 
 	public static final Comparator<? super Gui> WEIGHT_COMPARATOR = new Comparator<Gui>() {
 		@Override
@@ -117,9 +112,14 @@ public abstract class Gui {
 	private float totalAspectRatio = 1.0f;
 	private int weight;
 
+	/** the mouse coordinates relatively to the gui basis */
+	private float mouseX;
+	private float mouseY;
+	private float prevMouseX;
+	private float prevMouseY;
+
 	public Gui() {
 		this.children = null;
-		this.boxRot = 0.0F;
 		this.guiToParentChangeOfBasis = new Matrix4f();
 		this.guiToWindowChangeOfBasis = new Matrix4f();
 		this.windowToGuiChangeOfBasis = new Matrix4f();
@@ -131,148 +131,45 @@ public abstract class Gui {
 		this.setBox(0, 0, 1, 1, 0);
 		this.params = null;
 		this.animations = null;
-		this.listeners_mouse_hover = null;
-		this.listeners_mouse_enter = null;
-		this.listeners_mouse_exit = null;
-		this.listeners_mouse_left_release = null;
-		this.listeners_mouse_left_press = null;
-		this.listeners_key_press = null;
-		this.listeners_char = null;
-		this.listeners_aspect_ratio = null;
 		this.state = 0;
 		this.tasks = new ArrayList<GuiTask>();
 		this.setVisible(true);
-		this.setSelected(false);
+		this.setPressed(false);
 		this.setSelectable(false);
 		this.setEnabled(true);
 	}
 
 	/** a listener to the mouse hovering the gui */
-	public void addListener(GuiListenerKeyPress<?> listener) {
-		if (this.listeners_key_press == null) {
-			this.listeners_key_press = new ArrayList<GuiListenerKeyPress<?>>();
-		}
-		this.listeners_key_press.add(listener);
-	}
-
-	/** a listener to the mouse hovering the gui */
-	public void addListener(GuiListenerChar<?> listener) {
-		if (this.listeners_char == null) {
-			this.listeners_char = new ArrayList<GuiListenerChar<?>>();
-		}
-		this.listeners_char.add(listener);
-	}
-
-	/** a listener to the mouse hovering the gui */
-	public void addListener(GuiListenerMouseHover<?> listener) {
-		if (this.listeners_mouse_hover == null) {
-			this.listeners_mouse_hover = new ArrayList<GuiListenerMouseHover<?>>();
-		}
-		this.listeners_mouse_hover.add(listener);
-	}
-
-	/** a listener to the mouse entering the gui */
-	public void addListener(GuiListenerMouseEnter<?> listener) {
-		if (this.listeners_mouse_enter == null) {
-			this.listeners_mouse_enter = new ArrayList<GuiListenerMouseEnter<?>>();
-		}
-		this.listeners_mouse_enter.add(listener);
-	}
-
-	/** a listener to the mouse entering the gui */
-	public void addListener(GuiListenerMouseExit<?> listener) {
-		if (this.listeners_mouse_exit == null) {
-			this.listeners_mouse_exit = new ArrayList<GuiListenerMouseExit<?>>();
-		}
-		this.listeners_mouse_exit.add(listener);
-	}
-
-	/** a listener to the mouse entering the gui */
-	public void addListener(GuiListenerMouseLeftRelease<?> listener) {
-		if (this.listeners_mouse_left_release == null) {
-			this.listeners_mouse_left_release = new ArrayList<GuiListenerMouseLeftRelease<?>>();
-		}
-		this.listeners_mouse_left_release.add(listener);
-	}
-
-	/** a listener to the mouse entering the gui */
-	public void addListener(GuiListenerMouseLeftPress<?> listener) {
-		if (this.listeners_mouse_left_press == null) {
-			this.listeners_mouse_left_press = new ArrayList<GuiListenerMouseLeftPress<?>>();
-		}
-		this.listeners_mouse_left_press.add(listener);
-	}
-
-	/** a listener to the mouse hovering the gui */
-	public void addListener(GuiListenerAspectRatio<?> listener) {
-		if (this.listeners_aspect_ratio == null) {
-			this.listeners_aspect_ratio = new ArrayList<GuiListenerAspectRatio<?>>();
-		}
-		this.listeners_aspect_ratio.add(listener);
-	}
-
-	/** a listener to the mouse hovering the gui */
-	public void removeListener(GuiListenerKeyPress<?> listener) {
-		if (this.listeners_key_press == null) {
+	@SuppressWarnings("unchecked")
+	public void addListener(GuiListener<?> listener) {
+		if (listener == null) {
 			return;
 		}
-		this.listeners_key_press.remove(listener);
-	}
-
-	/** a listener to the mouse hovering the gui */
-	public void removeListener(GuiListenerChar<?> listener) {
-		if (this.listeners_char == null) {
-			return;
+		if (this.listeners == null) {
+			this.listeners = new HashMap<Class<?>, ArrayList<GuiListener<?>>>();
 		}
-		this.listeners_char.remove(listener);
-	}
-
-	/** a listener to the mouse hovering the gui */
-	public void removeListener(GuiListenerMouseHover<?> listener) {
-		if (this.listeners_mouse_hover == null) {
-			return;
+		ArrayList<GuiListener<?>> lst = this.listeners.get(listener.getEventClass());
+		if (lst == null) {
+			lst = new ArrayList<GuiListener<?>>();
+			this.listeners.put(listener.getEventClass(), lst);
 		}
-		this.listeners_mouse_hover.remove(listener);
+
+		lst.add(listener);
 	}
 
 	/** a listener to the mouse entering the gui */
-	public void removeListener(GuiListenerMouseEnter<?> listener) {
-		if (this.listeners_mouse_enter == null) {
+	public void removeListener(GuiListener<?> listener) {
+		ArrayList<GuiListener<?>> lst = this.listeners.get(listener.getEventClass());
+		if (lst == null) {
 			return;
 		}
-		this.listeners_mouse_enter.remove(listener);
-	}
-
-	/** a listener to the mouse entering the gui */
-	public void removeListener(GuiListenerMouseExit<?> listener) {
-		if (this.listeners_mouse_exit == null) {
-			return;
+		lst.remove(listener);
+		if (lst.size() == 0) {
+			this.listeners.remove(listener.getEventClass());
 		}
-		this.listeners_mouse_exit.remove(listener);
-	}
-
-	/** a listener to the mouse entering the gui */
-	public void removeListener(GuiListenerMouseLeftRelease<?> listener) {
-		if (this.listeners_mouse_left_release == null) {
-			return;
+		if (this.listeners.size() == 0) {
+			this.listeners = null;
 		}
-		this.listeners_mouse_left_release.remove(listener);
-	}
-
-	/** a listener to the mouse entering the gui */
-	public void removeListener(GuiListenerMouseLeftPress<?> listener) {
-		if (this.listeners_mouse_left_press == null) {
-			return;
-		}
-		this.listeners_mouse_left_press.remove(listener);
-	}
-
-	/** a listener to the mouse entering the gui */
-	public void removeListener(GuiListenerAspectRatio<?> listener) {
-		if (this.listeners_aspect_ratio == null) {
-			return;
-		}
-		this.listeners_aspect_ratio.remove(listener);
 	}
 
 	/**
@@ -427,14 +324,10 @@ public abstract class Gui {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void updateAspectRatio(float parentAspectRatio, boolean runParameters) {
+		float oldAspectRatio = this.totalAspectRatio;
 		this.totalAspectRatio = parentAspectRatio * this.localAspectRatio;
-		if (this.listeners_aspect_ratio != null) {
-			for (GuiListenerAspectRatio listener : this.listeners_aspect_ratio) {
-				listener.invokeAspectRatioChanged(this, runParameters);
-			}
-		}
+		this.stackEvent(new GuiEventAspectRatio(this, oldAspectRatio, this.totalAspectRatio));
 		if (this.children != null) {
 			for (Gui gui : this.children) {
 				gui.updateAspectRatio(this.totalAspectRatio, runParameters);
@@ -490,7 +383,9 @@ public abstract class Gui {
 	}
 
 	/** initialize the gui: this function is call in opengl main thread */
-	protected abstract void onInitialized(GuiRenderer renderer);
+	protected void onInitialized(GuiRenderer renderer) {
+
+	}
 
 	/** deinitialize the gui */
 	public final void deinitialize(GuiRenderer renderer) {
@@ -513,10 +408,12 @@ public abstract class Gui {
 	}
 
 	/** deinitialize the gui: this function is call in opengl main thread */
-	protected abstract void onDeinitialized(GuiRenderer renderer);
+	protected void onDeinitialized(GuiRenderer renderer) {
+	}
 
 	/**
-	 * update this gui, mouse (x, y) coordinates are relative to the window
+	 * update this gui inputs, mouse (x, y) coordinates are relative to the
+	 * window
 	 * 
 	 * @param x
 	 *            : x
@@ -525,22 +422,77 @@ public abstract class Gui {
 	 * @param pressed
 	 *            : if mouse is left pressed
 	 */
-	public final void update(float x, float y, boolean pressed) {
+	public final void updateInput(float x, float y, boolean pressed) {
 
+		// do not updateInput if tis gui is not enabled
 		if (!this.isEnabled()) {
 			return;
 		}
 
+		// get the coordinates relatively to the gui basis
 		Vector4f mouse = new Vector4f(x, y, 0.0f, 1.0f);
 		Matrix4f.transform(this.windowToGuiChangeOfBasis, mouse, mouse);
-		this.updateState(mouse.x, mouse.y, pressed);
-		this.onUpdate(mouse.x, mouse.y, pressed);
-		this.updateAnimations();
 
+		// update gui states (stack events)
+		this.updateMouseInputEvents(mouse.x, mouse.y, pressed);
+		this.onInputUpdate();
+
+		// unstack (raise events)
+		this.unstackEvents();
+
+		// do it recursively on each child
 		if (this.children != null) {
 			for (Gui child : this.children) {
-				child.update(x, y, pressed);
+				child.updateInput(x, y, pressed);
 			}
+		}
+	}
+
+	/** stack an event, it listeners will be caled using Gui#unstackEvents() */
+	public final void stackEvent(GuiEvent<?> guiEvent) {
+		if (this.stackedEvents == null) {
+			this.stackedEvents = new ArrayList<GuiEvent<?>>();
+		}
+		this.stackedEvents.add(guiEvent);
+	}
+
+	/** release the stack events and call their listener */
+	public final void unstackEvents() {
+		if (this.stackedEvents == null) {
+			return;
+		}
+
+		ArrayList<GuiEvent<?>> events = this.stackedEvents;
+		this.stackedEvents = null; // little hack for concurrent modification
+
+		for (GuiEvent<?> event : events) {
+			this.invokeEvent(event);
+		}
+	}
+
+	/** invoke the given event */
+	protected final void invokeEvent(GuiEvent event) {
+		if (this.listeners == null) {
+			return;
+		}
+		ArrayList<GuiListener<?>> listeners = this.listeners.get(event.getClass());
+		if (listeners == null) {
+			return;
+		}
+		for (GuiListener listener : listeners) {
+			listener.invoke(event);
+		}
+	}
+
+	/** called right after the input has been updated */
+	protected void onInputUpdate() {
+	}
+
+	/** update animations and gui tasks */
+	public final void update() {
+
+		if (!this.isEnabled()) {
+			return;
 		}
 
 		for (int i = 0; i < this.tasks.size(); i++) {
@@ -548,6 +500,12 @@ public abstract class Gui {
 		}
 		this.tasks.clear();
 		this.tasks.trimToSize();
+
+		this.updateAnimations();
+		this.onUpdate();
+	}
+
+	protected void onUpdate() {
 	}
 
 	/** a task to be run at the end of the gui update */
@@ -572,98 +530,100 @@ public abstract class Gui {
 			}
 		}
 	}
+	//
+	// public final void onCharPressed(GLFWWindow window, int codepoint) {
+	// this.invokeListeners(GuiEventChar.class, window, codepoint);
+	// if (this.children != null) {
+	// for (Gui child : this.children) {
+	// child.onCharPressed(window, codepoint);
+	// }
+	// }
+	// }
+	//
+	// public final void onKeyPressed(GLFWWindow glfwWindow, int key, int
+	// scancode, int mods) {
+	// this.invokeListeners(GuiEventKeyPress.class, glfwWindow, key, scancode,
+	// mods);
+	// if (this.children != null) {
+	// for (Gui child : this.children) {
+	// child.onKeyPressed(glfwWindow, key, scancode, mods);
+	// }
+	// }
+	// }
+	// TODO up here
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public final void onCharPressed(GLFWWindow window, int codepoint) {
-		if (this.listeners_char != null) {
-			for (GuiListenerChar listener : this.listeners_char) {
-				listener.invokeCharPress(this, window, codepoint);
-			}
-		}
-		if (this.children != null) {
-			for (Gui child : this.children) {
-				child.onCharPressed(window, codepoint);
-			}
-		}
-	}
+	private void updateMouseInputEvents(float x, float y, boolean pressed) {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public final void onKeyPressed(GLFWWindow glfwWindow, int key, int scancode, int mods) {
-		if (this.listeners_key_press != null) {
-			for (GuiListenerKeyPress listener : this.listeners_key_press) {
-				listener.invokeKeyPress(this, glfwWindow, key, scancode, mods);
-			}
-		}
-		if (this.children != null) {
-			for (Gui child : this.children) {
-				child.onKeyPressed(glfwWindow, key, scancode, mods);
-			}
-		}
-	}
+		this.prevMouseX = this.mouseX;
+		this.prevMouseY = this.mouseY;
+		this.mouseX = x;
+		this.mouseY = y;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void updateState(float x, float y, boolean pressed) {
+		this.stackEvent(new GuiEventMouseMove(this));
 
-		boolean mouse_in = (x >= 0.0f && x < 1.0f && y >= 0.0f && y <= 1.0f);
+		boolean hovered = (x >= 0.0f && x < 1.0f && y >= 0.0f && y <= 1.0f);
 
 		// if mouse is in the gui bounding box
-		if (mouse_in) {
+		if (hovered) {
 			// raise hover event
-			if (this.listeners_mouse_hover != null) {
-				for (GuiListenerMouseHover listener : this.listeners_mouse_hover) {
-					listener.invokeMouseHover(this, pressed, x, y);
-				}
-			}
+			this.stackEvent(new GuiEventMouseHover(this));
 		}
 
 		// if mouse is not in the gui bounding box, but used to be
-		if (this.isHovered() && !mouse_in) {
+		if (this.isHovered() && !hovered) {
 			this.setHovered(false);
-
 			// raise exit event
-			if (this.listeners_mouse_exit != null) {
-				for (GuiListenerMouseExit listener : this.listeners_mouse_exit) {
-					listener.invokeMouseExit(this, x, y);
-				}
-			}
-		} else if (!this.isHovered() && mouse_in) {
+			this.stackEvent(new GuiEventMouseExit(this));
+		} else if (!this.isHovered() && hovered) {
 			// if mouse is in the gui bounding box, but wasnt earlier
 			this.setHovered(true);
-
-			if (this.listeners_mouse_enter != null) {
-				for (GuiListenerMouseEnter listener : this.listeners_mouse_enter) {
-					listener.invokeMouseEnter(this, x, y);
-				}
-			}
+			this.stackEvent(new GuiEventMouseEnter(this));
 		}
 
-		if (this.isLeftPressed() && !pressed) {
-			this.setLeftPressed(false);
-
-			if (this.listeners_mouse_left_release != null) {
-				for (GuiListenerMouseLeftRelease listener : this.listeners_mouse_left_release) {
-					listener.invokeMouseLeftRelease(this, x, y);
-				}
-			}
-
-			if (this.isSelectable()) {
-				this.setSelected(!this.isSelected());
-			} else {
-				this.setSelected(false);
-			}
-
-		} else if (!this.hasState(STATE_LEFT_PRESSED) && pressed && this.isHovered()) {
-			this.setState(STATE_LEFT_PRESSED);
-			if (this.listeners_mouse_left_press != null) {
-				for (GuiListenerMouseLeftPress listener : this.listeners_mouse_left_press) {
-					listener.invokeMouseLeftPress(this, x, y);
-				}
-			}
-
+		// if mouse wasnt pressed, and now is pressed, and the gui is hovered
+		if (!this.isPressed() && pressed && this.isHovered()) {
+			// press this gui, is selectable, press/unpress it, if not
+			// selectable, press it
+			this.setPressed(this.isSelectable() ? !this.isPressed() : true);
+			// mouse left press
+			this.stackEvent(new GuiEventMouseLeftPress(this));
+		} else if (this.isPressed() && (!pressed || !this.isHovered())) {
 			if (!this.isSelectable()) {
-				this.setSelected(true);
+				this.setPressed(false);
+			}
+
+			if (this.isHovered()) {
+				this.stackEvent(new GuiEventMouseLeftRelease(this));
 			}
 		}
+	}
+
+	/**
+	 * @return : the mouse X coordinate relatively to the gui basis
+	 */
+	public final float getMouseX() {
+		return (this.mouseX);
+	}
+
+	/**
+	 * @return : the mouse Y coordinate relatively to the gui basis
+	 */
+	public final float getMouseY() {
+		return (this.mouseY);
+	}
+
+	/**
+	 * @return : the previous mouse X coordinate relatively to the gui basis
+	 */
+	public final float getPrevMouseX() {
+		return (this.prevMouseX);
+	}
+
+	/**
+	 * @return : the previous mouse Y coordinate relatively to the gui basis
+	 */
+	public final float getPrevMouseY() {
+		return (this.prevMouseY);
 	}
 
 	public void setVisible(boolean visible) {
@@ -678,24 +638,16 @@ public abstract class Gui {
 		this.setState(STATE_SELECTABLE, isSelectable);
 	}
 
-	public final void setSelected(boolean isSelected) {
-		this.setState(STATE_SELECTED, isSelected);
+	public final void setPressed(boolean isPressed) {
+		this.setState(STATE_PRESSED, isPressed);
 	}
 
 	public final void setHovered(boolean isHovered) {
 		this.setState(STATE_HOVERED, isHovered);
 	}
 
-	public final void setLeftPressed(boolean isLeftPressed) {
-		this.setState(STATE_LEFT_PRESSED, isLeftPressed);
-	}
-
 	public final boolean isSelectable() {
 		return (this.hasState(STATE_SELECTABLE));
-	}
-
-	public final boolean isSelected() {
-		return (this.hasState(STATE_SELECTED));
 	}
 
 	public final boolean isEnabled() {
@@ -711,11 +663,10 @@ public abstract class Gui {
 		return (this.hasState(STATE_HOVERED));
 	}
 
-	public boolean isLeftPressed() {
-		return (this.hasState(STATE_LEFT_PRESSED));
+	/** return true if the gui is pressed */
+	public final boolean isPressed() {
+		return (this.hasState(STATE_PRESSED));
 	}
-
-	protected abstract void onUpdate(float x, float y, boolean pressed);
 
 	@SuppressWarnings("unchecked")
 	public void addParameter(GuiParameter<?> parameter) {
@@ -786,34 +737,6 @@ public abstract class Gui {
 		return (this.hasState(STATE_FOCUSED));
 	}
 
-	public void setFocus(boolean value) {
-		this.setState(STATE_FOCUSED);
-		this.setFocusRequest(value);
-		if (value) {
-			this.onFocusGained();
-		} else {
-			this.onFocusLost();
-		}
-	}
-
-	protected void onFocusLost() {
-	}
-
-	protected void onFocusGained() {
-	}
-
-	public void setFocusRequest(boolean value) {
-		if (value) {
-			this.setState(STATE_FOCUS_REQUESTED);
-		} else {
-			this.unsetState(STATE_FOCUS_REQUESTED);
-		}
-	}
-
-	public final boolean hasFocusRequest() {
-		return (this.hasState(STATE_FOCUS_REQUESTED));
-	}
-
 	public final float getBoxRotation() {
 		return (this.boxRot);
 	}
@@ -864,10 +787,12 @@ public abstract class Gui {
 	}
 
 	/** called when this gui is added to another gui */
-	public abstract void onAddedTo(Gui gui);
+	protected void onAddedTo(Gui gui) {
+	}
 
 	/** called when this gui is removed from another gui */
-	public abstract void onRemovedFrom(Gui gui);
+	protected void onRemovedFrom(Gui gui) {
+	}
 
 	/** return true if this Gui has been initialized */
 	public final boolean isInitialized() {

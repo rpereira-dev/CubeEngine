@@ -17,8 +17,8 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered
 
 	public ModelEditorCamera(GLFWWindow window) {
 		super(window);
-		this.getWindow().addMousePressListener(this);
-		this.getWindow().addMouseReleaseListener(this);
+		this.getWindow().addListener((GLFWListenerMousePress) this);
+		this.getWindow().addListener((GLFWListenerMouseRelease) this);
 
 		super.setPosition(0, 8, 0);
 		super.setPositionVelocity(0, 0, 0);

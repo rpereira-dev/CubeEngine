@@ -4,30 +4,24 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseLeftPress;
-import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerAdd;
-import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerExpanded;
-import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerPick;
-import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerRemove;
-import com.grillecube.client.renderer.gui.listeners.GuiSpinnerListenerSorted;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftRelease;
+import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.client.renderer.gui.event.GuiSpinnerEventAdd;
+import com.grillecube.client.renderer.gui.event.GuiSpinnerEventExpanded;
+import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
+import com.grillecube.client.renderer.gui.event.GuiSpinnerEventRemove;
+import com.grillecube.client.renderer.gui.event.GuiSpinnerEventSorted;
 import com.grillecube.common.utils.Pair;
 
-/** a slider bar */
+/** a spinner list */
 public abstract class GuiSpinner extends Gui {
 
-	private static final GuiListenerMouseLeftPress<GuiSpinner> LISTENER = new GuiListenerMouseLeftPress<GuiSpinner>() {
+	private static final GuiListener<GuiEventMouseLeftRelease<GuiSpinner>> LISTENER = new GuiListener<GuiEventMouseLeftRelease<GuiSpinner>>() {
 		@Override
-		public void invokeMouseLeftPress(GuiSpinner guiSpinner, double mousex, double mousey) {
-			guiSpinner.expand();
+		public void invoke(GuiEventMouseLeftRelease<GuiSpinner> event) {
+			event.getGui().expand();
 		}
 	};
-
-	/** listeners */
-	private ArrayList<GuiSpinnerListenerExpanded> guiSpinnerListenersExpanded;
-	private ArrayList<GuiSpinnerListenerAdd> guiSpinnerListenersAdd;
-	private ArrayList<GuiSpinnerListenerRemove> guiSpinnerListenersRemove;
-	private ArrayList<GuiSpinnerListenerSorted> guiSpinnerListenersSorted;
-	private ArrayList<GuiSpinnerListenerPick> guiSpinnerListenersPick;
 
 	/** the objects hold */
 	private final ArrayList<Pair<Object, String>> values;
@@ -35,25 +29,21 @@ public abstract class GuiSpinner extends Gui {
 	/** true if this spinner is expanded */
 	private boolean expanded;
 
-	/** the currently selected index */
-	private int selectedIndex;
+	/** the currently picked index */
+	private int pickedIndex;
 
 	public GuiSpinner() {
 		super();
 		this.values = new ArrayList<Pair<Object, String>>();
 		this.expanded = false;
-		this.selectedIndex = 0;
+		this.pickedIndex = 0;
 		this.addListener(LISTENER);
 	}
 
 	/** expands the gui spinner */
 	public final void expand() {
 		this.expanded = !this.expanded;
-		if (this.guiSpinnerListenersExpanded != null) {
-			for (GuiSpinnerListenerExpanded listener : this.guiSpinnerListenersExpanded) {
-				listener.invokeSpinnerExpanded(this, this.expanded);
-			}
-		}
+		super.stackEvent(new GuiSpinnerEventExpanded<GuiSpinner>(this));
 	}
 
 	/** add a value to the spinner */
@@ -63,12 +53,12 @@ public abstract class GuiSpinner extends Gui {
 
 	/** add a value, and the given string name id to be shown */
 	public final void add(Object value, String name) {
-		this.values.add(new Pair<Object, String>(value, name));
-		if (this.guiSpinnerListenersAdd != null) {
-			for (GuiSpinnerListenerAdd listener : this.guiSpinnerListenersAdd) {
-				listener.invokeSpinnerAddObject(this, this.values.size() - 1);
-			}
-		}
+		this.add(value, name, this.values.size());
+	}
+
+	public final void add(Object value, String name, int index) {
+		this.values.add(index, new Pair<Object, String>(value, name));
+		super.stackEvent(new GuiSpinnerEventAdd<GuiSpinner>(this, index, value, name));
 	}
 
 	/** add a value to the spinner */
@@ -81,67 +71,20 @@ public abstract class GuiSpinner extends Gui {
 	}
 
 	public final void remove(int index) {
-		this.values.remove(index);
-		if (this.guiSpinnerListenersRemove != null) {
-			for (GuiSpinnerListenerRemove listener : this.guiSpinnerListenersRemove) {
-				listener.invokeSpinnerRemoveObject(this, index);
-			}
-		}
+		Pair<Object, String> value = this.values.remove(index);
+		super.stackEvent(new GuiSpinnerEventRemove<GuiSpinner>(this, index, value.left, value.right));
 	}
 
 	/** sort the spinner */
 	public final void sort(Comparator<Object> comparator) {
 		this.values.sort(comparator);
-		if (this.guiSpinnerListenersSorted != null) {
-			for (GuiSpinnerListenerSorted listener : this.guiSpinnerListenersSorted) {
-				listener.invokeSpinnerSorted(this);
-			}
-		}
+		super.stackEvent(new GuiSpinnerEventSorted<GuiSpinner>(this));
 	}
 
 	/** pick the given index */
 	public final void pick(int index) {
-		this.selectedIndex = index;
-		if (this.guiSpinnerListenersPick != null) {
-			for (GuiSpinnerListenerPick listener : this.guiSpinnerListenersPick) {
-				listener.invokeSpinnerIndexPick(this, index);
-			}
-		}
-	}
-
-	public final void addListener(GuiSpinnerListenerAdd listener) {
-		if (this.guiSpinnerListenersAdd == null) {
-			this.guiSpinnerListenersAdd = new ArrayList<GuiSpinnerListenerAdd>();
-		}
-		this.guiSpinnerListenersAdd.add(listener);
-	}
-
-	public final void addListener(GuiSpinnerListenerRemove listener) {
-		if (this.guiSpinnerListenersRemove == null) {
-			this.guiSpinnerListenersRemove = new ArrayList<GuiSpinnerListenerRemove>();
-		}
-		this.guiSpinnerListenersRemove.add(listener);
-	}
-
-	public final void addListener(GuiSpinnerListenerExpanded listener) {
-		if (this.guiSpinnerListenersExpanded == null) {
-			this.guiSpinnerListenersExpanded = new ArrayList<GuiSpinnerListenerExpanded>();
-		}
-		this.guiSpinnerListenersExpanded.add(listener);
-	}
-
-	public final void addListener(GuiSpinnerListenerSorted listener) {
-		if (this.guiSpinnerListenersSorted == null) {
-			this.guiSpinnerListenersSorted = new ArrayList<GuiSpinnerListenerSorted>();
-		}
-		this.guiSpinnerListenersSorted.add(listener);
-	}
-
-	public final void addListener(GuiSpinnerListenerPick listener) {
-		if (this.guiSpinnerListenersPick == null) {
-			this.guiSpinnerListenersPick = new ArrayList<GuiSpinnerListenerPick>();
-		}
-		this.guiSpinnerListenersPick.add(listener);
+		this.pickedIndex = index;
+		super.stackEvent(new GuiSpinnerEventPick<GuiSpinner>(this));
 	}
 
 	public final boolean isExpanded() {
@@ -153,28 +96,8 @@ public abstract class GuiSpinner extends Gui {
 		return (this.values);
 	}
 
-	@Override
-	protected void onInitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onDeinitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onUpdate(float x, float y, boolean pressed) {
-	}
-
 	/** do the rendering of this gui */
 	protected void onRender(GuiRenderer guiRenderer) {
-	}
-
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
 	}
 
 	/**
@@ -182,6 +105,15 @@ public abstract class GuiSpinner extends Gui {
 	 */
 	public final int count() {
 		return (this.values.size());
+	}
+
+	/** get the name at given index */
+	public final Object getPickedObject() {
+		return (this.getObject(this.getPickedIndex()));
+	}
+
+	public final String getPickedName() {
+		return (this.getName(this.getPickedIndex()));
 	}
 
 	/** get the value at given index */
@@ -194,11 +126,7 @@ public abstract class GuiSpinner extends Gui {
 		return (this.values.get(index).right);
 	}
 
-	public final Object getSelectedObject() {
-		return (this.values.get(this.selectedIndex).left);
-	}
-
-	public final String getSelectedName() {
-		return (this.values.get(this.selectedIndex).right);
+	public final int getPickedIndex() {
+		return (this.pickedIndex);
 	}
 }

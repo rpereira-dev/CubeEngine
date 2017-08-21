@@ -7,13 +7,13 @@ import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiPrompt;
 import com.grillecube.client.renderer.gui.components.GuiSliderBar;
-import com.grillecube.client.renderer.gui.components.GuiText;
 import com.grillecube.client.renderer.gui.components.GuiTexture;
 import com.grillecube.client.renderer.gui.components.GuiView;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseExit;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseEnter;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseExit;
+import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.common.Logger;
 import com.grillecube.common.resources.R;
@@ -36,14 +36,6 @@ public class TestGui {
 				// this.addGuiSliderBar();
 			}
 
-			@Override
-			protected void onDeinitialized(GuiRenderer renderer) {
-			}
-
-			@Override
-			protected void onUpdate(float x, float y, boolean pressed) {
-			}
-
 			private void addGuiSliderBar() {
 				GuiSliderBarEditor guiSliderBar = new GuiSliderBarEditor();
 				guiSliderBar.setBox(0.25f, 0.75f, 0.5f, 0.10f, 0.0f);
@@ -58,16 +50,16 @@ public class TestGui {
 				float uy = 16.0f / 256.0f;
 				t.setBox(0.1f, 0.1f, 0.8f, 0.16f, 0.5f);
 				t.setTexture(GLH.glhGenTexture(R.getResPath("textures/block_atlas/256x256.png")), 0.0f, 0.0f, ux, uy);
-				t.addListener(new GuiListenerMouseEnter<GuiTexture>() {
+				t.addListener(new GuiListener<GuiEventMouseEnter<GuiTexture>>() {
 					@Override
-					public void invokeMouseEnter(GuiTexture gui, double mousex, double mousey) {
+					public void invoke(GuiEventMouseEnter<GuiTexture> event) {
 						Logger.get().log(Logger.Level.DEBUG, "in");
 					}
 				});
 
-				t.addListener(new GuiListenerMouseExit<GuiTexture>() {
+				t.addListener(new GuiListener<GuiEventMouseExit<GuiTexture>>() {
 					@Override
-					public void invokeMouseExit(GuiTexture gui, double mousex, double mousey) {
+					public void invoke(GuiEventMouseExit<GuiTexture> event) {
 						Logger.get().log(Logger.Level.DEBUG, "out");
 					}
 				});
@@ -91,19 +83,6 @@ public class TestGui {
 				lbl.setBox(0, 0, 0.5f, 0.5f, 0);
 				lbl.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 				lbl.addTextParameter(new GuiTextParameterTextCenterBox());
-				lbl.getGuiText().addListener(new GuiListenerMouseEnter<GuiText>() {
-					@Override
-					public void invokeMouseEnter(GuiText gui, double mousex, double mousey) {
-						Logger.get().log(Logger.Level.DEBUG, "in");
-					}
-				});
-
-				lbl.getGuiText().addListener(new GuiListenerMouseExit<GuiText>() {
-					@Override
-					public void invokeMouseExit(GuiText gui, double mousex, double mousey) {
-						Logger.get().log(Logger.Level.DEBUG, "out");
-					}
-				});
 
 				this.addChild(lbl);
 			}

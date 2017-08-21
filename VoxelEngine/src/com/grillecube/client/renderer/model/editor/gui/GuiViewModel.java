@@ -17,22 +17,4 @@ public class GuiViewModel extends Gui {
 		GuiViewWorld tx = new GuiViewWorld(camera, worldID);
 		this.addChild(tx);
 	}
-
-	@Override
-	protected void onDeinitialized(GuiRenderer renderer) {
-
-	}
-
-	@Override
-	protected void onUpdate(float x, float y, boolean pressed) {
-	}
-
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
-	}
-
 }

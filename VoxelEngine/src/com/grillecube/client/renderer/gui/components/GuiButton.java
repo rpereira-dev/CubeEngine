@@ -37,21 +37,16 @@ public class GuiButton extends GuiLabel {
 		this.setOutColor(OUT_COLOR);
 		this.setPressedColor(PRESSED_COLOR);
 		this.setDisabledColor(DISABLED_COLOR);
-
-		this.setSelectable(false);
-		this.setSelected(false);
-		this.setEnabled(true);
 	}
 
 	@Override
-	public final void onUpdate(float mx, float my, boolean pressed) {
-		super.onUpdate(mx, my, pressed);
+	protected void onInputUpdate() {
 		this.updateColor();
 	}
 
 	private final void updateColor() {
 		this.bg.setColor(!this.isEnabled() ? this.disabledColor
-				: this.isHovered() ? this.hoveredColor : this.isSelected() ? this.pressedColor : this.outColor);
+				: this.isHovered() ? this.hoveredColor : this.isPressed() ? this.pressedColor : this.outColor);
 	}
 
 	public final void setHoveredColor(Vector4f color) {

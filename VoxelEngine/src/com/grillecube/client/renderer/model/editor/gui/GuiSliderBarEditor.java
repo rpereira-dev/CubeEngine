@@ -5,9 +5,25 @@ import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiSliderBar;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
-import com.grillecube.client.renderer.gui.listeners.GuiSliderBarListenerValueChanged;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseHover;
+import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
 
-public class GuiSliderBarEditor extends GuiSliderBar implements GuiSliderBarListenerValueChanged {
+public class GuiSliderBarEditor extends GuiSliderBar {
+
+	private static final GuiListener<GuiSliderBarEventValueChanged<GuiSliderBarEditor>> LISTENER = new GuiListener<GuiSliderBarEventValueChanged<GuiSliderBarEditor>>() {
+		@Override
+		public void invoke(GuiSliderBarEventValueChanged<GuiSliderBarEditor> event) {
+			event.getGui().onValueChanged();
+		}
+	};
+
+	private static final GuiListener<GuiEventMouseHover<GuiSliderBarEditor>> LISTENER_HOVER = new GuiListener<GuiEventMouseHover<GuiSliderBarEditor>>() {
+		@Override
+		public void invoke(GuiEventMouseHover<GuiSliderBarEditor> event) {
+
+		}
+	};
 
 	private GuiColoredQuad total;
 	private GuiColoredQuad selected;
@@ -29,11 +45,10 @@ public class GuiSliderBarEditor extends GuiSliderBar implements GuiSliderBarList
 		this.guiLabel.getGuiText().addParameter(new GuiTextParameterTextCenterBox());
 		this.addChild(this.guiLabel);
 
-		this.addListener(this);
+		this.addListener(LISTENER);
 	}
 
-	@Override
-	public void invokeSliderBarValueChanged(GuiSliderBar guiSliderBar, int selectedIndex, Object value) {
+	protected void onValueChanged() {
 		float width = this.getPercent();
 		this.selected.setBox(0, 0, width, 1, 0);
 		this.guiLabel.setText(this.getSelectedValue().toString());

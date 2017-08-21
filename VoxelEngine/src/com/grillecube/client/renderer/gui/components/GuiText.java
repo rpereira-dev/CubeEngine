@@ -17,18 +17,20 @@ package com.grillecube.client.renderer.gui.components;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
+import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.font.FontModel;
-import com.grillecube.client.renderer.gui.listeners.GuiListenerAspectRatio;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 
 public class GuiText extends Gui {
 
-	private static final GuiListenerAspectRatio<GuiText> LISTENER = new GuiListenerAspectRatio<GuiText>() {
+	private static final GuiListener<GuiEventAspectRatio<GuiText>> LISTENER = new GuiListener<GuiEventAspectRatio<GuiText>>() {
 		@Override
-		public void invokeAspectRatioChanged(GuiText gui, boolean runParameters) {
-			gui.resizeFontModelAspect(gui.getWindowAspectRatio(), runParameters);
+		public void invoke(GuiEventAspectRatio<GuiText> event) {
+			float window = GLH.glhGetWindow().getAspectRatio();
+			event.getGui().resizeFontModelAspect(window * event.getNewAspectRatio(), false);
 		}
 	};
 
@@ -125,10 +127,6 @@ public class GuiText extends Gui {
 	public void onRemovedFrom(Gui gui) {
 	}
 
-	@Override
-	protected void onUpdate(float x, float y, boolean pressed) {
-	}
-
 	/**
 	 * @return : the text width in the window coordinate system
 	 */
@@ -150,12 +148,12 @@ public class GuiText extends Gui {
 	@Override
 	public void onWindowResized(int width, int height) {
 		super.onWindowResized(width, height);
-		this.resizeFontModelAspect(width / (float) height, true);
+		this.resizeFontModelAspect(width / (float) height * this.getTotalAspectRatio(), true);
 	}
 
-	private void resizeFontModelAspect(float windowAspect, boolean runParameters) {
+	private void resizeFontModelAspect(float aspectRatio, boolean runParameters) {
 		if (this.getFontModel() != null) {
-			this.getFontModel().setAspect(windowAspect * this.getTotalAspectRatio());
+			this.getFontModel().setAspect(aspectRatio);
 			if (runParameters) {
 				this.runParameters();
 			}

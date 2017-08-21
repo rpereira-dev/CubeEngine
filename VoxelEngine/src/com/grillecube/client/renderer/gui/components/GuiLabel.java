@@ -77,10 +77,6 @@ public class GuiLabel extends Gui {
 	}
 
 	@Override
-	protected void onUpdate(float x, float y, boolean pressed) {
-	}
-
-	@Override
 	public void onAddedTo(Gui gui) {
 	}
 

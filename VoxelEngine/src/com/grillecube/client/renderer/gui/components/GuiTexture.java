@@ -40,25 +40,4 @@ public class GuiTexture extends Gui {
 			guiRenderer.renderTexturedQuad(this.glTexture, this.ux, this.uy, this.vx, this.vy, matrix);
 		}
 	}
-
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
-	}
-
-	@Override
-	protected void onUpdate(float x, float y, boolean mouse_in) {
-	}
-
-	@Override
-	protected void onInitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onDeinitialized(GuiRenderer renderer) {
-		// do not delete the texture, as it wasnt create by this object...
-	}
 }

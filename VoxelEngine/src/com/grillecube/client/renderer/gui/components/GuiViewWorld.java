@@ -39,21 +39,7 @@ public class GuiViewWorld extends GuiView {
 	}
 
 	@Override
-	public void onAddedTo(Gui gui) {
-
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
-
-	}
-
-	@Override
-	protected void onDeinitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onUpdate(float x, float y, boolean pressed) {
+	protected void onUpdate() {
 		if (this.worldRenderer == null) {
 			return;
 		}

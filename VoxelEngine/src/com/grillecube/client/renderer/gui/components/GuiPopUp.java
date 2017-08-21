@@ -1,6 +1,5 @@
 package com.grillecube.client.renderer.gui.components;
 
-import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.common.maths.Vector4f;
 
 public class GuiPopUp extends GuiView {
@@ -31,25 +30,4 @@ public class GuiPopUp extends GuiView {
 	public final void open() {
 		this.setVisible(true);
 	}
-
-	@Override
-	protected void onInitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onDeinitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onUpdate(float x, float y, boolean pressed) {
-	}
-
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
-	}
-
 }

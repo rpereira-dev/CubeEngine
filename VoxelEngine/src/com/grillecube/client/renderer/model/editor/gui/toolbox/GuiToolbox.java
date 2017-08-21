@@ -46,21 +46,4 @@ public class GuiToolbox extends Gui {
 	public final void selectNextView() {
 		this.selectView((this.selectedView + 1) % this.guiViews.size());
 	}
-
-	@Override
-	protected void onDeinitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	protected void onUpdate(float x, float y, boolean pressed) {
-	}
-
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
-	}
-
 }

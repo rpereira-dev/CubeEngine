@@ -152,7 +152,7 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + " initializes");
 		}
 
-		this.getGLFWWindow().addResizeListener(this);
+		this.getGLFWWindow().addListener(this);
 		this.invokeResize(this.getGLFWWindow(), this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
 
 		Logger.get().log(Level.FINE, "Done");
@@ -160,7 +160,7 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	}
 
 	public void deinitialize() {
-		this.getGLFWWindow().removeResizeListener(this);
+		this.getGLFWWindow().removeListener(this);
 
 		GLH.glhCheckError("pre renderer deinitialization");
 		for (Renderer renderer : this.defaultRenderers) {

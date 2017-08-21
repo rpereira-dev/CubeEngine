@@ -42,7 +42,7 @@ public class GuiColoredQuad extends Gui {
 	}
 
 	@Override
-	protected void onUpdate(float x, float y, boolean mouse_in) {
+	protected void onUpdate() {
 	}
 
 	@Override

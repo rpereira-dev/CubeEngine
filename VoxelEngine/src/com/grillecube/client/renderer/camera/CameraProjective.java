@@ -47,11 +47,18 @@ public abstract class CameraProjective extends CameraView
 		this.cameraPicker.update();
 	}
 
-	public void removeWindowListener() {
-		this.getWindow().removeCursorPosListener(this);
-		this.getWindow().removeKeyPressListener(this);
-		this.getWindow().removeKeyReleaseListener(this);
-		this.getWindow().removeMouseScrollListener(this);
+	public final void addWindowListeners() {
+		this.getWindow().addListener((GLFWListenerKeyPress) this);
+		this.getWindow().addListener((GLFWListenerKeyRelease) this);
+		this.getWindow().addListener((GLFWListenerCursorPos) this);
+		this.getWindow().addListener((GLFWListenerMouseScroll) this);
+	}
+
+	public void removeWindowListeners() {
+		this.getWindow().removeListener((GLFWListenerKeyPress) this);
+		this.getWindow().removeListener((GLFWListenerKeyRelease) this);
+		this.getWindow().removeListener((GLFWListenerCursorPos) this);
+		this.getWindow().removeListener((GLFWListenerMouseScroll) this);
 	}
 
 	/** create the projection matrix for this camera */
@@ -82,12 +89,12 @@ public abstract class CameraProjective extends CameraView
 	}
 
 	public void setWindow(GLFWWindow window) {
+		if (this.window != null) {
+			this.removeWindowListeners();
+		}
 		this.window = window;
 		if (window != null) {
-			window.addCursorPosListener(this);
-			window.addKeyPressListener(this);
-			window.addKeyReleaseListener(this);
-			window.addMouseScrollListener(this);
+			this.addWindowListeners();
 		}
 	}
 

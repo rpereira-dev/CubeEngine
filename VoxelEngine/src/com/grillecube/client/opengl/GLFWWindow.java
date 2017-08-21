@@ -103,7 +103,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 	private GLFWWindowSizeCallback _resize_callback;
 	private GLFWWindowFocusCallback _focus_callback;
 
-	private boolean _mouse_is_in;
+	private boolean mouseIsIn;
 
 	private boolean _focus;
 	private float aspectRatio;
@@ -170,7 +170,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 		return (this._screeny);
 	}
 
-	private void initEvents() {
+	private final void initEvents() {
 		this._listeners_resize = new ArrayList<GLFWListenerResize>();
 		this._listeners_key_press = new ArrayList<GLFWListenerKeyPress>();
 		this._listeners_char = new ArrayList<GLFWListenerChar>();
@@ -186,10 +186,10 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 		this.initKeyEvents();
 		this.initMouseEvents();
 
-		this.addKeyPressListener(this);
+		this.addListener(this);
 	}
 
-	private void initWindowEvents() {
+	private final void initWindowEvents() {
 		this._resize_callback = new GLFWWindowSizeCallback() {
 			@Override
 			public void invoke(long window, int width, int height) {
@@ -210,143 +210,143 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 	}
 
 	/** window resizement */
-	private void invokeWindowResize(int width, int height) {
+	private final void invokeWindowResize(int width, int height) {
 		for (GLFWListenerResize listener : this._listeners_resize) {
 			listener.invokeResize(this, width, height);
 		}
 	}
 
 	/** keyboard key press */
-	private void invokeKeyPressListeners(int key, int scancode, int mods) {
+	private final void invokeKeyPressListeners(int key, int scancode, int mods) {
 		for (GLFWListenerKeyPress listener : this._listeners_key_press) {
 			listener.invokeKeyPress(this, key, scancode, mods);
 		}
 	}
 
 	/** char input */
-	private void invokeCharListener(int codepoint) {
+	private final void invokeCharListener(int codepoint) {
 		for (GLFWListenerChar listener : this._listeners_char) {
 			listener.invokeChar(this, codepoint);
 		}
 	}
 
 	/** keyboard key release */
-	private void invokeKeyReleaseListeners(int key, int scancode, int mods) {
+	private final void invokeKeyReleaseListeners(int key, int scancode, int mods) {
 		for (GLFWListenerKeyRelease listener : this._listeners_key_release) {
 			listener.invokeKeyRelease(this, key, scancode, mods);
 		}
 	}
 
 	/** mouse move */
-	private void invokeCursorPosListeners(double posx, double posy) {
+	private final void invokeCursorPosListeners(double posx, double posy) {
 		for (GLFWListenerCursorPos listener : this._listeners_cursor_pos) {
 			listener.invokeCursorPos(this, posx, posy);
 		}
 	}
 
 	/** mouse move */
-	private void invokeScrollListeners(double posx, double posy) {
+	private final void invokeScrollListeners(double posx, double posy) {
 		for (GLFWListenerMouseScroll listener : this._listeners_mouse_scroll) {
 			listener.invokeMouseScroll(this, posx, posy);
 		}
 	}
 
 	/** mouse release */
-	private void invokeMouseReleaseListeners(int button, int mods) {
+	private final void invokeMouseReleaseListeners(int button, int mods) {
 		for (GLFWListenerMouseRelease listener : this._listeners_mouse_release) {
 			listener.invokeMouseRelease(this, button, mods);
 		}
 	}
 
 	/** mouse press */
-	private void invokeMousePressListeners(int button, int mods) {
+	private final void invokeMousePressListeners(int button, int mods) {
 		for (GLFWListenerMousePress listener : this._listeners_mouse_press) {
 			listener.invokeMousePress(this, button, mods);
 		}
 	}
 
 	/** add listeners */
-	public void addResizeListener(GLFWListenerResize listener) {
+	public final void addListener(GLFWListenerResize listener) {
 		this._listeners_resize.add(listener);
 	}
 
-	public void addKeyPressListener(GLFWListenerKeyPress listener) {
+	public final void addListener(GLFWListenerKeyPress listener) {
 		this._listeners_key_press.add(listener);
 	}
 
-	public void addCharListener(GLFWListenerChar listener) {
+	public final void addListener(GLFWListenerChar listener) {
 		this._listeners_char.add(listener);
 	}
 
-	public void addKeyReleaseListener(GLFWListenerKeyRelease listener) {
+	public final void addListener(GLFWListenerKeyRelease listener) {
 		this._listeners_key_release.add(listener);
 	}
 
-	public void addMousePressListener(GLFWListenerMousePress listener) {
+	public final void addListener(GLFWListenerMousePress listener) {
 		this._listeners_mouse_press.add(listener);
 	}
 
-	public void addMouseReleaseListener(GLFWListenerMouseRelease listener) {
+	public final void addListener(GLFWListenerMouseRelease listener) {
 		this._listeners_mouse_release.add(listener);
 	}
 
-	public void addCursorPosListener(GLFWListenerCursorPos listener) {
+	public final void addListener(GLFWListenerCursorPos listener) {
 		this._listeners_cursor_pos.add(listener);
 	}
 
-	public void addMouseScrollListener(GLFWListenerMouseScroll listener) {
+	public final void addListener(GLFWListenerMouseScroll listener) {
 		this._listeners_mouse_scroll.add(listener);
 	}
 
-	public void addMouseEnterListener(GLFWListenerMouseEnter listener) {
+	public final void addListener(GLFWListenerMouseEnter listener) {
 		this._listeners_mouse_enter.add(listener);
 	}
 
-	public void addMouseExitListener(GLFWListenerMouseExit listener) {
+	public final void addListener(GLFWListenerMouseExit listener) {
 		this._listeners_mouse_exit.add(listener);
 	}
 
-	public void removeResizeListener(GLFWListenerResize listener) {
+	public final void removeListener(GLFWListenerResize listener) {
 		this._listeners_resize.remove(listener);
 	}
 
-	public void removeKeyPressListener(GLFWListenerKeyPress listener) {
+	public final void removeListener(GLFWListenerKeyPress listener) {
 		this._listeners_key_press.remove(listener);
 	}
 
-	public void removeKeyReleaseListener(GLFWListenerKeyRelease listener) {
+	public final void removeListener(GLFWListenerKeyRelease listener) {
 		this._listeners_key_release.remove(listener);
 	}
 
-	public void removeCharListener(GLFWListenerChar listener) {
+	public final void removeListener(GLFWListenerChar listener) {
 		this._listeners_char.remove(listener);
 	}
 
-	public void removeMousePressListener(GLFWListenerMousePress listener) {
+	public final void removeListener(GLFWListenerMousePress listener) {
 		this._listeners_mouse_press.remove(listener);
 	}
 
-	public void removeMouseReleaseListener(GLFWListenerMouseRelease listener) {
+	public final void removeListener(GLFWListenerMouseRelease listener) {
 		this._listeners_mouse_release.remove(listener);
 	}
 
-	public void removeCursorPosListener(GLFWListenerCursorPos listener) {
+	public final void removeListener(GLFWListenerCursorPos listener) {
 		this._listeners_cursor_pos.remove(listener);
 	}
 
-	public void removeMouseScrollListener(GLFWListenerMouseScroll listener) {
+	public final void removeListener(GLFWListenerMouseScroll listener) {
 		this._listeners_mouse_scroll.remove(listener);
 	}
 
-	public void removeMouseEnterListener(GLFWListenerMouseEnter listener) {
+	public final void removeListener(GLFWListenerMouseEnter listener) {
 		this._listeners_mouse_enter.remove(listener);
 	}
 
-	public void removeMouseExitListener(GLFWListenerMouseExit listener) {
+	public final void removeListener(GLFWListenerMouseExit listener) {
 		this._listeners_mouse_exit.remove(listener);
 	}
 
-	private void initKeyEvents() {
+	private final void initKeyEvents() {
 
 		this._callback_char = new GLFWCharCallback() {
 			@Override
@@ -369,7 +369,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 		GLFW.glfwSetKeyCallback(this.windowPtr, this._callback_key);
 	}
 
-	private void initMouseEvents() {
+	private final void initMouseEvents() {
 		this._callback_scroll = new GLFWScrollCallback() {
 
 			@Override
@@ -471,7 +471,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 
-	public void update() {
+	public final void update() {
 		GLFW.glfwGetCursorPos(this.windowPtr, this.bufferX, this.bufferY);
 		this.mouseX = this.bufferX.get();
 		this.mouseY = this.bufferY.get();
@@ -479,32 +479,32 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 		this.bufferY.clear();
 
 		if (this.mouseX < 0 || this.mouseX >= this.width || this.mouseY < 0 || this.mouseY >= this.height) {
-			if (this._mouse_is_in) {
+			if (this.mouseIsIn) {
 				this.onMouseExit();
 			}
-			this._mouse_is_in = false;
+			this.mouseIsIn = false;
 		} else {
-			if (!this._mouse_is_in) {
+			if (!this.mouseIsIn) {
 				this.onMouseEntered();
 			}
-			this._mouse_is_in = true;
+			this.mouseIsIn = true;
 		}
 	}
 
-	public void onMouseEntered() {
+	private final void onMouseEntered() {
 		for (GLFWListenerMouseEnter listener : this._listeners_mouse_enter) {
 			listener.invokeMouseEnter(this, this.isCursorEnabled(), this.mouseX, this.mouseY);
 		}
 	}
 
-	public void onMouseExit() {
+	private final void onMouseExit() {
 		for (GLFWListenerMouseExit listener : this._listeners_mouse_exit) {
 			listener.invokeMouseExit(this, this.isCursorEnabled(), this.mouseX, this.mouseY);
 		}
 	}
 
 	/** should be call after rendering */
-	public void flushScreen() {
+	public final void flushScreen() {
 		GLFW.glfwSwapBuffers(this.windowPtr);
 		GLFW.glfwPollEvents();
 
@@ -516,7 +516,7 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 		GLH.glhCheckError("GLFWWindow.flushScreen()");
 	}
 
-	private void updateFpsCounter() {
+	private final void updateFpsCounter() {
 		if (System.currentTimeMillis() - this.prevFrame >= 1000) {
 			this.fps = this.fps_counter;
 			this.fps_counter = 0;
@@ -529,74 +529,74 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 	}
 
 	/** return true if glfw was close-requested */
-	public boolean shouldClose() {
+	public final boolean shouldClose() {
 		return (GLFW.glfwWindowShouldClose(this.windowPtr));
 	}
 
 	/** get window GLFW pointer */
-	public long getPointer() {
+	public final long getPointer() {
 		return (this.windowPtr);
 	}
 
 	/** get mouse X coordinate */
-	public double getMouseX() {
+	public final double getMouseX() {
 		return (this.mouseX);
 	}
 
 	/** get mouse Y coordinate */
-	public double getMouseY() {
+	public final double getMouseY() {
 		return (this.mouseY);
 	}
 
-	public double getPrevMouseX() {
+	public final double getPrevMouseX() {
 		return (this.prevmouseX);
 	}
 
-	public double getPrevMouseY() {
+	public final double getPrevMouseY() {
 		return (this.prevmouseY);
 	}
 
 	/**
 	 * return mouse delta X since last cursor move was made and current position
 	 */
-	public double getMouseDX() {
+	public final double getMouseDX() {
 		return (this.mouseX - this.prevmouseX);
 	}
 
 	/**
 	 * return mouse delta Y since last cursor move was made and current position
 	 */
-	public double getMouseDY() {
+	public final double getMouseDY() {
 		return (this.mouseY - this.prevmouseY);
 	}
 
 	/** get total frames flushed */
-	public long getTotalFramesFlushed() {
+	public final long getTotalFramesFlushed() {
 		return (this.frames);
 	}
 
-	public boolean isKeyPressed(int key) {
+	public final boolean isKeyPressed(int key) {
 		return (GLFW.glfwGetKey(this.getPointer(), key) == GLFW.GLFW_PRESS);
 	}
 
-	public boolean isKeyReleased(int key) {
+	public final boolean isKeyReleased(int key) {
 		return (GLFW.glfwGetKey(this.getPointer(), key) == GLFW.GLFW_RELEASE);
 	}
 
-	public boolean isMousePressed(int button) {
+	public final boolean isMousePressed(int button) {
 		return (GLFW.glfwGetMouseButton(this.getPointer(), button) == GLFW.GLFW_PRESS);
 	}
 
-	public boolean isMouseRightPressed() {
+	public final boolean isMouseRightPressed() {
 		return (GLFW.glfwGetMouseButton(this.getPointer(), GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS);
 	}
 
-	public boolean isMouseLeftPressed() {
+	public final boolean isMouseLeftPressed() {
 		return (GLFW.glfwGetMouseButton(this.getPointer(), GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS);
 	}
 
 	@Override
-	public void invokeKeyPress(GLFWWindow glfwWindow, int key, int scancode, int mods) {
+	public final void invokeKeyPress(GLFWWindow glfwWindow, int key, int scancode, int mods) {
 		// if (key == GLFW.GLFW_KEY_ESCAPE) {
 		// this.close();
 		// }
@@ -606,35 +606,35 @@ public class GLFWWindow implements GLFWListenerKeyPress, GLObject {
 		}
 	}
 
-	public int getFPS() {
+	public final int getFPS() {
 		return (this.fps);
 	}
 
-	public void setSize(int width, int height) {
+	public final void setSize(int width, int height) {
 		GLFW.glfwSetWindowSize(this.getPointer(), width, height);
 	}
 
-	public void close() {
+	public final void close() {
 		GLFW.glfwSetWindowShouldClose(this.windowPtr, true);
 	}
 
-	public boolean hasFocus() {
+	public final boolean hasFocus() {
 		return (this._focus);
 	}
 
-	public void focus(boolean focus) {
+	public final void focus(boolean focus) {
 		if (focus) {
 			GLFW.glfwFocusWindow(this.getPointer());
 		}
 	}
 
 	/** set the icon of this window */
-	public void setIcon(File file) {
+	public final void setIcon(File file) {
 		this.setIcon(file.getAbsolutePath());
 	}
 
 	/** set the icon of this window */
-	public void setIcon(String imagePath) {
+	public final void setIcon(String imagePath) {
 		BufferedImage bufferedImage = ImageUtils.readImage(imagePath);
 		int imwidth = bufferedImage.getWidth();
 		int imheight = bufferedImage.getHeight();
