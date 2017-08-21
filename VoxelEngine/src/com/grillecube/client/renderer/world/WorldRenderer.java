@@ -30,6 +30,8 @@ import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
+import com.grillecube.client.renderer.gui.components.Gui;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerAspectRatio;
 import com.grillecube.client.renderer.world.factories.LineRendererFactory;
 import com.grillecube.client.renderer.world.factories.ModelRendererFactory;
 import com.grillecube.client.renderer.world.factories.ParticleRendererFactory;
@@ -39,9 +41,11 @@ import com.grillecube.client.renderer.world.factories.WorldRendererFactory;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.world.World;
 
-public class WorldRenderer extends Renderer {
+public class WorldRenderer extends Renderer implements GuiListenerAspectRatio<Gui> {
 
 	/** world to render */
 	private World world;
@@ -60,8 +64,9 @@ public class WorldRenderer extends Renderer {
 	/** factories array list */
 	private ArrayList<WorldRendererFactory> factories;
 
+	/** the gui to match (so it optimizes the viewport) */
+	private Gui guiToMatch;
 	private int width;
-
 	private int height;
 
 	public WorldRenderer(MainRenderer mainRenderer) {
@@ -94,6 +99,8 @@ public class WorldRenderer extends Renderer {
 		this.fboDepthBuffer.attachToFBO(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT);
 
 		this.fbo.unbind();
+
+		this.resizeFbo();
 
 		GLH.glhCheckError("post worldrenderer fbo creation");
 
@@ -136,16 +143,26 @@ public class WorldRenderer extends Renderer {
 		this.factories = null;
 	}
 
-	public final void resizeFbo(int width, int height) {
+	public final void resizeFbo() {
+		int W = this.getMainRenderer().getGLFWWindow().getWidth();
+		int H = this.getMainRenderer().getGLFWWindow().getHeight();
+		this.width = W;
+		this.height = H;
+		if (this.guiToMatch != null) {
+			Vector4f w = new Vector4f(0, 1.0f, 0.0f, 1.0f);
+			Vector4f h = new Vector4f(0, 1.0f, 0.0f, 1.0f);
+			Matrix4f.transform(this.guiToMatch.getGuiToWindowChangeOfBasis(), w, w);
+			Matrix4f.transform(this.guiToMatch.getGuiToWindowChangeOfBasis(), h, h);
+			this.width = (int)((w.y - w.x) * W);
+			this.height = (int)((h.y - h.x) * H);
+		}
+
 		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
-		this.fboTexture.image2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height, 0, GL11.GL_RGB,
+		this.fboTexture.image2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, this.width, this.height, 0, GL11.GL_RGB,
 				GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
 
 		this.fboDepthBuffer.bind();
 		this.fboDepthBuffer.storage(GL11.GL_DEPTH_COMPONENT, width, height);
-
-		this.width = width;
-		this.height = height;
 	}
 
 	/** render the given world */
@@ -208,7 +225,7 @@ public class WorldRenderer extends Renderer {
 
 	@Override
 	public void onWindowResize(GLFWWindow window, int width, int height) {
-		this.resizeFbo(width, height);
+		this.resizeFbo();
 	}
 
 	public final void setPostProcessingProgram(GLProgramPostProcessing program) {
@@ -245,5 +262,19 @@ public class WorldRenderer extends Renderer {
 		return (this.camera);
 	}
 
-	// TODO : get factories
+	public final void matchGui(Gui gui) {
+		if (this.guiToMatch != null) {
+			this.guiToMatch.removeListener(this);
+		}
+		this.guiToMatch = gui;
+		if (this.guiToMatch != null) {
+			this.guiToMatch.addListener(this);
+		}
+		this.resizeFbo();
+	}
+
+	@Override
+	public void invokeAspectRatioChanged(Gui gui, boolean runParameters) {
+		this.resizeFbo();
+	}
 }

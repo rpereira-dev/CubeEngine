@@ -18,11 +18,19 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.font.FontModel;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerAspectRatio;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 
 public class GuiText extends Gui {
+
+	private static final GuiListenerAspectRatio<GuiText> LISTENER = new GuiListenerAspectRatio<GuiText>() {
+		@Override
+		public void invokeAspectRatioChanged(GuiText gui, boolean runParameters) {
+			gui.resizeFontModelAspect(gui.getWindowAspectRatio(), runParameters);
+		}
+	};
 
 	/** the font model for this text */
 	private final FontModel fontModel;
@@ -30,6 +38,7 @@ public class GuiText extends Gui {
 	public GuiText() {
 		super();
 		this.fontModel = new FontModel(GuiRenderer.DEFAULT_FONT);
+		super.addListener(LISTENER);
 	}
 
 	/** set text to render */
@@ -132,11 +141,6 @@ public class GuiText extends Gui {
 	 */
 	public float getTextHeight() {
 		return (this.getFontModel().getTextHeight() * this.getFontModel().getScaleY() * 0.5f);
-	}
-
-	@Override
-	protected void onAspectRatioUpdate(boolean runParameters) {
-		this.resizeFontModelAspect(this.getWindowAspectRatio(), runParameters);
 	}
 
 	private float getWindowAspectRatio() {

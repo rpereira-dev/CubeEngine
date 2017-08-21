@@ -23,6 +23,7 @@ import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.animations.GuiAnimation;
 import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
+import com.grillecube.client.renderer.gui.listeners.GuiListenerAspectRatio;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerChar;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerKeyPress;
 import com.grillecube.client.renderer.gui.listeners.GuiListenerMouseEnter;
@@ -101,6 +102,7 @@ public abstract class Gui {
 	private ArrayList<GuiListenerMouseLeftPress<?>> listeners_mouse_left_press;
 	private ArrayList<GuiListenerKeyPress<?>> listeners_key_press;
 	private ArrayList<GuiListenerChar<?>> listeners_char;
+	private ArrayList<GuiListenerAspectRatio<?>> listeners_aspect_ratio;
 
 	public static final Comparator<? super Gui> WEIGHT_COMPARATOR = new Comparator<Gui>() {
 		@Override
@@ -136,6 +138,7 @@ public abstract class Gui {
 		this.listeners_mouse_left_press = null;
 		this.listeners_key_press = null;
 		this.listeners_char = null;
+		this.listeners_aspect_ratio = null;
 		this.state = 0;
 		this.tasks = new ArrayList<GuiTask>();
 		this.setVisible(true);
@@ -201,6 +204,14 @@ public abstract class Gui {
 	}
 
 	/** a listener to the mouse hovering the gui */
+	public void addListener(GuiListenerAspectRatio<?> listener) {
+		if (this.listeners_aspect_ratio == null) {
+			this.listeners_aspect_ratio = new ArrayList<GuiListenerAspectRatio<?>>();
+		}
+		this.listeners_aspect_ratio.add(listener);
+	}
+
+	/** a listener to the mouse hovering the gui */
 	public void removeListener(GuiListenerKeyPress<?> listener) {
 		if (this.listeners_key_press == null) {
 			return;
@@ -254,6 +265,14 @@ public abstract class Gui {
 			return;
 		}
 		this.listeners_mouse_left_press.remove(listener);
+	}
+
+	/** a listener to the mouse entering the gui */
+	public void removeListener(GuiListenerAspectRatio<?> listener) {
+		if (this.listeners_aspect_ratio == null) {
+			return;
+		}
+		this.listeners_aspect_ratio.remove(listener);
 	}
 
 	/**
@@ -396,31 +415,31 @@ public abstract class Gui {
 		this.updateTransformationMatrices(parentTransform);
 
 		// aspect ratio
-		this.localAspectRatio = this.getBoxWidth() / this.getBoxHeight();
-		this.updateAspectRatio(this.getParent() == null ? 1.0f : this.getParent().getTotalAspectRatio(), runParameters);
-
-		this.onBoxSet(x, y, width, height, rot);
+		float aspectRatio = this.getBoxWidth() / this.getBoxHeight();
+		if (aspectRatio != this.localAspectRatio) {
+			this.localAspectRatio = aspectRatio;
+			float parentAspectRatio = this.getParent() == null ? 1.0f : this.getParent().getTotalAspectRatio();
+			this.updateAspectRatio(parentAspectRatio, runParameters);
+		}
 
 		if (runParameters) {
 			this.runParameters();
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void updateAspectRatio(float parentAspectRatio, boolean runParameters) {
 		this.totalAspectRatio = parentAspectRatio * this.localAspectRatio;
-		this.onAspectRatioUpdate(runParameters);
+		if (this.listeners_aspect_ratio != null) {
+			for (GuiListenerAspectRatio listener : this.listeners_aspect_ratio) {
+				listener.invokeAspectRatioChanged(this, runParameters);
+			}
+		}
 		if (this.children != null) {
 			for (Gui gui : this.children) {
 				gui.updateAspectRatio(this.totalAspectRatio, runParameters);
 			}
 		}
-	}
-
-	protected void onAspectRatioUpdate(boolean runParameters) {
-		// TODO Auto-generated method stub
-	}
-
-	protected void onBoxSet(float x, float y, float width, float height, float rot) {
 	}
 
 	/** update transformation matrices */

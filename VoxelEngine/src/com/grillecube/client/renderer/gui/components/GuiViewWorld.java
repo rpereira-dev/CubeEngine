@@ -28,9 +28,9 @@ public class GuiViewWorld extends GuiView {
 
 		this.worldRenderer = new WorldRenderer(mainRenderer);
 		this.worldRenderer.initialize();
-		this.worldRenderer.resizeFbo(mainRenderer.getGLFWWindow().getWidth(), mainRenderer.getGLFWWindow().getHeight());
 		this.worldRenderer.setCamera(this.camera);
 		this.worldRenderer.setWorld(this.worldID);
+		this.worldRenderer.matchGui(this);
 		mainRenderer.addRenderer(this.worldRenderer);
 
 		this.txWorld = new GuiTexture();
