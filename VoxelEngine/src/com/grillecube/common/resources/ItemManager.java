@@ -1,11 +1,6 @@
 package com.grillecube.common.resources;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.grillecube.common.Logger;
-import com.grillecube.common.event.Event;
-import com.grillecube.common.event.EventCallback;
 import com.grillecube.common.world.items.Item;
 
 public class ItemManager extends GenericManager<Item> {

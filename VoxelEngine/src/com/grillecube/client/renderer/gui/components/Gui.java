@@ -435,8 +435,8 @@ public abstract class Gui {
 
 		// update gui states (stack events)
 		this.updateMouseInputEvents(mouse.x, mouse.y, pressed);
-		this.onInputUpdate();
 
+		this.onInputUpdate();
 		// unstack (raise events)
 		this.unstackEvents();
 

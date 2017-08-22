@@ -24,16 +24,10 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.opengl.window.GLFWWindow;
-import com.grillecube.client.opengl.window.event.GLFWEventChar;
-import com.grillecube.client.opengl.window.event.GLFWEventKeyPress;
-import com.grillecube.client.opengl.window.event.GLFWListener;
 import com.grillecube.client.renderer.MainRenderer;
-import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.gui.components.Gui;
-import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiView;
-import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAdjustBox;
 import com.grillecube.client.renderer.gui.font.Font;
 import com.grillecube.client.renderer.gui.font.FontModel;
 import com.grillecube.common.Logger;
@@ -161,20 +155,20 @@ public class GuiRenderer extends Renderer {
 
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<Callable<Taskable>> tasks) {
-		updateGuis();
-		// tasks.add(engine.new Callable<Taskable>() {
-		//
-		// @Override
-		// public Taskable call() throws Exception {
-		// updateGuis();
-		// return (GuiRenderer.this);
-		// }
-		//
-		// @Override
-		// public String getName() {
-		// return ("GuiRenderer guis update");
-		// }
-		// });
+
+		tasks.add(engine.new Callable<Taskable>() {
+
+			@Override
+			public Taskable call() throws Exception {
+				updateGuis();
+				return (GuiRenderer.this);
+			}
+
+			@Override
+			public String getName() {
+				return ("GuiRenderer guis update");
+			}
+		});
 	}
 
 	private final void updateGuis() {
@@ -200,35 +194,7 @@ public class GuiRenderer extends Renderer {
 
 	/** toast a message on the screen */
 	public void toast(String text, Font font, float r, float g, float b, float a, int time) {
-
-		GuiLabel lbl = new GuiLabel() {
-			int timer = time;
-
-			@Override
-			protected void onRender(GuiRenderer renderer) {
-				super.onRender(renderer);
-
-				// weird trick, apparently it doesnt compile otherwise
-				final GuiLabel thisGui = this;
-				this.timer--;
-				if (this.timer <= 0) {
-					GuiRenderer.this.getMainRenderer().addGLTask(new GLTask() {
-						@Override
-						public void run() {
-							GuiRenderer.this.removeGui(thisGui);
-						}
-					});
-				}
-			}
-		};
-		lbl.setFontColor(r, g, b, a);
-		// lbl.setFontSize(1.0f, 1.0f);
-		lbl.setText(text);
-		lbl.setBoxCenterPosition(0.5f, 0.5f);
-		lbl.addParameter(new GuiTextParameterTextAdjustBox());
-
-		// gui.startAnimation(new GuiAnimationTextHoverScale<GuiLabel>(1.1f));
-		this.addGui(lbl);
+		// TODO
 	}
 
 	public void toast(String str, float r, float g, float b, float a) {

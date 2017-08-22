@@ -1,6 +1,7 @@
 package com.grillecube.client;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.lwjgl.glfw.GLFW;
@@ -10,6 +11,7 @@ import com.grillecube.client.opengl.GLFWContext;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
+import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.Logger;
 import com.grillecube.common.VoxelEngine;
@@ -26,6 +28,9 @@ public class VoxelEngineClient extends VoxelEngine {
 
 	/** Renderer */
 	private MainRenderer renderer;
+
+	/** tasks to be run in a gl context */
+	private ArrayList<GLTask> glTasks;
 
 	public VoxelEngineClient() {
 		super(Side.CLIENT);
@@ -49,6 +54,8 @@ public class VoxelEngineClient extends VoxelEngine {
 		// main renderer
 		this.renderer = new MainRenderer(this);
 		this.renderer.initialize();
+
+		this.glTasks = new ArrayList<GLTask>();
 	}
 
 	@Override
@@ -63,6 +70,12 @@ public class VoxelEngineClient extends VoxelEngine {
 		this.registerEventCallback(new EventCallback<EventOnLoop>() {
 			@Override
 			public void invoke(EventOnLoop event) {
+
+				// run tasks
+				for (GLTask glTask : glTasks) {
+					glTask.run();
+				}
+				glTasks.clear();
 
 				// window update has to be done in the main thread
 				// BEGIN FRAME
@@ -108,6 +121,14 @@ public class VoxelEngineClient extends VoxelEngine {
 	@Override
 	protected ResourceManager instanciateResourceManager() {
 		return (new ResourceManagerClient(this));
+	}
+
+	/**
+	 * a task to be run on a gl context (will be run on the next main thread
+	 * update)
+	 */
+	public final void addGLTask(GLTask glTask) {
+		this.glTasks.add(glTask);
 	}
 
 	// public void startNetwork(String host, int port)

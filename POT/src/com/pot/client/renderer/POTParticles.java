@@ -1,12 +1,6 @@
 package com.pot.client.renderer;
 
-import java.util.Random;
-
-import org.lwjgl.glfw.GLFW;
-
 import com.grillecube.client.event.renderer.EventPreRender;
-import com.grillecube.client.renderer.particles.ParticleBillboarded;
-import com.grillecube.client.renderer.particles.ParticleRenderer;
 import com.grillecube.client.renderer.particles.TextureSprite;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Side;

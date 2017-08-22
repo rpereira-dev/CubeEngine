@@ -59,7 +59,7 @@ public class TerrainMesh extends Mesh {
 
 			// set vertices
 
-			VoxelEngineClient.instance().getRenderer().addGLTask(new GLTask() {
+			VoxelEngineClient.instance().addGLTask(new GLTask() {
 
 				@Override
 				public void run() {

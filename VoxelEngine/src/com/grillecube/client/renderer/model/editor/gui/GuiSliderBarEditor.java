@@ -5,7 +5,6 @@ import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiSliderBar;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
-import com.grillecube.client.renderer.gui.event.GuiEventMouseHover;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
 
@@ -15,13 +14,6 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 		@Override
 		public void invoke(GuiSliderBarEventValueChanged<GuiSliderBarEditor> event) {
 			event.getGui().onValueChanged();
-		}
-	};
-
-	private static final GuiListener<GuiEventMouseHover<GuiSliderBarEditor>> LISTENER_HOVER = new GuiListener<GuiEventMouseHover<GuiSliderBarEditor>>() {
-		@Override
-		public void invoke(GuiEventMouseHover<GuiSliderBarEditor> event) {
-
 		}
 	};
 

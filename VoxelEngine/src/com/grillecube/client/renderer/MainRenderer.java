@@ -89,9 +89,6 @@ public class MainRenderer implements Taskable {
 	/** particles renderer */
 	private ParticleRenderer particleRenderer;
 
-	/** tasks to be run in a gl context */
-	private ArrayList<GLTask> glTasks;
-
 	/** random number generator */
 	private Random rng;
 
@@ -124,7 +121,6 @@ public class MainRenderer implements Taskable {
 		this.customRenderers = new ArrayList<Renderer>();
 		this.defaultRenderers = new ArrayList<Renderer>();
 
-		this.glTasks = new ArrayList<GLTask>();
 		this.rng = new Random();
 		this.preRenderEvent = new EventPreRender(this);
 		this.postRenderEvent = new EventPostRender(this);
@@ -252,12 +248,6 @@ public class MainRenderer implements Taskable {
 	 */
 	public void render() {
 
-		// run tasks
-		while (!this.glTasks.isEmpty()) {
-			GLTask task = this.glTasks.remove(0);
-			task.run();
-		}
-
 		// if renderer is not enabled, return
 		if (!this.toggle) {
 			return;
@@ -330,10 +320,6 @@ public class MainRenderer implements Taskable {
 
 	public Random getRNG() {
 		return (this.rng);
-	}
-
-	public void addGLTask(GLTask task) {
-		this.glTasks.add(task);
 	}
 
 	@Override

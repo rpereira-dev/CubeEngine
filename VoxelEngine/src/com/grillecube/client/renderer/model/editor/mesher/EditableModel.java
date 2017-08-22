@@ -21,7 +21,7 @@ public class EditableModel extends Model {
 	private ModelMesher modelMesher;
 
 	/** true of false whether this model should be remeshed */
-	private boolean needUpdate;
+	private boolean needUpdate; // TODO
 
 	/**
 	 * the model origin (the origin coordinates, in the model referential), so

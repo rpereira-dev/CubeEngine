@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.event.renderer.EventTerrainList;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
@@ -62,7 +63,7 @@ public class TerrainRendererFactory extends WorldRendererFactory {
 	public final void deinitialize() {
 		/** destroy every currently set meshes */
 		Collection<TerrainMesh> meshes = this.meshes.values();
-		this.getMainRenderer().addGLTask(new GLTask() {
+		VoxelEngineClient.instance().addGLTask(new GLTask() {
 			@Override
 			public void run() {
 				for (TerrainMesh mesh : meshes) {
@@ -151,7 +152,7 @@ public class TerrainRendererFactory extends WorldRendererFactory {
 			}
 		}
 
-		this.getMainRenderer().addGLTask(new GLTask() {
+		VoxelEngineClient.instance().addGLTask(new GLTask() {
 			@Override
 			public void run() {
 				for (TerrainMesh mesh : newMeshes) {

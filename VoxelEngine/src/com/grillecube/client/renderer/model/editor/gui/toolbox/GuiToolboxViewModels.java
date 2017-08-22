@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiPopUp;
@@ -111,7 +112,12 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 	private final void onBlockSizeUnitChanged() {
 		EditableModel model = this.getSelectedModel();
 		model.setBlockSizeUnit((float) this.modelBlockSizeUnit.getSelectedValue());
-		model.generate();
+		VoxelEngineClient.instance().addGLTask(new GLTask() {
+			@Override
+			public void run() {
+				model.generate();
+			}
+		});
 	}
 
 	private final void onModelInstanceChanged() {

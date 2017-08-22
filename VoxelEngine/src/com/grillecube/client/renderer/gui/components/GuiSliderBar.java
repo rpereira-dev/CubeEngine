@@ -77,7 +77,7 @@ public class GuiSliderBar extends Gui {
 		}
 		int prevIndex = this.selectedIndex;
 		this.selectedIndex = selectedIndex;
-		super.stackEvent(new GuiSliderBarEventValueChanged(this, prevIndex, this.getValue(prevIndex)));
+		super.stackEvent(new GuiSliderBarEventValueChanged<GuiSliderBar>(this, prevIndex, this.getValue(prevIndex)));
 		return (this.getSelectedValue());
 	}
 

@@ -491,6 +491,7 @@ public class GLFWWindow implements GLObject {
 		if (focus) {
 			GLFW.glfwFocusWindow(this.getPointer());
 		}
+		this.setState(STATE_FOCUSED, focus);
 	}
 
 	/** set the icon of this window */

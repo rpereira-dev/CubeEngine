@@ -542,11 +542,6 @@ public class Terrain {
 	}
 
 	/** set the sunlight value */
-	private final void setSunLight(byte value, int x, int y, int z) {
-		this.setSunLight(value, this.getIndex(x, y, z));
-	}
-
-	/** set the sunlight value */
 	private final void setSunLight(byte value, short index) {
 		if (this.lights == null) {
 			// initialize it, fill it with 0
