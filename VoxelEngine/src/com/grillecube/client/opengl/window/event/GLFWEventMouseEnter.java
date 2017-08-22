@@ -12,8 +12,12 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl;
+package com.grillecube.client.opengl.window.event;
 
-public interface GLFWListenerCursorPos {
-	public void invokeCursorPos(GLFWWindow window, double xpos, double ypos);
+import com.grillecube.client.opengl.window.GLFWWindow;
+
+public class GLFWEventMouseEnter extends GLFWEventMouse {
+	public GLFWEventMouseEnter(GLFWWindow window) {
+		super(window);
+	}
 }

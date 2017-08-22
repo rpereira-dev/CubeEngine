@@ -12,9 +12,26 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl;
+package com.grillecube.client.opengl.window.event;
 
-public interface GLFWListenerKeyRelease {
-	public void invokeKeyRelease(GLFWWindow glfwWindow, int key, int scancode, int mods);
+import com.grillecube.client.opengl.window.GLFWWindow;
 
+public class GLFWEventMousePress extends GLFWEventMouse {
+
+	private final int button;
+	private final int mods;
+
+	public GLFWEventMousePress(GLFWWindow window, int button, int mods) {
+		super(window);
+		this.button = button;
+		this.mods = mods;
+	}
+
+	public final int getButton() {
+		return (this.button);
+	}
+
+	public final int getMods() {
+		return (this.mods);
+	}
 }

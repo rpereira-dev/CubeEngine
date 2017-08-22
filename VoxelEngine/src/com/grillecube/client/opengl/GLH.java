@@ -32,6 +32,7 @@ import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.opengl.object.GLVertexArray;
 import com.grillecube.client.opengl.object.GLVertexBuffer;
 import com.grillecube.client.opengl.object.ImageUtils;
+import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
 

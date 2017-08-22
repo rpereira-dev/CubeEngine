@@ -1,16 +1,18 @@
 package com.grillecube.client.renderer.camera;
 
-import com.grillecube.client.opengl.GLFWListenerCursorPos;
-import com.grillecube.client.opengl.GLFWListenerKeyPress;
-import com.grillecube.client.opengl.GLFWListenerKeyRelease;
-import com.grillecube.client.opengl.GLFWListenerMouseScroll;
-import com.grillecube.client.opengl.GLFWWindow;
+import com.grillecube.client.opengl.window.GLFWWindow;
+import com.grillecube.client.opengl.window.event.GLFWEventKeyPress;
+import com.grillecube.client.opengl.window.event.GLFWEventKeyRelease;
+import com.grillecube.client.opengl.window.event.GLFWEventMouseCursor;
+import com.grillecube.client.opengl.window.event.GLFWEventMousePress;
+import com.grillecube.client.opengl.window.event.GLFWEventMouseRelease;
+import com.grillecube.client.opengl.window.event.GLFWEventMouseScroll;
+import com.grillecube.client.opengl.window.event.GLFWListener;
 import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 
-public abstract class CameraProjective extends CameraView
-		implements GLFWListenerKeyPress, GLFWListenerKeyRelease, GLFWListenerCursorPos, GLFWListenerMouseScroll {
+public abstract class CameraProjective extends CameraView {
 
 	/** the window linked with this camera */
 	private GLFWWindow window;
@@ -28,6 +30,13 @@ public abstract class CameraProjective extends CameraView
 
 	/** aspect */
 	private float aspect;
+
+	private GLFWListener<GLFWEventKeyPress> keyPressListener;
+	private GLFWListener<GLFWEventKeyRelease> keyReleaseListener;
+	private GLFWListener<GLFWEventMouseCursor> cursorListener;
+	private GLFWListener<GLFWEventMouseScroll> scrollListener;
+	private GLFWListener<GLFWEventMousePress> mousePressListener;
+	private GLFWListener<GLFWEventMouseRelease> mouseReleaseListener;
 
 	public CameraProjective(GLFWWindow window) {
 		super();
@@ -48,17 +57,63 @@ public abstract class CameraProjective extends CameraView
 	}
 
 	public final void addWindowListeners() {
-		this.getWindow().addListener((GLFWListenerKeyPress) this);
-		this.getWindow().addListener((GLFWListenerKeyRelease) this);
-		this.getWindow().addListener((GLFWListenerCursorPos) this);
-		this.getWindow().addListener((GLFWListenerMouseScroll) this);
+		this.keyPressListener = new GLFWListener<GLFWEventKeyPress>() {
+			@Override
+			public void invoke(GLFWEventKeyPress event) {
+				invokeKeyPress(event.getWindow(), event.getKey(), event.getScancode(), event.getMods());
+			}
+		};
+
+		this.keyReleaseListener = new GLFWListener<GLFWEventKeyRelease>() {
+			@Override
+			public void invoke(GLFWEventKeyRelease event) {
+				invokeKeyRelease(event.getWindow(), event.getKey(), event.getScancode(), event.getMods());
+			}
+		};
+
+		this.cursorListener = new GLFWListener<GLFWEventMouseCursor>() {
+			@Override
+			public void invoke(GLFWEventMouseCursor event) {
+				invokeCursorPos(event.getWindow(), event.getMouseX(), event.getMouseY());
+			}
+		};
+
+		this.scrollListener = new GLFWListener<GLFWEventMouseScroll>() {
+			@Override
+			public void invoke(GLFWEventMouseScroll event) {
+				invokeMouseScroll(event.getWindow(), event.getScrollX(), event.getScrollY());
+			}
+		};
+
+		this.mousePressListener = new GLFWListener<GLFWEventMousePress>() {
+			@Override
+			public void invoke(GLFWEventMousePress event) {
+				invokeMousePress(event.getWindow(), event.getButton(), event.getMods());
+			}
+		};
+
+		this.mouseReleaseListener = new GLFWListener<GLFWEventMouseRelease>() {
+			@Override
+			public void invoke(GLFWEventMouseRelease event) {
+				invokeMouseRelease(event.getWindow(), event.getButton(), event.getMods());
+			}
+		};
+
+		this.getWindow().addListener(this.keyPressListener);
+		this.getWindow().addListener(this.keyReleaseListener);
+		this.getWindow().addListener(this.cursorListener);
+		this.getWindow().addListener(this.scrollListener);
+		this.getWindow().addListener(this.mousePressListener);
+		this.getWindow().addListener(this.mouseReleaseListener);
 	}
 
 	public void removeWindowListeners() {
-		this.getWindow().removeListener((GLFWListenerKeyPress) this);
-		this.getWindow().removeListener((GLFWListenerKeyRelease) this);
-		this.getWindow().removeListener((GLFWListenerCursorPos) this);
-		this.getWindow().removeListener((GLFWListenerMouseScroll) this);
+		this.getWindow().removeListener(this.keyPressListener);
+		this.getWindow().removeListener(this.keyReleaseListener);
+		this.getWindow().removeListener(this.cursorListener);
+		this.getWindow().removeListener(this.scrollListener);
+		this.getWindow().removeListener(this.mousePressListener);
+		this.getWindow().removeListener(this.mouseReleaseListener);
 	}
 
 	/** create the projection matrix for this camera */
@@ -119,20 +174,22 @@ public abstract class CameraProjective extends CameraView
 		this.renderDistanceSquared = dist * dist;
 	}
 
-	@Override
 	public void invokeCursorPos(GLFWWindow window, double xpos, double ypos) {
 	}
 
-	@Override
 	public void invokeKeyRelease(GLFWWindow glfwWindow, int key, int scancode, int mods) {
 	}
 
-	@Override
 	public void invokeKeyPress(GLFWWindow glfwWindow, int key, int scancode, int mods) {
 	}
 
-	@Override
 	public void invokeMouseScroll(GLFWWindow window, double xpos, double ypos) {
+	}
+
+	public void invokeMouseRelease(GLFWWindow window, int button, int mods) {
+	}
+
+	public void invokeMousePress(GLFWWindow window, int button, int mods) {
 	}
 
 	/** return true if this point is in this camera frustum */

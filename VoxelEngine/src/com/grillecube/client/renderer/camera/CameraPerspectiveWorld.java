@@ -1,6 +1,6 @@
 package com.grillecube.client.renderer.camera;
 
-import com.grillecube.client.opengl.GLFWWindow;
+import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;

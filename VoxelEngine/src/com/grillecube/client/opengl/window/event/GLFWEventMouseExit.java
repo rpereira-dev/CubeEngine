@@ -12,9 +12,12 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl;
+package com.grillecube.client.opengl.window.event;
 
-public interface GLFWListenerMouseEnter
-{
-	public void invokeMouseEnter(GLFWWindow window, boolean cursor, double posx, double posy);
+import com.grillecube.client.opengl.window.GLFWWindow;
+
+public class GLFWEventMouseExit extends GLFWEventMouse {
+	public GLFWEventMouseExit(GLFWWindow window) {
+		super(window);
+	}
 }

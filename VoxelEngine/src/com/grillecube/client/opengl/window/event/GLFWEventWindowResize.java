@@ -12,8 +12,27 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl;
+package com.grillecube.client.opengl.window.event;
 
-public interface GLFWListenerChar {
-	public void invokeChar(GLFWWindow window, int codepoint);
+import com.grillecube.client.opengl.window.GLFWWindow;
+
+public class GLFWEventWindowResize extends GLFWEvent {
+
+	private final int width;
+	private final int height;
+
+	public GLFWEventWindowResize(GLFWWindow window) {
+		super(window);
+		this.width = window.getWidth();
+		this.height = window.getHeight();
+	}
+
+	public final int getWidth() {
+		return (this.width);
+	}
+
+	public final int getHeight() {
+		return (this.height);
+	}
+
 }

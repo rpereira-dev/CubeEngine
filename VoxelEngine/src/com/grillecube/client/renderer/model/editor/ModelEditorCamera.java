@@ -2,23 +2,18 @@ package com.grillecube.client.renderer.model.editor;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.grillecube.client.opengl.GLFWListenerMousePress;
-import com.grillecube.client.opengl.GLFWListenerMouseRelease;
-import com.grillecube.client.opengl.GLFWWindow;
+import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 
-public class ModelEditorCamera extends CameraPerspectiveWorldCentered
-		implements GLFWListenerMousePress, GLFWListenerMouseRelease {
+public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 
 	private final Vector3i blockOne;
 	private final Vector3i blockTwo;
 
 	public ModelEditorCamera(GLFWWindow window) {
 		super(window);
-		this.getWindow().addListener((GLFWListenerMousePress) this);
-		this.getWindow().addListener((GLFWListenerMouseRelease) this);
 
 		super.setPosition(0, 8, 0);
 		super.setPositionVelocity(0, 0, 0);

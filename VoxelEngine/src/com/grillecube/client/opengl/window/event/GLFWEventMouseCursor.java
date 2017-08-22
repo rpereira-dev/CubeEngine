@@ -12,8 +12,12 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl;
+package com.grillecube.client.opengl.window.event;
 
-public interface GLFWListenerMousePress {
-	public void invokeMousePress(GLFWWindow window, int button, int mods);
+import com.grillecube.client.opengl.window.GLFWWindow;
+
+public class GLFWEventMouseCursor extends GLFWEventMouse {
+	public GLFWEventMouseCursor(GLFWWindow window) {
+		super(window);
+	}
 }

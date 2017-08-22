@@ -12,8 +12,13 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl;
+package com.grillecube.client.opengl.window.event;
 
-public interface GLFWListenerMouseScroll {
-	public void invokeMouseScroll(GLFWWindow window, double xpos, double ypos);
+import com.grillecube.client.opengl.window.GLFWWindow;
+
+public class GLFWEventKeyPress extends GLFWEventKey {
+
+	public GLFWEventKeyPress(GLFWWindow glfwWindow, int key, int scancode, int mods) {
+		super(glfwWindow, key, scancode, mods);
+	}
 }

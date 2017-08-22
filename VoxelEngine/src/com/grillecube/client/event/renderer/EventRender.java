@@ -1,6 +1,6 @@
 package com.grillecube.client.event.renderer;
 
-import com.grillecube.client.opengl.GLFWWindow;
+import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.common.event.Event;
 

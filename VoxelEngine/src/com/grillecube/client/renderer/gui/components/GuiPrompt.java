@@ -2,7 +2,7 @@ package com.grillecube.client.renderer.gui.components;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.grillecube.client.opengl.GLFWWindow;
+import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.gui.event.GuiEventChar;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;

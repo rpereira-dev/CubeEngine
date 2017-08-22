@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 
 import com.grillecube.client.opengl.object.GLObject;
+import com.grillecube.client.opengl.window.GLFWWindow;
 
 public class GLFWContext {
 

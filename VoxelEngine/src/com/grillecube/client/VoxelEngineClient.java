@@ -7,11 +7,10 @@ import org.lwjgl.glfw.GLFW;
 
 import com.grillecube.client.opencl.CLH;
 import com.grillecube.client.opengl.GLFWContext;
-import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.opengl.GLH;
+import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.resources.ResourceManagerClient;
-import com.grillecube.client.sound.ALH;
 import com.grillecube.common.Logger;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.event.EventCallback;
@@ -68,7 +67,6 @@ public class VoxelEngineClient extends VoxelEngine {
 				// window update has to be done in the main thread
 				// BEGIN FRAME
 				getGLFWWindow().clearScreen();
-				getGLFWWindow().update();
 
 				// render has to be done in the main thread
 				// RENDER THE FRAME
@@ -76,6 +74,8 @@ public class VoxelEngineClient extends VoxelEngine {
 
 				// FLUSH THE FRAME
 				getGLFWWindow().flushScreen();
+				getGLFWWindow().pollEvents();
+
 				if (getGLFWWindow().shouldClose()) {
 					stopRunning();
 				}

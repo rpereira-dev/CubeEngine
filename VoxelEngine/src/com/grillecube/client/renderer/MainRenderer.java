@@ -23,11 +23,12 @@ import org.lwjgl.opengl.GL15;
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.event.renderer.EventPostRender;
 import com.grillecube.client.event.renderer.EventPreRender;
-import com.grillecube.client.opengl.GLFWListenerResize;
-import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLVertexArray;
 import com.grillecube.client.opengl.object.GLVertexBuffer;
+import com.grillecube.client.opengl.window.GLFWWindow;
+import com.grillecube.client.opengl.window.event.GLFWEventWindowResize;
+import com.grillecube.client.opengl.window.event.GLFWListener;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.lines.LineRenderer;
 import com.grillecube.client.renderer.model.ModelRenderer;
@@ -41,7 +42,7 @@ import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Matrix4f;
 
-public class MainRenderer implements Taskable, GLFWListenerResize {
+public class MainRenderer implements Taskable {
 
 	/**
 	 * screen referentials (bottom left to top right) varies from
@@ -108,6 +109,8 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 
 	private boolean toggle = true;
 
+	private GLFWListener<GLFWEventWindowResize> windowResizeListener;
+
 	public MainRenderer(VoxelEngineClient engine) {
 		this.engine = engine;
 	}
@@ -152,15 +155,21 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 			GLH.glhCheckError("post " + renderer.getClass().getSimpleName() + " initializes");
 		}
 
-		this.getGLFWWindow().addListener(this);
-		this.invokeResize(this.getGLFWWindow(), this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
+		this.windowResizeListener = new GLFWListener<GLFWEventWindowResize>() {
+			@Override
+			public void invoke(GLFWEventWindowResize event) {
+				onWindowResize(event.getWindow(), event.getWidth(), event.getHeight());
+			}
+		};
+		this.getGLFWWindow().addListener(this.windowResizeListener);
+		this.onWindowResize(this.getGLFWWindow(), this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
 
 		Logger.get().log(Level.FINE, "Done");
 		GLH.glhCheckError("post mainrenderer started");
 	}
 
 	public void deinitialize() {
-		this.getGLFWWindow().removeListener(this);
+		this.getGLFWWindow().removeListener(this.windowResizeListener);
 
 		GLH.glhCheckError("pre renderer deinitialization");
 		for (Renderer renderer : this.defaultRenderers) {
@@ -197,8 +206,7 @@ public class MainRenderer implements Taskable, GLFWListenerResize {
 	}
 
 	/** called whenever the window is resized */
-	@Override
-	public void invokeResize(GLFWWindow window, int width, int height) {
+	public void onWindowResize(GLFWWindow window, int width, int height) {
 		for (Renderer renderer : this.defaultRenderers) {
 			renderer.onWindowResize(window, width, height);
 		}

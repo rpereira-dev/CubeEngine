@@ -21,11 +21,12 @@ import java.util.Map;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
-import com.grillecube.client.opengl.GLFWListenerChar;
-import com.grillecube.client.opengl.GLFWListenerKeyPress;
-import com.grillecube.client.opengl.GLFWWindow;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.window.GLFWWindow;
+import com.grillecube.client.opengl.window.event.GLFWEventChar;
+import com.grillecube.client.opengl.window.event.GLFWEventKeyPress;
+import com.grillecube.client.opengl.window.event.GLFWListener;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.Renderer;
@@ -62,10 +63,6 @@ public class GuiRenderer extends Renderer {
 	/** gui rendering list (sorted by layers) */
 	private ArrayList<Gui> renderingList;
 
-	/** listeners */
-	private GLFWListenerChar charListener;
-	private GLFWListenerKeyPress keyListener;
-
 	public GuiRenderer(MainRenderer renderer) {
 		super(renderer);
 	}
@@ -92,8 +89,6 @@ public class GuiRenderer extends Renderer {
 		this.programColoredQuad.delete();
 		this.programTexturedQuad.delete();
 		this.programFont.delete();
-		this.getMainRenderer().getGLFWWindow().removeListener(this.keyListener);
-		this.getMainRenderer().getGLFWWindow().removeListener(this.charListener);
 	}
 
 	/** load every fonts */

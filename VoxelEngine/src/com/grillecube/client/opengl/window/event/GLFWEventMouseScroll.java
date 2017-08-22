@@ -12,8 +12,26 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl;
+package com.grillecube.client.opengl.window.event;
 
-public interface GLFWListenerMouseExit {
-	public void invokeMouseExit(GLFWWindow window, boolean cursor, double posx, double posy);
+import com.grillecube.client.opengl.window.GLFWWindow;
+
+public class GLFWEventMouseScroll extends GLFWEventMouse {
+
+	private final double xpos;
+	private final double ypos;
+
+	public GLFWEventMouseScroll(GLFWWindow window, double xpos, double ypos) {
+		super(window);
+		this.xpos = xpos;
+		this.ypos = ypos;
+	}
+
+	public final double getScrollX() {
+		return (this.xpos);
+	}
+
+	public final double getScrollY() {
+		return (this.ypos);
+	}
 }

@@ -14,7 +14,7 @@
 
 package com.grillecube.client.renderer;
 
-import com.grillecube.client.opengl.GLFWWindow;
+import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
 

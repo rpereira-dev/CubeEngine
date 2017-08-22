@@ -1,6 +1,6 @@
 package com.grillecube.client.renderer.gui.event;
 
-import com.grillecube.client.opengl.GLFWWindow;
+import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.gui.components.Gui;
 
 public class GuiEventChar<T extends Gui> extends GuiEvent<T> {
