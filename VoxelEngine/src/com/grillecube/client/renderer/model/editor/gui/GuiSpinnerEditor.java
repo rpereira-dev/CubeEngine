@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiSpinner;
-import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftRelease;
+import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventAdd;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventExpanded;
@@ -22,7 +22,7 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		}
 	};
 
-	private static final GuiListener<GuiSpinnerEventExpanded<GuiSpinnerEditor>> EXPANDLISTENER = new GuiListener<GuiSpinnerEventExpanded<GuiSpinnerEditor>>() {
+	private static final GuiListener<GuiSpinnerEventExpanded<GuiSpinnerEditor>> EXPAND_LISTENER = new GuiListener<GuiSpinnerEventExpanded<GuiSpinnerEditor>>() {
 
 		@Override
 		public void invoke(GuiSpinnerEventExpanded<GuiSpinnerEditor> event) {
@@ -44,10 +44,10 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		}
 	};
 
-	private static final GuiListener<GuiEventMouseLeftRelease<GuiButton>> BUTTONS_LEFT_PRESSED_LISTENER = new GuiListener<GuiEventMouseLeftRelease<GuiButton>>() {
+	private static final GuiListener<GuiEventClick<GuiButton>> BUTTONS_LEFT_PRESSED_LISTENER = new GuiListener<GuiEventClick<GuiButton>>() {
 
 		@Override
-		public void invoke(GuiEventMouseLeftRelease<GuiButton> event) {
+		public void invoke(GuiEventClick<GuiButton> event) {
 			GuiSpinnerEditor spinner = ((GuiSpinnerEditor) event.getGui().getParent());
 			spinner.pick((Integer) event.getGui().getAttribute(ATTR_BUTTON_INDEX));
 		}
@@ -64,19 +64,17 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		this.title = new GuiButton();
 		this.title.setText("...");
 		this.title.setFontColor(0, 0, 0, 1.0f);
+		this.title.setSelectable(true);
 		this.addChild(this.title);
 
 		super.addListener(ADD_LISTENER);
-		super.addListener(EXPANDLISTENER);
+		super.addListener(EXPAND_LISTENER);
 		super.addListener(SORTED_LISTENER);
 		super.addListener(REMOVE_LISTENER);
 	}
 
 	private final void onExpansionChanged() {
-		this.title.setPressed(this.isExpanded());
-		for (GuiButton guiButton : this.guiButtons) {
-			guiButton.setVisible(this.isExpanded());
-		}
+		this.refreshButtons();
 	}
 
 	private void refreshButtons() {
@@ -91,10 +89,12 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		}
 
 		// update buttons
-		for (int i = 0; i < this.count(); i++) {
+		for (int i = 0; i < this.guiButtons.size(); i++) {
 			GuiButton guiButton = this.guiButtons.get(i);
 			guiButton.setAttribute(ATTR_BUTTON_INDEX, i);
 			guiButton.setText(super.getName(i));
+			guiButton.setVisible(this.title.isSelected());
+			guiButton.setBox(0.2f, -i - 1, 0.8f, 1, 0);
 		}
 	}
 
@@ -102,7 +102,6 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		// new gui button
 		GuiButton guiButton = new GuiButton();
 		guiButton.setOutColor(0.7f, 0.7f, 0.7f, 0.5f);
-		guiButton.setBox(0.2f, -this.count(), 0.8f, 1, 0);
 		guiButton.setVisible(false);
 		guiButton.addListener(BUTTONS_LEFT_PRESSED_LISTENER);
 		this.guiButtons.add(guiButton);

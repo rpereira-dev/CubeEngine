@@ -10,7 +10,7 @@ public abstract class GLFWEvent {
 		this.window = window;
 	}
 
-	public final GLFWWindow getWindow() {
+	public final GLFWWindow getGLFWWindow() {
 		return (this.window);
 	}
 

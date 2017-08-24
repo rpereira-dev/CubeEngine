@@ -86,15 +86,6 @@ public class TestGui {
 
 				this.addChild(lbl);
 			}
-
-			@Override
-			public void onAddedTo(Gui gui) {
-			}
-
-			@Override
-			public void onRemovedFrom(Gui gui) {
-			}
-
 		};
 		// guiView.set(0.5f, 0.5f, 0.5f, 0.5f, 0.0f);
 		guiView.setBox(0.0f, 0.0f, 1.0f, 1.0f, 0.0f);

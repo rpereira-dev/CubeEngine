@@ -60,42 +60,42 @@ public abstract class CameraProjective extends CameraView {
 		this.keyPressListener = new GLFWListener<GLFWEventKeyPress>() {
 			@Override
 			public void invoke(GLFWEventKeyPress event) {
-				invokeKeyPress(event.getWindow(), event.getKey(), event.getScancode(), event.getMods());
+				invokeKeyPress(event.getGLFWWindow(), event.getKey(), event.getScancode(), event.getMods());
 			}
 		};
 
 		this.keyReleaseListener = new GLFWListener<GLFWEventKeyRelease>() {
 			@Override
 			public void invoke(GLFWEventKeyRelease event) {
-				invokeKeyRelease(event.getWindow(), event.getKey(), event.getScancode(), event.getMods());
+				invokeKeyRelease(event.getGLFWWindow(), event.getKey(), event.getScancode(), event.getMods());
 			}
 		};
 
 		this.cursorListener = new GLFWListener<GLFWEventMouseCursor>() {
 			@Override
 			public void invoke(GLFWEventMouseCursor event) {
-				invokeCursorPos(event.getWindow(), event.getMouseX(), event.getMouseY());
+				invokeCursorPos(event.getGLFWWindow(), event.getMouseX(), event.getMouseY());
 			}
 		};
 
 		this.scrollListener = new GLFWListener<GLFWEventMouseScroll>() {
 			@Override
 			public void invoke(GLFWEventMouseScroll event) {
-				invokeMouseScroll(event.getWindow(), event.getScrollX(), event.getScrollY());
+				invokeMouseScroll(event.getGLFWWindow(), event.getScrollX(), event.getScrollY());
 			}
 		};
 
 		this.mousePressListener = new GLFWListener<GLFWEventMousePress>() {
 			@Override
 			public void invoke(GLFWEventMousePress event) {
-				invokeMousePress(event.getWindow(), event.getButton(), event.getMods());
+				invokeMousePress(event.getGLFWWindow(), event.getButton(), event.getMods());
 			}
 		};
 
 		this.mouseReleaseListener = new GLFWListener<GLFWEventMouseRelease>() {
 			@Override
 			public void invoke(GLFWEventMouseRelease event) {
-				invokeMouseRelease(event.getWindow(), event.getButton(), event.getMods());
+				invokeMouseRelease(event.getGLFWWindow(), event.getButton(), event.getMods());
 			}
 		};
 

@@ -17,6 +17,7 @@ public class GuiSliderBar extends Gui {
 		super();
 		this.selectedIndex = 0;
 		this.values = new ArrayList<Object>();
+		this.addListener(ON_PRESS_FOCUS_LISTENER);
 	}
 
 	/** add all values to the list */

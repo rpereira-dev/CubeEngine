@@ -133,11 +133,4 @@ public class GuiViewDebug extends GuiView {
 	protected void onDeinitialized(GuiRenderer renderer) {
 	}
 
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
-	}
 }

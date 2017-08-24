@@ -21,6 +21,8 @@ public class GuiButton extends GuiLabel {
 	public GuiButton() {
 		super();
 
+		this.addListener(ON_PRESS_FOCUS_LISTENER);
+
 		this.hoveredColor = new Vector4f();
 		this.outColor = new Vector4f();
 		this.pressedColor = new Vector4f();
@@ -46,7 +48,7 @@ public class GuiButton extends GuiLabel {
 
 	private final void updateColor() {
 		this.bg.setColor(!this.isEnabled() ? this.disabledColor
-				: this.isHovered() ? this.hoveredColor : this.isPressed() ? this.pressedColor : this.outColor);
+				: this.isPressed() || this.isSelected() ? this.pressedColor : this.isHovered() ? this.hoveredColor : this.outColor);
 	}
 
 	public final void setHoveredColor(Vector4f color) {

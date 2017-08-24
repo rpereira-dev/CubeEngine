@@ -72,11 +72,9 @@ public class BlockInstanceLiquid extends BlockInstance {
 	}
 
 	private void disperse() {
-
 		Terrain terrain = super.getTerrain();
 		short index = super.getIndex();
 		this.getTerrain().setBlock(Blocks.AIR, index);
-		terrain.requestMeshUpdate();
 	}
 
 	/** flow the water around */
@@ -105,8 +103,6 @@ public class BlockInstanceLiquid extends BlockInstance {
 					liquidUnder.lastUpdate = this.lastUpdate;
 					liquidUnder.setAmount(this.getAmount());
 					this.setAmount((short) 0);
-					terrainUnder.requestMeshUpdate();
-					terrain.requestMeshUpdate();
 				}
 			} else {
 				if (this.blockUnder instanceof BlockLiquid) {
@@ -201,8 +197,6 @@ public class BlockInstanceLiquid extends BlockInstance {
 		if (transfered > 0) {
 			dst.setAmount((short) (dst.getAmount() + transfered));
 			this.setAmount((short) (this.getAmount() - transfered));
-			super.getTerrain().requestMeshUpdate();
-			dst.getTerrain().requestMeshUpdate();
 		}
 	}
 

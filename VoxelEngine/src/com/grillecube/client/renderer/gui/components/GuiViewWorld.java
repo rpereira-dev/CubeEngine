@@ -21,15 +21,14 @@ public class GuiViewWorld extends GuiView {
 
 	@Override
 	protected void onInitialized(GuiRenderer renderer) {
-
 		MainRenderer mainRenderer = renderer.getMainRenderer();
 
 		this.camera.getPicker().setGuiRelative(this);
 
 		this.worldRenderer = new WorldRenderer(mainRenderer);
-		this.worldRenderer.initialize();
 		this.worldRenderer.setCamera(this.camera);
 		this.worldRenderer.setWorld(this.worldID);
+		this.worldRenderer.initialize();
 		this.worldRenderer.matchGui(this);
 		mainRenderer.addRenderer(this.worldRenderer);
 

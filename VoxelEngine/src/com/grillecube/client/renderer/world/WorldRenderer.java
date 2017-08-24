@@ -164,21 +164,24 @@ public class WorldRenderer extends Renderer {
 		int H = this.getMainRenderer().getGLFWWindow().getHeight();
 		this.width = W;
 		this.height = H;
-		if (this.guiToMatch != null) {
-			Vector4f w = new Vector4f(0, 1.0f, 0.0f, 1.0f);
-			Vector4f h = new Vector4f(0, 1.0f, 0.0f, 1.0f);
-			Matrix4f.transform(this.guiToMatch.getGuiToWindowChangeOfBasis(), w, w);
-			Matrix4f.transform(this.guiToMatch.getGuiToWindowChangeOfBasis(), h, h);
-			this.width = (int) ((w.y - w.x) * W);
-			this.height = (int) ((h.y - h.x) * H);
-		}
+
+		// TODO, negative values lol
+		// if (this.guiToMatch != null) {
+		// Vector4f w = new Vector4f(0, 1.0f, 0.0f, 1.0f);
+		// Vector4f h = new Vector4f(0, 1.0f, 0.0f, 1.0f);
+		// Matrix4f.transform(this.guiToMatch.getGuiToWindowChangeOfBasis(), w,
+		// w);
+		// Matrix4f.transform(this.guiToMatch.getGuiToWindowChangeOfBasis(), h,
+		// h);
+		// this.width = (int) ((w.y - w.x) * W);
+		// this.height = (int) ((h.y - h.x) * H);
+		// }
 
 		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
 		this.fboTexture.image2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, this.width, this.height, 0, GL11.GL_RGB,
 				GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
-
 		this.fboDepthBuffer.bind();
-		this.fboDepthBuffer.storage(GL11.GL_DEPTH_COMPONENT, width, height);
+		this.fboDepthBuffer.storage(GL11.GL_DEPTH_COMPONENT, this.width, this.height);
 	}
 
 	/** render the given world */

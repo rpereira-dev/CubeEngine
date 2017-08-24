@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftRelease;
+import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventAdd;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventExpanded;
@@ -16,9 +16,9 @@ import com.grillecube.common.utils.Pair;
 /** a spinner list */
 public abstract class GuiSpinner extends Gui {
 
-	private static final GuiListener<GuiEventMouseLeftRelease<GuiSpinner>> LISTENER = new GuiListener<GuiEventMouseLeftRelease<GuiSpinner>>() {
+	private static final GuiListener<GuiEventPress<GuiSpinner>> PRESS_EXPAND_LISTENER = new GuiListener<GuiEventPress<GuiSpinner>>() {
 		@Override
-		public void invoke(GuiEventMouseLeftRelease<GuiSpinner> event) {
+		public void invoke(GuiEventPress<GuiSpinner> event) {
 			event.getGui().expand();
 		}
 	};
@@ -37,7 +37,8 @@ public abstract class GuiSpinner extends Gui {
 		this.values = new ArrayList<Pair<Object, String>>();
 		this.expanded = false;
 		this.pickedIndex = 0;
-		this.addListener(LISTENER);
+		this.addListener(PRESS_EXPAND_LISTENER);
+		this.addListener(ON_PRESS_FOCUS_LISTENER);
 	}
 
 	/** expands the gui spinner */
@@ -63,11 +64,17 @@ public abstract class GuiSpinner extends Gui {
 
 	/** add a value to the spinner */
 	public final void remove(Object value) {
-		int index = this.values.indexOf(value);
-		if (index == -1) {
+		int i = 0;
+		for (Pair<Object, String> pair : this.values) {
+			if (pair.left.equals(value)) {
+				break;
+			}
+			++i;
+		}
+		if (i == this.values.size()) {
 			return;
 		}
-		this.remove(index);
+		this.remove(i);
 	}
 
 	public final void remove(int index) {

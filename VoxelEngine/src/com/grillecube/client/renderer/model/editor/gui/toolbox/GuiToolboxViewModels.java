@@ -10,7 +10,7 @@ import com.grillecube.client.renderer.gui.components.GuiSpinner;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAlignLeft;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
-import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftRelease;
+import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventAdd;
@@ -57,11 +57,9 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 		this.newModelButton.setBox(0, 0.85f, 1, 0.05f, 0);
 		this.newModelButton.setText("New model");
 		this.addChild(this.newModelButton);
-
-		this.newModelButton.addListener(new GuiListener<GuiEventMouseLeftRelease<GuiButton>>() {
-
+		this.newModelButton.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
-			public void invoke(GuiEventMouseLeftRelease<GuiButton> event) {
+			public void invoke(GuiEventClick<GuiButton> event) {
 				getParent().getParent().getChildren().get(1).addChild(new GuiPopUp());
 			}
 		});
@@ -81,22 +79,15 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 			}
 		});
 		this.modelList.setBox(0, 0.80f, 1.0f, 0.05f, 0.0f);
-
-		ModelInstance modelInstance = newModel();
-		this.modelList.add(modelInstance, modelInstance.getModel().getName());
+		this.modelList.add(null, "a");
+		this.modelList.add(null, "b");
+		this.modelList.add(null, "c");
+		this.modelList.add(null, "d");
 		this.addChild(this.modelList);
-
-		// model name
-		this.modelName = new GuiPrompt();
-		this.modelName.setBox(0, 0.4f, 1, 0.1f, 0);
-		this.modelName.setHeldTextColor(0, 0, 0, 1.0f);
-		this.modelName.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
-		this.modelName.addTextParameter(new GuiTextParameterTextAlignLeft(0.1f));
-		this.addChild(this.modelName);
 
 		// block size unit slider bar
 		this.modelBlockSizeUnit = new GuiSliderBarEditor();
-		this.modelBlockSizeUnit.setBox(0, 0.7f, 1.0f, 0.05f, 0);
+		this.modelBlockSizeUnit.setBox(0, 0.50f, 1.0f, 0.05f, 0);
 		this.modelBlockSizeUnit.addValues(0.125f, 0.250f, 0.5f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f,
 				10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f);
 		this.modelBlockSizeUnit.addListener(new GuiListener<GuiSliderBarEventValueChanged<GuiSliderBarEditor>>() {
@@ -107,10 +98,23 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 		});
 		this.modelBlockSizeUnit.select((Object) 1.0f);
 		this.addChild(this.modelBlockSizeUnit);
+
+		// model name
+		this.modelName = new GuiPrompt();
+		this.modelName.setHint("Enter model name here");
+		this.modelName.setBox(0, 0.4f, 1, 0.1f, 0);
+		this.modelName.setHeldTextColor(0, 0, 0, 1.0f);
+		this.modelName.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
+		this.modelName.addTextParameter(new GuiTextParameterTextAlignLeft(0.1f));
+		this.addChild(this.modelName);
+
 	}
 
 	private final void onBlockSizeUnitChanged() {
 		EditableModel model = this.getSelectedModel();
+		if (model == null) {
+			return;
+		}
 		model.setBlockSizeUnit((float) this.modelBlockSizeUnit.getSelectedValue());
 		VoxelEngineClient.instance().addGLTask(new GLTask() {
 			@Override
@@ -130,7 +134,11 @@ public class GuiToolboxViewModels extends GuiToolboxView {
 	}
 
 	private final EditableModel getSelectedModel() {
-		return ((EditableModel) (this.getSelectedModelInstance().getModel()));
+		ModelInstance modelInstance = this.getSelectedModelInstance();
+		if (modelInstance == null) {
+			return (null);
+		}
+		return ((EditableModel) (modelInstance.getModel()));
 	}
 
 	private final ModelInstance newModel() {

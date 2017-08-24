@@ -14,13 +14,12 @@
 
 package com.grillecube.client.renderer.terrain;
 
+import java.nio.ByteBuffer;
+
 import org.lwjgl.opengl.GL11;
 
-import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.opengl.object.GLVertexArray;
 import com.grillecube.client.opengl.object.GLVertexBuffer;
-import com.grillecube.client.renderer.MainRenderer.GLTask;
-import com.grillecube.client.renderer.camera.Camera;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class TerrainMesh extends Mesh {
@@ -48,30 +47,6 @@ public class TerrainMesh extends Mesh {
 	}
 
 	@Override
-	public boolean update(TerrainMesher mesher, Camera camera) {
-		super.update(mesher, camera);
-
-		// if vertices need to be update, and lights are calculated
-		if (!this.terrain.hasState(Terrain.STATE_VERTICES_UP_TO_DATE)) {
-
-			// lock the update
-			this.terrain.setState(Terrain.STATE_VERTICES_UP_TO_DATE);
-
-			// set vertices
-
-			VoxelEngineClient.instance().addGLTask(new GLTask() {
-
-				@Override
-				public void run() {
-					setVertices(mesher.generateVertices(getTerrain()), BYTES_PER_VERTEX);
-				}
-			});
-			return (true);
-		}
-		return (false);
-	}
-
-	@Override
 	protected void setAttributes(GLVertexArray vao, GLVertexBuffer vbo) {
 		vao.setAttribute(0, 3, GL11.GL_FLOAT, false, BYTES_PER_VERTEX, 0); // xyz
 		vao.setAttribute(1, 3, GL11.GL_FLOAT, false, BYTES_PER_VERTEX, 3 * 4); // normal
@@ -84,5 +59,9 @@ public class TerrainMesh extends Mesh {
 		vao.enableAttribute(2);
 		vao.enableAttribute(3);
 		vao.enableAttribute(4);
+	}
+
+	public void setVertices(ByteBuffer buffer) {
+		super.setVertices(buffer, BYTES_PER_VERTEX);
 	}
 }

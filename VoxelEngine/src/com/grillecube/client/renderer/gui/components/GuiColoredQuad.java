@@ -34,14 +34,6 @@ public class GuiColoredQuad extends Gui {
 	}
 
 	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
-	}
-
-	@Override
 	protected void onUpdate() {
 	}
 

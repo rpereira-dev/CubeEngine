@@ -154,7 +154,7 @@ public class MainRenderer implements Taskable {
 		this.windowResizeListener = new GLFWListener<GLFWEventWindowResize>() {
 			@Override
 			public void invoke(GLFWEventWindowResize event) {
-				onWindowResize(event.getWindow(), event.getWidth(), event.getHeight());
+				onWindowResize(event.getGLFWWindow(), event.getWidth(), event.getHeight());
 			}
 		};
 		this.getGLFWWindow().addListener(this.windowResizeListener);

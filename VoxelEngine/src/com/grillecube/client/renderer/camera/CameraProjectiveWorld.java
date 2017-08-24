@@ -83,7 +83,6 @@ public abstract class CameraProjectiveWorld extends CameraProjective implements 
 			return;
 		}
 
-		terrain.requestMeshUpdate();
 		terrain.requestFaceVisibilityUpdate();
 	}
 

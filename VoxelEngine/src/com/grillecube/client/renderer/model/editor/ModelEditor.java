@@ -2,6 +2,8 @@ package com.grillecube.client.renderer.model.editor;
 
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
+import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.event.EventOnLoop;
 
 public class ModelEditor {
 
@@ -49,6 +51,7 @@ public class ModelEditor {
 		engine.getGLFWWindow().setScreenPosition(100, 100);
 
 		GuiModelEditor guiModelEditor = new GuiModelEditor();
+		guiModelEditor.setBox(0, 0, 1.0f, 1.0f, 0);
 		engine.getRenderer().getGuiRenderer().addGui(guiModelEditor);
 	}
 }

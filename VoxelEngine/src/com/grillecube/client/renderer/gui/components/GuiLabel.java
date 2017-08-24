@@ -16,6 +16,8 @@ package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
+import com.grillecube.client.renderer.gui.event.GuiEventPress;
+import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.common.maths.Vector4f;
 
 /**
@@ -74,14 +76,6 @@ public class GuiLabel extends Gui {
 
 	@Override
 	protected void onDeinitialized(GuiRenderer renderer) {
-	}
-
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
 	}
 
 	public float getTextHeight() {

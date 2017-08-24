@@ -155,20 +155,21 @@ public class GuiRenderer extends Renderer {
 
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<Callable<Taskable>> tasks) {
+		updateGuis();
 
-		tasks.add(engine.new Callable<Taskable>() {
-
-			@Override
-			public Taskable call() throws Exception {
-				updateGuis();
-				return (GuiRenderer.this);
-			}
-
-			@Override
-			public String getName() {
-				return ("GuiRenderer guis update");
-			}
-		});
+//		tasks.add(engine.new Callable<Taskable>() {
+//
+//			@Override
+//			public Taskable call() throws Exception {
+//				updateGuis();
+//				return (GuiRenderer.this);
+//			}
+//
+//			@Override
+//			public String getName() {
+//				return ("GuiRenderer guis update");
+//			}
+//		});
 	}
 
 	private final void updateGuis() {

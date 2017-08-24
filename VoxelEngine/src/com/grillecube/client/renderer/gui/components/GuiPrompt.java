@@ -4,7 +4,9 @@ import org.lwjgl.glfw.GLFW;
 
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.gui.event.GuiEventChar;
+import com.grillecube.client.renderer.gui.event.GuiEventGainFocus;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
+import com.grillecube.client.renderer.gui.event.GuiEventLooseFocus;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.font.FontFile;
 import com.grillecube.common.maths.Vector4f;
@@ -22,6 +24,20 @@ public class GuiPrompt extends GuiLabel {
 		@Override
 		public void invoke(GuiEventKeyPress<GuiPrompt> event) {
 			event.getGui().onKeyPressed(event.getGLFWWindow(), event.getKey(), event.getScancode(), event.getMods());
+		}
+	};
+
+	private static final GuiListener<GuiEventGainFocus<GuiPrompt>> GAIN_FOCUS_LISTENER = new GuiListener<GuiEventGainFocus<GuiPrompt>>() {
+		@Override
+		public void invoke(GuiEventGainFocus<GuiPrompt> event) {
+			event.getGui().onFocusGained();
+		}
+	};
+
+	private static final GuiListener<GuiEventLooseFocus<GuiPrompt>> LOST_FOCUS_LISTENER = new GuiListener<GuiEventLooseFocus<GuiPrompt>>() {
+		@Override
+		public void invoke(GuiEventLooseFocus<GuiPrompt> event) {
+			event.getGui().onFocusLost();
 		}
 	};
 
@@ -53,10 +69,24 @@ public class GuiPrompt extends GuiLabel {
 		super();
 		this.addListener(CHAR_LISTENER);
 		this.addListener(KEY_PRESS_LISTENER);
+		this.addListener(LOST_FOCUS_LISTENER);
+		this.addListener(LOST_FOCUS_LISTENER);
+		this.addListener(GAIN_FOCUS_LISTENER);
+		this.addListener(ON_PRESS_FOCUS_LISTENER);
+
 		this.charset = new String(DEFAULT_CHARSET);
 		this.maxChars = Integer.MAX_VALUE;
 		this.setHintColor(0.5f, 0.5f, 0.5f, 0.5f);
 		this.setHeldTextColor(Gui.COLOR_BLUE);
+	}
+
+	protected void onFocusLost() {
+		this.updateVisibleText();
+	}
+
+	protected void onFocusGained() {
+		this.tickCursor();
+		this.updateVisibleText();
 	}
 
 	protected void onChar(GLFWWindow glfwWindow, char character) {
@@ -162,7 +192,10 @@ public class GuiPrompt extends GuiLabel {
 
 	@Override
 	public void onUpdate() {
-		this.updateCursor();
+		super.onUpdate();
+		if (this.hasFocus()) {
+			this.updateCursor();
+		}
 	}
 
 	public final void setHintColor(Vector4f color) {
@@ -175,6 +208,7 @@ public class GuiPrompt extends GuiLabel {
 		this.gh = g;
 		this.bh = b;
 		this.ah = a;
+		this.updateVisibleText();
 	}
 
 	public final void setHeldTextColor(Vector4f color) {
@@ -187,6 +221,7 @@ public class GuiPrompt extends GuiLabel {
 		this.g = g;
 		this.b = b;
 		this.a = a;
+		this.updateVisibleText();
 	}
 
 	/** set the maximum chars this prompt can holds */
@@ -207,6 +242,7 @@ public class GuiPrompt extends GuiLabel {
 	/** set the hint text */
 	public final void setHint(String hintText) {
 		this.hintText = hintText;
+		this.updateVisibleText();
 	}
 
 	/** return the text held by this prompt */
@@ -222,12 +258,11 @@ public class GuiPrompt extends GuiLabel {
 		if (text == null || text.length() == 0) {
 			this.heldText = null;
 			this.setCursor(0);
-			this.setHintAsText();
 		} else {
 			this.heldText = text;
 			this.setCursor(index);
-			this.setHeldTextAsText();
 		}
+		this.updateVisibleText();
 	}
 
 	private final void setHintAsText() {
@@ -247,6 +282,14 @@ public class GuiPrompt extends GuiLabel {
 			} else {
 				super.setText(this.heldText);
 			}
+		}
+	}
+
+	private final void updateVisibleText() {
+		if (this.hasFocus() || this.getHeldText() != null) {
+			this.setHeldTextAsText();
+		} else {
+			this.setHintAsText();
 		}
 	}
 }

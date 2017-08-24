@@ -339,7 +339,7 @@ public class GLFWWindow implements GLObject {
 		return (this.aspectRatio);
 	}
 
-	public void resize(int width, int height) {
+	private void resize(int width, int height) {
 		this.width = width;
 		this.height = height;
 		this.aspectRatio = this.width / (float) this.height;

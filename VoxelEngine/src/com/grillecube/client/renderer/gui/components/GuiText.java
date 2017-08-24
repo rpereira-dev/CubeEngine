@@ -111,20 +111,13 @@ public class GuiText extends Gui {
 	@Override
 	protected void onInitialized(GuiRenderer guiRenderer) {
 		this.fontModel.initialize();
-		this.resizeFontModelAspect(this.getWindowAspectRatio(), true);
+		this.resizeFontModelAspect(
+				guiRenderer.getMainRenderer().getGLFWWindow().getAspectRatio() * this.getTotalAspectRatio(), true);
 	}
 
 	@Override
 	protected void onDeinitialized(GuiRenderer guiRenderer) {
 		this.fontModel.deinitialize();
-	}
-
-	@Override
-	public void onAddedTo(Gui gui) {
-	}
-
-	@Override
-	public void onRemovedFrom(Gui gui) {
 	}
 
 	/**
@@ -139,10 +132,6 @@ public class GuiText extends Gui {
 	 */
 	public float getTextHeight() {
 		return (this.getFontModel().getTextHeight() * this.getFontModel().getScaleY() * 0.5f);
-	}
-
-	private float getWindowAspectRatio() {
-		return (GLH.glhGetWindow() == null ? 1 / 1.6f : GLH.glhGetWindow().getAspectRatio());
 	}
 
 	@Override

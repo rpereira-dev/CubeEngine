@@ -7,6 +7,7 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
+import com.grillecube.common.maths.Vector4f;
 
 public class GuiSliderBarEditor extends GuiSliderBar {
 
@@ -16,6 +17,10 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 			event.getGui().onValueChanged();
 		}
 	};
+	
+	private static final Vector4f FILL_COLOR = new Vector4f(0.6f, 0.6f, 1.0f, 1.0f);
+	private static final Vector4f BG_COLOR = new Vector4f(0.87f, 0.87f, 0.87f, 1.0f);
+
 
 	private GuiColoredQuad total;
 	private GuiColoredQuad selected;
@@ -24,15 +29,15 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 	public GuiSliderBarEditor() {
 		super();
 		this.total = new GuiColoredQuad();
-		this.total.setColor(0, 0, 0, 1);
+		this.total.setColor(BG_COLOR);
 		this.addChild(this.total);
 
 		this.selected = new GuiColoredQuad();
-		this.selected.setColor(1, 0, 0, 1);
+		this.selected.setColor(FILL_COLOR);
 		this.addChild(this.selected);
 
 		this.guiLabel = new GuiLabel();
-		this.guiLabel.setFontColor(1, 1, 1, 1.0f);
+		this.guiLabel.setFontColor(0, 0, 0, 1.0f);
 		this.guiLabel.getGuiText().addParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.guiLabel.getGuiText().addParameter(new GuiTextParameterTextCenterBox());
 		this.addChild(this.guiLabel);

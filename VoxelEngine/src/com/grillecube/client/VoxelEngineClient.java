@@ -93,9 +93,9 @@ public class VoxelEngineClient extends VoxelEngine {
 					stopRunning();
 				}
 
-				// TODO hard sleep here
+				// TODO remove hard sleep here
 				try {
-					Thread.sleep(10);
+					Thread.sleep(12);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

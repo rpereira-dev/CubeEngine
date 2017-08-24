@@ -1,7 +1,10 @@
 package com.grillecube.common.event;
 
-import com.grillecube.common.event.world.EventWorldDespawnTerrain;
-import com.grillecube.common.event.world.EventWorldSpawnTerrain;
+import com.grillecube.common.event.world.EventTerrainBlocklightUpdate;
+import com.grillecube.common.event.world.EventTerrainDespawn;
+import com.grillecube.common.event.world.EventTerrainSetBlock;
+import com.grillecube.common.event.world.EventTerrainSpawn;
+import com.grillecube.common.event.world.EventTerrainSunlightUpdate;
 import com.grillecube.common.event.world.entity.EventEntityDespawn;
 import com.grillecube.common.event.world.entity.EventEntityJump;
 import com.grillecube.common.event.world.entity.EventEntitySpawn;
@@ -23,8 +26,11 @@ public class Events implements IModResource {
 		eventManager.registerEvent(EventEntityDespawn.class);
 
 		// world event
-		eventManager.registerEvent(EventWorldSpawnTerrain.class);
-		eventManager.registerEvent(EventWorldDespawnTerrain.class);
+		eventManager.registerEvent(EventTerrainSpawn.class);
+		eventManager.registerEvent(EventTerrainDespawn.class);
+		eventManager.registerEvent(EventTerrainSetBlock.class);
+		eventManager.registerEvent(EventTerrainBlocklightUpdate.class);
+		eventManager.registerEvent(EventTerrainSunlightUpdate.class);
 
 		// engine events
 		eventManager.registerEvent(EventGetTasks.class);

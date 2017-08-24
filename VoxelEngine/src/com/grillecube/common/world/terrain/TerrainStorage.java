@@ -9,8 +9,8 @@ import com.grillecube.common.Logger.Level;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
-import com.grillecube.common.event.world.EventWorldDespawnTerrain;
-import com.grillecube.common.event.world.EventWorldSpawnTerrain;
+import com.grillecube.common.event.world.EventTerrainDespawn;
+import com.grillecube.common.event.world.EventTerrainSpawn;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
@@ -117,7 +117,7 @@ public class TerrainStorage extends WorldStorage {
 		}
 
 		terrain.onSpawned(this.getWorld());
-		this.invokeEvent(new EventWorldSpawnTerrain(this.getWorld(), terrain));
+		this.invokeEvent(new EventTerrainSpawn(terrain));
 		terrain.postSpawned();
 
 		return (terrain);
@@ -131,7 +131,7 @@ public class TerrainStorage extends WorldStorage {
 		}
 
 		terrain.destroy();
-		this.invokeEvent(new EventWorldDespawnTerrain(this.getWorld(), terrain));
+		this.invokeEvent(new EventTerrainDespawn(terrain));
 
 		this.terrains.remove(terrain.getWorldIndex3());
 		this.loadedTerrains.remove(terrain);
