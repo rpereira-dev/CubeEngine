@@ -2,15 +2,15 @@ package com.grillecube.common.event;
 
 import java.lang.reflect.ParameterizedType;
 
-public abstract class EventCallback<T extends Event> {
+public abstract class EventListener<T extends Event> {
 	private Class<? extends Event> _class;
 
 	@SuppressWarnings("unchecked")
-	public EventCallback() {
+	public EventListener() {
 		this._class = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
-	public EventCallback(Class<? extends Event> eventclass) {
+	public EventListener(Class<? extends Event> eventclass) {
 		this._class = eventclass;
 	}
 

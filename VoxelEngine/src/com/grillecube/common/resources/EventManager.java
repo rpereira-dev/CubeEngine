@@ -6,12 +6,12 @@ import java.util.HashMap;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
 import com.grillecube.common.event.Event;
-import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.event.EventListener;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class EventManager extends GenericManager<EventHandler> {
 
-	private HashMap<Class<? extends Event>, ArrayList<EventCallback>> events;
+	private HashMap<Class<? extends Event>, ArrayList<EventListener>> events;
 
 	public EventManager(ResourceManager resource_manager) {
 		super(resource_manager);
@@ -19,14 +19,14 @@ public class EventManager extends GenericManager<EventHandler> {
 
 	/** raise an event */
 	public void invokeEvent(Event event) {
-		ArrayList<EventCallback> callbacks = this.events.get(event.getClass());
+		ArrayList<EventListener> callbacks = this.events.get(event.getClass());
 		if (callbacks == null) {
 			Logger.get().log(Level.WARNING,
 					"Tried to invoke an un-existing event! " + event.getClass().getSimpleName());
 			return;
 		}
 
-		for (EventCallback callback : callbacks) {
+		for (EventListener callback : callbacks) {
 			callback.invoke(event);
 		}
 	}
@@ -37,21 +37,32 @@ public class EventManager extends GenericManager<EventHandler> {
 			Logger.get().log(Level.WARNING, "Tried to add an already registered event! " + eventclass);
 			return;
 		}
-		ArrayList lst = new ArrayList<EventCallback>();
+		ArrayList lst = new ArrayList<EventListener>();
 		this.events.put(eventclass, lst);
 		super.registerObject(new EventHandler(eventclass, lst));
 		Logger.get().log(Level.FINE, "Registered event: " + eventclass.getSimpleName());
 	}
 
-	public <T extends Event> void registerEventCallback(EventCallback<T> callback) {
-		ArrayList<EventCallback> event = this.events.get(callback.getEventClass());
+	public <T extends Event> void addListener(EventListener<T> callback) {
+		ArrayList<EventListener> event = this.events.get(callback.getEventClass());
 		if (event == null) {
-			Logger.get().log(Level.ERROR, "Tried to register an event callback on an un-existing event! "
+			Logger.get().log(Level.ERROR, "Tried to add an event listener on an un-existing event! "
+					+ callback.getEventClass().getSimpleName());
+		}
+		event.add(callback);
+		Logger.get().log(Level.FINE, "Added event callback : " + callback.getClass().getSimpleName() + " on : "
+				+ callback.getEventClass().getSimpleName());
+	}
+	
+	public <T extends Event> void removeListener(EventListener<T> callback) {
+		ArrayList<EventListener> event = this.events.get(callback.getEventClass());
+		if (event == null) {
+			Logger.get().log(Level.ERROR, "Tried to remove an event callback on an un-existing event! "
 					+ callback.getEventClass().getSimpleName());
 			return;
 		}
-		event.add(callback);
-		Logger.get().log(Level.FINE, "Registered event callback : " + callback.getClass().getSimpleName() + " , on : "
+		event.remove(callback);
+		Logger.get().log(Level.FINE, "Removed event callback : " + callback.getClass().getSimpleName() + " on : "
 				+ callback.getEventClass().getSimpleName());
 	}
 
@@ -61,7 +72,7 @@ public class EventManager extends GenericManager<EventHandler> {
 	
 	@Override
 	public void onInitialized() {
-		this.events = new HashMap<Class<? extends Event>, ArrayList<EventCallback>>();
+		this.events = new HashMap<Class<? extends Event>, ArrayList<EventListener>>();
 	}
 
 	@Override
@@ -83,10 +94,10 @@ public class EventManager extends GenericManager<EventHandler> {
 @SuppressWarnings({ "rawtypes" })
 class EventHandler {
 
-	private final ArrayList<EventCallback> callbacks;
+	private final ArrayList<EventListener> callbacks;
 	private final Class<? extends Event> event;
 
-	public EventHandler(Class<? extends Event> event, ArrayList<EventCallback> lst) {
+	public EventHandler(Class<? extends Event> event, ArrayList<EventListener> lst) {
 		this.event = event;
 		this.callbacks = lst;
 	}
@@ -100,7 +111,7 @@ class EventHandler {
 		return (this.event);
 	}
 
-	public ArrayList<EventCallback> getCallbacks() {
+	public ArrayList<EventListener> getCallbacks() {
 		return (this.callbacks);
 	}
 

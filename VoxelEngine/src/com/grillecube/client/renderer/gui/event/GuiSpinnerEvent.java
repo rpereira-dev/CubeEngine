@@ -15,7 +15,7 @@ public abstract class GuiSpinnerEvent<T extends GuiSpinner> extends GuiEvent<T> 
 		this.expanded = gui.isExpanded();
 		this.pickedIndex = gui.getPickedIndex();
 		this.pickedName = gui.getPickedName();
-		this.pickedObject = gui.getPickedName();
+		this.pickedObject = gui.getPickedObject();
 	}
 
 	public final boolean isExpanded() {

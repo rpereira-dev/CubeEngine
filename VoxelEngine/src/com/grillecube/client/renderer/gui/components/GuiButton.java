@@ -29,6 +29,7 @@ public class GuiButton extends GuiLabel {
 		this.disabledColor = new Vector4f();
 
 		this.bg = new GuiColoredQuad();
+		this.bg.setResponsive(false);
 		this.addChild(0, this.bg);
 
 		this.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
@@ -48,7 +49,8 @@ public class GuiButton extends GuiLabel {
 
 	private final void updateColor() {
 		this.bg.setColor(!this.isEnabled() ? this.disabledColor
-				: this.isPressed() || this.isSelected() ? this.pressedColor : this.isHovered() ? this.hoveredColor : this.outColor);
+				: this.isPressed() || this.isSelected() ? this.pressedColor
+						: this.isHovered() ? this.hoveredColor : this.outColor);
 	}
 
 	public final void setHoveredColor(Vector4f color) {

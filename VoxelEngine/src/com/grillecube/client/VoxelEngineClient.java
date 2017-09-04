@@ -15,7 +15,7 @@ import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.Logger;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.EventGetTasks;
 import com.grillecube.common.event.EventOnLoop;
 import com.grillecube.common.resources.R;
@@ -67,7 +67,7 @@ public class VoxelEngineClient extends VoxelEngine {
 		this.getGLFWWindow().setIcon(files[new Random().nextInt(files.length)]);
 
 		// event callback
-		this.registerEventCallback(new EventCallback<EventOnLoop>() {
+		this.registerEventCallback(new EventListener<EventOnLoop>() {
 			@Override
 			public void invoke(EventOnLoop event) {
 
@@ -103,7 +103,7 @@ public class VoxelEngineClient extends VoxelEngine {
 		});
 
 		// get tasks
-		this.registerEventCallback(new EventCallback<EventGetTasks>() {
+		this.registerEventCallback(new EventListener<EventGetTasks>() {
 			@Override
 			public void invoke(EventGetTasks event) {
 				// get all renderer tasks

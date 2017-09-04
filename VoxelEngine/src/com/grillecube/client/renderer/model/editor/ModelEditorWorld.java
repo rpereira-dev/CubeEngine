@@ -8,6 +8,10 @@ public class ModelEditorWorld extends World {
 
 	public ModelEditorWorld() {
 		super();
+	}
+	
+	@Override
+	public void onLoaded() {
 		this.setWorldGenerator(new WorldGeneratorFlat());
 		for (int x = -4; x < 4; x++) {
 			for (int z = -4; z < 4; z++) {

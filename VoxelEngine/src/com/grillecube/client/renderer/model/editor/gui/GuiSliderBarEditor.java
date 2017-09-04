@@ -17,10 +17,9 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 			event.getGui().onValueChanged();
 		}
 	};
-	
+
 	private static final Vector4f FILL_COLOR = new Vector4f(0.6f, 0.6f, 1.0f, 1.0f);
 	private static final Vector4f BG_COLOR = new Vector4f(0.87f, 0.87f, 0.87f, 1.0f);
-
 
 	private GuiColoredQuad total;
 	private GuiColoredQuad selected;
@@ -38,8 +37,8 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 
 		this.guiLabel = new GuiLabel();
 		this.guiLabel.setFontColor(0, 0, 0, 1.0f);
-		this.guiLabel.getGuiText().addParameter(new GuiTextParameterTextFillBox(0.75f));
-		this.guiLabel.getGuiText().addParameter(new GuiTextParameterTextCenterBox());
+		this.guiLabel.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
+		this.guiLabel.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.addChild(this.guiLabel);
 
 		this.addListener(LISTENER);
@@ -48,7 +47,7 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 	protected void onValueChanged() {
 		float width = this.getPercent();
 		this.selected.setBox(0, 0, width, 1, 0);
-		this.guiLabel.setText(this.getSelectedValue().toString());
+		this.guiLabel.setText(this.getPrefix() + this.getSelectedValue().toString() + this.getSuffix());
 	}
 
 	public void setText(String title) {

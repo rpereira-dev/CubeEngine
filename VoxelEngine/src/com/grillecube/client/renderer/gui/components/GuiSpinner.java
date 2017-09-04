@@ -32,11 +32,15 @@ public abstract class GuiSpinner extends Gui {
 	/** the currently picked index */
 	private int pickedIndex;
 
+	/** default text */
+	private String hintText;
+
 	public GuiSpinner() {
 		super();
 		this.values = new ArrayList<Pair<Object, String>>();
 		this.expanded = false;
-		this.pickedIndex = 0;
+		this.pickedIndex = -1;
+		this.hintText = "...";
 		this.addListener(PRESS_EXPAND_LISTENER);
 		this.addListener(ON_PRESS_FOCUS_LISTENER);
 	}
@@ -79,6 +83,9 @@ public abstract class GuiSpinner extends Gui {
 
 	public final void remove(int index) {
 		Pair<Object, String> value = this.values.remove(index);
+		if (this.pickedIndex >= this.values.size()) {
+			this.pick(this.values.size() - 1);
+		}
 		super.stackEvent(new GuiSpinnerEventRemove<GuiSpinner>(this, index, value.left, value.right));
 	}
 
@@ -90,8 +97,9 @@ public abstract class GuiSpinner extends Gui {
 
 	/** pick the given index */
 	public final void pick(int index) {
+		int prevIndex = this.pickedIndex;
 		this.pickedIndex = index;
-		super.stackEvent(new GuiSpinnerEventPick<GuiSpinner>(this));
+		super.stackEvent(new GuiSpinnerEventPick<GuiSpinner>(this, prevIndex));
 	}
 
 	public final boolean isExpanded() {
@@ -125,15 +133,36 @@ public abstract class GuiSpinner extends Gui {
 
 	/** get the value at given index */
 	public final Object getObject(int index) {
+		if (index < 0 || index >= this.values.size()) {
+			return (null);
+		}
 		return (this.values.get(index).left);
 	}
 
 	/** get the name at given index */
 	public final String getName(int index) {
+		if (index < 0 || index >= this.values.size()) {
+			return (null);
+		}
 		return (this.values.get(index).right);
 	}
 
+	/** get the index of the picked item (or -1 if empty, or no item picked) */
 	public final int getPickedIndex() {
 		return (this.pickedIndex);
+	}
+
+	/** set the hint to be displayed by default (or when empty) */
+	public final void setHint(String hintText) {
+		this.hintText = hintText;
+		this.onHintChanged();
+	}
+
+	public final String getHint() {
+		return (this.hintText);
+	}
+
+	/** called whenever the hint changes */
+	protected void onHintChanged() {
 	}
 }

@@ -22,6 +22,10 @@ public class WorldDefault extends World {
 
 	public WorldDefault() {
 		super();
+	}
+
+	@Override
+	public void onLoaded() {
 		this.setWorldGenerator(new WorldGeneratorHoles());
 		for (int y = 6; y > 0; y--) {
 			for (int x = -4; x < 4; x++) {
@@ -33,7 +37,6 @@ public class WorldDefault extends World {
 
 		for (int x = 0; x < 4; x++) {
 			for (int z = 0; z < 4; z++) {
-
 				EntityTest entityTest = new EntityTest(this);
 				entityTest.setPosition(x * 8.0f, 160.0f, z * 8.0f);
 				this.spawnEntity(entityTest);

@@ -71,6 +71,9 @@ public class ModelRenderer extends Renderer {
 			for (ArrayList<ModelInstance> models : renderingList.values()) {
 				if (models.size() > 0) {
 					Model model = models.get(0).getModel();
+					if (!model.isInitialized()) {
+						model.initialize();
+					}
 					ModelMesh mesh = model.getMesh();
 					this.programModel.loadModel(model);
 					mesh.bind();

@@ -72,7 +72,7 @@ public abstract class ResourceManager {
 	/** initialize every game resources */
 	public final void initialize() {
 
-		Logger.get().log(Logger.Level.FINE, "* initializing resources manager");
+		Logger.get().log(Logger.Level.FINE, "* Initializing resources manager");
 
 		this.assets = new ArrayList<AssetsPack>();
 		this.managers = new ArrayList<GenericManager<?>>();
@@ -92,6 +92,9 @@ public abstract class ResourceManager {
 
 	protected void addManagers() {
 
+		this.eventManager = new EventManager(this);
+		this.addManager(this.eventManager);
+
 		this.worldManager = new WorldManager(this);
 		this.addManager(this.worldManager);
 
@@ -106,9 +109,6 @@ public abstract class ResourceManager {
 
 		this.packetManager = new PacketManager(this);
 		this.addManager(this.packetManager);
-
-		this.eventManager = new EventManager(this);
-		this.addManager(this.eventManager);
 
 		this.langManager = new LangManager(this);
 		this.addManager(this.langManager);
@@ -151,8 +151,9 @@ public abstract class ResourceManager {
 
 	/** deinitilize every game resources */
 	public final void deinitialize() {
-		Logger.get().log(Logger.Level.FINE, "* Stopping resources manager");
-		for (GenericManager<?> manager : this.managers) {
+		Logger.get().log(Logger.Level.FINE, "* Deinitializing resources manager");
+		for (int i = this.managers.size() - 1; i >= 0; i--) {
+			GenericManager<?> manager = this.managers.get(i);
 			Logger.get().log(Logger.Level.FINE, manager.getClass().getSimpleName());
 			manager.deinitialize();
 		}
@@ -162,7 +163,7 @@ public abstract class ResourceManager {
 
 	/** deinitilize every game resources */
 	public final void load() {
-		Logger.get().log(Logger.Level.FINE, "* Stopping resources manager");
+		Logger.get().log(Logger.Level.FINE, "* Loading resources manager");
 		for (GenericManager<?> manager : this.managers) {
 			Logger.get().log(Logger.Level.FINE, manager.getClass().getSimpleName());
 			manager.load();
@@ -171,7 +172,7 @@ public abstract class ResourceManager {
 
 	/** deinitilize every game resources */
 	public final void unload() {
-		Logger.get().log(Logger.Level.FINE, "* Stopping resources manager");
+		Logger.get().log(Logger.Level.FINE, "* Unload resources manager");
 		for (GenericManager<?> manager : this.managers) {
 			Logger.get().log(Logger.Level.FINE, manager.getClass().getSimpleName());
 			manager.deinitialize();

@@ -119,7 +119,6 @@ public class GuiRenderer extends Renderer {
 		}
 
 		GL11.glDisable(GL11.GL_BLEND);
-
 	}
 
 	/** a recursive helper to generate rendering list */
@@ -157,30 +156,26 @@ public class GuiRenderer extends Renderer {
 	public void getTasks(VoxelEngine engine, ArrayList<Callable<Taskable>> tasks) {
 		updateGuis();
 
-//		tasks.add(engine.new Callable<Taskable>() {
-//
-//			@Override
-//			public Taskable call() throws Exception {
-//				updateGuis();
-//				return (GuiRenderer.this);
-//			}
-//
-//			@Override
-//			public String getName() {
-//				return ("GuiRenderer guis update");
-//			}
-//		});
+		// tasks.add(engine.new Callable<Taskable>() {
+		//
+		// @Override
+		// public Taskable call() throws Exception {
+		// updateGuis();
+		// return (GuiRenderer.this);
+		// }
+		//
+		// @Override
+		// public String getName() {
+		// return ("GuiRenderer guis update");
+		// }
+		// });
 	}
 
 	private final void updateGuis() {
 		this.renderingList.clear();
 		this.addGuisToRenderingList(this.mainGui);
-		this.renderingList.sort(Gui.WEIGHT_COMPARATOR);
-
+		this.renderingList.sort(Gui.LAYER_COMPARATOR);
 		this.guiInputManager.update();
-		for (Gui gui : this.renderingList) {
-			gui.update();
-		}
 	}
 
 	/** add a view to render */

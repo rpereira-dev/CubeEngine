@@ -50,7 +50,7 @@ public abstract class World implements Taskable {
 	private EntityStorage entities;
 
 	/** world weather */
-	private Weather weather;
+	private Sky sky;
 
 	private Random rng;
 
@@ -60,7 +60,7 @@ public abstract class World implements Taskable {
 	public World() {
 		this.terrains = new TerrainStorage(this);
 		this.entities = new EntityStorage(this);
-		this.weather = new Weather();
+		this.sky = new Sky();
 		this.rng = new Random();
 		this.tick = 0;
 		this.setWorldGenerator(new WorldGeneratorEmpty());
@@ -69,8 +69,7 @@ public abstract class World implements Taskable {
 	/** tasks to be run to update the world */
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<com.grillecube.common.VoxelEngine.Callable<Taskable>> tasks) {
-
-		this.weather.getTasks(engine, tasks);
+		this.sky.getTasks(engine, tasks);
 		this.entities.getTasks(engine, tasks);
 		this.terrains.getTasks(engine, tasks);
 		this.onTasksGet(engine, tasks);
@@ -109,8 +108,8 @@ public abstract class World implements Taskable {
 		return (this.rng);
 	}
 
-	public void setWeather(Weather weather) {
-		this.weather = weather;
+	public void setWeather(Sky weather) {
+		this.sky = weather;
 	}
 
 	/** delete the world : de-allocate every allocated memory */
@@ -132,8 +131,8 @@ public abstract class World implements Taskable {
 	}
 
 	/** return world weather */
-	public Weather getWeather() {
-		return (this.weather);
+	public Sky getSky() {
+		return (this.sky);
 	}
 
 	/** get the block at the given world relative position */
@@ -351,5 +350,10 @@ public abstract class World implements Taskable {
 	/** return the top loaded terrain for the given (x, z) coordinates */
 	public final Terrain getTopTerrain(Vector2i index2) {
 		return (this.terrains.getTop(index2));
+	}
+
+	/** called when this world is loaded */
+	public void onLoaded() {
+		
 	}
 }

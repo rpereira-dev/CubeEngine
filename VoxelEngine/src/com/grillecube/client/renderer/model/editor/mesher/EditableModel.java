@@ -3,6 +3,7 @@ package com.grillecube.client.renderer.model.editor.mesher;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelInitializer;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.maths.Vector3i;
 
 public class EditableModel extends Model {
 
@@ -28,7 +29,7 @@ public class EditableModel extends Model {
 	 * when and entity is located at (x, y, z), the concrete model's block at
 	 * coordinate (x, y, z) is the one at this origin
 	 */
-	private final Vector3f origin;
+	private final Vector3i origin;
 
 	public EditableModel() {
 		this(null);
@@ -38,22 +39,22 @@ public class EditableModel extends Model {
 		super(modelInitializer);
 		this.blockSizeUnit = 1.0f;
 		this.blocksData = new BlockData[0][0][0];
-		this.origin = new Vector3f(0, 0, 0);
+		this.origin = new Vector3i(0, 0, 0);
 		this.modelMesher = DEFAULT_MODEL_MESHER;
 	}
 
 	/** @see ModelBuildingData#origin */
-	public final Vector3f getOrigin() {
+	public final Vector3i getOrigin() {
 		return (this.origin);
 	}
 
 	/** @see ModelBuildingData#origin */
-	public final void setOrigin(Vector3f origin) {
+	public final void setOrigin(Vector3i origin) {
 		this.setOrigin(origin.x, origin.y, origin.z);
 	}
 
 	/** @see ModelBuildingData#origin */
-	public final void setOrigin(float x, float y, float z) {
+	public final void setOrigin(int x, int y, int z) {
 		this.origin.set(x, y, z);
 	}
 
@@ -112,7 +113,7 @@ public class EditableModel extends Model {
 		for (int dx = 0; dx < endx; dx++) {
 			for (int dy = 0; dy < endy; dy++) {
 				for (int dz = 0; dz < endz; dz++) {
-					newModelBlocksData[dx][dy][dz] = this.blocksData[x][y][z];
+					newModelBlocksData[dx][dy][dz] = this.blocksData[dx][dy][dz];
 				}
 			}
 		}

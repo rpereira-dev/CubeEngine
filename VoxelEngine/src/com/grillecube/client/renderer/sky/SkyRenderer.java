@@ -31,7 +31,7 @@ import com.grillecube.client.renderer.geometry.Sphere;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
-import com.grillecube.common.world.Weather;
+import com.grillecube.common.world.Sky;
 
 public class SkyRenderer extends Renderer {
 
@@ -78,17 +78,13 @@ public class SkyRenderer extends Renderer {
 		this.vbo = null;
 	}
 
-	@Override
-	public void render() {
-	}
-
-	public void render(CameraProjective camera, Weather weather) {
+	public void render(CameraProjective camera, Sky sky) {
 
 		// GL11.glEnable(GL11.GL_CULL_FACE);
 		// GL11.glCullFace(GL11.GL_BACK);
 
 		this.programSky.useStart();
-		this.programSky.loadUniforms(weather, camera);
+		this.programSky.loadUniforms(sky, camera);
 
 		this.vao.bind();
 		this.vao.draw(GL11.GL_TRIANGLES, 0, Sphere.getVertexCount(SKYDOME_PRECISION));

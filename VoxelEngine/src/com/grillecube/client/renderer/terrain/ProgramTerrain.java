@@ -93,14 +93,14 @@ public class ProgramTerrain extends GLProgram {
 		this.loadUniformMatrix(this._proj_matrix, camera.getProjectionMatrix());
 		this.loadUniformMatrix(this._view_matrix, camera.getViewMatrix());
 
-		this.loadUniformVec(this._fog_color, world.getWeather().getFogColor());
-		this.loadUniformFloat(this._fog_gradient, world.getWeather().getFogGradient());
-		this.loadUniformFloat(this._fog_density, world.getWeather().getFogDensity());
+		this.loadUniformVec(this._fog_color, world.getSky().getFogColor());
+		this.loadUniformFloat(this._fog_gradient, world.getSky().getFogGradient());
+		this.loadUniformFloat(this._fog_density, world.getSky().getFogDensity());
 
-		this.loadUniformVec(this._sun_color, world.getWeather().getSun().getColor());
-		this.loadUniformFloat(this._sun_intensity, world.getWeather().getSun().getIntensity());
-		this.loadUniformVec(this._sun_position, sunpos.set(world.getWeather().getSun().getPosition()));
-		this.loadUniformFloat(this._ambient_light, world.getWeather().getAmbientLight());
+		this.loadUniformVec(this._sun_color, world.getSky().getSun().getColor());
+		this.loadUniformFloat(this._sun_intensity, world.getSky().getSun().getIntensity());
+		this.loadUniformVec(this._sun_position, sunpos.set(world.getSky().getSun().getPosition()));
+		this.loadUniformFloat(this._ambient_light, world.getSky().getAmbientLight());
 
 		this.loadUniformInteger(this._tx_atlas, 0);
 

@@ -4,7 +4,7 @@ import com.grillecube.client.event.renderer.EventPreRender;
 import com.grillecube.client.renderer.particles.TextureSprite;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Side;
-import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.event.EventListener;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.mod.IModResource;
 import com.grillecube.common.mod.Mod;
@@ -27,7 +27,7 @@ public class POTParticles implements IModResource {
 	@Override
 	public void load(Mod mod, ResourceManager manager) {
 		if (VoxelEngine.instance().getSide().equals(Side.CLIENT)) {
-			manager.getEventManager().registerEventCallback(new PostRenderCallback());
+			manager.getEventManager().addListener(new PostRenderCallback());
 
 			SPRITE_EXPLOSION = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/explosion.png"), 5, 5);
 			SPRITE_FIRE = new TextureSprite(R.getResPath(ModPOT.MOD_ID, "textures/particles/fire.png"), 2, 2);
@@ -47,7 +47,7 @@ public class POTParticles implements IModResource {
 
 }
 
-class PostRenderCallback extends EventCallback<EventPreRender> {
+class PostRenderCallback extends EventListener<EventPreRender> {
 	private static Vector3f pos = new Vector3f();
 
 	@Override

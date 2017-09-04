@@ -6,10 +6,10 @@ import java.util.HashMap;
 
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
-import com.grillecube.common.event.world.entity.EventEntityDespawn;
-import com.grillecube.common.event.world.entity.EventEntitySpawn;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.event.world.entity.EventEntityDespawn;
+import com.grillecube.common.event.world.entity.EventEntitySpawn;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldStorage;
 
@@ -86,7 +86,7 @@ public class EntityStorage extends WorldStorage {
 		Integer id = this.generateNextEntityID(entity);
 
 		// prepare the entity
-		entity.setWorldID(id);
+		entity.setEntityID(id);
 
 		// add it to the list
 		this.entities.put(id, entity);
@@ -120,8 +120,8 @@ public class EntityStorage extends WorldStorage {
 	private Integer generateNextEntityID(Entity entity) {
 
 		// get the entity id if it already has one
-		if (entity.getWorldID() != Entity.DEFAULT_WORLD_ID && !(this.contains(entity.getWorldID()))) {
-			return (entity.getWorldID());
+		if (entity.getEntityID() != Entity.DEFAULT_ENTITY_ID && !(this.contains(entity.getEntityID()))) {
+			return (entity.getEntityID());
 		}
 
 		// else generate one
@@ -140,7 +140,7 @@ public class EntityStorage extends WorldStorage {
 		}
 
 		// remove from global list
-		this.entities.remove(entity.getWorldID());
+		this.entities.remove(entity.getEntityID());
 
 		// remove from type list
 		ArrayList<Entity> type_list = this.getEntitiesByClass(entity);

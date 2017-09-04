@@ -3,12 +3,15 @@ package com.grillecube.client.resources;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.grillecube.client.event.renderer.model.EventModelInstanceAdded;
+import com.grillecube.client.event.renderer.model.EventModelInstanceRemoved;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.Logger;
-import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.world.entity.EventEntityDespawn;
 import com.grillecube.common.event.world.entity.EventEntitySpawn;
+import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.resources.GenericManager;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.entity.Entity;
@@ -52,11 +55,10 @@ public class ModelManager extends GenericManager<Model> {
 
 	@Override
 	protected final void onLoaded() {
-
-		this.getResourceManager().getEventManager().registerEventCallback(new EventCallback<EventEntitySpawn>() {
+		EventManager eventManager = this.getResourceManager().getEventManager();
+		eventManager.addListener(new EventListener<EventEntitySpawn>() {
 			@Override
 			public void invoke(EventEntitySpawn event) {
-
 				Entity entity = event.getEntity();
 				Model model = getModelForEntity(entity);
 				if (model == null) {
@@ -73,7 +75,7 @@ public class ModelManager extends GenericManager<Model> {
 			}
 		});
 
-		this.getResourceManager().getEventManager().registerEventCallback(new EventCallback<EventEntityDespawn>() {
+		eventManager.addListener(new EventListener<EventEntityDespawn>() {
 			@Override
 			public void invoke(EventEntityDespawn event) {
 				Entity entity = event.getEntity();
@@ -97,6 +99,10 @@ public class ModelManager extends GenericManager<Model> {
 	public final void removeModelInstance(ModelInstance modelInstance) {
 		Model model = modelInstance.getModel();
 		ArrayList<ModelInstance> modelInstances = this.modelsModelInstances.get(model);
+		if (modelInstances == null) {
+			Logger.get().log(Logger.Level.WARNING, "tried to despawn an un-spawned model instance: " + modelInstance);
+			return;
+		}
 		modelInstances.remove(modelInstance);
 
 		if (modelInstances.size() == 0) {
@@ -104,6 +110,7 @@ public class ModelManager extends GenericManager<Model> {
 			model.deinitialize();
 		}
 		this.entitiesModelInstance.remove(modelInstance.getEntity());
+		this.getResourceManager().getEventManager().invokeEvent(new EventModelInstanceRemoved(modelInstance));
 	}
 
 	/**
@@ -120,6 +127,7 @@ public class ModelManager extends GenericManager<Model> {
 		}
 		modelInstances.add(modelInstance);
 		this.entitiesModelInstance.put(entity, modelInstance);
+		this.getResourceManager().getEventManager().invokeEvent(new EventModelInstanceAdded(modelInstance));
 	}
 
 	/**

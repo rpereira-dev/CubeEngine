@@ -92,8 +92,8 @@ public abstract class Entity {
 	private static final float DEFAULT_WEIGHT = 1e-7f;
 
 	/** world id */
-	public static final int DEFAULT_WORLD_ID = 0;
-	private int worldID = DEFAULT_WORLD_ID;
+	public static final int DEFAULT_ENTITY_ID = 0;
+	private int id = DEFAULT_ENTITY_ID;
 
 	public Entity(World world) {
 		this.world = world;
@@ -227,7 +227,8 @@ public abstract class Entity {
 
 	/** update the value of the block under this entity */
 	private void updateBlockUnder() {
-		this.blockUnder = this.getWorld().getBlock(this.pos.x, this.pos.y - 1, this.pos.z);
+		this.blockUnder = (this.getWorld() == null) ? null
+				: this.getWorld().getBlock(this.pos.x, this.pos.y - 1, this.pos.z);
 	}
 
 	/** add a force to this entity */
@@ -285,12 +286,12 @@ public abstract class Entity {
 	}
 
 	/** world ID for this entity, this is set on spawn */
-	public void setWorldID(int worldID) {
-		this.worldID = worldID;
+	public void setEntityID(int id) {
+		this.id = id;
 	}
 
-	public int getWorldID() {
-		return (this.worldID);
+	public int getEntityID() {
+		return (this.id);
 	}
 
 	public void increasePitch(float f) {

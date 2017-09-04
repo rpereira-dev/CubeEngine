@@ -10,8 +10,8 @@ public class GuiViewWorld extends GuiView {
 
 	private GuiTexture txWorld;
 	private WorldRenderer worldRenderer;
-	private int worldID;
 	private CameraProjective camera;
+	private int worldID;
 
 	public GuiViewWorld(CameraProjective camera, int worldID) {
 		super();
@@ -26,15 +26,19 @@ public class GuiViewWorld extends GuiView {
 		this.camera.getPicker().setGuiRelative(this);
 
 		this.worldRenderer = new WorldRenderer(mainRenderer);
+		this.worldRenderer.initialize();
 		this.worldRenderer.setCamera(this.camera);
 		this.worldRenderer.setWorld(this.worldID);
-		this.worldRenderer.initialize();
-		this.worldRenderer.matchGui(this);
 		mainRenderer.addRenderer(this.worldRenderer);
 
 		this.txWorld = new GuiTexture();
 		this.txWorld.setTexture(this.worldRenderer.getFBOTexture(), 0.0f, 0.0f, 1.0f, 1.0f);
 		this.addChild(this.txWorld);
+	}
+
+	/** deinitialize the gui: this function is call in opengl main thread */
+	protected void onDeinitialized(GuiRenderer renderer) {
+		this.worldRenderer.deinitialize();
 	}
 
 	@Override
@@ -47,5 +51,9 @@ public class GuiViewWorld extends GuiView {
 		// TODO update this by setting world renderer viewport
 		float aspect = GLH.glhGetWindow().getAspectRatio() * super.getTotalAspectRatio();
 		this.worldRenderer.getCamera().setAspect(aspect);
+	}
+
+	public final WorldRenderer getWorldRenderer() {
+		return (this.worldRenderer);
 	}
 }

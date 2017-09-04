@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.world.factories;
+package com.grillecube.client.renderer.factories;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import com.grillecube.client.VoxelEngineClient;
-import com.grillecube.client.event.renderer.EventTerrainList;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.camera.CameraProjective;
@@ -14,8 +13,7 @@ import com.grillecube.client.renderer.terrain.TerrainMesh;
 import com.grillecube.client.renderer.terrain.TerrainMesher;
 import com.grillecube.client.renderer.terrain.TerrainMesherGreedy;
 import com.grillecube.client.renderer.terrain.TerrainRenderer;
-import com.grillecube.client.renderer.world.WorldRenderer;
-import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.world.EventTerrainBlocklightUpdate;
 import com.grillecube.common.event.world.EventTerrainDespawn;
 import com.grillecube.common.event.world.EventTerrainSetBlock;
@@ -23,10 +21,11 @@ import com.grillecube.common.event.world.EventTerrainSunlightUpdate;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.resources.ResourceManager;
+import com.grillecube.common.world.World;
 import com.grillecube.common.world.terrain.Terrain;
 
 /** a factory class which create terrain renderer lists */
-public class TerrainRendererFactory extends WorldRendererFactory {
+public class TerrainRendererFactory extends RendererFactory {
 
 	class TerrainMeshData {
 		byte state;
@@ -61,27 +60,30 @@ public class TerrainRendererFactory extends WorldRendererFactory {
 	/** next rendering list */
 	private ArrayList<TerrainMesh> renderingList;
 
-	/** post rendernig list creation callback */
-	private EventTerrainList eventTerrainList;
+	/** the world on which terrain should be considered */
+	private World world;
+	private CameraProjective camera;
 
 	// TODO : Terrain.STATE_VERTICES_UP_TO_DATE , remove this (server has
 	// nothing to deal with vertices, and it creates conflicts with multiple
 	// world renderer on the same world
 	// to do so, add events to Terrains, and listener to the factory
-	public TerrainRendererFactory(WorldRenderer worldRenderer) {
-		super(worldRenderer);
+	public TerrainRendererFactory(MainRenderer mainRenderer) {
+		super(mainRenderer);
 
 		this.meshesData = new HashMap<Terrain, TerrainMeshData>(8192);
 		this.mesher = new TerrainMesherGreedy();
 		// this.mesher = new TerrainMesherCull();
 		this.renderingList = new ArrayList<TerrainMesh>();
-		this.eventTerrainList = new EventTerrainList(this);
 
 		EventManager eventManager = ResourceManager.instance().getEventManager();
-		eventManager.registerEventCallback(new EventCallback<EventTerrainDespawn>() {
+		eventManager.addListener(new EventListener<EventTerrainDespawn>() {
 			@Override
 			public void invoke(EventTerrainDespawn event) {
 				Terrain terrain = event.getTerrain();
+				if (terrain.getWorld() != world) {
+					return;
+				}
 				TerrainMeshData terrainMeshData = meshesData.get(terrain);
 				if (terrainMeshData != null) {
 					terrainMeshData.mesh.deinitialize();
@@ -90,23 +92,32 @@ public class TerrainRendererFactory extends WorldRendererFactory {
 			}
 		});
 
-		eventManager.registerEventCallback(new EventCallback<EventTerrainSetBlock>() {
+		eventManager.addListener(new EventListener<EventTerrainSetBlock>() {
 			@Override
 			public void invoke(EventTerrainSetBlock event) {
+				if (event.getTerrain().getWorld() != world) {
+					return;
+				}
 				requestMeshUpdate(event.getTerrain());
 			}
 		});
 
-		eventManager.registerEventCallback(new EventCallback<EventTerrainBlocklightUpdate>() {
+		eventManager.addListener(new EventListener<EventTerrainBlocklightUpdate>() {
 			@Override
 			public void invoke(EventTerrainBlocklightUpdate event) {
+				if (event.getTerrain().getWorld() != world) {
+					return;
+				}
 				requestMeshUpdate(event.getTerrain());
 			}
 		});
 
-		eventManager.registerEventCallback(new EventCallback<EventTerrainSunlightUpdate>() {
+		eventManager.addListener(new EventListener<EventTerrainSunlightUpdate>() {
 			@Override
 			public void invoke(EventTerrainSunlightUpdate event) {
+				if (event.getTerrain().getWorld() != world) {
+					return;
+				}
 				requestMeshUpdate(event.getTerrain());
 			}
 		});
@@ -134,7 +145,6 @@ public class TerrainRendererFactory extends WorldRendererFactory {
 	public final void update() {
 		this.updateLoadedMeshes();
 		this.updateRenderingList();
-		super.getResourceManager().getEventManager().invokeEvent(this.eventTerrainList);
 	}
 
 	private final void updateRenderingList() {
@@ -225,4 +235,21 @@ public class TerrainRendererFactory extends WorldRendererFactory {
 		TerrainRenderer terrainRenderer = mainRenderer.getTerrainRenderer();
 		terrainRenderer.render(this.getCamera(), this.getWorld(), this.renderingList);
 	}
+
+	public final World getWorld() {
+		return (this.world);
+	}
+
+	public final CameraProjective getCamera() {
+		return (this.camera);
+	}
+
+	public final void setWorld(World world) {
+		this.world = world;
+	}
+
+	public final void setCamera(CameraProjective camera) {
+		this.camera = camera;
+	}
+
 }

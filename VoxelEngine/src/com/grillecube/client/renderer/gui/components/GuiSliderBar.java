@@ -13,10 +13,15 @@ public class GuiSliderBar extends Gui {
 	/** selected index */
 	private int selectedIndex;
 
+	private String prefix;
+	private String suffix;
+
 	public GuiSliderBar() {
 		super();
 		this.selectedIndex = 0;
 		this.values = new ArrayList<Object>();
+		this.prefix = "";
+		this.suffix = "";
 		this.addListener(ON_PRESS_FOCUS_LISTENER);
 	}
 
@@ -102,6 +107,24 @@ public class GuiSliderBar extends Gui {
 			return (null);
 		}
 		return (this.values.get(this.selectedIndex));
+	}
+
+	/** the prefix to be displayed */
+	public final void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	/** the suffix to be displayed */
+	public final void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
+
+	public final String getPrefix() {
+		return (this.prefix);
+	}
+
+	public final String getSuffix() {
+		return (this.suffix);
 	}
 
 	/** get the selected value */

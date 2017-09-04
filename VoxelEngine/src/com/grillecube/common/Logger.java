@@ -56,15 +56,16 @@ public class Logger {
 	}
 
 	public void log(Logger.Level level, String message) {
-		log(level, message, 3);
+		log(level, 3, message);
 	}
 
-	public void log(Logger.Level level, String message, int stackDepth) {
+	public void log(Logger.Level level, int stackDepth, String message) {
 		Thread thrd = Thread.currentThread();
 		StackTraceElement[] trace = thrd.getStackTrace();
 		StringBuilder stack = new StringBuilder();
+		int offset = 2;
 		int end = trace.length < stackDepth ? trace.length : stackDepth;
-		for (int i = 0; i < end; i++) {
+		for (int i = offset; i < end + offset; i++) {
 			if (trace[i].getFileName() == null) {
 				continue;
 			}

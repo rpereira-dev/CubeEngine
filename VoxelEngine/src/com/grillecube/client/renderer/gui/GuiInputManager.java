@@ -1,5 +1,9 @@
 package com.grillecube.client.renderer.gui;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.opengl.window.event.GLFWEventChar;
 import com.grillecube.client.opengl.window.event.GLFWEventKeyPress;
@@ -72,41 +76,105 @@ public class GuiInputManager {
 		}
 	}
 
+	private static final Comparator<Integer> LAYER_SORT = new Comparator<Integer>() {
+		@Override
+		public int compare(Integer a, Integer b) {
+			return (b - a);
+		}
+	};
+
+	// public final void update() {
+	// double xpos = this.glfwWindow.getMouseX();
+	// double ypos = this.glfwWindow.getMouseY();
+	// float mx = (float) (xpos / this.glfwWindow.getWidth());
+	// float my = (float) (1 - (ypos / this.glfwWindow.getHeight()));
+	// boolean pressed = this.glfwWindow.isMouseLeftPressed();
+	// HashMap<Integer, ArrayList<Gui>> guis = new HashMap<Integer,
+	// ArrayList<Gui>>();
+	// this.getGuis(guis, this.mainGui);
+	//
+	// ArrayList<Integer> layers = new ArrayList<Integer>(guis.keySet());
+	// layers.sort(LAYER_SORT);
+	//
+	// boolean action = false;
+	// int i = 0;
+	// while (!action && i < layers.size()) {
+	// ArrayList<Gui> layerGuis = guis.get(layers.get(i));
+	// i = i + 1;
+	//
+	// for (Gui gui : layerGuis) {
+	// gui.update();
+	//
+	// if (!gui.isVisible()) {
+	// continue;
+	// }
+	//
+	// if (gui.requestedFocus()) {
+	// this.setFocusedGui(gui);
+	// gui.requestFocus(false);
+	// }
+	//
+	// if (gui.isResponsive() && this.stackGuiInput(gui, mx, my, pressed)) {
+	// action = true;
+	// gui.unstackEvents();
+	// }
+	// }
+	// }
+	// }
+
+	// private void getGuis(HashMap<Integer, ArrayList<Gui>> guis, Gui gui) {
+	// ArrayList<Gui> lst;
+	// if (!guis.containsKey(gui.getLayer())) {
+	// lst = new ArrayList<Gui>();
+	// guis.put(gui.getLayer(), lst);
+	// } else {
+	// lst = guis.get(gui.getLayer());
+	// }
+	// lst.add(gui);
+	// if (gui.getChildren() != null) {
+	// for (Gui child : gui.getChildren()) {
+	// this.getGuis(guis, child);
+	// }
+	// }
+	// }
+
 	public final void update() {
 		double xpos = this.glfwWindow.getMouseX();
 		double ypos = this.glfwWindow.getMouseY();
 		float mx = (float) (xpos / this.glfwWindow.getWidth());
 		float my = (float) (1 - (ypos / this.glfwWindow.getHeight()));
 		boolean pressed = this.glfwWindow.isMouseLeftPressed();
-		this.updateGui(this.mainGui, mx, my, pressed);
-	}
+		ArrayList<Gui> guis = new ArrayList<Gui>();
+		this.getGuis(guis, this.mainGui);
 
-	private final void updateGui(Gui gui, float mx, float my, boolean pressed) {
+		for (Gui gui : guis) {
+			gui.update();
 
-		// do not updateInput if tis gui is not enabled
-		if (!gui.isEnabled()) {
-			return;
-		}
+			if (!gui.isVisible()) {
+				continue;
+			}
 
-		if (gui.requestedFocus()) {
-			this.setFocusedGui(gui);
-			gui.requestFocus(false);
-		}
+			if (gui.requestedFocus()) {
+				this.setFocusedGui(gui);
+				gui.requestFocus(false);
+			}
 
-		this.updateGuiInput(gui, mx, my, pressed);
-
-		if (gui.requestedFocus()) {
-			this.setFocusedGui(gui);
-		}
-
-		if (gui.getChildren() != null) {
-			for (Gui child : gui.getChildren()) {
-				this.updateGui(child, mx, my, pressed);
+			if (gui.isResponsive()) {
+				this.updateGuiInput(gui, mx, my, pressed);
 			}
 		}
 	}
 
-	private void updateGuiInput(Gui gui, float mx, float my, boolean pressed) {
+	private void getGuis(ArrayList<Gui> guis, Gui gui) {
+		guis.add(gui);
+		if (gui.getChildren() != null) {
+			for (Gui child : gui.getChildren()) {
+				this.getGuis(guis, child);
+			}
+		}
+	}
+
+	private final void updateGuiInput(Gui gui, float mx, float my, boolean pressed) {
 		// get the coordinates relatively to the gui basis
 		Vector4f mouse = new Vector4f(mx, my, 0.0f, 1.0f);
 		Matrix4f.transform(gui.getWindowToGuiChangeOfBasis(), mouse, mouse);
@@ -153,7 +221,6 @@ public class GuiInputManager {
 			}
 		}
 
-		// unstack (raise events)
 		gui.unstackEvents();
 	}
 }

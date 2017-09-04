@@ -1,32 +1,43 @@
-package com.grillecube.client.renderer.world.factories;
+package com.grillecube.client.renderer.factories;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.renderer.MainRenderer;
+import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.lines.Line;
-import com.grillecube.client.renderer.lines.LineRenderer;
-import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 
-public class LineRendererFactory extends WorldRendererFactory {
+public class LineRendererFactory extends RendererFactory {
 
-	private ArrayList<Line> renderingList;
+	private final ArrayList<Line> renderingList;
+	private CameraProjective camera;
 
-	public LineRendererFactory(WorldRenderer worldRenderer) {
-		super(worldRenderer);
+	public LineRendererFactory(MainRenderer mainRenderer) {
+		this(mainRenderer, null);
+	}
+
+	public LineRendererFactory(MainRenderer mainRenderer, CameraProjective camera) {
+		super(mainRenderer);
 		this.renderingList = new ArrayList<Line>();
+		this.setCamera(camera);
+	}
+
+	public final void setCamera(CameraProjective camera) {
+		this.camera = camera;
+	}
+
+	public final CameraProjective getCamera() {
+		return (this.camera);
+	}
+
+	public final ArrayList<Line> getRenderingList() {
+		return (this.renderingList);
 	}
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void render() {
-		LineRenderer lineRenderer = super.getMainRenderer().getLineRenderer();
-		lineRenderer.render(super.getCamera(), this.renderingList);
 	}
 
 	/** add a line to the renderer factory */
@@ -86,6 +97,12 @@ public class LineRendererFactory extends WorldRendererFactory {
 
 		// Logger.get().log(Logger.Level.DEBUG, "added line: " + a, b);
 		return (new Line(a, color, b, color));
+	}
+
+	@Override
+	public void render() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

@@ -129,6 +129,9 @@ public abstract class Mesh {
 	}
 
 	protected final void setVertices(ByteBuffer buffer, int bytesPerVertex) {
+		if (!this.isInitialized()) {
+			this.initialize();
+		}
 		this.vertexCount = buffer.capacity() / bytesPerVertex;
 		this.vbo.bind(GL15.GL_ARRAY_BUFFER);
 		this.vbo.bufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);

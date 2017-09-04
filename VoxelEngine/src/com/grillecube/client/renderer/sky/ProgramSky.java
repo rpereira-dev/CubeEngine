@@ -21,7 +21,7 @@ import com.grillecube.client.opengl.object.GLProgram;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
-import com.grillecube.common.world.Weather;
+import com.grillecube.common.world.Sky;
 
 public class ProgramSky extends GLProgram {
 	private int _proj_matrix;
@@ -69,7 +69,7 @@ public class ProgramSky extends GLProgram {
 
 	private Matrix4f matrix = new Matrix4f();
 
-	public void loadUniforms(Weather weather, CameraProjective camera) {
+	public void loadUniforms(Sky sky, CameraProjective camera) {
 		this.loadUniformMatrix(this._proj_matrix, camera.getProjectionMatrix());
 
 		this.matrix = new Matrix4f(camera.getViewMatrix());
@@ -78,15 +78,15 @@ public class ProgramSky extends GLProgram {
 		this.matrix.m32 = 0;
 		this.loadUniformMatrix(this._view_matrix, this.matrix);
 
-		this.loadUniformVec(this._sky_color, weather.getSkyColor());
+		this.loadUniformVec(this._sky_color, sky.getSkyColor());
 
-		this.loadUniformFloat(this._sun_intensity, weather.getSun().getIntensity());
-		this.loadUniformVec(this._sun_pos, weather.getSun().getPosition());
-		this.loadUniformVec(this._sun_color, weather.getSun().getColor());
+		this.loadUniformFloat(this._sun_intensity, sky.getSun().getIntensity());
+		this.loadUniformVec(this._sun_pos, sky.getSun().getPosition());
+		this.loadUniformVec(this._sun_color, sky.getSun().getColor());
 
-		this.loadUniformVec(this._fog_color, weather.getFogColor());
-		this.loadUniformVec(this._cloud_color, weather.getCloudColor());
-		this.loadUniformFloat(this._time, weather.getDayCount() + weather.getCycleRatio());
+		this.loadUniformVec(this._fog_color, sky.getFogColor());
+		this.loadUniformVec(this._cloud_color, sky.getCloudColor());
+		this.loadUniformFloat(this._time, sky.getDayCount() + sky.getCycleRatio());
 	}
 
 }

@@ -13,6 +13,7 @@ import com.grillecube.client.opengl.object.GLVertexBuffer;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
+import com.grillecube.client.renderer.factories.LineRendererFactory;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
@@ -31,7 +32,7 @@ public class LineRenderer extends Renderer {
 	private ProgramLines program;
 
 	/** the bytebuffer holding the data to be send to the gpu */
-	private ByteBuffer buffer;
+	private ByteBuffer buffer; // TODO : moev this to factory
 
 	public LineRenderer(MainRenderer renderer) {
 		super(renderer);
@@ -90,6 +91,14 @@ public class LineRenderer extends Renderer {
 		// update vertex buffer object
 		this.vbo.bind(GL15.GL_ARRAY_BUFFER);
 		this.vbo.bufferData(GL15.GL_ARRAY_BUFFER, this.buffer, GL15.GL_STATIC_DRAW);
+	}
+
+	public final void render(LineRendererFactory factory) {
+		if (factory.getCamera() == null) {
+			return;
+		}
+		this.render(factory.getCamera(), factory.getRenderingList());
+
 	}
 
 	public void render(CameraProjective camera, ArrayList<Line> lines) {

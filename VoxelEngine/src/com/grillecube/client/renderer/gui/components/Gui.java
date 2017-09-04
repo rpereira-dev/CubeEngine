@@ -75,6 +75,7 @@ public abstract class Gui {
 	private static final int STATE_ENABLED = (1 << 6);
 	private static final int STATE_REQUESTED_FOCUS = (1 << 7);
 	private static final int STATE_SELECTED = (1 << 8);
+	private static final int STATE_RESPONSIVE = (1 << 9);
 
 	/** the transformation matrix, relative to the parent */
 	private final Matrix4f guiToParentChangeOfBasis;
@@ -105,10 +106,10 @@ public abstract class Gui {
 	private HashMap<Class<?>, ArrayList<GuiListener<?>>> listeners;
 	private ArrayList<GuiEvent<?>> stackedEvents;
 
-	public static final Comparator<? super Gui> WEIGHT_COMPARATOR = new Comparator<Gui>() {
+	public static final Comparator<? super Gui> LAYER_COMPARATOR = new Comparator<Gui>() {
 		@Override
 		public int compare(Gui left, Gui right) {
-			return (-left.getWeight() + right.getWeight());
+			return (left.getLayer() - right.getLayer());
 		}
 	};
 
@@ -116,7 +117,7 @@ public abstract class Gui {
 	private int state;
 	private float localAspectRatio = 1.0f;
 	private float totalAspectRatio = 1.0f;
-	private int weight;
+	private int layer;
 
 	/** the mouse coordinates relatively to the gui basis */
 	private float mouseX;
@@ -144,6 +145,7 @@ public abstract class Gui {
 		this.setSelected(false);
 		this.setSelectable(false);
 		this.setEnabled(true);
+		this.setResponsive(true);
 		this.requestFocus(false);
 		this.focus(false);
 	}
@@ -468,11 +470,13 @@ public abstract class Gui {
 			return;
 		}
 
-		for (int i = 0; i < this.tasks.size(); i++) {
-			this.tasks.get(i).run();
+		if (this.tasks.size() > 0) {
+			for (int i = 0; i < this.tasks.size(); i++) {
+				this.tasks.get(i).run();
+			}
+			this.tasks.clear();
+			this.tasks.trimToSize();
 		}
-		this.tasks.clear();
-		this.tasks.trimToSize();
 
 		this.updateAnimations();
 		this.onUpdate();
@@ -544,6 +548,10 @@ public abstract class Gui {
 		this.setState(STATE_SELECTABLE, isSelectable);
 	}
 
+	public final void setResponsive(boolean isResponsive) {
+		this.setState(STATE_RESPONSIVE, isResponsive);
+	}
+
 	public final void setPressed(boolean isPressed) {
 		this.setState(STATE_PRESSED, isPressed);
 	}
@@ -558,6 +566,10 @@ public abstract class Gui {
 
 	public final boolean isSelectable() {
 		return (this.hasState(STATE_SELECTABLE));
+	}
+
+	public final boolean isResponsive() {
+		return (this.hasState(STATE_RESPONSIVE));
 	}
 
 	public final boolean isEnabled() {
@@ -701,7 +713,7 @@ public abstract class Gui {
 		this.children.add(position, gui);
 		gui.updateTransformationMatrices(this.guiToWindowChangeOfBasis);
 		gui.updateAspectRatio(this.getTotalAspectRatio(), false);
-		gui.setWeight(this.getWeight() + 1);
+		gui.setLayer(this.getLayer() + 1);
 		this.stackEvent(new GuiEventAddChild<Gui, Gui>(this, gui));
 	}
 
@@ -785,16 +797,29 @@ public abstract class Gui {
 		}
 	}
 
-	public final int getWeight() {
-		return (this.weight);
+	public final int getLayer() {
+		return (this.layer);
 	}
 
 	/**
-	 * gui weight (the greater the weight is, the most this gui will be placed
-	 * in foreground layers). This weight is relative to the window
+	 * gui layer (the greater the layer is, the most this gui will be placed in
+	 * foreground layers). This layer is relative to the window
 	 */
-	public final void setWeight(int weight) {
-		this.weight = weight;
+	public final void setLayer(int layer) {
+		if (this.layer == layer) {
+			return;
+		}
+		int inc = layer - this.layer;
+		this.layer = layer;
+		if (this.getChildren() != null) {
+			for (Gui gui : this.getChildren()) {
+				gui.setLayer(gui.getLayer() + inc);
+			}
+		}
+	}
+
+	public final void increaseLayer(int inc) {
+		this.setLayer(this.layer + inc);
 	}
 
 	public final Object getAttribute(String attrID) {

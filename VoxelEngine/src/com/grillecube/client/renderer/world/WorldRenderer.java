@@ -15,13 +15,14 @@
 package com.grillecube.client.renderer.world;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.event.renderer.model.EventModelInstanceAdded;
+import com.grillecube.client.event.renderer.model.EventModelInstanceRemoved;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLFrameBuffer;
 import com.grillecube.client.opengl.object.GLProgramPostProcessing;
@@ -30,25 +31,22 @@ import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
-import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
+import com.grillecube.client.renderer.factories.LineRendererFactory;
+import com.grillecube.client.renderer.factories.ModelRendererFactory;
+import com.grillecube.client.renderer.factories.ParticleRendererFactory;
+import com.grillecube.client.renderer.factories.SkyRendererFactory;
+import com.grillecube.client.renderer.factories.TerrainRendererFactory;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.world.factories.LineRendererFactory;
-import com.grillecube.client.renderer.world.factories.ModelRendererFactory;
-import com.grillecube.client.renderer.world.factories.ParticleRendererFactory;
-import com.grillecube.client.renderer.world.factories.SkyRendererFactory;
-import com.grillecube.client.renderer.world.factories.TerrainRendererFactory;
-import com.grillecube.client.renderer.world.factories.WorldRendererFactory;
+import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.Logger;
-import com.grillecube.common.Taskable;
-import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.maths.Matrix4f;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.event.EventListener;
+import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.world.World;
 
-public class WorldRenderer extends Renderer {
+public class WorldRenderer extends RendererFactorized {
 
 	/** world to render */
 	private World world;
@@ -64,15 +62,20 @@ public class WorldRenderer extends Renderer {
 	private GLTexture fboTexture;
 	private GLRenderBuffer fboDepthBuffer;
 
-	/** factories array list */
-	private ArrayList<WorldRendererFactory> factories;
-
 	/** the gui to match (so it optimizes the viewport) */
-	private Gui guiToMatch;
 	private int width;
 	private int height;
 
 	private GuiListener<GuiEventAspectRatio<Gui>> aspectRatioListener;
+
+	private LineRendererFactory lineFactory;
+	private SkyRendererFactory skyFactory;
+	private TerrainRendererFactory terrainFactory;
+	private ModelRendererFactory modelFactory;
+	private ParticleRendererFactory particleFactory;
+
+	private EventListener<EventModelInstanceAdded> modelInstanceAddCallback;
+	private EventListener<EventModelInstanceRemoved> modelInstanceRemoveCallback;
 
 	public WorldRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
@@ -89,14 +92,8 @@ public class WorldRenderer extends Renderer {
 		};
 	}
 
-	public WorldRenderer(MainRenderer mainRenderer, World world, CameraProjective camera) {
-		this(mainRenderer);
-		this.setWorld(world);
-		this.setCamera(camera);
-	}
-
 	@Override
-	public void initialize() {
+	protected void onInitialized() {
 		Logger.get().log(Logger.Level.DEBUG, "Initializing " + this.getClass().getSimpleName());
 
 		GLH.glhCheckError("pre worldrenderer fbo creation");
@@ -121,27 +118,44 @@ public class WorldRenderer extends Renderer {
 		GLH.glhCheckError("post worldrenderer fbo creation");
 
 		this.setPostProcessingProgram(null);
-		this.factories = new ArrayList<WorldRendererFactory>();
-		this.factories.add(new LineRendererFactory(this));
-		this.factories.add(new SkyRendererFactory(this));
-		this.factories.add(new TerrainRendererFactory(this));
-		this.factories.add(new ModelRendererFactory(this));
-		this.factories.add(new ParticleRendererFactory(this));
+		this.lineFactory = new LineRendererFactory(this.getMainRenderer());
+		this.skyFactory = new SkyRendererFactory(this.getMainRenderer());
+		this.terrainFactory = new TerrainRendererFactory(this.getMainRenderer());
+		this.modelFactory = new ModelRendererFactory(this.getMainRenderer());
+		this.particleFactory = new ParticleRendererFactory(this.getMainRenderer());
 
-		for (WorldRendererFactory factory : this.factories) {
-			factory.initialize();
-		}
+		super.addFactory(this.lineFactory);
+		super.addFactory(this.skyFactory);
+		super.addFactory(this.terrainFactory);
+		super.addFactory(this.modelFactory);
+		super.addFactory(this.particleFactory);
 
-		// this.setPostProcessingProgram(new
-		// GLProgramPostProcessing(R.getResPath("shaders/post_process/blurv.fs")));
-		// this.setPostProcessingProgram(new
-		// GLProgramPostProcessing(R.getResPath("shaders/post_process/blurh.fs")));
-		// this.setPostProcessingProgram(new
-		// GLProgramPostProcessing(R.getResPath("shaders/post_process/drunk.fs")));
+		// callback to add every model instances to the renderer, if they are in
+		// the correct world
+		EventManager eventManager = this.getMainRenderer().getResourceManager().getEventManager();
+		this.modelInstanceAddCallback = new EventListener<EventModelInstanceAdded>() {
+			@Override
+			public void invoke(EventModelInstanceAdded event) {
+				if (event.getModelInstance().getEntity().getWorld() == world) {
+					modelFactory.addModelInstance(event.getModelInstance());
+				}
+			}
+		};
+		this.modelInstanceRemoveCallback = new EventListener<EventModelInstanceRemoved>() {
+			@Override
+			public void invoke(EventModelInstanceRemoved event) {
+				if (event.getModelInstance().getEntity().getWorld() == world) {
+					modelFactory.removeModelInstance(event.getModelInstance());
+				}
+			}
+		};
+
+		eventManager.addListener(this.modelInstanceAddCallback);
+		eventManager.addListener(this.modelInstanceRemoveCallback);
 	}
 
 	@Override
-	public void deinitialize() {
+	protected void onDeinitialized() {
 
 		Logger.get().log(Logger.Level.DEBUG, "Deinitializing " + this.getClass().getSimpleName());
 
@@ -153,10 +167,9 @@ public class WorldRenderer extends Renderer {
 		this.fboTexture = null;
 		this.fboDepthBuffer = null;
 
-		for (WorldRendererFactory factory : this.factories) {
-			factory.deinitialize();
-		}
-		this.factories = null;
+		EventManager eventManager = this.getMainRenderer().getResourceManager().getEventManager();
+		eventManager.removeListener(this.modelInstanceAddCallback);
+		eventManager.removeListener(this.modelInstanceRemoveCallback);
 	}
 
 	public final void resizeFbo() {
@@ -187,6 +200,7 @@ public class WorldRenderer extends Renderer {
 	/** render the given world */
 	@Override
 	public void render() {
+		// System.out.println(this.world.getEntityStorage().getEntities().size());
 
 		// if there is a world
 		if (this.getWorld() != null && this.getCamera() != null) {
@@ -197,10 +211,7 @@ public class WorldRenderer extends Renderer {
 			// TODO change viewport here to have it modular
 			this.getFBO().viewport(0, 0, this.width, this.height);
 
-			// DO THE RENDER HERE
-			for (WorldRendererFactory factory : this.factories) {
-				factory.render();
-			}
+			super.render();
 
 			// post processing effects
 			this.renderPostProcessingEffects();
@@ -225,24 +236,6 @@ public class WorldRenderer extends Renderer {
 	}
 
 	@Override
-	public void getTasks(VoxelEngine engine, ArrayList<VoxelEngine.Callable<Taskable>> tasks) {
-		for (WorldRendererFactory factory : this.factories) {
-			tasks.add(engine.new Callable<Taskable>() {
-				@Override
-				public Taskable call() throws Exception {
-					factory.update();
-					return (WorldRenderer.this);
-				}
-
-				@Override
-				public String getName() {
-					return (factory.getClass().getSimpleName() + " update");
-				}
-			});
-		}
-	}
-
-	@Override
 	public void onWindowResize(GLFWWindow window, int width, int height) {
 		this.resizeFbo();
 	}
@@ -261,6 +254,10 @@ public class WorldRenderer extends Renderer {
 
 	public final void setWorld(World world) {
 		this.world = world;
+		this.terrainFactory.setWorld(world);
+		this.skyFactory.setSky(world.getSky());
+		this.modelFactory.clear();
+		this.modelFactory.loadWorldModelInstance(world);
 	}
 
 	public final void setWorld(int worldID) {
@@ -269,6 +266,11 @@ public class WorldRenderer extends Renderer {
 
 	public final void setCamera(CameraProjective camera) {
 		this.camera = camera;
+		this.modelFactory.setCamera(camera);
+		this.terrainFactory.setCamera(camera);
+		this.skyFactory.setCamera(camera);
+		this.lineFactory.setCamera(camera);
+		this.particleFactory.setCamera(camera);
 	}
 
 	/** the world to be rendered */
@@ -281,14 +283,11 @@ public class WorldRenderer extends Renderer {
 		return (this.camera);
 	}
 
-	public final void matchGui(Gui gui) {
-		if (this.guiToMatch != null) {
-			this.guiToMatch.removeListener(this.aspectRatioListener);
-		}
-		this.guiToMatch = gui;
-		if (this.guiToMatch != null) {
-			this.guiToMatch.addListener(this.aspectRatioListener);
-		}
-		this.resizeFbo();
+	public final void addModelInstance(ModelInstance modelInstance) {
+		this.modelFactory.addModelInstance(modelInstance);
+	}
+
+	public final void removeModelInstance(ModelInstance modelInstance) {
+		this.modelFactory.removeModelInstance(modelInstance);
 	}
 }

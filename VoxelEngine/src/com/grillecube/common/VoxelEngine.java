@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import com.grillecube.common.Logger.Level;
 import com.grillecube.common.defaultmod.VoxelEngineDefaultMod;
 import com.grillecube.common.event.Event;
-import com.grillecube.common.event.EventCallback;
+import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.EventGetTasks;
 import com.grillecube.common.event.EventOnLoop;
 import com.grillecube.common.event.EventPostLoop;
@@ -269,8 +269,8 @@ public abstract class VoxelEngine {
 		this.getResourceManager().getEventManager().invokeEvent(event);
 	}
 
-	protected final void registerEventCallback(EventCallback<?> eventCallback) {
-		this.getResourceManager().getEventManager().registerEventCallback(eventCallback);
+	protected final void registerEventCallback(EventListener<?> eventCallback) {
+		this.getResourceManager().getEventManager().addListener(eventCallback);
 	}
 
 	/** request the game to stop */
@@ -331,6 +331,7 @@ public abstract class VoxelEngine {
 			return (null);
 		}
 		this.loadedWorlds.add(world);
+		world.onLoaded();
 		return (world);
 	}
 

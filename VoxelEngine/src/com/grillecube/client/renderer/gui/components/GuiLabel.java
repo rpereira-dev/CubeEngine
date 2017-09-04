@@ -39,6 +39,7 @@ public class GuiLabel extends Gui {
 		this.guiText = new GuiText();
 		this.guiText.setPosition(0.0f, 0.0f);
 		this.guiText.setFontColor(0, 0, 0, 1.0f);
+		this.guiText.setResponsive(false);
 		this.addChild(this.guiText);
 	}
 

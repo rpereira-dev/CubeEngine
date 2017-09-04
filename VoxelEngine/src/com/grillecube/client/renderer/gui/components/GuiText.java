@@ -123,14 +123,14 @@ public class GuiText extends Gui {
 	/**
 	 * @return : the text width in the window coordinate system
 	 */
-	public float getTextWidth() {
+	public final float getTextWidth() {
 		return (this.getFontModel().getTextWidth() * this.getFontModel().getScaleX() * 0.5f);
 	}
 
 	/**
 	 * @return : the text height in the window coordinate system
 	 */
-	public float getTextHeight() {
+	public final float getTextHeight() {
 		return (this.getFontModel().getTextHeight() * this.getFontModel().getScaleY() * 0.5f);
 	}
 

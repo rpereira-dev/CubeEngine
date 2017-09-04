@@ -1,35 +1,39 @@
-package com.grillecube.client.renderer.world.factories;
+package com.grillecube.client.renderer.factories;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.particles.ParticleBillboarded;
 import com.grillecube.client.renderer.particles.ParticleCube;
-import com.grillecube.client.renderer.particles.ParticleCubeBouncing;
 import com.grillecube.client.renderer.particles.ParticleRenderer;
-import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.World;
 
-public class ParticleRendererFactory extends WorldRendererFactory {
+public class ParticleRendererFactory extends RendererFactory {
 
 	// one array list is an array list of particles (one list for each sprite)
-	private ArrayList<ParticleBillboarded> billboardedParticles;
-	private ArrayList<ParticleCube> cubeParticles;
+	private final ArrayList<ParticleBillboarded> billboardedParticles;
+	private final ArrayList<ParticleCube> cubeParticles;
+	private CameraProjective camera;
 
-	public ParticleRendererFactory(WorldRenderer worldRenderer) {
-		super(worldRenderer);
-
+	public ParticleRendererFactory(MainRenderer mainRenderer) {
+		super(mainRenderer);
 		this.billboardedParticles = new ArrayList<ParticleBillboarded>();
 		this.cubeParticles = new ArrayList<ParticleCube>();
 	}
 
-	@Override
+	public final CameraProjective getCamera() {
+		return (this.camera);
+	}
+
+	public final void setCamera(CameraProjective camera) {
+		this.camera = camera;
+	}
+
 	public void update() {
 
-		World world = super.getWorld();
-		CameraProjective camera = super.getCamera();
+		CameraProjective camera = this.getCamera();
 
 		// update billboarded particles
 		int i = 0;
@@ -39,7 +43,7 @@ public class ParticleRendererFactory extends WorldRendererFactory {
 				this.billboardedParticles.remove(i);
 				continue;
 			}
-			particle.update(world, camera);
+			particle.update(camera);
 			++i;
 		}
 
@@ -51,16 +55,16 @@ public class ParticleRendererFactory extends WorldRendererFactory {
 				this.cubeParticles.remove(i);
 				continue;
 			}
-			particle.update(world, camera);
+			particle.update(camera);
 			++i;
 		}
 	}
 
 	/** testing particles system :D */
 	private void ambientParticle() {
-		Random rng = super.getRNG();
+		Random rng = new Random();
 		ParticleCube cube = new ParticleCube();
-		Vector3f campos = super.getCamera().getPosition();
+		Vector3f campos = this.getCamera().getPosition();
 
 		float x = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
 		float y = rng.nextFloat();
@@ -69,7 +73,7 @@ public class ParticleRendererFactory extends WorldRendererFactory {
 		float size = rng.nextFloat() * 0.1f;
 		cube.setScale(size, size, size);
 		cube.setHealth(120);
-		Vector3f color = super.getWorld().getWeather().getFogColor();
+		Vector3f color = new Vector3f(0.8f, 0.8f, 0.8f);
 		cube.setColor(color.x, color.y, color.z, 0.5f);
 
 		float velx = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
@@ -80,15 +84,15 @@ public class ParticleRendererFactory extends WorldRendererFactory {
 	}
 
 	/** testing particles system :D */
-	private void rainParticles(World world, int strength) {
-		Random rng = super.getRNG();
-		Vector3f campos = super.getCamera().getPosition();
+	private void rainParticles(int strength) {
+		Random rng = new Random();
+		Vector3f campos = this.getCamera().getPosition();
 
 		float yfactor = 0.5f;
 
 		for (int i = 0; i < strength; i++) {
 
-			ParticleCubeBouncing cube = new ParticleCubeBouncing();
+			ParticleCube cube = new ParticleCube();
 
 			float x = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
 			float y = rng.nextFloat();
@@ -98,7 +102,7 @@ public class ParticleRendererFactory extends WorldRendererFactory {
 			cube.setScale(size, size, size);
 			cube.setHealth(120);
 			cube.setRotationVel(rng.nextFloat(), rng.nextFloat(), rng.nextFloat());
-			Vector3f color = world.getWeather().getFogColor();
+			Vector3f color = new Vector3f(0.8f, 0.8f, 0.8f);
 			cube.setColor(color.x, color.y, color.z, 0.5f);
 			cube.setColor(0, 0.2f, 0.9f, 0.5f);
 
@@ -110,14 +114,6 @@ public class ParticleRendererFactory extends WorldRendererFactory {
 			cube.setPositionVel(velx, vely, velz);
 			this.spawnParticle(cube);
 		}
-	}
-
-	@Override
-	public void render() {
-		ParticleRenderer renderer = super.getMainRenderer().getParticleRenderer();
-		CameraProjective camera = super.getCamera();
-		renderer.renderBillboardedParticles(camera, this.billboardedParticles);
-		renderer.renderCubeParticles(camera, this.cubeParticles);
 	}
 
 	/** add a particule to the update functions */
@@ -136,6 +132,21 @@ public class ParticleRendererFactory extends WorldRendererFactory {
 		// this.cubeParticles.trimToSize();
 		// this.billboardedParticles.trimToSize();
 
+	}
+
+	public final ArrayList<ParticleBillboarded> getBillboadedParticles() {
+		return (this.billboardedParticles);
+	}
+
+	public final ArrayList<ParticleCube> getCubeParticles() {
+		return (this.cubeParticles);
+	}
+
+	@Override
+	public final void render() {
+		ParticleRenderer particleRenderer = this.getMainRenderer().getParticleRenderer();
+		particleRenderer.renderBillboardedParticles(this.getCamera(), this.getBillboadedParticles());
+		particleRenderer.renderCubeParticles(this.getCamera(), this.getCubeParticles());
 	}
 
 }

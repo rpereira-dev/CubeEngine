@@ -22,7 +22,7 @@ import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 
-public class Weather implements Taskable {
+public class Sky implements Taskable {
 	/** minutes for a full day / night cycle */
 	private static final float MINUTE_PER_CYCLE = 15.0f;
 	private static final long MILLIS_PER_CYCLE = (long) (1000 * 60 * MINUTE_PER_CYCLE);
@@ -78,8 +78,8 @@ public class Weather implements Taskable {
 	private float _wind;
 
 	/** Weather constructor */
-	public Weather() {
-		this.setCycleRatio(Weather.DAY_START);
+	public Sky() {
+		this.setCycleRatio(Sky.DAY_START);
 		this._state = 0;
 		this._ambient_light = 0;
 		this._cycle_count = 0;
@@ -87,7 +87,7 @@ public class Weather implements Taskable {
 
 		this._sky_color = new Vector3f();
 
-		this._sun = new PointLight(new Vector3f(10000f, 10000f, 10000f), Weather.SUN_RISE_COLOR, 1.0f);
+		this._sun = new PointLight(new Vector3f(10000f, 10000f, 10000f), Sky.SUN_RISE_COLOR, 1.0f);
 
 		this._fog_color = new Vector3f(1.0f, 1.0f, 1.0f);
 		this._fog_density = 0.04f;
@@ -113,25 +113,25 @@ public class Weather implements Taskable {
 
 	private void calculateLights() {
 		if (this.hasState(WeatherState.DAY_ENDING)) {
-			float intensity = 1 - (this._cycle_ratio - Weather.DAY_END) / (Weather.NIGHT_START - Weather.DAY_END);
+			float intensity = 1 - (this._cycle_ratio - Sky.DAY_END) / (Sky.NIGHT_START - Sky.DAY_END);
 			this._sun.setIntensity(intensity);
-			this._ambient_light = intensity * Weather.DAY_AMBIENT + (1 - intensity) * Weather.NIGHT_AMBIENT;
+			this._ambient_light = intensity * Sky.DAY_AMBIENT + (1 - intensity) * Sky.NIGHT_AMBIENT;
 		}
 
 		if (this.hasState(WeatherState.NIGHT_ENDING)) {
-			float intensity = (this._cycle_ratio - Weather.NIGHT_END) / (1.0f - Weather.NIGHT_END);
+			float intensity = (this._cycle_ratio - Sky.NIGHT_END) / (1.0f - Sky.NIGHT_END);
 			this._sun.setIntensity(intensity);
-			this._ambient_light = intensity * Weather.DAY_AMBIENT + (1 - intensity) * Weather.NIGHT_AMBIENT;
+			this._ambient_light = intensity * Sky.DAY_AMBIENT + (1 - intensity) * Sky.NIGHT_AMBIENT;
 		}
 
 		if (this.hasState(WeatherState.DAY)) {
 			this._sun.setIntensity(1.0f);
-			this._ambient_light = Weather.DAY_AMBIENT;
+			this._ambient_light = Sky.DAY_AMBIENT;
 		}
 
 		if (this.hasState(WeatherState.NIGHT)) {
 			this._sun.setIntensity(0.0f);
-			this._ambient_light = Weather.NIGHT_AMBIENT;
+			this._ambient_light = Sky.NIGHT_AMBIENT;
 		}
 	}
 
@@ -150,19 +150,19 @@ public class Weather implements Taskable {
 		this._cycle_ratio = this._cycle_millis / (float) MILLIS_PER_CYCLE;
 		this._prev_millis = time;
 
-		if (this._cycle_ratio >= Weather.DAY_START && this._cycle_ratio < Weather.DAY_END) {
+		if (this._cycle_ratio >= Sky.DAY_START && this._cycle_ratio < Sky.DAY_END) {
 			this.setCycleState(WeatherState.DAY);
 		}
 
-		if (this._cycle_ratio >= Weather.DAY_END && this._cycle_ratio < Weather.NIGHT_START) {
+		if (this._cycle_ratio >= Sky.DAY_END && this._cycle_ratio < Sky.NIGHT_START) {
 			this.setCycleState(WeatherState.DAY_ENDING);
 		}
 
-		if (this._cycle_ratio > Weather.NIGHT_START && this._cycle_ratio <= Weather.NIGHT_END) {
+		if (this._cycle_ratio > Sky.NIGHT_START && this._cycle_ratio <= Sky.NIGHT_END) {
 			this.setCycleState(WeatherState.NIGHT);
 		}
 
-		if (this._cycle_ratio >= Weather.NIGHT_END) {
+		if (this._cycle_ratio >= Sky.NIGHT_END) {
 			this.setCycleState(WeatherState.NIGHT_ENDING);
 		}
 	}
@@ -220,11 +220,11 @@ public class Weather implements Taskable {
 		if (this.hasState(WeatherState.NIGHT)) {
 			ratio = 0;
 		} else if (this.hasState(WeatherState.DAY_ENDING)) {
-			ratio = 1 - (this._cycle_ratio - Weather.DAY_END) / (Weather.NIGHT_START - Weather.DAY_END);
+			ratio = 1 - (this._cycle_ratio - Sky.DAY_END) / (Sky.NIGHT_START - Sky.DAY_END);
 		} else if (this.hasState(WeatherState.NIGHT_ENDING)) {
-			ratio = (this._cycle_ratio - Weather.NIGHT_END) / (1.0f - Weather.NIGHT_END);
+			ratio = (this._cycle_ratio - Sky.NIGHT_END) / (1.0f - Sky.NIGHT_END);
 		}
-		Vector3f.mix(this._sky_color, Weather.SKY_COLOR_DAY, Weather.SKY_COLOR_NIGHT, ratio);
+		Vector3f.mix(this._sky_color, Sky.SKY_COLOR_DAY, Sky.SKY_COLOR_NIGHT, ratio);
 	}
 
 	public Vector3f getSkyColor() {
@@ -338,7 +338,7 @@ public class Weather implements Taskable {
 	 */
 	public void startRain(float f) {
 		f = Maths.clamp(f, 0.0f, 1.0f);
-		this.startRain((int) (f * (Weather.MAX_RAIN_STRENGTH - Weather.MIN_RAIN_STRENGTH) + Weather.MIN_RAIN_STRENGTH));
+		this.startRain((int) (f * (Sky.MAX_RAIN_STRENGTH - Sky.MIN_RAIN_STRENGTH) + Sky.MIN_RAIN_STRENGTH));
 	}
 
 	/** numbre of particles spawned per frames */
@@ -380,9 +380,9 @@ public class Weather implements Taskable {
 		VoxelEngine.Callable<Taskable> call = engine.new Callable<Taskable>() {
 
 			@Override
-			public Weather call() {
-				Weather.this.update();
-				return (Weather.this);
+			public Sky call() {
+				Sky.this.update();
+				return (Sky.this);
 			}
 
 			@Override
