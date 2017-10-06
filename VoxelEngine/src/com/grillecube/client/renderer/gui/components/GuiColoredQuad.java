@@ -43,6 +43,5 @@ public class GuiColoredQuad extends Gui {
 
 	@Override
 	protected void onDeinitialized(GuiRenderer renderer) {
-		// do not delete the texture, as it wasnt create by this object...
 	}
 }

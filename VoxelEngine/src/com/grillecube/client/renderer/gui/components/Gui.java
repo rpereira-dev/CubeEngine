@@ -75,7 +75,7 @@ public abstract class Gui {
 	private static final int STATE_ENABLED = (1 << 6);
 	private static final int STATE_REQUESTED_FOCUS = (1 << 7);
 	private static final int STATE_SELECTED = (1 << 8);
-	private static final int STATE_RESPONSIVE = (1 << 9);
+	private static final int STATE_HOVERABLE = (1 << 9);
 
 	/** the transformation matrix, relative to the parent */
 	private final Matrix4f guiToParentChangeOfBasis;
@@ -109,7 +109,8 @@ public abstract class Gui {
 	public static final Comparator<? super Gui> LAYER_COMPARATOR = new Comparator<Gui>() {
 		@Override
 		public int compare(Gui left, Gui right) {
-			return (left.getLayer() - right.getLayer());
+			float d = left.getLayer() - right.getLayer();
+			return (d == 0 ? 0 : d < 0 ? -1 : 1);
 		}
 	};
 
@@ -117,7 +118,7 @@ public abstract class Gui {
 	private int state;
 	private float localAspectRatio = 1.0f;
 	private float totalAspectRatio = 1.0f;
-	private int layer;
+	private float layer;
 
 	/** the mouse coordinates relatively to the gui basis */
 	private float mouseX;
@@ -145,13 +146,12 @@ public abstract class Gui {
 		this.setSelected(false);
 		this.setSelectable(false);
 		this.setEnabled(true);
-		this.setResponsive(true);
+		this.setHoverable(true);
 		this.requestFocus(false);
 		this.focus(false);
 	}
 
 	/** a listener to the mouse hovering the gui */
-	@SuppressWarnings("unchecked")
 	public void addListener(GuiListener<?> listener) {
 		if (listener == null) {
 			return;
@@ -188,13 +188,13 @@ public abstract class Gui {
 	 * 
 	 * @return the animation id
 	 */
-	@SuppressWarnings("unchecked")
 	public int startAnimation(GuiAnimation<? extends Gui> animation) {
 		if (this.animations == null) {
 			this.animations = new ArrayList<GuiAnimation<Gui>>();
 		}
 		this.animations.add((GuiAnimation<Gui>) animation);
 		((GuiAnimation<Gui>) animation).restart(this);
+		((GuiAnimation<Gui>) animation).onStart(this);
 		return (this.animations.size() - 1);
 	}
 
@@ -499,7 +499,8 @@ public abstract class Gui {
 		if (this.animations != null) {
 			for (int i = 0; i < this.animations.size(); i++) {
 				GuiAnimation<Gui> animation = this.animations.get(i);
-				if (animation == null || animation.update(this)) {
+				if (animation.update(this)) {
+					animation.onStop(this);
 					this.animations.remove(i);
 					continue;
 				}
@@ -540,16 +541,16 @@ public abstract class Gui {
 		this.setState(STATE_VISIBLE, visible);
 	}
 
+	/**
+	 * set to true or false weather you want this gui to be responsive to mouse
+	 * events
+	 */
 	public final void setEnabled(boolean enabled) {
 		this.setState(STATE_ENABLED, enabled);
 	}
 
 	public final void setSelectable(boolean isSelectable) {
 		this.setState(STATE_SELECTABLE, isSelectable);
-	}
-
-	public final void setResponsive(boolean isResponsive) {
-		this.setState(STATE_RESPONSIVE, isResponsive);
 	}
 
 	public final void setPressed(boolean isPressed) {
@@ -564,12 +565,12 @@ public abstract class Gui {
 		this.setState(STATE_HOVERED, isHovered);
 	}
 
-	public final boolean isSelectable() {
-		return (this.hasState(STATE_SELECTABLE));
+	public final void setHoverable(boolean isHoverable) {
+		this.setState(STATE_HOVERABLE, isHoverable);
 	}
 
-	public final boolean isResponsive() {
-		return (this.hasState(STATE_RESPONSIVE));
+	public final boolean isSelectable() {
+		return (this.hasState(STATE_SELECTABLE));
 	}
 
 	public final boolean isEnabled() {
@@ -585,6 +586,10 @@ public abstract class Gui {
 		return (this.hasState(STATE_HOVERED));
 	}
 
+	public final boolean isHoverable() {
+		return (this.hasState(STATE_HOVERABLE));
+	}
+
 	/** return true if the gui is pressed */
 	public final boolean isPressed() {
 		return (this.hasState(STATE_PRESSED));
@@ -595,7 +600,6 @@ public abstract class Gui {
 		return (this.hasState(STATE_SELECTED));
 	}
 
-	@SuppressWarnings("unchecked")
 	public void addParameter(GuiParameter<?> parameter) {
 		if (this.params == null) {
 			this.params = new ArrayList<GuiParameter<Gui>>();
@@ -624,7 +628,7 @@ public abstract class Gui {
 		}
 		if (this.children != null) {
 			for (Gui child : this.children) {
-				child.runParameters(); // TODO keep this?
+				child.runParameters();
 			}
 		}
 	}
@@ -797,7 +801,7 @@ public abstract class Gui {
 		}
 	}
 
-	public final int getLayer() {
+	public final float getLayer() {
 		return (this.layer);
 	}
 
@@ -805,11 +809,11 @@ public abstract class Gui {
 	 * gui layer (the greater the layer is, the most this gui will be placed in
 	 * foreground layers). This layer is relative to the window
 	 */
-	public final void setLayer(int layer) {
+	public final void setLayer(float layer) {
 		if (this.layer == layer) {
 			return;
 		}
-		int inc = layer - this.layer;
+		float inc = layer - this.layer;
 		this.layer = layer;
 		if (this.getChildren() != null) {
 			for (Gui gui : this.getChildren()) {

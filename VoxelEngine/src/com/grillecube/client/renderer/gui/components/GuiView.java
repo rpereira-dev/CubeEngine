@@ -10,5 +10,6 @@ public class GuiView extends Gui {
 
 	public GuiView() {
 		super();
+		this.setHoverable(false);
 	}
 }

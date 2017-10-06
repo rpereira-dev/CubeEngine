@@ -33,6 +33,12 @@ public class GuiAnimationTextAutoScale<T extends GuiText> extends GuiAnimation<T
 	}
 
 	@Override
-	public void onRestart(T gui) {
+	public void onStart(T gui) {
+	}
+
+	@Override
+	public void onStop(T gui) {
+		// TODO Auto-generated method stub
+
 	}
 }

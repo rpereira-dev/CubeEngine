@@ -175,7 +175,7 @@ public class GuiRenderer extends Renderer {
 		this.renderingList.clear();
 		this.addGuisToRenderingList(this.mainGui);
 		this.renderingList.sort(Gui.LAYER_COMPARATOR);
-		this.guiInputManager.update();
+		this.guiInputManager.update(this.renderingList);
 	}
 
 	/** add a view to render */

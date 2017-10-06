@@ -123,7 +123,7 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		guiButton.setOutColor(0.8f, 0.8f, 0.8f, 1.0f);
 		this.guiButtons.add(guiButton);
 		this.addChild(guiButton);
-		guiButton.increaseLayer(64); //TODO make it proper
+		guiButton.increaseLayer(64);
 		this.refreshButtons();
 	}
 

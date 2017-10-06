@@ -29,13 +29,16 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 		super();
 		this.total = new GuiColoredQuad();
 		this.total.setColor(BG_COLOR);
+		this.total.setHoverable(false);
 		this.addChild(this.total);
 
 		this.selected = new GuiColoredQuad();
 		this.selected.setColor(FILL_COLOR);
+		this.selected.setHoverable(false);
 		this.addChild(this.selected);
 
 		this.guiLabel = new GuiLabel();
+		this.guiLabel.setHoverable(false);
 		this.guiLabel.setFontColor(0, 0, 0, 1.0f);
 		this.guiLabel.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.guiLabel.addTextParameter(new GuiTextParameterTextCenterBox());
