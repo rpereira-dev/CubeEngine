@@ -133,22 +133,22 @@ public class GuiRenderer extends Renderer {
 		}
 	}
 
-	public void renderFontModel(FontModel model, Matrix4f transfMatrix) {
+	public void renderFontModel(FontModel model, float transparency, Matrix4f transfMatrix) {
 		this.programFont.useStart();
-		this.programFont.bindFontModel(model, transfMatrix);
+		this.programFont.bindFontModel(model, transparency, transfMatrix);
 		model.render();
 	}
 
-	public void renderTexturedQuad(GLTexture glTexture, float ux, float uy, float vx, float vy,
+	public void renderTexturedQuad(GLTexture glTexture, float ux, float uy, float vx, float vy, float transparency,
 			Matrix4f transformMatrix) {
 		this.programTexturedQuad.useStart();
-		this.programTexturedQuad.loadQuadTextured(glTexture, ux, uy, vx, vy, transformMatrix);
+		this.programTexturedQuad.loadQuadTextured(glTexture, ux, uy, vx, vy, transparency, transformMatrix);
 		GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
 	}
 
-	public void renderColoredQuad(float r, float g, float b, float a, Matrix4f transformMatrix) {
+	public void renderColoredQuad(float r, float g, float b, float a, float transparency, Matrix4f transformMatrix) {
 		this.programColoredQuad.useStart();
-		this.programColoredQuad.loadQuadColored(r, g, b, a, transformMatrix);
+		this.programColoredQuad.loadQuadColored(r, g, b, a * transparency, transformMatrix);
 		GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
 	}
 

@@ -91,7 +91,7 @@ public class GuiText extends Gui {
 			transfMatrix = Matrix4f.mul(this.getParent().getGuiToWindowChangeOfBasis(), transfMatrix, null);
 			transfMatrix = Matrix4f.mul(MainRenderer.WINDOW_TO_GL_BASIS, transfMatrix, null);
 		}
-		renderer.renderFontModel(this.fontModel, transfMatrix);
+		renderer.renderFontModel(this.fontModel, this.getTransparency(), transfMatrix);
 	}
 
 	public final void setPosition(float x, float y) {

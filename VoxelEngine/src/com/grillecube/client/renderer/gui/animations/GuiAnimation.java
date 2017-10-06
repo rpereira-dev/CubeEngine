@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer.gui.animations;
 
 import com.grillecube.client.renderer.gui.components.Gui;
+import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.common.world.Timer;
 
 public abstract class GuiAnimation<T extends Gui> {
@@ -20,7 +21,7 @@ public abstract class GuiAnimation<T extends Gui> {
 	 *            : the timer (started when the animation started)
 	 * @return true if the animation is ended, false else way
 	 */
-	public abstract boolean run(T gui, Timer timer);
+	public abstract boolean run(T gui);
 
 	public abstract void onStart(T gui);
 
@@ -28,7 +29,10 @@ public abstract class GuiAnimation<T extends Gui> {
 
 	public final boolean update(T gui) {
 		this.timer.update();
-		return (this.run(gui, this.timer));
+		if (!(gui instanceof GuiButton)) {
+			System.out.println(gui+ ": " + this.timer.getTime());
+		}
+		return (this.run(gui));
 	}
 
 	public final void restart(T gui) {

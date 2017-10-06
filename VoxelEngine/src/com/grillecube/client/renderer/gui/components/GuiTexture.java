@@ -37,7 +37,8 @@ public class GuiTexture extends Gui {
 	protected void onRender(GuiRenderer guiRenderer) {
 		if (this.glTexture != null) {
 			Matrix4f matrix = super.getGuiToGLChangeOfBasis();
-			guiRenderer.renderTexturedQuad(this.glTexture, this.ux, this.uy, this.vx, this.vy, matrix);
+			guiRenderer.renderTexturedQuad(this.glTexture, this.ux, this.uy, this.vx, this.vy, this.getTransparency(),
+					matrix);
 		}
 	}
 }

@@ -5,7 +5,6 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterYBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.common.maths.Vector4f;
-import com.grillecube.common.world.Timer;
 
 public class GuiButton extends GuiLabel {
 
@@ -22,7 +21,7 @@ public class GuiButton extends GuiLabel {
 	private float transition;
 
 	public GuiButton() {
-		this(0.25f);
+		this(0.15f);
 	}
 
 	public GuiButton(float transition) {
@@ -65,7 +64,7 @@ public class GuiButton extends GuiLabel {
 			}
 
 			@Override
-			public boolean run(GuiButton guiButton, Timer timer) {
+			public boolean run(GuiButton guiButton) {
 				Vector4f color;
 				if (!guiButton.isEnabled()) {
 					color = guiButton.getDisabledColor();

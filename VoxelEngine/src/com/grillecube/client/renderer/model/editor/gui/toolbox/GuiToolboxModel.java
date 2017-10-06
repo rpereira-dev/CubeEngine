@@ -2,6 +2,9 @@ package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.renderer.gui.animations.GuiAnimationAddChild;
+import com.grillecube.client.renderer.gui.animations.GuiAnimationRemoveChild;
+import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiText;
@@ -79,7 +82,9 @@ public class GuiToolboxModel extends GuiView {
 		this.panels.add(new GuiToolboxModelPanelBuild());
 		this.panels.add(new GuiToolboxModelPanelSkin());
 		this.panels.add(new GuiToolboxModelPanelSkeleton());
-		this.select(0);
+		this.addChild(this.panels.get(0));
+
+		this.refresh();
 	}
 
 	private final void refresh() {
@@ -87,10 +92,14 @@ public class GuiToolboxModel extends GuiView {
 	}
 
 	private final void select(int index) {
-		if (this.selected != index) {
-			this.removeChild(this.panels.get(this.selected));
-			this.selected = index;
-			this.addChild(this.panels.get(this.selected));
+		GuiToolboxModelPanel prev = this.panels.get(this.selected);
+		if (prev != null) {
+			this.startAnimation(new GuiAnimationRemoveChild<GuiToolboxModel, GuiToolboxModelPanel>(prev, 0.15d));
+		}
+		this.selected = index;
+		GuiToolboxModelPanel next = this.panels.get(this.selected);
+		if (next != null) {
+			this.startAnimation(new GuiAnimationAddChild<GuiToolboxModel, GuiToolboxModelPanel>(next, 0.15d));
 		}
 		this.refresh();
 	}

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.event.GuiEventPress;
-import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventAdd;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventExpanded;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
@@ -15,13 +13,6 @@ import com.grillecube.common.utils.Pair;
 
 /** a spinner list */
 public abstract class GuiSpinner extends Gui {
-
-	private static final GuiListener<GuiEventPress<GuiSpinner>> PRESS_EXPAND_LISTENER = new GuiListener<GuiEventPress<GuiSpinner>>() {
-		@Override
-		public void invoke(GuiEventPress<GuiSpinner> event) {
-			event.getGui().expand();
-		}
-	};
 
 	/** the objects hold */
 	private final ArrayList<Pair<Object, String>> values;
@@ -41,7 +32,6 @@ public abstract class GuiSpinner extends Gui {
 		this.expanded = false;
 		this.pickedIndex = -1;
 		this.hintText = "...";
-		this.addListener(PRESS_EXPAND_LISTENER);
 		this.addListener(ON_PRESS_FOCUS_LISTENER);
 	}
 

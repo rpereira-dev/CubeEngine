@@ -92,6 +92,9 @@ public abstract class Gui {
 	private final Vector2f boxCenter;
 	private float boxRot;
 
+	/** transparency value of this gui in [0, 1] */
+	private float transparency;
+
 	/** guis of this view */
 	private ArrayList<Gui> children;
 	private final ArrayList<GuiTask> tasks;
@@ -136,6 +139,7 @@ public abstract class Gui {
 		this.boxCenter = new Vector2f();
 		this.boxSize = new Vector2f();
 		this.boxRot = 0.0f;
+		this.setTransparency(1);
 		this.setBox(0, 0, 1, 1, 0);
 		this.params = null;
 		this.animations = null;
@@ -497,7 +501,8 @@ public abstract class Gui {
 
 	private void updateAnimations() {
 		if (this.animations != null) {
-			for (int i = 0; i < this.animations.size(); i++) {
+			int i = 0;
+			while (i < this.animations.size()) {
 				GuiAnimation<Gui> animation = this.animations.get(i);
 				if (animation.update(this)) {
 					animation.onStop(this);
@@ -837,6 +842,16 @@ public abstract class Gui {
 		}
 	}
 
+	public final void removeAttribute(String attrID) {
+		if (this.attributes == null) {
+			return;
+		}
+		this.attributes.remove(attrID);
+		if (this.attributes.size() == 0) {
+			this.attributes = null;
+		}
+	}
+
 	public void setMouse(float x, float y) {
 		this.prevMouseX = this.mouseX;
 		this.prevMouseY = this.mouseY;
@@ -845,5 +860,18 @@ public abstract class Gui {
 	}
 
 	protected void onInputUpdate() {
+	}
+
+	public final void setTransparency(float transparency) {
+		this.transparency = transparency < 0.0f ? 0.0f : transparency > 1.0f ? 1.0f : transparency;
+		if (this.children != null) {
+			for (Gui gui : this.children) {
+				gui.setTransparency(transparency);
+			}
+		}
+	}
+
+	public final float getTransparency() {
+		return (this.transparency);
 	}
 }
