@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
 import com.grillecube.client.renderer.gui.components.GuiButton;
+import com.grillecube.client.renderer.gui.components.GuiTexture;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiListener;
@@ -20,6 +21,8 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 	private final GuiButton addColor;
 	private final GuiSpinnerEditor colors;
 	private final GuiButton removeColor;
+
+	private final GuiTexture skinPreview;
 
 	public GuiToolboxModelPanelSkin() {
 		super();
@@ -77,6 +80,11 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.removeColor.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.removeColor.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.addChild(this.removeColor);
+
+		// skin preview
+		this.skinPreview = new GuiTexture();
+		this.skinPreview.setBox(0.2f, 0.50f, 0.6f, 0.2f, 0.0f);
+		this.addChild(this.skinPreview);
 	}
 
 	private final void onPixelPerFaceChanged() {

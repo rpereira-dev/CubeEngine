@@ -21,6 +21,8 @@ import java.util.HashMap;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.animations.GuiAnimation;
+import com.grillecube.client.renderer.gui.animations.GuiAnimationAddChild;
+import com.grillecube.client.renderer.gui.animations.GuiAnimationRemoveChild;
 import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
 import com.grillecube.client.renderer.gui.event.GuiEvent;
 import com.grillecube.client.renderer.gui.event.GuiEventAddChild;
@@ -122,6 +124,10 @@ public abstract class Gui {
 	private float localAspectRatio = 1.0f;
 	private float totalAspectRatio = 1.0f;
 	private float layer;
+
+	/** border */
+	private float borderWidth;
+	private Vector4f borderColor;
 
 	/** the mouse coordinates relatively to the gui basis */
 	private float mouseX;
@@ -873,5 +879,13 @@ public abstract class Gui {
 
 	public final float getTransparency() {
 		return (this.transparency);
+	}
+
+	public void fadeOut(double t) {
+		this.getParent().startAnimation(new GuiAnimationRemoveChild<Gui, Gui>(this, 0.15d));
+	}
+
+	public void fadeIn(Gui parent, double t) {
+		parent.startAnimation(new GuiAnimationAddChild<Gui, Gui>(this, 0.15d));
 	}
 }

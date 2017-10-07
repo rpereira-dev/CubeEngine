@@ -29,9 +29,6 @@ public abstract class GuiAnimation<T extends Gui> {
 
 	public final boolean update(T gui) {
 		this.timer.update();
-		if (!(gui instanceof GuiButton)) {
-			System.out.println(gui+ ": " + this.timer.getTime());
-		}
 		return (this.run(gui));
 	}
 
