@@ -14,10 +14,12 @@
 
 package com.grillecube.client.renderer.gui;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
@@ -36,6 +38,7 @@ import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
 import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.resources.R;
 
 public class GuiRenderer extends Renderer {
@@ -233,6 +236,13 @@ public class GuiRenderer extends Renderer {
 	 */
 	public static final String dialogSelectFolder(String title, String defaultPath) {
 		return (TinyFileDialogs.tinyfd_selectFolderDialog(title, defaultPath));
+	}
+
+	public static final Vector4f dialogPickColor() {
+		long v = Long.parseLong(TinyFileDialogs.tinyfd_colorChooser("Pick a color", "#FFFFFF", null,
+				BufferUtils.createByteBuffer(3 * 4)).replace("#", ""), 16);
+		Color color = new Color((int) v);
+		return (new Vector4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, 1.0f));
 	}
 
 	// TODO : more dialogs

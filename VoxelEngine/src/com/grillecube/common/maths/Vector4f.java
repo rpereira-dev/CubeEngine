@@ -419,6 +419,17 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 		return (new Vector3f(this.x, this.y, this.z));
 	}
 
+	public static Vector4f scale(Vector4f dst, Vector4f color, float f) {
+		if (dst == null) {
+			dst = new Vector4f();
+		}
+		dst.x = color.x * f;
+		dst.y = color.y * f;
+		dst.z = color.z * f;
+		dst.w = color.w * f;
+		return (dst);
+	}
+
 	/** dst = (1 - ratio) * left + ratio * right */
 	public static final Vector4f mix(Vector4f left, Vector4f right, float ratio, Vector4f dst) {
 		if (dst == null) {

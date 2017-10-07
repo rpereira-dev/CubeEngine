@@ -174,7 +174,11 @@ public class BoundingBox {
 	}
 
 	public void setMinSize(Vector3f min, float sizex, float sizey, float sizez) {
-		this.min.set(min);
+		this.setMinSize(min.x, min.y, min.z, sizex, sizey, sizez);
+	}
+
+	public void setMinSize(float minx, float miny, float minz, float sizex, float sizey, float sizez) {
+		this.min.set(minx, miny, minz);
 		this.size.set(sizex, sizey, sizez);
 		this.max.set(this.min.x + sizex, this.min.y + sizey, this.min.z + sizez);
 		this.center.set(this.min.x + this.size.x / 2.0f, this.min.y + this.size.y / 2.0f,

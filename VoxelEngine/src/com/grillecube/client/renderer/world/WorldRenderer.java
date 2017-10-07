@@ -283,11 +283,23 @@ public class WorldRenderer extends RendererFactorized {
 		return (this.camera);
 	}
 
-	public final void addModelInstance(ModelInstance modelInstance) {
-		this.modelFactory.addModelInstance(modelInstance);
+	public final LineRendererFactory getLineRendererFactory() {
+		return (this.lineFactory);
 	}
 
-	public final void removeModelInstance(ModelInstance modelInstance) {
-		this.modelFactory.removeModelInstance(modelInstance);
+	public final SkyRendererFactory getSkyRendererFactory() {
+		return (this.skyFactory);
+	}
+
+	public final TerrainRendererFactory getTerrainRendererFactory() {
+		return (this.terrainFactory);
+	}
+
+	public final ModelRendererFactory getModelRendererFactory() {
+		return (this.modelFactory);
+	}
+
+	public final ParticleRendererFactory getParticleRendererFactory() {
+		return (this.particleFactory);
 	}
 }

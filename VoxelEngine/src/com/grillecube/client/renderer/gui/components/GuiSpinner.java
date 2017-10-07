@@ -72,6 +72,9 @@ public abstract class GuiSpinner extends Gui {
 	}
 
 	public final void remove(int index) {
+		if (index < 0 || index >= this.values.size()) {
+			return;
+		}
 		Pair<Object, String> value = this.values.remove(index);
 		if (this.pickedIndex >= this.values.size()) {
 			this.pick(this.values.size() - 1);

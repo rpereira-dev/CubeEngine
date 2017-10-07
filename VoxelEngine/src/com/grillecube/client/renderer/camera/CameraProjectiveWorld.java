@@ -1,10 +1,8 @@
 package com.grillecube.client.renderer.camera;
 
 import com.grillecube.client.opengl.window.GLFWWindow;
-import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.terrain.Terrain;
@@ -17,7 +15,6 @@ public abstract class CameraProjectiveWorld extends CameraProjective implements 
 	/** looking block informations */
 	private Vector3f lookCube;
 	private Vector3f lookFace;
-	private BoundingBox lookBox;
 
 	/** the terrain index the camera is inside */
 	private Vector3i world_index;
@@ -27,9 +24,6 @@ public abstract class CameraProjectiveWorld extends CameraProjective implements 
 
 		this.lookCube = new Vector3f();
 		this.lookFace = new Vector3f();
-		this.lookBox = new BoundingBox();
-		this.lookBox.setMinSize(new Vector3f(), new Vector3f(1, 1, 1));
-		this.lookBox.setColor(new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
 
 		this.world_index = new Vector3i();
 	}
@@ -57,7 +51,6 @@ public abstract class CameraProjectiveWorld extends CameraProjective implements 
 		if (block.isVisible() && !block.bypassRaycast()) {
 			this.lookCube.set(x + face.x, y + face.y, z + face.z);
 			this.lookFace.set(face);
-			this.lookBox.setMin(this.lookCube);
 			return (true);
 		}
 		return (false);
@@ -93,9 +86,5 @@ public abstract class CameraProjectiveWorld extends CameraProjective implements 
 
 	public Vector3f getLookCoords() {
 		return (this.lookCube);
-	}
-
-	public BoundingBox getLookBoundingBox() {
-		return (this.lookBox);
 	}
 }
