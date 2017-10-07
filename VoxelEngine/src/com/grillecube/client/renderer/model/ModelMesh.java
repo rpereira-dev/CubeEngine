@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL15;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLVertexArray;
 import com.grillecube.client.opengl.object.GLVertexBuffer;
-import com.grillecube.client.renderer.terrain.Mesh;
+import com.grillecube.client.renderer.Mesh;
 
 public class ModelMesh extends Mesh {
 

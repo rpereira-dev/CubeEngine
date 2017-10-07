@@ -382,7 +382,7 @@ public abstract class Gui {
 	}
 
 	/** initialize the gui */
-	protected final void initialize(GuiRenderer renderer) {
+	public final void initialize(GuiRenderer renderer) {
 		if (this.hasState(STATE_INITIALIZED)) {
 			return;
 		}

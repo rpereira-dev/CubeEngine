@@ -26,7 +26,7 @@ public class GuiToolboxModel extends GuiView {
 
 	private final ArrayList<GuiToolboxModelPanel> panels;
 
-	private int selected;
+	private int selected = -1;
 
 	public GuiToolboxModel(ModelInstance modelInstance) {
 		super();
@@ -88,9 +88,13 @@ public class GuiToolboxModel extends GuiView {
 
 	private final void select(int index) {
 		if (this.selected != index) {
-			this.removeChild(this.panels.get(this.selected));
+			if (this.selected != -1) {
+				this.removeChild(this.panels.get(this.selected));
+			}
 			this.selected = index;
-			this.addChild(this.panels.get(this.selected));
+			if (this.selected != -1) {
+				this.addChild(this.panels.get(this.selected));
+			}
 		}
 		this.refresh();
 	}

@@ -63,7 +63,7 @@ public class Model {
 	 * @return : true if this model is already initialized
 	 */
 	public final boolean isInitialized() {
-		return (this.mesh.isInitialized());
+		return (this.mesh != null);
 	}
 
 	/**

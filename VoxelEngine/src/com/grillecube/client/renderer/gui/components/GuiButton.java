@@ -36,10 +36,7 @@ public class GuiButton extends GuiLabel {
 		this.addTextParameter(new GuiTextParameterTextCenterYBox());
 		this.addTextParameter(new GuiTextParameterTextAlignLeft(0.1f));
 
-		this.setHoveredColor(HOVERED_COLOR);
-		this.setOutColor(OUT_COLOR);
-		this.setPressedColor(PRESSED_COLOR);
-		this.setDisabledColor(DISABLED_COLOR);
+		this.setDefaultColors();
 	}
 
 	@Override
@@ -87,5 +84,35 @@ public class GuiButton extends GuiLabel {
 	public final void setDisabledColor(float r, float g, float b, float a) {
 		this.disabledColor.set(r, g, b, a);
 		this.updateColor();
+	}
+
+	public void setColors(GuiButton guiButton) {
+		this.setHoveredColor(guiButton.getHoveredColor());
+		this.setOutColor(guiButton.getOutColor());
+		this.setPressedColor(guiButton.getPressedColor());
+		this.setDisabledColor(guiButton.getDisabledColor());
+	}
+
+	public final Vector4f getPressedColor() {
+		return (this.pressedColor);
+	}
+
+	public final Vector4f getOutColor() {
+		return (this.outColor);
+	}
+
+	public final Vector4f getHoveredColor() {
+		return (this.hoveredColor);
+	}
+
+	public final Vector4f getDisabledColor() {
+		return (this.disabledColor);
+	}
+
+	public void setDefaultColors() {
+		this.setHoveredColor(HOVERED_COLOR);
+		this.setOutColor(OUT_COLOR);
+		this.setPressedColor(PRESSED_COLOR);
+		this.setDisabledColor(DISABLED_COLOR);
 	}
 }

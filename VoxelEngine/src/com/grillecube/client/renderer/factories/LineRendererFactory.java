@@ -59,29 +59,46 @@ public class LineRendererFactory extends RendererFactory {
 		corners[7] = new Vector3f(0, 1, 1);
 	}
 
-	public Line[] addBox(BoundingBox box) {
-		Line[] lines = new Line[12];
+	public final int setBox(BoundingBox box, int index) {
 		Vector4f color = box.getColor();
 		Vector3f boxorigin = box.getMin();
 		Vector3f boxsize = box.getSize();
+		Line[] lines = new Line[12];
 
-		lines[0] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 0, 1));
-		lines[1] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 1, 2));
-		lines[2] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 2, 3));
-		lines[3] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 3, 0));
+		lines[0] = this.getBoxLine(color, boxorigin, boxsize, 0, 0);
+		lines[1] = this.getBoxLine(color, boxorigin, boxsize, 1, 2);
+		lines[2] = this.getBoxLine(color, boxorigin, boxsize, 2, 3);
+		lines[3] = this.getBoxLine(color, boxorigin, boxsize, 3, 0);
 
-		lines[4] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 4, 5));
-		lines[5] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 5, 6));
-		lines[6] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 6, 7));
-		lines[7] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 7, 4));
+		lines[4] = this.getBoxLine(color, boxorigin, boxsize, 4, 5);
+		lines[5] = this.getBoxLine(color, boxorigin, boxsize, 5, 6);
+		lines[6] = this.getBoxLine(color, boxorigin, boxsize, 6, 7);
+		lines[7] = this.getBoxLine(color, boxorigin, boxsize, 7, 4);
 
-		lines[8] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 0, 4));
-		lines[9] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 1, 5));
+		lines[8] = this.getBoxLine(color, boxorigin, boxsize, 0, 4);
+		lines[9] = this.getBoxLine(color, boxorigin, boxsize, 1, 5);
 
-		lines[10] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 2, 6));
-		lines[11] = this.addLine(this.getBoxLine(color, boxorigin, boxsize, 3, 7));
+		lines[10] = this.getBoxLine(color, boxorigin, boxsize, 2, 6);
+		lines[11] = this.getBoxLine(color, boxorigin, boxsize, 3, 7);
 
-		return (lines);
+		if (index >= this.renderingList.size()) {
+			index = this.renderingList.size();
+			for (Line line : lines) {
+				this.renderingList.add(line);
+			}
+			return (index);
+		}
+
+		int i = index;
+		for (Line line : lines) {
+			this.renderingList.set(i++, line);
+		}
+
+		return (index);
+	}
+
+	public final int addBox(BoundingBox box) {
+		return (this.setBox(box, this.renderingList.size()));
 	}
 
 	private Line getBoxLine(Vector4f color, Vector3f boxorigin, Vector3f boxsize, int cornera, int cornerb) {
@@ -101,8 +118,7 @@ public class LineRendererFactory extends RendererFactory {
 
 	@Override
 	public void render() {
-		// TODO Auto-generated method stub
-
+		this.getMainRenderer().getLineRenderer().render(this);
 	}
 
 }
