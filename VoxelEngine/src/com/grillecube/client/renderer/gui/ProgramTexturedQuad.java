@@ -27,6 +27,7 @@ import com.grillecube.common.resources.R;
 
 public class ProgramTexturedQuad extends GLProgram {
 	private int uvs;
+	private int alpha;
 	private int transfMatrix;
 
 	public ProgramTexturedQuad() {
@@ -45,12 +46,14 @@ public class ProgramTexturedQuad extends GLProgram {
 	public void linkUniforms() {
 		this.uvs = super.getUniform("uvs");
 		this.transfMatrix = super.getUniform("transfMatrix");
+		this.alpha = super.getUniform("alpha");
 	}
 
-	public void loadQuadTextured(GLTexture glTexture, float ux, float uy, float vx, float vy,
+	public void loadQuadTextured(GLTexture glTexture, float ux, float uy, float vx, float vy, float alpha,
 			Matrix4f transformMatrix) {
 		glTexture.bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
 		super.loadUniformMatrix(this.transfMatrix, transformMatrix);
 		super.loadUniformVec(this.uvs, ux, uy, vx, vy);
+		super.loadUniformFloat(this.alpha, alpha);
 	}
 }

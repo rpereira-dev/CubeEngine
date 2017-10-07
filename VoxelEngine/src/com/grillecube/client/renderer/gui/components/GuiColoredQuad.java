@@ -30,7 +30,7 @@ public class GuiColoredQuad extends Gui {
 	@Override
 	protected void onRender(GuiRenderer guiRenderer) {
 		Matrix4f matrix = super.getGuiToGLChangeOfBasis();
-		guiRenderer.renderColoredQuad(this.r, this.g, this.b, this.a, matrix);
+		guiRenderer.renderColoredQuad(this.r, this.g, this.b, this.a, this.getTransparency(), matrix);
 	}
 
 	@Override
@@ -43,6 +43,5 @@ public class GuiColoredQuad extends Gui {
 
 	@Override
 	protected void onDeinitialized(GuiRenderer renderer) {
-		// do not delete the texture, as it wasnt create by this object...
 	}
 }

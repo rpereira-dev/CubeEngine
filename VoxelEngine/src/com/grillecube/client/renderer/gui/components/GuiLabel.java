@@ -16,8 +16,6 @@ package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
-import com.grillecube.client.renderer.gui.event.GuiEventPress;
-import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.common.maths.Vector4f;
 
 /**
@@ -39,8 +37,8 @@ public class GuiLabel extends Gui {
 		this.guiText = new GuiText();
 		this.guiText.setPosition(0.0f, 0.0f);
 		this.guiText.setFontColor(0, 0, 0, 1.0f);
-		this.guiText.setResponsive(false);
 		this.addChild(this.guiText);
+		this.guiText.setHoverable(false);
 	}
 
 	public void addTextParameter(GuiParameter<GuiText> parameter) {

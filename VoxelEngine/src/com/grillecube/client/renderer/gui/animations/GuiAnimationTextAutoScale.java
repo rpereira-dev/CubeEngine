@@ -17,9 +17,9 @@ public class GuiAnimationTextAutoScale<T extends GuiText> extends GuiAnimation<T
 	}
 
 	@Override
-	public boolean run(T gui, Timer timer) {
+	public boolean run(T gui) {
 
-		float time = (float) timer.getTime();
+		float time = (float) this.getTimer().getTime();
 		float sign = (time > 0.5f) ? 1.0f : -1.0f;
 		float sizex = gui.getFontSize().x;
 		float sizey = gui.getFontSize().y;
@@ -33,6 +33,12 @@ public class GuiAnimationTextAutoScale<T extends GuiText> extends GuiAnimation<T
 	}
 
 	@Override
-	public void onRestart(T gui) {
+	public void onStart(T gui) {
+	}
+
+	@Override
+	public void onStop(T gui) {
+		// TODO Auto-generated method stub
+
 	}
 }

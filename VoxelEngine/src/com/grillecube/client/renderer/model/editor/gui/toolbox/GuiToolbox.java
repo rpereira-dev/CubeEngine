@@ -44,8 +44,6 @@ public class GuiToolbox extends Gui {
 		this.bg = new GuiColoredQuad();
 		this.bg.setBox(0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 		this.bg.setColor(0.95f, 0.95f, 0.95f, 1.0f);
-		this.bg.setResponsive(false);
-		this.bg.increaseLayer(-1);
 		this.addChild(this.bg);
 
 		// the title

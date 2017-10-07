@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiSpinner;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
+import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventAdd;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventExpanded;
@@ -63,6 +64,13 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		}
 	};
 
+	private static final GuiListener<GuiEventPress<GuiButton>> PRESS_EXPAND_LISTENER = new GuiListener<GuiEventPress<GuiButton>>() {
+		@Override
+		public void invoke(GuiEventPress<GuiButton> event) {
+			((GuiSpinner) event.getGui().getParent()).expand();
+		}
+	};
+
 	private static final Vector4f TX_COLOR = new Vector4f(0, 0, 0, 1.0f);
 	private static final Vector4f HINT_COLOR = new Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
 
@@ -75,6 +83,7 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		this.guiButtons = new ArrayList<GuiButton>();
 
 		this.title = new GuiButton();
+		this.title.addListener(PRESS_EXPAND_LISTENER);
 		this.addChild(this.title);
 
 		this.refreshButtons();
@@ -87,9 +96,6 @@ public class GuiSpinnerEditor extends GuiSpinner {
 	}
 
 	private final void onIndexPicked(int pickedIndex) {
-		if (this.isExpanded()) {
-			this.expand();
-		}
 		this.refreshButtons();
 	}
 
@@ -101,7 +107,7 @@ public class GuiSpinnerEditor extends GuiSpinner {
 
 		// update title
 		this.title.setSelectable(this.count() != 0);
-		this.title.setSelected(this.isExpanded() && this.isSelectable());
+		this.title.setSelected(this.isExpanded() && this.title.isSelectable());
 		this.title.setText(this.getPickedIndex() == -1 ? this.getHint() : "-   " + this.getPickedName() + " ...");
 		this.title.setFontColor(this.getPickedIndex() == -1 ? HINT_COLOR : TX_COLOR);
 
@@ -123,7 +129,7 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		guiButton.setOutColor(0.8f, 0.8f, 0.8f, 1.0f);
 		this.guiButtons.add(guiButton);
 		this.addChild(guiButton);
-		guiButton.increaseLayer(64); //TODO make it proper
+		guiButton.increaseLayer(64);
 		this.refreshButtons();
 	}
 
