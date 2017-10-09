@@ -154,11 +154,11 @@ public class MainRenderer implements Taskable {
 		this.windowResizeListener = new GLFWListener<GLFWEventWindowResize>() {
 			@Override
 			public void invoke(GLFWEventWindowResize event) {
-				onWindowResize(event.getGLFWWindow(), event.getWidth(), event.getHeight());
+				onWindowResize(event.getGLFWWindow());
 			}
 		};
 		this.getGLFWWindow().addListener(this.windowResizeListener);
-		this.onWindowResize(this.getGLFWWindow(), this.getGLFWWindow().getWidth(), this.getGLFWWindow().getHeight());
+		this.onWindowResize(this.getGLFWWindow());
 
 		Logger.get().log(Level.FINE, "Done");
 		GLH.glhCheckError("post mainrenderer started");
@@ -202,13 +202,13 @@ public class MainRenderer implements Taskable {
 	}
 
 	/** called whenever the window is resized */
-	public void onWindowResize(GLFWWindow window, int width, int height) {
+	public void onWindowResize(GLFWWindow window) {
 		for (Renderer renderer : this.defaultRenderers) {
-			renderer.onWindowResize(window, width, height);
+			renderer.onWindowResize(window);
 		}
 
 		for (Renderer renderer : this.customRenderers) {
-			renderer.onWindowResize(window, width, height);
+			renderer.onWindowResize(window);
 		}
 	}
 

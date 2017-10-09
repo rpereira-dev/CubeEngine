@@ -7,56 +7,13 @@ import com.grillecube.client.renderer.gui.components.GuiSpinner;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.gui.event.GuiSpinnerEventAdd;
-import com.grillecube.client.renderer.gui.event.GuiSpinnerEventExpanded;
-import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
-import com.grillecube.client.renderer.gui.event.GuiSpinnerEventRemove;
-import com.grillecube.client.renderer.gui.event.GuiSpinnerEventSorted;
 import com.grillecube.common.maths.Vector4f;
 
 public class GuiSpinnerEditor extends GuiSpinner {
 
 	private static final String ATTR_BUTTON_INDEX = "spinnerIndex";
 
-	private static final GuiListener<GuiSpinnerEventAdd<GuiSpinnerEditor>> ADD_LISTENER = new GuiListener<GuiSpinnerEventAdd<GuiSpinnerEditor>>() {
-		@Override
-		public void invoke(GuiSpinnerEventAdd<GuiSpinnerEditor> event) {
-			event.getGui().onObjectAdded(event.getAddedIndex());
-		}
-	};
-
-	private static final GuiListener<GuiSpinnerEventExpanded<GuiSpinnerEditor>> EXPAND_LISTENER = new GuiListener<GuiSpinnerEventExpanded<GuiSpinnerEditor>>() {
-
-		@Override
-		public void invoke(GuiSpinnerEventExpanded<GuiSpinnerEditor> event) {
-			event.getGui().onExpansionChanged();
-		}
-	};
-
-	private static final GuiListener<GuiSpinnerEventSorted<GuiSpinnerEditor>> SORTED_LISTENER = new GuiListener<GuiSpinnerEventSorted<GuiSpinnerEditor>>() {
-		@Override
-		public void invoke(GuiSpinnerEventSorted<GuiSpinnerEditor> event) {
-			event.getGui().onObjectsSorted();
-		}
-	};
-
-	private static final GuiListener<GuiSpinnerEventRemove<GuiSpinnerEditor>> REMOVE_LISTENER = new GuiListener<GuiSpinnerEventRemove<GuiSpinnerEditor>>() {
-		@Override
-		public void invoke(GuiSpinnerEventRemove<GuiSpinnerEditor> event) {
-			event.getGui().onObjectRemoved(event.getRemovedIndex());
-		}
-	};
-
-	private static final GuiListener<GuiSpinnerEventPick<GuiSpinnerEditor>> PICKED_LISTENER = new GuiListener<GuiSpinnerEventPick<GuiSpinnerEditor>>() {
-
-		@Override
-		public void invoke(GuiSpinnerEventPick<GuiSpinnerEditor> event) {
-			event.getGui().onIndexPicked(event.getPickedIndex());
-		}
-	};
-
 	private static final GuiListener<GuiEventClick<GuiButton>> BUTTONS_LEFT_PRESSED_LISTENER = new GuiListener<GuiEventClick<GuiButton>>() {
-
 		@Override
 		public void invoke(GuiEventClick<GuiButton> event) {
 			GuiSpinnerEditor spinner = ((GuiSpinnerEditor) event.getGui().getParent());
@@ -87,19 +44,18 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		this.addChild(this.title);
 
 		this.refreshButtons();
-
-		super.addListener(ADD_LISTENER);
-		super.addListener(EXPAND_LISTENER);
-		super.addListener(SORTED_LISTENER);
-		super.addListener(PICKED_LISTENER);
-		super.addListener(REMOVE_LISTENER);
 	}
 
-	private final void onIndexPicked(int pickedIndex) {
+	@Override
+	protected void onIndexPicked(int pickedIndex) {
+		if (this.isExpanded()) {
+			this.expand();
+		}
 		this.refreshButtons();
 	}
 
-	private final void onExpansionChanged() {
+	@Override
+	protected void onExpansionChanged() {
 		this.refreshButtons();
 	}
 
@@ -121,7 +77,8 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		}
 	}
 
-	private final void onObjectAdded(int index) {
+	@Override
+	protected void onObjectAdded(int index) {
 		// new gui button
 		GuiButton guiButton = new GuiButton();
 		guiButton.setVisible(false);
@@ -129,15 +86,17 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		guiButton.setOutColor(0.8f, 0.8f, 0.8f, 1.0f);
 		this.guiButtons.add(guiButton);
 		this.addChild(guiButton);
-		guiButton.increaseLayer(64);
+		guiButton.setLayer(this.getTopestLayer() + 1);
 		this.refreshButtons();
 	}
 
-	private final void onObjectsSorted() {
+	@Override
+	protected void onObjectsSorted() {
 		this.refreshButtons();
 	}
 
-	private final void onObjectRemoved(int index) {
+	@Override
+	protected void onObjectRemoved(int index) {
 		if (this.guiButtons.size() == 0) {
 			return;
 		}

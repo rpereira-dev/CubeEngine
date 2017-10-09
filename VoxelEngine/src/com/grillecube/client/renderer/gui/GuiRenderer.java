@@ -221,8 +221,9 @@ public class GuiRenderer extends Renderer {
 	}
 
 	/** a callback when the window is resized */
-	public void onWindowResize(GLFWWindow window, int width, int height) {
-		this.mainGui.onWindowResized(width, height);
+	@Override
+	public void onWindowResize(GLFWWindow window) {
+		this.mainGui.onWindowResized(window.getWidth(), window.getHeight(), window.getAspectRatio());
 	}
 
 	/**
@@ -239,9 +240,12 @@ public class GuiRenderer extends Renderer {
 	}
 
 	public static final Vector4f dialogPickColor() {
-		long v = Long.parseLong(TinyFileDialogs.tinyfd_colorChooser("Pick a color", "#FFFFFF", null,
-				BufferUtils.createByteBuffer(3 * 4)).replace("#", ""), 16);
-		Color color = new Color((int) v);
+		String value = TinyFileDialogs.tinyfd_colorChooser("Pick a color", "#FFFFFF", null,
+				BufferUtils.createByteBuffer(3 * 4));
+		if (value == null) {
+			return (null);
+		}
+		Color color = new Color((int) Long.parseLong(value.replace("#", ""), 16));
 		return (new Vector4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, 1.0f));
 	}
 

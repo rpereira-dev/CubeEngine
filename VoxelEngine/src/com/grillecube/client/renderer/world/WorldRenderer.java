@@ -40,7 +40,6 @@ import com.grillecube.client.renderer.factories.TerrainRendererFactory;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.Logger;
 import com.grillecube.common.event.EventListener;
 import com.grillecube.common.resources.EventManager;
@@ -236,7 +235,7 @@ public class WorldRenderer extends RendererFactorized {
 	}
 
 	@Override
-	public void onWindowResize(GLFWWindow window, int width, int height) {
+	public void onWindowResize(GLFWWindow window) {
 		this.resizeFbo();
 	}
 

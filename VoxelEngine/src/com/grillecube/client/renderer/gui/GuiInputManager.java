@@ -52,6 +52,7 @@ public class GuiInputManager {
 				focusedGui.stackEvent(new GuiEventChar<Gui>(focusedGui, event.getGLFWWindow(), event.getCharacter()));
 			}
 		};
+
 		this.glfwWindow.addListener(this.keyPressListener);
 		this.glfwWindow.addListener(this.charListener);
 	}

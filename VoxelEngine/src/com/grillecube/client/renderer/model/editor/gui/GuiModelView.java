@@ -3,6 +3,7 @@ package com.grillecube.client.renderer.model.editor.gui;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
+import com.grillecube.client.renderer.gui.components.GuiViewDebug;
 import com.grillecube.client.renderer.gui.components.GuiViewWorld;
 import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.ModelEditorMod;
@@ -25,6 +26,8 @@ public class GuiModelView extends Gui {
 		this.addChild(this.guiViewWorld);
 		this.theBox = new BoundingBox();
 		this.boxID = this.guiViewWorld.getWorldRenderer().getLineRendererFactory().addBox(this.theBox);
+
+		this.addChild(new GuiViewDebug(camera));
 	}
 
 	@Override

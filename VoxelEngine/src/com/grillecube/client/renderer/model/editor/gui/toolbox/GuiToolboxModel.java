@@ -2,11 +2,6 @@ package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
 import java.util.ArrayList;
 
-<<<<<<< HEAD
-=======
-import com.grillecube.client.renderer.gui.animations.GuiAnimationAddChild;
-import com.grillecube.client.renderer.gui.animations.GuiAnimationRemoveChild;
->>>>>>> 856eee9be42fb9b08ffd540060ce2285952a9054
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiText;
@@ -31,7 +26,7 @@ public class GuiToolboxModel extends GuiView {
 
 	private final ArrayList<GuiToolboxModelPanel> panels;
 
-	private int selected = -1;
+	private int selected;
 
 	public GuiToolboxModel(ModelInstance modelInstance) {
 		super();
@@ -84,7 +79,7 @@ public class GuiToolboxModel extends GuiView {
 		this.panels.add(new GuiToolboxModelPanelBuild());
 		this.panels.add(new GuiToolboxModelPanelSkin());
 		this.panels.add(new GuiToolboxModelPanelSkeleton());
-		this.addChild(this.panels.get(0));
+		this.panels.get(0).fadeIn(this, 0.15d);
 
 		this.refresh();
 	}

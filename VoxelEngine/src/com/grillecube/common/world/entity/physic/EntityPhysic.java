@@ -2,6 +2,8 @@ package com.grillecube.common.world.entity.physic;
 
 import com.grillecube.common.world.entity.Entity;
 
+//TODO : rebuild this
+
 public abstract class EntityPhysic {
 
 	/** number of physic update per second for each entity */

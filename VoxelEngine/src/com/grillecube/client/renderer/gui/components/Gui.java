@@ -64,6 +64,7 @@ public abstract class Gui {
 	public static final Vector4f COLOR_WHITE = new Vector4f(0.9f, 0.9f, 0.9f, 1.0f);
 	public static final Vector4f COLOR_BLACK = new Vector4f(0.1f, 0.1f, 0.1f, 1.0f);
 	public static final Vector4f COLOR_BLUE = new Vector4f(65 / 255.0f, 105 / 255.0f, 225 / 255.0f, 1.0f);
+	public static final Vector4f COLOR_LIGHT_BLUE = Vector4f.scale(null, COLOR_BLUE, 1.5f);
 	public static final Vector4f COLOR_RED = new Vector4f(176 / 255.0f, 23 / 255.0f, 31 / 255.0f, 1.0f);
 	public static final Vector4f COLOR_DARK_MAGENTA = new Vector4f(139 / 255.0f, 0 / 255.0f, 139 / 255.0f, 1.0f);
 
@@ -114,8 +115,7 @@ public abstract class Gui {
 	public static final Comparator<? super Gui> LAYER_COMPARATOR = new Comparator<Gui>() {
 		@Override
 		public int compare(Gui left, Gui right) {
-			float d = left.getLayer() - right.getLayer();
-			return (d == 0 ? 0 : d < 0 ? -1 : 1);
+			return (left.getLayer() - right.getLayer());
 		}
 	};
 
@@ -123,7 +123,7 @@ public abstract class Gui {
 	private int state;
 	private float localAspectRatio = 1.0f;
 	private float totalAspectRatio = 1.0f;
-	private float layer;
+	private int layer;
 
 	/** border */
 	private float borderWidth;
@@ -804,15 +804,15 @@ public abstract class Gui {
 		return (this.totalAspectRatio);
 	}
 
-	public void onWindowResized(int width, int height) {
+	public void onWindowResized(int width, int height, float aspectRatio) {
 		if (this.children != null) {
 			for (Gui gui : this.children) {
-				gui.onWindowResized(width, height);
+				gui.onWindowResized(width, height, aspectRatio);
 			}
 		}
 	}
 
-	public final float getLayer() {
+	public final int getLayer() {
 		return (this.layer);
 	}
 
@@ -820,11 +820,11 @@ public abstract class Gui {
 	 * gui layer (the greater the layer is, the most this gui will be placed in
 	 * foreground layers). This layer is relative to the window
 	 */
-	public final void setLayer(float layer) {
+	public final void setLayer(int layer) {
 		if (this.layer == layer) {
 			return;
 		}
-		float inc = layer - this.layer;
+		int inc = layer - this.layer;
 		this.layer = layer;
 		if (this.getChildren() != null) {
 			for (Gui gui : this.getChildren()) {
@@ -887,5 +887,37 @@ public abstract class Gui {
 
 	public void fadeIn(Gui parent, double t) {
 		parent.startAnimation(new GuiAnimationAddChild<Gui, Gui>(this, 0.15d));
+	}
+
+	/**
+	 * return the topest layer found (tested gui are the 'older' parent found,
+	 * and it childs)
+	 */
+	public final int getTopestLayer() {
+		Gui localParentParent = this.getParent();
+		Gui localParent = this;
+		while (true) {
+			Gui oldLocalParentParent = localParentParent;
+			localParentParent = localParent.getParent();
+			if (localParentParent == null) {
+				break;
+			}
+			localParent = oldLocalParentParent;
+		}
+		return (localParent.getTopestLayerUnder());
+	}
+
+	/** return the topest layer found (tested gui are 'this', and it childs) */
+	public final int getTopestLayerUnder() {
+		int topestLayer = this.layer;
+		if (this.children != null) {
+			for (Gui child : this.children) {
+				int childTopestLayer = child.getTopestLayerUnder();
+				if (childTopestLayer > topestLayer) {
+					topestLayer = childTopestLayer;
+				}
+			}
+		}
+		return (topestLayer);
 	}
 }

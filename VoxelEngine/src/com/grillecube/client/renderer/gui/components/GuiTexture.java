@@ -29,8 +29,12 @@ public class GuiTexture extends Gui {
 		this.vy = vy;
 	}
 
-	public void setTexture(GLTexture glTexture) {
+	public final void setTexture(GLTexture glTexture) {
 		this.glTexture = glTexture;
+	}
+
+	public final GLTexture getGLTexture() {
+		return (this.glTexture);
 	}
 
 	@Override

@@ -38,6 +38,7 @@ public abstract class GuiSpinner extends Gui {
 	/** expands the gui spinner */
 	public final void expand() {
 		this.expanded = !this.expanded;
+		this.onExpansionChanged();
 		super.stackEvent(new GuiSpinnerEventExpanded<GuiSpinner>(this));
 	}
 
@@ -53,6 +54,7 @@ public abstract class GuiSpinner extends Gui {
 
 	public final void add(Object value, String name, int index) {
 		this.values.add(index, new Pair<Object, String>(value, name));
+		this.onObjectAdded(index);
 		super.stackEvent(new GuiSpinnerEventAdd<GuiSpinner>(this, index, value, name));
 	}
 
@@ -79,12 +81,14 @@ public abstract class GuiSpinner extends Gui {
 		if (this.pickedIndex >= this.values.size()) {
 			this.pick(this.values.size() - 1);
 		}
+		this.onObjectRemoved(index);
 		super.stackEvent(new GuiSpinnerEventRemove<GuiSpinner>(this, index, value.left, value.right));
 	}
 
 	/** sort the spinner */
 	public final void sort(Comparator<Object> comparator) {
 		this.values.sort(comparator);
+		this.onObjectsSorted();
 		super.stackEvent(new GuiSpinnerEventSorted<GuiSpinner>(this));
 	}
 
@@ -92,6 +96,7 @@ public abstract class GuiSpinner extends Gui {
 	public final void pick(int index) {
 		int prevIndex = this.pickedIndex;
 		this.pickedIndex = index;
+		this.onIndexPicked(this.pickedIndex);
 		super.stackEvent(new GuiSpinnerEventPick<GuiSpinner>(this, prevIndex));
 	}
 
@@ -157,5 +162,20 @@ public abstract class GuiSpinner extends Gui {
 
 	/** called whenever the hint changes */
 	protected void onHintChanged() {
+	}
+
+	protected void onIndexPicked(int pickedIndex) {
+	}
+
+	protected void onExpansionChanged() {
+	}
+
+	protected void onObjectAdded(int index) {
+	}
+
+	protected void onObjectsSorted() {
+	}
+
+	protected void onObjectRemoved(int index) {
 	}
 }

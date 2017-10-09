@@ -23,16 +23,18 @@ import org.lwjgl.opengl.GL13;
 
 public class GLTexture implements GLObject {
 	/** opengl texture id */
-	private int _glID;
+	private final int glID;
 
 	/** texture size */
-	private int _width;
-	private int _height;
+	private int width;
+	private int height;
+
+	private BufferedImage data;
 
 	public GLTexture(int glID) {
-		this._glID = glID;
-		this._width = 0;
-		this._height = 0;
+		this.glID = glID;
+		this.width = 0;
+		this.height = 0;
 	}
 
 	public GLTexture() {
@@ -41,14 +43,13 @@ public class GLTexture implements GLObject {
 
 	@Override
 	public void delete() {
-		GL11.glDeleteTextures(this._glID);
-		this._glID = 0;
-		this._width = 0;
-		this._height = 0;
+		GL11.glDeleteTextures(this.glID);
+		this.width = 0;
+		this.height = 0;
 	}
 
 	/** set pixels data */
-	public void setData(BufferedImage img) {
+	public final void setData(BufferedImage img) {
 		if (img == null) {
 			return;
 		}
@@ -57,6 +58,8 @@ public class GLTexture implements GLObject {
 		ByteBuffer buffer = BufferUtils.createByteBuffer(pixels.length);
 		buffer.put(pixels);
 		buffer.flip();
+
+		this.data = img;
 
 		this.bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
 
@@ -68,28 +71,32 @@ public class GLTexture implements GLObject {
 
 		this.unbind(GL11.GL_TEXTURE_2D);
 
-		this._width = img.getWidth();
-		this._height = img.getHeight();
+		this.width = img.getWidth();
+		this.height = img.getHeight();
 	}
 
-	public int getWidth() {
-		return (this._width);
+	public final BufferedImage getData() {
+		return (this.data);
 	}
 
-	public int getHeight() {
-		return (this._height);
+	public final int getWidth() {
+		return (this.width);
 	}
-	
-	public void bind(int target) {
-		GL11.glBindTexture(target, this._glID);
+
+	public final int getHeight() {
+		return (this.height);
 	}
-	
-	public void bind(int texture, int target) {
+
+	public final void bind(int target) {
+		GL11.glBindTexture(target, this.glID);
+	}
+
+	public final void bind(int texture, int target) {
 		GL13.glActiveTexture(texture);
-		GL11.glBindTexture(target, this._glID);
+		GL11.glBindTexture(target, this.glID);
 	}
 
-	public void unbind(int target) {
+	public final void unbind(int target) {
 		GL11.glBindTexture(target, 0);
 	}
 
@@ -97,20 +104,20 @@ public class GLTexture implements GLObject {
 	 * int target, int level, int internalformat, int width, int height, int
 	 * border, int format, int type, ByteBuffer pixels
 	 */
-	public void image2D(int target, int level, int internalformat, int width, int height, int border, int format,
+	public final void image2D(int target, int level, int internalformat, int width, int height, int border, int format,
 			int type, ByteBuffer pixels) {
 		GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 	}
 
-	public void parameteri(int target, int pname, int param) {
+	public final void parameteri(int target, int pname, int param) {
 		GL11.glTexParameteri(target, pname, param);
 	}
 
-	public void parameterf(int target, int pname, float param) {
+	public final void parameterf(int target, int pname, float param) {
 		GL11.glTexParameterf(target, pname, param);
 	}
 
-	public int getID() {
-		return (this._glID);
+	public final int getID() {
+		return (this.glID);
 	}
 }

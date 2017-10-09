@@ -135,9 +135,9 @@ public class GuiText extends Gui {
 	}
 
 	@Override
-	public void onWindowResized(int width, int height) {
-		super.onWindowResized(width, height);
-		this.resizeFontModelAspect(width / (float) height * this.getTotalAspectRatio(), true);
+	public void onWindowResized(int width, int height, float aspectRatio) {
+		super.onWindowResized(width, height, aspectRatio);
+		this.resizeFontModelAspect(aspectRatio * this.getTotalAspectRatio(), true);
 	}
 
 	private void resizeFontModelAspect(float aspectRatio, boolean runParameters) {

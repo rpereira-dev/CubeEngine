@@ -38,7 +38,7 @@ public abstract class Renderer implements Taskable {
 	public abstract void deinitialize();
 
 	/** a callback when the window is resized */
-	public void onWindowResize(GLFWWindow window, int width, int height) {
+	public void onWindowResize(GLFWWindow window) {
 	}
 
 	public void render() {
