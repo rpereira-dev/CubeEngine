@@ -108,11 +108,12 @@ public class GuiInputManager {
 			// if gui is hovered,
 			if (gui.isHoverable() && !topestHoveredFound && (x >= 0.0f && x < 1.0f && y >= 0.0f && y <= 1.0f)) {
 				topestHoveredFound = true;
+				gui.stackEvent(new GuiEventMouseHover<Gui>(gui));
+
 				// if gui wasnt hovered earlier
 				if (!gui.isHovered()) {
 					gui.setHovered(true);
 					gui.stackEvent(new GuiEventMouseEnter<Gui>(gui));
-					gui.stackEvent(new GuiEventMouseHover<Gui>(gui));
 				}
 				// if mouse wasnt pressed, and now is pressed, and the gui is
 				// hovered

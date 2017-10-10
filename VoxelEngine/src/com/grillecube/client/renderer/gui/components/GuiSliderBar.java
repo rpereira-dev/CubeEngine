@@ -32,6 +32,12 @@ public class GuiSliderBar extends Gui {
 		}
 	}
 
+	public final void addValuesArray(Object[] objects) {
+		for (Object object : objects) {
+			this.addValue(object);
+		}
+	}
+
 	/** add a value to the list */
 	public final void addValue(Object object) {
 		if (this.values.size() == 0) {
@@ -142,25 +148,29 @@ public class GuiSliderBar extends Gui {
 
 	@Override
 	protected void onInputUpdate() {
-		// TODO : mouse press
-		if (super.isPressed()) {
+		if (super.isPressed() && super.hasFocus()) {
 			this.select(this.getMouseX());
 		}
 	}
 
 	/** VALUES HELPER */
+	public static final Integer[] intRange(int min, int max) {
+		return (intRange(min, max, 1));
+	}
 
-	public static final Integer[] intRange(int min, int max, int n) {
-		int step = (max - min) / (n - 1);
-		Integer[] values = new Integer[n];
-		for (int i = 0; i < n; i++) {
-			values[i] = new Integer(min + i * step);
+	public static final Integer[] intRange(int min, int max, int step) {
+		int n = (max - min) / step;
+		Integer[] values = new Integer[n + 1];
+		int i = 0;
+		while (min <= max) {
+			values[i++] = new Integer(min);
+			min += step;
 		}
 		return (values);
 	}
 
 	public static final Float[] floatRange(float min, float max, float step) {
-		return (floatRange(min, max, (max - min) / step));
+		return (floatRange(min, max, (int) ((max - min) / step)));
 	}
 
 	public static final Float[] floatRange(float min, float max, int n) {

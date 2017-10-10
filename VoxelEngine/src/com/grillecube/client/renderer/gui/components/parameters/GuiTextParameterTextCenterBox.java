@@ -14,5 +14,8 @@ public class GuiTextParameterTextCenterBox extends GuiParameter<GuiText> {
 		float x = 2.0f * guiText.getBoxCenterX() - 1.0f - guiText.getTextWidth();
 		float y = 2.0f * guiText.getBoxCenterY() - 1.0f - guiText.getTextHeight();
 		fontModel.setPosition(x, y, 1.0f);
+		if (guiText.getText().equals("Build")) {
+			System.out.println("center box: " + x + " : " + y);
+		}
 	}
 }

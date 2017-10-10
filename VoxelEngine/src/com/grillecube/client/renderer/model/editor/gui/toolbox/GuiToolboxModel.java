@@ -36,7 +36,7 @@ public class GuiToolboxModel extends GuiView {
 		GuiParameter<GuiText> center = new GuiTextParameterTextCenterBox();
 
 		this.prev = new GuiButton();
-		this.prev.setBox(0, 0.75f, 0.25f, 0.05f, 0);
+		this.prev.setBox(0, 0.75f, 1 / 3.0f, 0.05f, 0);
 		this.prev.addTextParameter(center);
 		this.prev.setText("<-");
 		this.addChild(this.prev);
@@ -53,13 +53,13 @@ public class GuiToolboxModel extends GuiView {
 		});
 
 		this.title = new GuiLabel();
-		this.title.setBox(0.25f, 0.75f, 0.5f, 0.05f, 0);
+		this.title.setBox(1 / 3.0f, 0.75f, 2 / 3.0f, 0.05f, 0);
 		this.title.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.title.addTextParameter(center);
 		this.addChild(this.title);
 
 		this.next = new GuiButton();
-		this.next.setBox(0.75f, 0.75f, 0.25f, 0.05f, 0);
+		this.next.setBox(2 / 3.0f, 0.75f, 1 / 3.0f, 0.05f, 0);
 		this.next.addTextParameter(center);
 		this.next.setText("->");
 		this.next.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
