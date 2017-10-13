@@ -35,14 +35,20 @@ public class Raycasting {
 	public static Vector3f raycast(Vector3f origin, Vector3f dir, float rx, float ry, float rz,
 			RaycastingCallback callback) {
 
-		if (dir.lengthSquared() < 0.01f) {
+		if (dir.lengthSquared() < 0.001f) {
 			return (null);
 		}
 
-		float x = (float) Math.floor(origin.x);
-		float y = (float) Math.floor(origin.y);
-		float z = (float) Math.floor(origin.z);
-
+		float ox = (float) Math.floor(origin.x);
+		float oy = (float) Math.floor(origin.y);
+		float oz = (float) Math.floor(origin.z);
+		float x = ox;
+		float y = oy;
+		float z = oz;
+		int nx = 1;
+		int ny = 1;
+		int nz = 1;
+		
 		float dirx = dir.x;
 		float diry = dir.y;
 		float dirz = dir.z;
@@ -68,17 +74,19 @@ public class Raycasting {
 
 			if (maxX < maxY) {
 				if (maxX < maxZ) {
-					if (Maths.abs(maxX) > rx)
+					if (Maths.abs(maxX) > rx) {
 						break;
-					x += stepX;
+					}
+					x = ox + nx++ * stepX;
 					maxX += dx;
 					face.x = -stepX;
 					face.y = 0;
 					face.z = 0;
 				} else {
-					if (Maths.abs(maxZ) > rz)
+					if (Maths.abs(maxZ) > rz) {
 						break;
-					z += stepZ;
+					}
+					z = oz + nz++ * stepZ;
 					maxZ += dz;
 					face.x = 0;
 					face.y = 0;
@@ -86,17 +94,19 @@ public class Raycasting {
 				}
 			} else {
 				if (maxY < maxZ) {
-					if (Maths.abs(maxY) > ry)
+					if (Maths.abs(maxY) > ry) {
 						break;
-					y += stepY;
+					}
+					y = oy + ny++ * stepY;
 					maxY += dy;
 					face.x = 0;
 					face.y = -stepY;
 					face.z = 0;
 				} else {
-					if (Maths.abs(maxZ) > rz)
+					if (Maths.abs(maxZ) > rz) {
 						break;
-					z += stepZ;
+					}
+					z = oz + nz++ * stepZ;
 					maxZ += dz;
 					face.x = 0;
 					face.y = 0;
