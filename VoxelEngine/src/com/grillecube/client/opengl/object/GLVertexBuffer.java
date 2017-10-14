@@ -113,7 +113,7 @@ public class GLVertexBuffer implements GLObject {
 		ByteBuffer buffer = BufferUtils.createByteBuffer(byteCount);
 		this.bind(GL15.GL_ARRAY_BUFFER);
 		GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, offset, buffer);
-		this.unbind(GL15.GL_ARRAY_BUFFER);
+//		this.unbind(GL15.GL_ARRAY_BUFFER);
 		return (buffer);
 	}
 

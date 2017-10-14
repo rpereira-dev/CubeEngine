@@ -74,7 +74,7 @@ public class GLVertexArray implements GLObject {
 	public void setAttributei(GLVertexBuffer vbo, int index, int size, int type, int stride, long pointer) {
 		vbo.bind(GL15.GL_ARRAY_BUFFER);
 		GL30.glVertexAttribIPointer(index, size, type, stride, pointer);
-		vbo.unbind(GL15.GL_ARRAY_BUFFER);
+//		vbo.unbind(GL15.GL_ARRAY_BUFFER);
 	}
 
 	/** bind the given VertexBuffer and set the attribute in the VertexArray */
@@ -82,7 +82,7 @@ public class GLVertexArray implements GLObject {
 			int offset) {
 		vbo.bind(GL15.GL_ARRAY_BUFFER);
 		this.setAttribute(attributeID, length, type, normalized, stride, offset);
-		vbo.unbind(GL15.GL_ARRAY_BUFFER);
+//		vbo.unbind(GL15.GL_ARRAY_BUFFER);
 	}
 
 	/** bind the given VertexBuffer and set the attribute in the VertexArray */
@@ -92,7 +92,7 @@ public class GLVertexArray implements GLObject {
 		vbo.bind(GL15.GL_ARRAY_BUFFER);
 		vbo.bufferData(GL15.GL_ARRAY_BUFFER, floats, GL15.GL_STATIC_DRAW);
 		this.setAttribute(attributeID, length, type, normalized, stride, offset);
-		vbo.unbind(GL15.GL_ARRAY_BUFFER);
+//		vbo.unbind(GL15.GL_ARRAY_BUFFER);
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class GLVertexArray implements GLObject {
 
 		vbo.bind(GL15.GL_ARRAY_BUFFER);
 		this.setAttributeInstanced(attributeID, length, type, normalized, stride, offset);
-		vbo.unbind(GL15.GL_ARRAY_BUFFER);
+//		vbo.unbind(GL15.GL_ARRAY_BUFFER);
 	}
 
 	/** Set the bound vbo as an instanced attribute to the vertex array */

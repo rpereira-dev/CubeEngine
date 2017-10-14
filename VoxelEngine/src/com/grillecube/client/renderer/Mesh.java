@@ -68,9 +68,8 @@ public abstract class Mesh {
 
 		this.setAttributes(this.vao, this.vbo);
 
-		this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
-
-		this.vao.unbind();
+//		this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
+//		this.vao.unbind();
 	}
 
 	public boolean isInitialized() {

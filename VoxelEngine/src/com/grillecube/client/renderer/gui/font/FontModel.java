@@ -112,13 +112,13 @@ public class FontModel {
 			this.vao.setAttribute(1, 2, GL11.GL_FLOAT, false, (3 + 2 + 4) * 4, 3 * 4);
 			this.vao.setAttribute(2, 4, GL11.GL_FLOAT, false, (3 + 2 + 4) * 4, (3 + 2) * 4);
 
-			this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
+//			this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
 
 			this.vao.enableAttribute(0);
 			this.vao.enableAttribute(1);
 			this.vao.enableAttribute(2);
 		}
-		this.vao.unbind();
+//		this.vao.unbind();
 	}
 
 	/** destroy the model */
