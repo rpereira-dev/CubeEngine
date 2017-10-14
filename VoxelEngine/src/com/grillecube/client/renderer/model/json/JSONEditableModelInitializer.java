@@ -11,6 +11,7 @@ import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.editor.mesher.BlockData;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.common.Logger;
+import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.utils.JSONHelper;
 
 public class JSONEditableModelInitializer extends JSONModelInitializer {
@@ -51,10 +52,12 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 		model.setBlockSizeUnit((float) (blocks.getDouble("sizeUnit")));
 		JSONArray blocksData = blocks.getJSONArray("blocks");
 
-		ArrayList<BlockData> blocksDataList = new ArrayList<BlockData>(blocksData.length());
-		int xmax = 0;
-		int ymax = 0;
-		int zmax = 0;
+		// TODO : optimize this so EditableModel 3D blockdata array isnt
+		// reallocated only once
+		ArrayList<BlockData> blockDatas = new ArrayList<BlockData>();
+		ArrayList<Vector3i> pos = new ArrayList<Vector3i>();
+		int minx = 0, miny = 0, minz = 0;
+		int maxx = 0, maxy = 0, maxz = 0;
 		for (int i = 0; i < blocksData.length();) {
 			int x = blocksData.getInt(i++);
 			int y = blocksData.getInt(i++);
@@ -66,31 +69,36 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 			float w2 = (float) blocksData.getDouble(i++);
 			float w3 = (float) blocksData.getDouble(i++);
 
-			BlockData blockData = new BlockData(x, y, z);
+			BlockData blockData = new BlockData();
 			blockData.setBoneWeight(0, b1, w1);
 			blockData.setBoneWeight(1, b2, w2);
 			blockData.setBoneWeight(2, b3, w3);
-
-			blocksDataList.add(blockData);
-
-			if (x > xmax) {
-				xmax = x;
+			blockDatas.add(blockData);
+			pos.add(new Vector3i(x, y, z));
+			if (x < minx) {
+				minx = x;
+			} else if (x > maxx) {
+				maxx = x;
 			}
 
-			if (y > ymax) {
-				ymax = y;
+			if (y < miny) {
+				miny = y;
+			} else if (y > maxy) {
+				maxy = y;
 			}
 
-			if (z > zmax) {
-				zmax = z;
+			if (z < minz) {
+				minz = z;
+			} else if (z > maxz) {
+				maxz = z;
 			}
+
 		}
-
-		model.resize(xmax + 1, ymax + 1, zmax + 1);
-		for (BlockData blockData : blocksDataList) {
-			model.addBlockData(blockData);
+		model.allocate(minx, miny, minz, maxx, maxy, maxz);
+		for (int i = 0; i < blockDatas.size(); i++) {
+			Vector3i p = pos.get(i);
+			model.setBlockDataUncheck(blockDatas.get(i), p.x, p.y, p.z);
 		}
-
 	}
 
 }

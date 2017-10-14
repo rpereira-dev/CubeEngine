@@ -30,11 +30,10 @@ public class ModelMesherCull extends ModelMesher {
 		// prepare the mesh vertex stack
 		Stack<ModelMeshVertex> vertices = new Stack<ModelMeshVertex>();
 		Stack<Short> indices = new Stack<Short>();
-
 		for (Face face : Face.faces) {
-			for (int x = 0; x < editableModel.getSizeX(); x++) {
-				for (int y = 0; y < editableModel.getSizeY(); y++) {
-					for (int z = 0; z < editableModel.getSizeZ(); z++) {
+			for (int x = editableModel.getMinX(); x <= editableModel.getMaxX(); x++) {
+				for (int y = editableModel.getMinY(); y <= editableModel.getMaxY(); y++) {
+					for (int z = editableModel.getMinZ(); z <= editableModel.getMaxZ(); z++) {
 						BlockData modelBlockData = editableModel.getBlockData(x, y, z);
 						if (modelBlockData == null) {
 							continue;

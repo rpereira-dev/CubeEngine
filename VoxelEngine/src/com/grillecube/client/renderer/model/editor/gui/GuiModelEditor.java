@@ -2,6 +2,7 @@ package com.grillecube.client.renderer.model.editor.gui;
 
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolbox;
+import com.grillecube.client.renderer.model.instance.ModelInstance;
 
 public class GuiModelEditor extends Gui {
 
@@ -28,5 +29,18 @@ public class GuiModelEditor extends Gui {
 
 	public final GuiModelView getModelView() {
 		return (this.viewModel);
+	}
+
+	public final void onPickedModelChanged(ModelInstance prevModelInstance, ModelInstance newModelInstance) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public final void onModelInstanceAdded(ModelInstance modelInstance) {
+		this.viewModel.addModelInstance(modelInstance);
+	}
+	
+	public final void onModelInstanceRemoved(ModelInstance modelInstance) {
+		this.viewModel.removeModelInstance(modelInstance);
 	}
 }

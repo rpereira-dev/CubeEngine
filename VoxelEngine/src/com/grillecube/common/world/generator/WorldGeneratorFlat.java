@@ -15,7 +15,9 @@ public class WorldGeneratorFlat extends WorldGenerator {
 		}
 		for (int x = 0; x < Terrain.DIM; x++) {
 			for (int z = 0; z < Terrain.DIM; z++) {
-				terrain.setBlockAt((x + z) % 2 == 0 ? Blocks.GRASS : Blocks.LOG, x, 4, z);
+				// terrain.setBlockAt((x + z) % 2 == 0 ? Blocks.GRASS :
+				// Blocks.LOG, x, 4, z);
+				terrain.setBlockAt(Blocks.GRASS, x, 4, z);
 				terrain.setBlockAt(Blocks.STONE, x, 3, z);
 				terrain.setBlockAt(Blocks.STONE, x, 2, z);
 				terrain.setBlockAt(Blocks.STONE, x, 1, z);

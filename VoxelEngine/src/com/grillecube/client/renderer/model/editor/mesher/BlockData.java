@@ -3,30 +3,12 @@ package com.grillecube.client.renderer.model.editor.mesher;
 /** hold the data of a single block of the model */
 public class BlockData {
 
-	private final int x;
-	private final int y;
-	private final int z;
 	private final int[] boneIds;
 	private final float[] weights;
 
-	public BlockData(int x, int y, int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+	public BlockData() {
 		this.boneIds = new int[3];
 		this.weights = new float[3];
-	}
-
-	public final int getX() {
-		return (this.x);
-	}
-
-	public final int getY() {
-		return (this.y);
-	}
-
-	public final int getZ() {
-		return (this.z);
 	}
 
 	public final int getBoneID(int i) {
@@ -49,5 +31,24 @@ public class BlockData {
 	public final void setBoneWeight(int i, int boneID, float weight) {
 		this.boneIds[i] = boneID;
 		this.weights[i] = weight;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("BlockData{");
+		sb.append(this.boneIds[0]);
+		sb.append(",");
+		sb.append(this.boneIds[1]);
+		sb.append(",");
+		sb.append(this.boneIds[2]);
+		sb.append(",");
+		sb.append(this.weights[0]);
+		sb.append(",");
+		sb.append(this.weights[1]);
+		sb.append(",");
+		sb.append(this.weights[2]);
+		sb.append("}");
+		return (sb.toString());
 	}
 }

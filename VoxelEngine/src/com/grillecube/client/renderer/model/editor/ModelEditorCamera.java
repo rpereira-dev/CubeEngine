@@ -15,18 +15,18 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 	public ModelEditorCamera(GLFWWindow window) {
 		super(window);
 
-		super.setPosition(0, 8, 0);
+		super.setPosition(0, 16, 0);
 		super.setPositionVelocity(0, 0, 0);
 		super.setRotationVelocity(0, 0, 0);
 		super.setPitch(0);
-		super.setYaw((float) Math.PI);
+		super.setYaw(0);
 		super.setRoll(0);
 		super.setSpeed(0.2f);
 		super.setRotSpeed(1);
 		super.setFarDistance(Float.MAX_VALUE);
 		super.setRenderDistance(Float.MAX_VALUE);
 		super.setDistanceFromCenter(16);
-		super.setAngleAroundCenter(0);
+		super.setAngleAroundCenter(-45);
 
 		this.blockOne = new Vector3i();
 		this.blockTwo = new Vector3i();

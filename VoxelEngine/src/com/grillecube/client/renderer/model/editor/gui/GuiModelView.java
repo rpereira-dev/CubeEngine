@@ -1,5 +1,7 @@
 package com.grillecube.client.renderer.model.editor.gui;
 
+import java.util.ArrayList;
+
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
@@ -9,6 +11,7 @@ import com.grillecube.client.renderer.gui.components.GuiViewDebug;
 import com.grillecube.client.renderer.gui.components.GuiViewWorld;
 import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.ModelEditorMod;
+import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.block.Block;
@@ -16,37 +19,52 @@ import com.grillecube.common.world.block.Block;
 /** the gui which displays the model */
 public class GuiModelView extends Gui {
 
-	private GuiViewWorld guiViewWorld;
-	private BoundingBox theBox;
+	private final ArrayList<ModelInstance> modelInstances;
+	private final GuiViewWorld guiViewWorld;
+	private final BoundingBox theBox;
 	private int boxID;
+
+	public GuiModelView() {
+		super();
+		this.modelInstances = new ArrayList<ModelInstance>();
+		this.guiViewWorld = new GuiViewWorld();
+		this.theBox = new BoundingBox();
+	}
 
 	@Override
 	protected void onInitialized(GuiRenderer renderer) {
 		int worldID = ModelEditorMod.WORLD_ID;
 		CameraProjective camera = new ModelEditorCamera(renderer.getMainRenderer().getGLFWWindow());
-		this.guiViewWorld = new GuiViewWorld(camera, worldID);
+		this.guiViewWorld.set(camera, worldID);
 		this.guiViewWorld.initialize(renderer);
-		this.addChild(this.guiViewWorld);
-		this.theBox = new BoundingBox();
 		this.boxID = this.guiViewWorld.getWorldRenderer().getLineRendererFactory().addBox(this.theBox);
 
+		this.addChild(this.guiViewWorld);
 		this.addChild(new GuiViewDebug(camera));
 	}
 
-	int i = 0;
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		if (this.guiViewWorld == null) {
-			return;
-		}
-		ModelEditorCamera camera = (ModelEditorCamera) this.guiViewWorld.getWorldRenderer().getCamera();
+		this.updateModelInstances();
+		this.updateCamera();
+	}
 
+	private final void updateModelInstances() {
+		for (ModelInstance modelInstance : this.modelInstances) {
+			modelInstance.getEntity().update();
+			modelInstance.update();
+		}
+	}
+
+	private final void updateCamera() {
+		ModelEditorCamera camera = (ModelEditorCamera) this.guiViewWorld.getWorldRenderer().getCamera();
 		Vector3f ray = camera.getPicker().getRay();
 		Raycasting.raycast(camera.getPosition(), ray, 512.0f, new RaycastingCallback() {
 			@Override
 			public boolean onRaycastCoordinates(float x, float y, float z, Vector3f face) {
-//				if (i++ % 500 == 0) System.out.println(x + " : " + y + " : " + z);
+				// if (i++ % 500 == 0) System.out.println(x + " : " + y + " : "
+				// + z);
 				Block block = guiViewWorld.getWorldRenderer().getWorld().getBlock(x, y, z);
 				if (block.isVisible() && !block.bypassRaycast()) {
 					theBox.setMinSize(x + face.x, y + face.y, z + face.z, 1, 1, 1);
@@ -60,5 +78,15 @@ public class GuiModelView extends Gui {
 
 	public final GuiViewWorld getGuiViewWorld() {
 		return (this.guiViewWorld);
+	}
+
+	public final void addModelInstance(ModelInstance modelInstance) {
+		this.modelInstances.add(modelInstance);
+		this.guiViewWorld.getWorldRenderer().getModelRendererFactory().addModelInstance(modelInstance);
+	}
+
+	public final void removeModelInstance(ModelInstance modelInstance) {
+		this.modelInstances.remove(modelInstance);
+		this.guiViewWorld.getWorldRenderer().getModelRendererFactory().removeModelInstance(modelInstance);
 	}
 }
