@@ -2,6 +2,7 @@ package com.grillecube.client.renderer.model.editor.mesher;
 
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelInitializer;
+import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
 
 @SuppressWarnings("unused")
@@ -15,14 +16,22 @@ public class EditableModel extends Model {
 	 */
 	private float blockSizeUnit;
 
-	/** the data of each blocks of this model (null if empty block) */
-	private BlockData[][][] blocksData;
-
 	/** the mesher to be used for this model */
 	private ModelMesher modelMesher;
 
 	/** true of false whether this model should be remeshed */
 	private boolean needUpdate; // TODO
+
+	/** blocks data */
+	private BlockData[][][] blocksData;
+
+	/** minimum coordinates */
+	private int minx;
+	private int miny;
+	private int minz;
+	private int maxx;
+	private int maxy;
+	private int maxz;
 
 	/**
 	 * the model origin (the origin coordinates, in the model referential), so
@@ -38,7 +47,7 @@ public class EditableModel extends Model {
 	public EditableModel(ModelInitializer modelInitializer) {
 		super(modelInitializer);
 		this.blockSizeUnit = 1.0f;
-		this.blocksData = new BlockData[0][0][0];
+		this.blocksData = null;
 		this.origin = new Vector3i(0, 0, 0);
 		this.modelMesher = DEFAULT_MODEL_MESHER;
 	}
@@ -73,69 +82,149 @@ public class EditableModel extends Model {
 		return (this.blockSizeUnit);
 	}
 
-	/** @see ModelBuildingData#resize(int x, int y, int z) */
-	public final int getSizeX() {
-		return (this.blocksData.length);
+	/**
+	 * return the block data at given coordinates relatively to the model basis
+	 * (0 == model center)
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return
+	 */
+	public final BlockData getBlockData(int x, int y, int z) {
+		if (x < this.minx || y < this.miny || z < this.minz || x > this.maxx || y > this.maxy || z > this.maxz) {
+			return (null);
+		}
+		int ix = x - this.minx;
+		int iy = y - this.miny;
+		int iz = z - this.minz;
+		return (this.blocksData[ix][iy][iz]);
 	}
 
-	/** @see ModelBuildingData#resize(int x, int y, int z) */
-	public final int getSizeY() {
-		return (this.blocksData.length == 0 ? 0 : this.blocksData[0].length);
+	/** set the block data for this model, and ensure the container capacity */
+	public final void setBlockData(BlockData blockData, int x, int y, int z) {
+		this.ensureCapacity(x, y, z);
+		int ix = x - this.minx;
+		int iy = y - this.miny;
+		int iz = z - this.minz;
+		this.blocksData[ix][iy][iz] = blockData;
 	}
 
-	/** @see ModelBuildingData#resize(int x, int y, int z) */
-	public final int getSizeZ() {
-		return (this.blocksData.length == 0 ? 0 : this.blocksData[0].length == 0 ? 0 : this.blocksData[0][0].length);
+	/**
+	 * set the block data for this model, may cause crash if capacity isnt
+	 * enough, @see {@link #setBlockData(BlockData, int, int, int)} to ensure
+	 * the capacity automatically
+	 */
+	public final void setBlockDataUncheck(BlockData blockData, int x, int y, int z) {
+		int ix = x - this.minx;
+		int iy = y - this.miny;
+		int iz = z - this.minz;
+		this.blocksData[ix][iy][iz] = blockData;
 	}
 
-	/** @see ModelBuildingData#resize(int x, int y, int z) */
-	public final void resizeX(int x) {
-		this.resize(x, this.getSizeY(), this.getSizeZ());
-	}
+	/**
+	 * ensure that this model can hold block at coordinates (x, y, z)
+	 */
+	public final void ensureCapacity(int x, int y, int z) {
+		int mx = Maths.min(x, this.minx);
+		int my = Maths.min(y, this.miny);
+		int mz = Maths.min(z, this.minz);
+		int Mx = Maths.max(x, this.maxx);
+		int My = Maths.max(y, this.maxy);
+		int Mz = Maths.max(z, this.maxz);
+		if (this.blocksData != null && mx == this.minx && my == this.miny && mz == this.minz && Mx == this.maxx
+				&& My == this.maxy && Mz == this.maxz) {
+			return;
+		}
 
-	/** @see ModelBuildingData#resize(int x, int y, int z) */
-	public final void resizeY(int y) {
-		this.resize(this.getSizeX(), y, this.getSizeZ());
-	}
+		int oldminx = this.minx;
+		int oldminy = this.miny;
+		int oldminz = this.minz;
+		int oldsizex = this.getSizeX();
+		int oldsizey = this.getSizeY();
+		int oldsizez = this.getSizeZ();
+		BlockData[][][] oldBlocksData = this.blocksData;
 
-	/** @see ModelBuildingData#resize(int x, int y, int z) */
-	public final void resizeZ(int z) {
-		this.resize(this.getSizeX(), this.getSizeY(), z);
-	}
+		this.minx = mx;
+		this.miny = my;
+		this.minz = mz;
+		this.maxx = Mx;
+		this.maxy = My;
+		this.maxz = Mz;
+		this.blocksData = new BlockData[this.getSizeX()][this.getSizeY()][this.getSizeZ()];
 
-	/** resize the capacity this modle building data can hold */
-	public final void resize(int x, int y, int z) {
-		BlockData[][][] newModelBlocksData = new BlockData[x][y][z];
-		int endx = x < this.getSizeX() ? x : this.getSizeX();
-		int endy = y < this.getSizeY() ? y : this.getSizeY();
-		int endz = z < this.getSizeZ() ? z : this.getSizeZ();
+		if (oldBlocksData != null) {
+			int dx = oldminx - mx;
+			int dy = oldminy - my;
+			int dz = oldminz - mz;
 
-		for (int dx = 0; dx < endx; dx++) {
-			for (int dy = 0; dy < endy; dy++) {
-				for (int dz = 0; dz < endz; dz++) {
-					newModelBlocksData[dx][dy][dz] = this.blocksData[dx][dy][dz];
+			// copy and offset previously set blocks
+			for (int i = 0; i < oldsizex; i++) {
+				for (int j = 0; j < oldsizey; j++) {
+					for (int k = 0; k < oldsizez; k++) {
+						this.blocksData[i + dx][j + dy][k + dz] = oldBlocksData[i][j][k];
+					}
 				}
 			}
 		}
-		this.blocksData = newModelBlocksData;
 	}
 
-	public final BlockData getBlockData(int x, int y, int z) {
-		if (x < 0 || x >= this.getSizeX() || y < 0 || y >= this.getSizeY() || z < 0 || z >= this.getSizeZ()) {
-			return (null);
-		}
-		return (this.blocksData[x][y][z]);
+	/**
+	 * allocate the block data containers, and delete every previously set block
+	 * data
+	 */
+	public final void allocate(int minx, int miny, int minz, int maxx, int maxy, int maxz) {
+		this.minx = minx;
+		this.miny = miny;
+		this.minz = minz;
+		this.maxx = maxx;
+		this.maxy = maxy;
+		this.maxz = maxz;
+		this.blocksData = new BlockData[this.getSizeX()][this.getSizeY()][this.getSizeZ()];
 	}
 
-	public final void addBlockData(BlockData blockData) {
-		this.blocksData[blockData.getX()][blockData.getY()][blockData.getZ()] = blockData;
-	}
-
-	public final void setBlocksData(BlockData[][][] blocksData) {
-		this.blocksData = blocksData;
+	/** unset the block data at the given coordinates */
+	public final void unsetBlockData(int x, int y, int z) {
+		this.blocksData[x][y][z] = null;
 	}
 
 	public final void generate() {
 		this.modelMesher.generate(this);
+	}
+
+	public final int getMinX() {
+		return (this.minx);
+	}
+
+	public final int getMinY() {
+		return (this.miny);
+	}
+
+	public final int getMinZ() {
+		return (this.minz);
+	}
+
+	public final int getMaxX() {
+		return (this.maxx);
+	}
+
+	public final int getMaxY() {
+		return (this.maxy);
+	}
+
+	public final int getMaxZ() {
+		return (this.maxz);
+	}
+
+	public final int getSizeX() {
+		return (this.maxx - this.minx + 1);
+	}
+
+	public final int getSizeY() {
+		return (this.maxy - this.miny + 1);
+	}
+
+	public final int getSizeZ() {
+		return (this.maxy - this.miny + 1);
 	}
 }

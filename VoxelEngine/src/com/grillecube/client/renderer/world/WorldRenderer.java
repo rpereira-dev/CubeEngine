@@ -63,8 +63,6 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 	private int width;
 	private int height;
 
-	private GuiListener<GuiEventAspectRatio<Gui>> aspectRatioListener;
-
 	private LineRendererFactory lineFactory;
 	private ModelRendererFactory modelFactory;
 	private ParticleRendererFactory particleFactory;
@@ -74,17 +72,6 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 
 	public WorldRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
-		this.aspectRatioListener = new GuiListener<GuiEventAspectRatio<Gui>>() {
-			@Override
-			public void invoke(GuiEventAspectRatio<Gui> event) {
-				VoxelEngineClient.instance().addGLTask(new GLTask() {
-					@Override
-					public void run() {
-						resizeFbo();
-					}
-				});
-			}
-		};
 	}
 
 	@Override
@@ -163,6 +150,7 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		eventManager.removeListener(this.modelInstanceRemoveCallback);
 	}
 
+	//TODO : take size as parameter
 	public final void resizeFbo() {
 		int W = this.getMainRenderer().getGLFWWindow().getWidth();
 		int H = this.getMainRenderer().getGLFWWindow().getHeight();

@@ -243,8 +243,8 @@ public class MainRenderer implements Taskable {
 	}
 
 	/**
-	 * main rendering function (screen is already cleared, and frame buffer will
-	 * be swapped after this render
+	 * main rendering function (screen is already cleared, and frame buffer will be
+	 * swapped after this render
 	 */
 	public void render() {
 
@@ -265,6 +265,8 @@ public class MainRenderer implements Taskable {
 		this.drawCalls = GLH.glhGetContext().resetDrawCalls();
 		this.verticesDrawn = GLH.glhGetContext().resetDrawVertices();
 
+		this.getDefaultVAO().bind();
+
 		// render
 		GLH.glhCheckError("pre main renderer render");
 		for (Renderer renderer : this.customRenderers) {
@@ -281,9 +283,9 @@ public class MainRenderer implements Taskable {
 	}
 
 	/**
-	 * return the default vertex array. It contains a single attribute (bound on
-	 * 0) with a VBO which contains a single float (this float is 0.0f) you
-	 * should use it as a default VAO for geometry
+	 * return the default vertex array. It contains a single attribute (bound on 0)
+	 * with a VBO which contains a single float (this float is 0.0f) you should use
+	 * it as a default VAO for geometry
 	 */
 	public GLVertexArray getDefaultVAO() {
 		return (this.defaultVao);

@@ -50,8 +50,8 @@ public class LineRenderer extends Renderer {
 		this.vao.setAttribute(1, 4, GL11.GL_FLOAT, false, FLOAT_PER_LINE_VERTEX * 4, 3 * 4); // color
 		this.vao.enableAttribute(0);
 		this.vao.enableAttribute(1);
-		this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
-		this.vao.unbind();
+//		this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
+//		this.vao.unbind();
 	}
 
 	@Override

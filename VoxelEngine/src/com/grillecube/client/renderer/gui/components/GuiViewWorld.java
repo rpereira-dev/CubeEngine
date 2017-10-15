@@ -1,21 +1,34 @@
 package com.grillecube.client.renderer.gui.components;
 
+import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.MainRenderer;
+import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
+import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.client.renderer.world.flat.WorldFlatRenderer;
 
 public class GuiViewWorld extends GuiView {
 
-	private GuiTexture txWorld;
-	private WorldFlatRenderer worldRenderer;
+	private final GuiTexture txWorld;
+	private WorldRenderer worldRenderer;
 	private CameraProjective camera;
 	private int worldID;
 
-	public GuiViewWorld(CameraProjective camera, int worldID) {
+	public GuiViewWorld() {
 		super();
+		this.txWorld = new GuiTexture();
+	}
+
+	public GuiViewWorld(CameraProjective camera, int worldID) {
+		this();
+		this.set(camera, worldID);
+	}
+
+	public final void set(CameraProjective camera, int worldID) {
 		this.camera = camera;
 		this.worldID = worldID;
 	}
@@ -30,9 +43,20 @@ public class GuiViewWorld extends GuiView {
 		this.worldRenderer.setWorld(this.worldID);
 		mainRenderer.addRenderer(this.worldRenderer);
 
-		this.txWorld = new GuiTexture();
 		this.txWorld.setTexture(this.worldRenderer.getFBOTexture(), 0.0f, 0.0f, 1.0f, 1.0f);
 		this.addChild(this.txWorld);
+
+		this.addListener(new GuiListener<GuiEventAspectRatio<Gui>>() {
+			@Override
+			public void invoke(GuiEventAspectRatio<Gui> event) {
+				VoxelEngineClient.instance().addGLTask(new GLTask() {
+					@Override
+					public void run() {
+						worldRenderer.resizeFbo();
+					}
+				});
+			}
+		});
 	}
 
 	/** deinitialize the gui: this function is call in opengl main thread */

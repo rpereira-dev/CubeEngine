@@ -11,10 +11,10 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
+import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
+import com.grillecube.client.renderer.model.editor.mesher.BlockData;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
-import com.grillecube.client.renderer.model.editor.mesher.ModelMesher;
-import com.grillecube.client.renderer.model.editor.mesher.ModelMesherCull;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.model.json.JSONEditableModelInitializer;
 import com.grillecube.common.Logger;
@@ -122,7 +122,7 @@ public class GuiToolbox extends Gui {
 			protected void onUpdate() {
 			}
 		};
-		entity.setPosition(0.0f, 16.0f, 0.0f);
+		entity.setPosition(0.0f, 5.0f, 0.0f);
 
 		// String path = GuiRenderer.dialogSelectFolder("Import an existing
 		// model", R.getResPath("models/"));
@@ -137,10 +137,11 @@ public class GuiToolbox extends Gui {
 			return;
 		}
 
-		ModelMesher modelMesher = new ModelMesherCull();
-		modelMesher.generate(editableModel);
-
 		ModelInstance modelInstance = new ModelInstance(editableModel, entity);
+		this.addModelInstance(modelInstance);
+	}
+
+	private final void addModelInstance(ModelInstance modelInstance) {
 		GuiToolboxModel guiToolboxModel = new GuiToolboxModel(modelInstance);
 		guiToolboxModel.setBox(0, 0.0f, 1.0f, 1.0f, 0);
 		this.modelList.add(guiToolboxModel, modelInstance.getModel().getName());
@@ -150,20 +151,11 @@ public class GuiToolbox extends Gui {
 				modelList.pick(modelList.count() - 1);
 			}
 		});
+		((GuiModelEditor) this.getParent()).onModelInstanceAdded(modelInstance);
 	}
 
 	private final void importModel() {
 		// TODO
-	}
-
-	@Override
-	public void onUpdate() {
-		super.onUpdate();
-		ModelInstance modelInstance = this.getSelectedModelInstance();
-		if (modelInstance != null) {
-			modelInstance.getEntity().update();
-			modelInstance.update();
-		}
 	}
 
 	private final void onPickedModelChanged(GuiToolboxModel prevPanel, GuiToolboxModel newPanel) {
@@ -179,6 +171,11 @@ public class GuiToolbox extends Gui {
 				}
 			}
 		});
+
+		GuiModelEditor parent = (GuiModelEditor) this.getParent();
+		ModelInstance prevModelInstance = prevPanel != null ? prevPanel.getModelInstance() : null;
+		ModelInstance newModelInstance = newPanel != null ? newPanel.getModelInstance() : null;
+		parent.onPickedModelChanged(prevModelInstance, newModelInstance);
 	}
 
 	private final ModelInstance getSelectedModelInstance() {
