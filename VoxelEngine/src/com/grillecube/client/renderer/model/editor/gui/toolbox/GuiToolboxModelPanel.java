@@ -6,6 +6,11 @@ import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 /** a view which handles model creation */
 public abstract class GuiToolboxModelPanel extends GuiView {
 
+	public GuiToolboxModelPanel() {
+		super();
+		this.setHoverable(false);
+	}
+
 	public abstract void refresh();
 
 	public abstract String getTitle();

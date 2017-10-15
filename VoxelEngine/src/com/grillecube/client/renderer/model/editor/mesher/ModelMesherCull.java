@@ -17,15 +17,12 @@ package com.grillecube.client.renderer.model.editor.mesher;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
-import com.grillecube.client.renderer.model.ModelMesh;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
 
 public class ModelMesherCull extends ModelMesher {
 
 	public final void generate(EditableModel editableModel) {
-
-		ModelMesh mesh = editableModel.getMesh();
 
 		// prepare the mesh vertex stack
 		Stack<ModelMeshVertex> vertices = new Stack<ModelMeshVertex>();
@@ -65,9 +62,6 @@ public class ModelMesherCull extends ModelMesher {
 
 		super.setIndices(indices);
 		super.setVertices(vertices);
-		mesh.setVertices(this.getVertices());
-		mesh.setIndices(this.getIndices());
-
 	}
 
 	private final ModelMeshVertex generateVertex(EditableModel editableModel, Face face, BlockData modelBlockData,

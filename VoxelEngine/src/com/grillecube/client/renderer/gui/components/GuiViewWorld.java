@@ -10,17 +10,20 @@ import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.client.renderer.world.flat.WorldFlatRenderer;
+import com.grillecube.common.world.WorldFlat;
 
 public class GuiViewWorld extends GuiView {
 
 	private final GuiTexture txWorld;
-	private WorldRenderer worldRenderer;
+	private WorldRenderer<WorldFlat> worldRenderer;
 	private CameraProjective camera;
 	private int worldID;
 
 	public GuiViewWorld() {
 		super();
 		this.txWorld = new GuiTexture();
+		this.txWorld.setHoverable(false);
+		this.txWorld.setBox(0, 0, 1, 1, 0);
 	}
 
 	public GuiViewWorld(CameraProjective camera, int worldID) {

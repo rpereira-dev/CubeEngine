@@ -19,6 +19,7 @@ import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.GuiRenderer;
+import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAdjustBox;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
@@ -35,7 +36,10 @@ public class GuiViewDebug extends GuiView {
 		this.label = new GuiLabel();
 		this.label.setFontSize(0.65f, 0.65f);
 		this.label.setFontColor(Gui.COLOR_BLUE);
+		this.label.addTextParameter(new GuiTextParameterTextAdjustBox());
 		this.addChild(this.label);
+		this.label.setHoverable(false);
+		this.setHoverable(false);
 	}
 
 	@Override

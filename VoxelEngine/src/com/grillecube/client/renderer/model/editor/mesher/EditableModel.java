@@ -5,10 +5,7 @@ import com.grillecube.client.renderer.model.ModelInitializer;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
 
-@SuppressWarnings("unused")
 public class EditableModel extends Model {
-
-	public static final ModelMesher DEFAULT_MODEL_MESHER = new ModelMesherCull();
 
 	/**
 	 * the size of a single block of this model (N.B: a terrain block size is
@@ -18,9 +15,6 @@ public class EditableModel extends Model {
 
 	/** the mesher to be used for this model */
 	private ModelMesher modelMesher;
-
-	/** true of false whether this model should be remeshed */
-	private boolean needUpdate; // TODO
 
 	/** blocks data */
 	private BlockData[][][] blocksData;
@@ -49,7 +43,7 @@ public class EditableModel extends Model {
 		this.blockSizeUnit = 1.0f;
 		this.blocksData = null;
 		this.origin = new Vector3i(0, 0, 0);
-		this.modelMesher = DEFAULT_MODEL_MESHER;
+		this.modelMesher = null;
 	}
 
 	/** @see ModelBuildingData#origin */
@@ -104,10 +98,7 @@ public class EditableModel extends Model {
 	/** set the block data for this model, and ensure the container capacity */
 	public final void setBlockData(BlockData blockData, int x, int y, int z) {
 		this.ensureCapacity(x, y, z);
-		int ix = x - this.minx;
-		int iy = y - this.miny;
-		int iz = z - this.minz;
-		this.blocksData[ix][iy][iz] = blockData;
+		this.setBlockDataUncheck(blockData, x, y, z);
 	}
 
 	/**
@@ -189,7 +180,21 @@ public class EditableModel extends Model {
 	}
 
 	public final void generate() {
-		this.modelMesher.generate(this);
+		if (this.modelMesher != null) {
+			return;
+		}
+		this.modelMesher = new ModelMesherCull();
+	}
+
+	@Override
+	public void preRender() {
+		super.preRender();
+		if (this.modelMesher != null) {
+			this.modelMesher.generate(this);
+			this.getMesh().setIndices(this.modelMesher.getIndices());
+			this.getMesh().setVertices(this.modelMesher.getVertices());
+			this.modelMesher = null;
+		}
 	}
 
 	public final int getMinX() {
@@ -225,6 +230,6 @@ public class EditableModel extends Model {
 	}
 
 	public final int getSizeZ() {
-		return (this.maxy - this.miny + 1);
+		return (this.maxz - this.minz + 1);
 	}
 }

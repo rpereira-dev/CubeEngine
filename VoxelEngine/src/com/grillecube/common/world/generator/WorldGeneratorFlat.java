@@ -1,8 +1,5 @@
 package com.grillecube.common.world.generator;
 
-import java.util.Random;
-
-import com.grillecube.common.maths.Maths;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
@@ -10,37 +7,36 @@ public class WorldGeneratorFlat extends WorldGenerator {
 
 	@Override
 	public void generate(Terrain terrain) {
-		if (terrain.getWorldIndex3().y != 0) {
-			return;
-		}
-
-		for (int x = 0; x < Terrain.DIMX; x++) {
-			for (int z = 0; z < Terrain.DIMZ; z++) {
-				// terrain.setBlockAt((x + z) % 2 == 0 ? Blocks.GRASS :
-				// Blocks.LOG, x, 4, z);
-				terrain.setBlockAt(Blocks.GRASS, x, 4, z);
-				terrain.setBlockAt(Blocks.STONE, x, 3, z);
-				terrain.setBlockAt(Blocks.STONE, x, 2, z);
-				terrain.setBlockAt(Blocks.STONE, x, 1, z);
-				terrain.setBlockAt(Blocks.STONE, x, 0, z);
+		if (terrain.getWorldIndex3().y == -1) {
+			for (int x = 0; x < Terrain.DIMX; x++) {
+				for (int z = 0; z < Terrain.DIMZ; z++) {
+					// terrain.setBlockAt((x + z) % 2 == 0 ? Blocks.GRASS :
+					// Blocks.LOG, x, 4, z);
+					terrain.setBlockAt(Blocks.GRASS, x, Terrain.DIMY - 1, z);
+					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 2, z);
+					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 3, z);
+					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 4, z);
+					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 5, z);
+				}
 			}
 		}
 
-		Random rng = new Random();
-		int ix = terrain.getWorldIndex3().x;
-		int iz = terrain.getWorldIndex3().z;
-		if (Maths.abs(ix) > 1 && Maths.abs(iz) > 1 && rng.nextInt() % 4 == 0) {
-			int x = rng.nextInt() % 8;
-			int z = rng.nextInt() % 8;
-			for (int y = 4; y < 8; y++) {
-				terrain.setBlock(Blocks.LOG, x, y, z);
-			}
-			terrain.setBlock(Blocks.LEAVES, x - 1, 8, z);
-			terrain.setBlock(Blocks.LEAVES, x, 8, z - 1);
-			terrain.setBlock(Blocks.LEAVES, x, 9, z);
-			terrain.setBlock(Blocks.LEAVES, x, 8, z + 1);
-			terrain.setBlock(Blocks.LEAVES, x + 1, 8, z);
-		}
+		// Random rng = new Random();
+		// int ix = terrain.getWorldIndex3().x;
+		// int iz = terrain.getWorldIndex3().z;
+		// if (Maths.abs(ix) > 1 && Maths.abs(iz) > 1 && rng.nextInt() % 4 == 0)
+		// {
+		// int x = rng.nextInt() % 8;
+		// int z = rng.nextInt() % 8;
+		// for (int y = 4; y < 8; y++) {
+		// terrain.setBlock(Blocks.LOG, x, y, z);
+		// }
+		// terrain.setBlock(Blocks.LEAVES, x - 1, 8, z);
+		// terrain.setBlock(Blocks.LEAVES, x, 8, z - 1);
+		// terrain.setBlock(Blocks.LEAVES, x, 9, z);
+		// terrain.setBlock(Blocks.LEAVES, x, 8, z + 1);
+		// terrain.setBlock(Blocks.LEAVES, x + 1, 8, z);
+		// }
 	}
 }
 

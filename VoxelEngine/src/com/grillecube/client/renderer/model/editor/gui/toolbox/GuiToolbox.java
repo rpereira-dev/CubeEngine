@@ -13,7 +13,6 @@ import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
-import com.grillecube.client.renderer.model.editor.mesher.BlockData;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.model.json.JSONEditableModelInitializer;
@@ -39,6 +38,8 @@ public class GuiToolbox extends Gui {
 
 	public GuiToolbox() {
 		super();
+
+		this.addListener(Gui.ON_HOVERED_FOCUS_LISTENER);
 
 		// background
 		this.bg = new GuiColoredQuad();
@@ -122,7 +123,7 @@ public class GuiToolbox extends Gui {
 			protected void onUpdate() {
 			}
 		};
-		entity.setPosition(0.0f, 5.0f, 0.0f);
+		entity.setPosition(0.0f, 0.0f, 0.0f);
 
 		// String path = GuiRenderer.dialogSelectFolder("Import an existing
 		// model", R.getResPath("models/"));
@@ -130,6 +131,7 @@ public class GuiToolbox extends Gui {
 		EditableModel editableModel = new EditableModel(new JSONEditableModelInitializer(path));
 		try {
 			editableModel.initialize();
+			editableModel.generate();
 		} catch (Exception e) {
 			Logger.get().log(Logger.Level.ERROR, "Error when parsing model", path);
 			e.printStackTrace(Logger.get().getPrintStream());
@@ -178,7 +180,7 @@ public class GuiToolbox extends Gui {
 		parent.onPickedModelChanged(prevModelInstance, newModelInstance);
 	}
 
-	private final ModelInstance getSelectedModelInstance() {
+	public final ModelInstance getSelectedModelInstance() {
 		return (this.modelList.getPickedObject() == null ? null
 				: ((GuiToolboxModel) (this.modelList.getPickedObject())).getModelInstance());
 	}

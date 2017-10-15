@@ -18,6 +18,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventMouseHover;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseMove;
 import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiEventUnpress;
+import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector4f;
 
@@ -49,7 +50,10 @@ public class GuiInputManager {
 		this.charListener = new GLFWListener<GLFWEventChar>() {
 			@Override
 			public void invoke(GLFWEventChar event) {
-				focusedGui.stackEvent(new GuiEventChar<Gui>(focusedGui, event.getGLFWWindow(), event.getCharacter()));
+				if (focusedGui != null) {
+					focusedGui
+							.stackEvent(new GuiEventChar<Gui>(focusedGui, event.getGLFWWindow(), event.getCharacter()));
+				}
 			}
 		};
 
@@ -64,11 +68,17 @@ public class GuiInputManager {
 	}
 
 	private final void setFocusedGui(Gui gui) {
+		if (this.focusedGui == gui) {
+			return;
+		}
+
 		if (this.focusedGui != null) {
 			this.focusedGui.focus(false);
 			this.focusedGui.stackEvent(new GuiEventLooseFocus<Gui>(this.focusedGui));
 		}
 		this.focusedGui = gui;
+		Logger.get().log(Logger.Level.DEBUG, "focused gui is now: "
+				+ (this.focusedGui != null ? this.focusedGui.getClass().getSimpleName() : "null"));
 		if (this.focusedGui != null) {
 			this.focusedGui.focus(true);
 			this.focusedGui.stackEvent(new GuiEventGainFocus<Gui>(this.focusedGui));
@@ -77,12 +87,18 @@ public class GuiInputManager {
 
 	/** update the given guis, which should be sorted by their layers */
 	public final void update(ArrayList<Gui> guis) {
+
+		if (this.focusedGui != null && this.focusedGui.requestedUnfocus()) {
+			this.setFocusedGui(null);
+		}
+
 		double xpos = this.glfwWindow.getMouseX();
 		double ypos = this.glfwWindow.getMouseY();
 		float mx = (float) (xpos / this.glfwWindow.getWidth());
 		float my = (float) (1 - (ypos / this.glfwWindow.getHeight()));
 		boolean pressed = this.glfwWindow.isMouseLeftPressed();
 		boolean topestHoveredFound = false;
+
 		int i;
 		for (i = guis.size() - 1; i >= 0; i--) {
 			Gui gui = guis.get(i);
@@ -106,10 +122,9 @@ public class GuiInputManager {
 			gui.stackEvent(new GuiEventMouseMove<Gui>(gui));
 
 			// if gui is hovered,
-			if (gui.isHoverable() && !topestHoveredFound && (x >= 0.0f && x < 1.0f && y >= 0.0f && y <= 1.0f)) {
+			if (!topestHoveredFound && gui.isHoverable() && (x >= 0.0f && x < 1.0f && y >= 0.0f && y <= 1.0f)) {
 				topestHoveredFound = true;
 				gui.stackEvent(new GuiEventMouseHover<Gui>(gui));
-
 				// if gui wasnt hovered earlier
 				if (!gui.isHovered()) {
 					gui.setHovered(true);

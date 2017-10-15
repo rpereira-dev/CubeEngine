@@ -146,4 +146,11 @@ public class Model {
 	public ModelInitializer getInitializer() {
 		return (this.modelInitializer);
 	}
+
+	/** to be called before the model is rendered, in a GL context */
+	public void preRender() {
+		if (!this.isInitialized()) {
+			this.initialize();
+		}
+	}
 }

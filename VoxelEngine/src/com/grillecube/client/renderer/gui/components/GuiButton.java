@@ -28,6 +28,7 @@ public class GuiButton extends GuiLabel {
 		super();
 
 		this.addListener(ON_PRESS_FOCUS_LISTENER);
+		this.addListener(ON_UNPRESS_FOCUS_LISTENER);
 
 		this.transition = transition;
 		this.hoveredColor = new Vector4f();

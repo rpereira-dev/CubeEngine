@@ -27,6 +27,7 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
 import com.grillecube.client.renderer.gui.event.GuiEvent;
 import com.grillecube.client.renderer.gui.event.GuiEventAddChild;
 import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseMove;
 import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiEventRemoveChild;
 import com.grillecube.client.renderer.gui.event.GuiListener;
@@ -53,10 +54,25 @@ import com.grillecube.common.maths.Vector4f;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class Gui {
 
+	protected static final GuiListener<GuiEventMouseMove<Gui>> ON_HOVERED_FOCUS_LISTENER = new GuiListener<GuiEventMouseMove<Gui>>() {
+		@Override
+		public void invoke(GuiEventMouseMove<Gui> event) {
+			event.getGui().requestFocus(event.getGui().isHovered());
+			event.getGui().requestUnfocus(!event.getGui().isHovered());
+		}
+	};
+
 	protected static final GuiListener<GuiEventPress<Gui>> ON_PRESS_FOCUS_LISTENER = new GuiListener<GuiEventPress<Gui>>() {
 		@Override
 		public void invoke(GuiEventPress<Gui> event) {
 			event.getGui().requestFocus(true);
+		}
+	};
+
+	protected static final GuiListener<GuiEventPress<Gui>> ON_UNPRESS_FOCUS_LISTENER = new GuiListener<GuiEventPress<Gui>>() {
+		@Override
+		public void invoke(GuiEventPress<Gui> event) {
+			event.getGui().requestFocus(false);
 		}
 	};
 
@@ -77,8 +93,9 @@ public abstract class Gui {
 	public static final int STATE_VISIBLE = (1 << 5);
 	private static final int STATE_ENABLED = (1 << 6);
 	private static final int STATE_REQUESTED_FOCUS = (1 << 7);
-	private static final int STATE_SELECTED = (1 << 8);
-	private static final int STATE_HOVERABLE = (1 << 9);
+	private static final int STATE_REQUESTED_UNFOCUS = (1 << 8);
+	private static final int STATE_SELECTED = (1 << 9);
+	private static final int STATE_HOVERABLE = (1 << 10);
 
 	/** the transformation matrix, relative to the parent */
 	private final Matrix4f guiToParentChangeOfBasis;
@@ -304,6 +321,10 @@ public abstract class Gui {
 	 */
 	public final void setBox(float x, float y, float width, float height, float rot) {
 		this.setBox(x, y, width, height, rot, true);
+	}
+
+	public final void setBox(Gui gui) {
+		this.setBox(gui.getBoxX(), gui.getBoxY(), gui.getBoxWidth(), gui.getBoxHeight(), gui.getBoxRotation());
 	}
 
 	public final void setBox(float x, float y, float width, float height, float rot, boolean runParameters) {
@@ -681,15 +702,20 @@ public abstract class Gui {
 		this.setState(STATE_REQUESTED_FOCUS, focus);
 	}
 
+	public final void requestUnfocus(boolean unfocus) {
+		this.setState(STATE_REQUESTED_UNFOCUS, unfocus);
+	}
+
 	public final boolean requestedFocus() {
 		return (this.hasState(STATE_REQUESTED_FOCUS));
 	}
 
+	public final boolean requestedUnfocus() {
+		return (this.hasState(STATE_REQUESTED_UNFOCUS));
+	}
+
 	/** DO NOT USE, USE {@link Gui#requestFocus()} */
 	public final void focus(boolean hasFocus) {
-		if (this.hasFocus() == hasFocus) {
-			return;
-		}
 		this.setState(STATE_FOCUSED, hasFocus);
 	}
 

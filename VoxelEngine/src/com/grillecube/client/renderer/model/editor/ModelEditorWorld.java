@@ -15,7 +15,7 @@ public class ModelEditorWorld extends WorldFlat {
 		this.setWorldGenerator(new WorldGeneratorFlat());
 		for (int x = -4; x < 4; x++) {
 			for (int z = -4; z < 4; z++) {
-				Terrain terrain = this.spawnTerrain(new Terrain(x, 0, z));
+				Terrain terrain = this.spawnTerrain(new Terrain(x, -1, z));
 				this.generateTerrain(terrain);
 			}
 		}

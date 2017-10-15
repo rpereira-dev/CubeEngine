@@ -52,8 +52,6 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 		model.setBlockSizeUnit((float) (blocks.getDouble("sizeUnit")));
 		JSONArray blocksData = blocks.getJSONArray("blocks");
 
-		// TODO : optimize this so EditableModel 3D blockdata array isnt
-		// reallocated only once
 		ArrayList<BlockData> blockDatas = new ArrayList<BlockData>();
 		ArrayList<Vector3i> pos = new ArrayList<Vector3i>();
 		int minx = 0, miny = 0, minz = 0;
