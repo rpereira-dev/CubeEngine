@@ -16,17 +16,17 @@ import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.WorldStorage;
+import com.grillecube.common.world.WorldTerrainStorage;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.block.instances.BlockInstance;
 
-public class TerrainStorage extends WorldStorage {
+public class WorldFlatTerrainStorage extends WorldTerrainStorage {
 
-	private HashMap<Vector3i, Terrain> terrains;
-	private HashMap<Vector2i, Terrain> topTerrains;
-	private HashMap<Vector2i, Terrain> botTerrains;
-	private ArrayList<Terrain> loadedTerrains;
+	private final HashMap<Vector3i, Terrain> terrains;
+	private final HashMap<Vector2i, Terrain> topTerrains;
+	private final HashMap<Vector2i, Terrain> botTerrains;
+	private final ArrayList<Terrain> loadedTerrains;
 
 	/**
 	 * the maximum and minimum terrain y coordinates to make a terrain valid for
@@ -35,7 +35,7 @@ public class TerrainStorage extends WorldStorage {
 	private int maxY;
 	private int minY;
 
-	public TerrainStorage(World world) {
+	public WorldFlatTerrainStorage(World world) {
 		super(world);
 		this.terrains = new HashMap<Vector3i, Terrain>(4096 * 4);
 		this.topTerrains = new HashMap<Vector2i, Terrain>(4096);
@@ -51,14 +51,14 @@ public class TerrainStorage extends WorldStorage {
 
 		tasks.add(engine.new Callable<Taskable>() {
 			@Override
-			public TerrainStorage call() throws Exception {
+			public WorldFlatTerrainStorage call() throws Exception {
 				for (Terrain terrain : loadedTerrains) {
 					terrain.update();
 					if (terrain.getBlockCount() == 0) {
-						despawn(terrain);
+						remove(terrain);
 					}
 				}
-				return (TerrainStorage.this);
+				return (WorldFlatTerrainStorage.this);
 			}
 
 			@Override
@@ -75,11 +75,8 @@ public class TerrainStorage extends WorldStorage {
 		}
 	}
 
-	/**
-	 * add the terrain to the world, return true it if added sucessfully, return
-	 * false else way
-	 */
-	public Terrain spawn(Terrain terrain) {
+	@Override
+	public final Terrain add(Terrain terrain) {
 		Terrain previous = this.get(terrain.getWorldIndex3());
 		if (previous != null) {
 			Logger.get().log(Level.WARNING,
@@ -123,9 +120,8 @@ public class TerrainStorage extends WorldStorage {
 		return (terrain);
 	}
 
-	/** remove the terrain */
-	public void despawn(Terrain terrain) {
-
+	@Override
+	public final void remove(Terrain terrain) {
 		if (terrain == null || this.terrains.containsKey(terrain.getWorldIndex3())) {
 			return;
 		}
@@ -166,82 +162,79 @@ public class TerrainStorage extends WorldStorage {
 		}
 	}
 
-	/** remove the terrain */
-	public void despawn(Vector3i index) {
-		this.despawn(this.get(index));
-	}
-
 	/** get the terrain at the given world coordinates */
 	public Terrain get(float x, float y, float z) {
-		int ix = this.getIndex(x);
-		int iy = this.getIndex(y);
-		int iz = this.getIndex(z);
+		int ix = this.getIndex(x, Terrain.DIMX);
+		int iy = this.getIndex(y, Terrain.DIMY);
+		int iz = this.getIndex(z, Terrain.DIMZ);
 		return (this.get(ix, iy, iz));
 	}
 
-	/** world coordinates */
-	public Terrain get(Vector3f pos) {
-		return (this.get(pos.x, pos.y, pos.z));
-	}
-
 	/** get the terrain at the given index */
+	@Override
 	public Terrain get(int indexx, int indexy, int indexz) {
 		return (this.get(new Vector3i(indexx, indexy, indexz)));
 	}
 
-	/** return the terrain hashmap */
-	public Terrain[] get() {
+	@Override
+	public Terrain get(Vector3i index) {
+		return (this.terrains.get(index));
+	}
+
+	/** return every terrains */
+	@Override
+	public final Terrain[] get() {
 		Collection<Terrain> collection = this.terrains.values();
 		Terrain[] terrains = new Terrain[collection.size()];
 		return (collection.toArray(terrains));
 	}
 
 	/** get every loaded terrains */
-	public Terrain[] getLoaded() {
+	@Override
+	public final Terrain[] getLoaded() {
 		return (this.loadedTerrains.toArray(new Terrain[this.loadedTerrains.size()]));
 	}
 
-	/**
-	 * return the terrain with the given location, or null if the terrain doesnt
-	 * exists / is empty
-	 */
-	public Terrain get(Vector3i index) {
-		return (this.terrains.get(index));
-	}
-
 	/** get the terrain location (x, y, z) for the given world location */
-	public int getIndex(float coord) {
+	private final int getIndex(float coord, int dim) {
 		if (coord < 0) {
-			coord -= Terrain.DIM - 1;
+			coord -= dim - 1;
 		}
-		return ((int) coord / Terrain.DIM);
-	}
-
-	public Vector3i getIndex(Vector3f pos, Vector3i dst) {
-		return (dst.set(this.getIndex(pos.x), this.getIndex(pos.y), this.getIndex(pos.z)));
+		return ((int) coord / dim);
 	}
 
 	/** return positions relative to the terrain */
-	public int getRelativeCoordinate(int index) {
-		index = index % Terrain.DIM;
+	public int getRelativeCoordinate(int index, int dim) {
+		index = index % dim;
 		if (index < 0) {
-			index += Terrain.DIM;
+			index += dim;
 		}
 		return (index);
 	}
 
-	/** return true if the terrain height is valid */
+	@Override
+	public Vector3i getIndex(float x, float y, float z, Vector3i dst) {
+		if (dst == null) {
+			dst = new Vector3i();
+		}
+		int ix = this.getIndex(x, Terrain.DIMX);
+		int iy = this.getIndex(y, Terrain.DIMY);
+		int iz = this.getIndex(z, Terrain.DIMZ);
+		return (dst.set(ix, iy, iz));
+	}
+
+	@Override
 	public final boolean canHold(Terrain terrain) {
 		int y = terrain.getWorldIndex3().y;
 		return (y >= this.minY && y <= this.maxY);
 	}
 
 	public final int getMaxHeight() {
-		return (this.maxY * Terrain.DIM);
+		return (this.maxY * Terrain.DIMY);
 	}
 
 	public final int getMinHeight() {
-		return (this.minY * Terrain.DIM);
+		return (this.minY * Terrain.DIMY);
 	}
 
 	public final int getMaxHeightIndex() {
@@ -254,7 +247,7 @@ public class TerrainStorage extends WorldStorage {
 
 	/** the minimum height in term of block that this world can reach */
 	public void setMinHeight(int height) {
-		this.minY = (height + Maths.abs(height) % Terrain.DIM) / Terrain.DIM - 1;
+		this.minY = (height + Maths.abs(height) % Terrain.DIMY) / Terrain.DIMY - 1;
 	}
 
 	/** the minimum height in term of block that this world can reach */
@@ -264,20 +257,12 @@ public class TerrainStorage extends WorldStorage {
 
 	/** the maxium height in term of block that this world can reach */
 	public void setMaxHeight(int height) {
-		this.maxY = (height + Maths.abs(height) % Terrain.DIM) / Terrain.DIM;
+		this.maxY = (height + Maths.abs(height) % Terrain.DIMY) / Terrain.DIMY;
 	}
 
 	/** the minimum height in term of block that this world can reach */
 	public void setMaxHeightIndex(int height) {
 		this.maxY = height;
-	}
-
-	@Override
-	public void delete() {
-		Terrain[] terrains = this.get();
-		for (Terrain terrain : terrains) {
-			this.despawn(terrain);
-		}
 	}
 
 	public boolean hasTerrain(Terrain terrain) {
@@ -290,31 +275,28 @@ public class TerrainStorage extends WorldStorage {
 		if (terrain == null) {
 			return (Blocks.AIR);
 		}
-		int xx = this.getRelativeCoordinate((int) x);
-		int yy = this.getRelativeCoordinate((int) y);
-		int zz = this.getRelativeCoordinate((int) z);
+		int xx = this.getRelativeCoordinate((int) x, Terrain.DIMX);
+		int yy = this.getRelativeCoordinate((int) y, Terrain.DIMY);
+		int zz = this.getRelativeCoordinate((int) z, Terrain.DIMZ);
 		return (terrain.getBlockAt(xx, yy, zz));
 	}
 
-	/** world position */
-	public Block getBlock(Vector3f pos) {
-		return (this.getBlock(pos.x, pos.y, pos.z));
-	}
-
 	/** get the block light at the given world relative position */
+	@Override
 	public byte getBlockLight(float x, float y, float z) {
 		Terrain terrain = this.get(x, y, z);
 		if (terrain == null) {
 			return (0);
 		}
-		int xx = this.getRelativeCoordinate((int) x);
-		int yy = this.getRelativeCoordinate((int) y);
-		int zz = this.getRelativeCoordinate((int) z);
+		int xx = this.getRelativeCoordinate((int) x, Terrain.DIMX);
+		int yy = this.getRelativeCoordinate((int) y, Terrain.DIMY);
+		int zz = this.getRelativeCoordinate((int) z, Terrain.DIMZ);
 		short index = terrain.getIndex(xx, yy, zz);
 		return (terrain.getBlockLight(index));
 	}
 
 	/** world position */
+	@Override
 	public byte getBlockLight(Vector3f pos) {
 		return (this.getBlockLight(pos.x, pos.y, pos.z));
 	}
@@ -323,6 +305,7 @@ public class TerrainStorage extends WorldStorage {
 	 * set a block, world coordinates, return the terrain on which the block was
 	 * set
 	 */
+	@Override
 	public Terrain setBlock(Block block, float x, float y, float z) {
 
 		Terrain terrain = this.get(x, y, z);
@@ -331,32 +314,35 @@ public class TerrainStorage extends WorldStorage {
 			return (null);
 		}
 
-		int xx = this.getRelativeCoordinate((int) x);
-		int yy = this.getRelativeCoordinate((int) y);
-		int zz = this.getRelativeCoordinate((int) z);
+		int xx = this.getRelativeCoordinate((int) x, Terrain.DIMX);
+		int yy = this.getRelativeCoordinate((int) y, Terrain.DIMY);
+		int zz = this.getRelativeCoordinate((int) z, Terrain.DIMZ);
 
 		terrain.setBlock(block, xx, yy, zz);
 
 		return (terrain);
 	}
 
+	@Override
 	public int getTerrainCount() {
 		return (this.terrains.size());
 	}
 
 	/** world location */
+	@Override
 	public BlockInstance getBlockInstance(float x, float y, float z) {
 		Terrain terrain = this.get(x, y, z);
 		if (terrain == null) {
 			return (null);
 		}
-		int xx = this.getRelativeCoordinate((int) x);
-		int yy = this.getRelativeCoordinate((int) y);
-		int zz = this.getRelativeCoordinate((int) z);
+		int xx = this.getRelativeCoordinate((int) x, Terrain.DIMX);
+		int yy = this.getRelativeCoordinate((int) y, Terrain.DIMY);
+		int zz = this.getRelativeCoordinate((int) z, Terrain.DIMZ);
 		return (terrain.getBlockInstance(xx, yy, zz));
 	}
 
 	/** return true if the given terrain is loaded */
+	@Override
 	public boolean isLoaded(Terrain terrain) {
 		return (this.loadedTerrains.contains(terrain));
 	}
@@ -382,7 +368,7 @@ public class TerrainStorage extends WorldStorage {
 		}
 		int iy = terrain.getWorldIndex3().y;
 		int h = terrain.getHeightAt(x, z);
-		return (iy * Terrain.DIM + h);
+		return (iy * Terrain.DIMY + h);
 	}
 
 	/**
@@ -413,10 +399,10 @@ public class TerrainStorage extends WorldStorage {
 	 * relative to the given terrain
 	 */
 	public int getHeight(float wx, float wz) {
-		int ix = this.getIndex(wx);
-		int iz = this.getIndex(wz);
-		int x = this.getRelativeCoordinate((int) wx);
-		int z = this.getRelativeCoordinate((int) wz);
+		int ix = this.getIndex(wx, Terrain.DIMX);
+		int iz = this.getIndex(wz, Terrain.DIMZ);
+		int x = this.getRelativeCoordinate((int) wx, Terrain.DIMX);
+		int z = this.getRelativeCoordinate((int) wz, Terrain.DIMZ);
 		return (this.getHeight(new Vector2i(ix, iz), x, z));
 	}
 }

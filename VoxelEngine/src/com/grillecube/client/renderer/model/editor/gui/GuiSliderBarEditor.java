@@ -1,5 +1,6 @@
 package com.grillecube.client.renderer.model.editor.gui;
 
+import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.GuiColoredQuad;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiSliderBar;
@@ -20,6 +21,9 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 
 	private static final Vector4f FILL_COLOR = new Vector4f(0.6f, 0.6f, 1.0f, 1.0f);
 	private static final Vector4f BG_COLOR = new Vector4f(0.87f, 0.87f, 0.87f, 1.0f);
+
+	private static final Vector4f FILL_DISABLED_COLOR = Vector4f.scale(null, FILL_COLOR, 0.5f);
+	private static final Vector4f BG_DISABLED_COLOR = Vector4f.scale(null, BG_COLOR, 0.5f);
 
 	private GuiColoredQuad total;
 	private GuiColoredQuad selected;
@@ -45,6 +49,17 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 		this.addChild(this.guiLabel);
 
 		this.addListener(LISTENER);
+	}
+
+	@Override
+	protected void onRender(GuiRenderer guiRenderer) {
+		if (this.isEnabled()) {
+			this.selected.setColor(FILL_COLOR);
+			this.total.setColor(BG_COLOR);
+		} else {
+			this.total.setColor(BG_DISABLED_COLOR);
+			this.selected.setColor(FILL_DISABLED_COLOR);
+		}
 	}
 
 	protected void onValueChanged() {

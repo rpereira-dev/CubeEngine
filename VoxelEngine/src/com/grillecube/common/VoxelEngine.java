@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 import com.grillecube.common.Logger.Level;
 import com.grillecube.common.defaultmod.VoxelEngineDefaultMod;
 import com.grillecube.common.event.Event;
-import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.EventGetTasks;
+import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.EventOnLoop;
 import com.grillecube.common.event.EventPostLoop;
 import com.grillecube.common.event.EventPreLoop;
@@ -331,7 +331,7 @@ public abstract class VoxelEngine {
 			return (null);
 		}
 		this.loadedWorlds.add(world);
-		world.onLoaded();
+		world.load();
 		return (world);
 	}
 

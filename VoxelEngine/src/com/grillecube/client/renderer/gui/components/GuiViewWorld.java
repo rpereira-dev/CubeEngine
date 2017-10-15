@@ -5,11 +5,12 @@ import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.world.WorldRenderer;
+import com.grillecube.client.renderer.world.flat.WorldFlatRenderer;
 
 public class GuiViewWorld extends GuiView {
 
 	private GuiTexture txWorld;
-	private WorldRenderer worldRenderer;
+	private WorldFlatRenderer worldRenderer;
 	private CameraProjective camera;
 	private int worldID;
 
@@ -23,9 +24,7 @@ public class GuiViewWorld extends GuiView {
 	protected void onInitialized(GuiRenderer renderer) {
 		MainRenderer mainRenderer = renderer.getMainRenderer();
 
-		this.camera.getPicker().setGuiRelative(this);
-
-		this.worldRenderer = new WorldRenderer(mainRenderer);
+		this.worldRenderer = new WorldFlatRenderer(mainRenderer);
 		this.worldRenderer.initialize();
 		this.worldRenderer.setCamera(this.camera);
 		this.worldRenderer.setWorld(this.worldID);

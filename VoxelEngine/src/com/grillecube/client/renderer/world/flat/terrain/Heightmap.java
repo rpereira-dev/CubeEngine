@@ -1,11 +1,11 @@
-package com.grillecube.client.renderer.terrain;
+package com.grillecube.client.renderer.world.flat.terrain;
 
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 
+//TODO ?
 public class Heightmap {
 
-	// TODO
 	private Matrix4f matrix;
 	private final Vector3f pos;
 	private final Vector3f rot;

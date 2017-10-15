@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.renderer.terrain;
+package com.grillecube.client.renderer.world;
 
 import org.lwjgl.opengl.GL20;
 
@@ -21,7 +21,7 @@ import com.grillecube.client.opengl.object.GLProgram;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.R;
-import com.grillecube.common.world.World;
+import com.grillecube.common.world.WorldFlat;
 
 public class ProgramTerrain extends GLProgram {
 
@@ -87,7 +87,7 @@ public class ProgramTerrain extends GLProgram {
 	/** load global terrain uniform */
 	private Vector3f sunpos = new Vector3f();
 
-	public void loadUniforms(CameraProjective camera, World world) {
+	public void loadUniforms(CameraProjective camera, WorldFlat world) {
 
 		this.loadUniformVec(this._camera_position, camera.getPosition());
 		this.loadUniformMatrix(this._proj_matrix, camera.getProjectionMatrix());

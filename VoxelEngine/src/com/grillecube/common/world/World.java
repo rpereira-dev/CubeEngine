@@ -22,54 +22,57 @@ import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Maths;
-import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.instances.BlockInstance;
 import com.grillecube.common.world.entity.Entity;
-import com.grillecube.common.world.entity.EntityStorage;
+import com.grillecube.common.world.entity.WorldEntityStorage;
 import com.grillecube.common.world.generator.WorldGenerator;
 import com.grillecube.common.world.generator.WorldGeneratorEmpty;
 import com.grillecube.common.world.terrain.Terrain;
-import com.grillecube.common.world.terrain.TerrainStorage;
 
+/**
+ * TODO Main world class, may change to a "Planet" class, and a new World class
+ * should be build, and load multiple "Planets"
+ */
 public abstract class World implements Taskable {
 
 	// public static final int seed = (int) System.currentTimeMillis();
 	public static final int seed = 42;
 	public static final SimplexNoiseOctave NOISE_OCTAVE = new SimplexNoiseOctave(seed);
+	public static final SimplexNoiseOctave[] NOISE_OCTAVES = { new SimplexNoiseOctave(seed + 1),
+			new SimplexNoiseOctave(seed + 2), new SimplexNoiseOctave(seed + 3), new SimplexNoiseOctave(seed + 4) };
 
 	/** the world generator */
 	private WorldGenerator generator;
 
 	/** every loaded terrain are in */
-	private TerrainStorage terrains;
+	private final WorldTerrainStorage terrains;
 
 	/** every world entities. */
-	private EntityStorage entities;
+	private final WorldEntityStorage entities;
 
-	/** world weather */
-	private Sky sky;
-
-	private Random rng;
+	/** rng */
+	private final Random rng;
 
 	/** number of updates which was made for the world */
 	private long tick;
 
 	public World() {
-		this.terrains = new TerrainStorage(this);
-		this.entities = new EntityStorage(this);
-		this.sky = new Sky();
+		this.terrains = this.instanciateTerrainStorage();
+		this.entities = new WorldEntityStorage(this);
 		this.rng = new Random();
 		this.tick = 0;
 		this.setWorldGenerator(new WorldGeneratorEmpty());
 	}
 
+	/** create the terrain storage of this world (can be null) */
+	protected abstract WorldTerrainStorage instanciateTerrainStorage();
+
 	/** tasks to be run to update the world */
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<com.grillecube.common.VoxelEngine.Callable<Taskable>> tasks) {
-		this.sky.getTasks(engine, tasks);
 		this.entities.getTasks(engine, tasks);
 		this.terrains.getTasks(engine, tasks);
 		this.onTasksGet(engine, tasks);
@@ -104,12 +107,9 @@ public abstract class World implements Taskable {
 		this.generator = worldgen;
 	}
 
-	public Random getRNG() {
+	/** get the rng */
+	public final Random getRNG() {
 		return (this.rng);
-	}
-
-	public void setWeather(Sky weather) {
-		this.sky = weather;
 	}
 
 	/** delete the world : de-allocate every allocated memory */
@@ -122,17 +122,12 @@ public abstract class World implements Taskable {
 	 * return the terrain with the given location, or null if the terrain doesnt
 	 * exists / is empty
 	 */
-	public TerrainStorage getTerrainStorage() {
+	public WorldTerrainStorage getTerrainStorage() {
 		return (this.terrains);
 	}
 
-	public EntityStorage getEntityStorage() {
+	public WorldEntityStorage getEntityStorage() {
 		return (this.entities);
-	}
-
-	/** return world weather */
-	public Sky getSky() {
-		return (this.sky);
 	}
 
 	/** get the block at the given world relative position */
@@ -190,7 +185,7 @@ public abstract class World implements Taskable {
 
 	/** spawn a terrain */
 	public final Terrain spawnTerrain(Terrain terrain) {
-		return (this.terrains.spawn(terrain));
+		return (this.terrains.add(terrain));
 	}
 
 	/** spawn an entity into the world */
@@ -347,13 +342,21 @@ public abstract class World implements Taskable {
 		return (null);
 	}
 
-	/** return the top loaded terrain for the given (x, z) coordinates */
-	public final Terrain getTopTerrain(Vector2i index2) {
-		return (this.terrains.getTop(index2));
+	public final void load() {
+		this.onLoaded();
 	}
 
 	/** called when this world is loaded */
-	public void onLoaded() {
-		
+	protected void onLoaded() {
+
+	}
+
+	public final void unload() {
+		this.onUnloaded();
+	}
+
+	private void onUnloaded() {
+		// TODO Auto-generated method stub
+
 	}
 }

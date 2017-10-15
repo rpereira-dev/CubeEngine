@@ -20,7 +20,7 @@ import com.grillecube.common.world.WorldStorage;
  * be able to get sorted entities (by type, so model) fastly, to optimize
  * rendering Insertion and deletion are also optimized
  **/
-public class EntityStorage extends WorldStorage {
+public class WorldEntityStorage extends WorldStorage {
 
 	/** the entities by their UUID */
 	private HashMap<Integer, Entity> entities;
@@ -28,7 +28,7 @@ public class EntityStorage extends WorldStorage {
 	/** the list of the entities sharing the class */
 	private HashMap<Class<? extends Entity>, ArrayList<Entity>> entitiesByClass;
 
-	public EntityStorage(World world) {
+	public WorldEntityStorage(World world) {
 		super(world);
 		this.entities = new HashMap<Integer, Entity>();
 		this.entitiesByClass = new HashMap<Class<? extends Entity>, ArrayList<Entity>>();
@@ -173,13 +173,13 @@ public class EntityStorage extends WorldStorage {
 		tasks.add(engine.new Callable<Taskable>() {
 
 			@Override
-			public EntityStorage call() throws Exception {
+			public WorldEntityStorage call() throws Exception {
 
 				for (int i = 0; i < entities.length; i++) {
 					Entity entity = entities[i];
 					entity.update();
 				}
-				return (EntityStorage.this);
+				return (WorldEntityStorage.this);
 			}
 
 			@Override

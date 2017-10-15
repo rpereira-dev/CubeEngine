@@ -35,8 +35,6 @@ import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.factories.LineRendererFactory;
 import com.grillecube.client.renderer.factories.ModelRendererFactory;
 import com.grillecube.client.renderer.factories.ParticleRendererFactory;
-import com.grillecube.client.renderer.factories.SkyRendererFactory;
-import com.grillecube.client.renderer.factories.TerrainRendererFactory;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
 import com.grillecube.client.renderer.gui.event.GuiListener;
@@ -45,10 +43,10 @@ import com.grillecube.common.event.EventListener;
 import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.world.World;
 
-public class WorldRenderer extends RendererFactorized {
+public abstract class WorldRenderer<T extends World> extends RendererFactorized {
 
 	/** world to render */
-	private World world;
+	private T world;
 
 	/** camera used to render the world */
 	private CameraProjective camera;
@@ -68,8 +66,6 @@ public class WorldRenderer extends RendererFactorized {
 	private GuiListener<GuiEventAspectRatio<Gui>> aspectRatioListener;
 
 	private LineRendererFactory lineFactory;
-	private SkyRendererFactory skyFactory;
-	private TerrainRendererFactory terrainFactory;
 	private ModelRendererFactory modelFactory;
 	private ParticleRendererFactory particleFactory;
 
@@ -118,14 +114,10 @@ public class WorldRenderer extends RendererFactorized {
 
 		this.setPostProcessingProgram(null);
 		this.lineFactory = new LineRendererFactory(this.getMainRenderer());
-		this.skyFactory = new SkyRendererFactory(this.getMainRenderer());
-		this.terrainFactory = new TerrainRendererFactory(this.getMainRenderer());
 		this.modelFactory = new ModelRendererFactory(this.getMainRenderer());
 		this.particleFactory = new ParticleRendererFactory(this.getMainRenderer());
 
 		super.addFactory(this.lineFactory);
-		super.addFactory(this.skyFactory);
-		super.addFactory(this.terrainFactory);
 		super.addFactory(this.modelFactory);
 		super.addFactory(this.particleFactory);
 
@@ -176,18 +168,6 @@ public class WorldRenderer extends RendererFactorized {
 		int H = this.getMainRenderer().getGLFWWindow().getHeight();
 		this.width = W;
 		this.height = H;
-
-		// TODO, negative values lol
-		// if (this.guiToMatch != null) {
-		// Vector4f w = new Vector4f(0, 1.0f, 0.0f, 1.0f);
-		// Vector4f h = new Vector4f(0, 1.0f, 0.0f, 1.0f);
-		// Matrix4f.transform(this.guiToMatch.getGuiToWindowChangeOfBasis(), w,
-		// w);
-		// Matrix4f.transform(this.guiToMatch.getGuiToWindowChangeOfBasis(), h,
-		// h);
-		// this.width = (int) ((w.y - w.x) * W);
-		// this.height = (int) ((h.y - h.x) * H);
-		// }
 
 		this.fboTexture.bind(GL11.GL_TEXTURE_2D);
 		this.fboTexture.image2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, this.width, this.height, 0, GL11.GL_RGB,
@@ -251,29 +231,35 @@ public class WorldRenderer extends RendererFactorized {
 		return (this.fboTexture);
 	}
 
-	public final void setWorld(World world) {
+	public final void setWorld(T world) {
 		this.world = world;
-		this.terrainFactory.setWorld(world);
-		this.skyFactory.setSky(world.getSky());
 		this.modelFactory.clear();
 		this.modelFactory.loadWorldModelInstance(world);
+		this.onWorldSet();
 	}
 
+	protected void onWorldSet() {
+
+	}
+
+	@SuppressWarnings("unchecked")
 	public final void setWorld(int worldID) {
-		this.setWorld(this.getMainRenderer().getResourceManager().getWorldManager().getWorld(worldID));
+		this.setWorld((T) this.getMainRenderer().getResourceManager().getWorldManager().getWorld(worldID));
 	}
 
 	public final void setCamera(CameraProjective camera) {
 		this.camera = camera;
 		this.modelFactory.setCamera(camera);
-		this.terrainFactory.setCamera(camera);
-		this.skyFactory.setCamera(camera);
 		this.lineFactory.setCamera(camera);
 		this.particleFactory.setCamera(camera);
+		this.onCameraSet();
+	}
+
+	protected void onCameraSet() {
 	}
 
 	/** the world to be rendered */
-	public final World getWorld() {
+	public final T getWorld() {
 		return (this.world);
 	}
 
@@ -284,14 +270,6 @@ public class WorldRenderer extends RendererFactorized {
 
 	public final LineRendererFactory getLineRendererFactory() {
 		return (this.lineFactory);
-	}
-
-	public final SkyRendererFactory getSkyRendererFactory() {
-		return (this.skyFactory);
-	}
-
-	public final TerrainRendererFactory getTerrainRendererFactory() {
-		return (this.terrainFactory);
 	}
 
 	public final ModelRendererFactory getModelRendererFactory() {

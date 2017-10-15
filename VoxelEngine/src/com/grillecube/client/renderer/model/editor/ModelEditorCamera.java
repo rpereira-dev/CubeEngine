@@ -5,12 +5,8 @@ import org.lwjgl.glfw.GLFW;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.maths.Vector3i;
 
 public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
-
-	private final Vector3i blockOne;
-	private final Vector3i blockTwo;
 
 	public ModelEditorCamera(GLFWWindow window) {
 		super(window);
@@ -27,9 +23,11 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 		super.setRenderDistance(Float.MAX_VALUE);
 		super.setDistanceFromCenter(16);
 		super.setAngleAroundCenter(0);
+	}
 
-		this.blockOne = new Vector3i();
-		this.blockTwo = new Vector3i();
+	@Override
+	public void update() {
+		super.update();
 	}
 
 	@Override

@@ -12,11 +12,13 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.renderer.terrain;
+package com.grillecube.client.renderer.world.flat.terrain;
 
 import java.util.Stack;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
+import com.grillecube.client.renderer.world.TerrainMeshVertex;
+import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.world.block.Block;
@@ -24,7 +26,7 @@ import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 /** the simplest terrain mesher (cull colliding faces) */
-public class TerrainMesherCull extends TerrainMesher {
+public class FlatTerrainMesherCull extends TerrainMesher {
 
 	/**
 	 * fill an array of dimension
@@ -43,9 +45,9 @@ public class TerrainMesherCull extends TerrainMesher {
 
 		// for each face
 		for (Face face : Face.faces) {
-			for (int z = 0; z < Terrain.DIM; z++) {
-				for (int y = 0; y < Terrain.DIM; y++) {
-					for (int x = 0; x < Terrain.DIM; x++) {
+			for (int z = 0; z < Terrain.DIMZ; z++) {
+				for (int y = 0; y < Terrain.DIMY; y++) {
+					for (int x = 0; x < Terrain.DIMX; x++) {
 						BlockFace blockFace = faces[face.getID()][x][y][z];
 						if (blockFace == null) {
 							continue;
@@ -77,13 +79,13 @@ public class TerrainMesherCull extends TerrainMesher {
 			return (null);
 		}
 
-		BlockFace[][][][] faces = new BlockFace[Face.faces.length][Terrain.DIM][Terrain.DIM][Terrain.DIM];
+		BlockFace[][][][] faces = new BlockFace[Face.faces.length][Terrain.DIMX][Terrain.DIMY][Terrain.DIMZ];
 
 		// for each block
 		int index = 0; // x + Terrain.DIM * (y + Terrain.DIM * z)
-		for (int z = 0; z < Terrain.DIM; ++z) {
-			for (int y = 0; y < Terrain.DIM; ++y) {
-				for (int x = 0; x < Terrain.DIM; ++x) {
+		for (int z = 0; z < Terrain.DIMZ; ++z) {
+			for (int y = 0; y < Terrain.DIMY; ++y) {
+				for (int x = 0; x < Terrain.DIMX; ++x) {
 					Block block = Blocks.getBlockByID(blocks[index]);
 
 					if (block == null) {

@@ -755,6 +755,7 @@ public abstract class Gui {
 
 	private final void setState(int state) {
 		this.state = this.state | state;
+		this.onStateChanged();
 	}
 
 	private final void setState(int state, boolean enabled) {
@@ -767,11 +768,17 @@ public abstract class Gui {
 
 	private final void unsetState(int state) {
 		this.state = this.state & ~state;
+		this.onStateChanged();
 	}
 
 	@SuppressWarnings("unused")
 	private final void swapState(int state) {
 		this.state = this.state ^ state;
+		this.onStateChanged();
+	}
+
+	protected void onStateChanged() {
+
 	}
 
 	public final Matrix4f getGuiToWindowChangeOfBasis() {

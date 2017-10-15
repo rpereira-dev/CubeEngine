@@ -14,11 +14,11 @@
 
 package com.pot.common.world;
 
-import com.grillecube.common.world.World;
+import com.grillecube.common.world.WorldFlat;
 import com.grillecube.common.world.generator.WorldGeneratorHoles;
 import com.pot.common.world.entity.EntityTest;
 
-public class WorldDefault extends World {
+public class WorldDefault extends WorldFlat {
 
 	public WorldDefault() {
 		super();
@@ -27,7 +27,7 @@ public class WorldDefault extends World {
 	@Override
 	public void onLoaded() {
 		this.setWorldGenerator(new WorldGeneratorHoles());
-		for (int y = 6; y > 0; y--) {
+		for (int y = 1; y > 0; y--) {
 			for (int x = -4; x < 4; x++) {
 				for (int z = -4; z < 4; z++) {
 					this.generateTerrain(x, y, z);

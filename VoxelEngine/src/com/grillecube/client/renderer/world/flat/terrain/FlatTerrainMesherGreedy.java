@@ -12,11 +12,13 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.renderer.terrain;
+package com.grillecube.client.renderer.world.flat.terrain;
 
 import java.util.Stack;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
+import com.grillecube.client.renderer.world.TerrainMeshVertex;
+import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.world.block.Block;
@@ -24,7 +26,7 @@ import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 /** an object which is used to generate terrain meshes dynamically */
-public class TerrainMesherGreedy extends TerrainMesher {
+public class FlatTerrainMesherGreedy extends TerrainMesher {
 
 	/**
 	 * fill an array of dimension
@@ -41,13 +43,13 @@ public class TerrainMesherGreedy extends TerrainMesher {
 			return (stack);
 		}
 
-		boolean[][][][] visited = new boolean[Face.faces.length][Terrain.DIM][Terrain.DIM][Terrain.DIM];
+		boolean[][][][] visited = new boolean[Face.faces.length][Terrain.DIMX][Terrain.DIMY][Terrain.DIMZ];
 
 		// for each face
 		for (int faceID = 0; faceID < Face.faces.length; faceID++) {
-			for (int z = 0; z < Terrain.DIM; z++) {
-				for (int y = 0; y < Terrain.DIM; y++) {
-					for (int x = 0; x < Terrain.DIM; x++) {
+			for (int z = 0; z < Terrain.DIMZ; z++) {
+				for (int y = 0; y < Terrain.DIMY; y++) {
+					for (int x = 0; x < Terrain.DIMX; x++) {
 
 						if (visited[faceID][x][y][z]) {
 							continue;
@@ -67,13 +69,13 @@ public class TerrainMesherGreedy extends TerrainMesher {
 							int depth = 1;
 
 							// generate the rectangle width
-							while (x + width < Terrain.DIM && !visited[faceID][x + width][y][z]
+							while (x + width < Terrain.DIMX && !visited[faceID][x + width][y][z]
 									&& face.equals(faces[faceID][x + width][y][z])) {
 								++width;
 							}
 
 							// generate the rectangle depth
-							depth_test: while (z + depth < Terrain.DIM) {
+							depth_test: while (z + depth < Terrain.DIMZ) {
 								for (int dx = 0; dx < width; dx++) {
 									if (visited[faceID][x + dx][y][z + depth]
 											|| !face.equals(faces[faceID][x + dx][y][z + depth])) {
@@ -111,13 +113,13 @@ public class TerrainMesherGreedy extends TerrainMesher {
 							int height = 1;
 
 							// generate the rectangle width
-							while (x + width < Terrain.DIM && !visited[faceID][x + width][y][z]
+							while (x + width < Terrain.DIMX && !visited[faceID][x + width][y][z]
 									&& face.equals(faces[faceID][x + width][y][z])) {
 								++width;
 							}
 
 							// generate the rectangle depth
-							height_test: while (y + height < Terrain.DIM) {
+							height_test: while (y + height < Terrain.DIMY) {
 								for (int dx = 0; dx < width; dx++) {
 									if (visited[faceID][x + dx][y + height][z]
 											|| !face.equals(faces[faceID][x + dx][y + height][z])) {
@@ -156,13 +158,13 @@ public class TerrainMesherGreedy extends TerrainMesher {
 							int height = 1;
 
 							// generate the rectangle width
-							while (z + depth < Terrain.DIM && !visited[faceID][x][y][z + depth]
+							while (z + depth < Terrain.DIMZ && !visited[faceID][x][y][z + depth]
 									&& face.equals(faces[faceID][x][y][z + depth])) {
 								++depth;
 							}
 
 							// generate the rectangle depth
-							height_test: while (y + height < Terrain.DIM) {
+							height_test: while (y + height < Terrain.DIMY) {
 								for (int dz = 0; dz < depth; dz++) {
 									if (visited[faceID][x][y + height][z + dz]
 											|| !face.equals(faces[faceID][x][y + height][z + dz])) {
@@ -223,13 +225,13 @@ public class TerrainMesherGreedy extends TerrainMesher {
 			return (null);
 		}
 
-		BlockFace[][][][] faces = new BlockFace[Face.faces.length][Terrain.DIM][Terrain.DIM][Terrain.DIM];
+		BlockFace[][][][] faces = new BlockFace[Face.faces.length][Terrain.DIMX][Terrain.DIMY][Terrain.DIMZ];
 
 		// for each block
 		int index = 0; // x + Terrain.DIM * (y + Terrain.DIM * z)
-		for (int z = 0; z < Terrain.DIM; ++z) {
-			for (int y = 0; y < Terrain.DIM; ++y) {
-				for (int x = 0; x < Terrain.DIM; ++x) {
+		for (int z = 0; z < Terrain.DIMZ; ++z) {
+			for (int y = 0; y < Terrain.DIMY; ++y) {
+				for (int x = 0; x < Terrain.DIMX; ++x) {
 					Block block = Blocks.getBlockByID(blocks[index]);
 
 					if (block == null) {

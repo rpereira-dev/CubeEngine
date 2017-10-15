@@ -24,9 +24,9 @@ public class WorldGeneratorHoles extends WorldGenerator {
 		//
 		// }
 
-		for (int x = 0; x < Terrain.DIM; x++) {
-			for (int y = 0; y < Terrain.DIM; y++) {
-				for (int z = 0; z < Terrain.DIM; z++) {
+		for (int x = 0; x < Terrain.DIMX; x++) {
+			for (int y = 0; y < Terrain.DIMY; y++) {
+				for (int z = 0; z < Terrain.DIMZ; z++) {
 					double d = World.NOISE_OCTAVE.noise(
 							(terrain.getWorldPos().x + x * Terrain.BLOCK_SIZE) / (64.0f * Terrain.BLOCK_SIZE),
 							(terrain.getWorldPos().y + y * Terrain.BLOCK_SIZE) / (32.0f * Terrain.BLOCK_SIZE),
@@ -40,9 +40,9 @@ public class WorldGeneratorHoles extends WorldGenerator {
 			}
 		}
 
-		for (int x = 0; x < Terrain.DIM; x++) {
-			for (int y = 0; y < Terrain.DIM; y++) {
-				for (int z = 0; z < Terrain.DIM; z++) {
+		for (int x = 0; x < Terrain.DIMX; x++) {
+			for (int y = 0; y < Terrain.DIMY; y++) {
+				for (int z = 0; z < Terrain.DIMZ; z++) {
 					if (y - 1 >= 0 && terrain.getBlockAt(x, y, z) == Blocks.AIR) {
 						if (terrain.getBlockAt(x, y - 1, z) != Blocks.AIR) {
 							terrain.setBlock(Blocks.GRASS, x, y - 1, z);

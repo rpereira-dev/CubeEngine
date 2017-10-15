@@ -1,15 +1,15 @@
 package com.grillecube.client.renderer.model.editor;
 
-import com.grillecube.common.world.World;
+import com.grillecube.common.world.WorldFlat;
 import com.grillecube.common.world.generator.WorldGeneratorFlat;
 import com.grillecube.common.world.terrain.Terrain;
 
-public class ModelEditorWorld extends World {
+public class ModelEditorWorld extends WorldFlat {
 
 	public ModelEditorWorld() {
 		super();
 	}
-	
+
 	@Override
 	public void onLoaded() {
 		this.setWorldGenerator(new WorldGeneratorFlat());

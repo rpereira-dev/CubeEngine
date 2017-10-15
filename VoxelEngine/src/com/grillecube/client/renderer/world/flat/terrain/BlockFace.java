@@ -1,6 +1,8 @@
-package com.grillecube.client.renderer.terrain;
+package com.grillecube.client.renderer.world.flat.terrain;
 
 import java.util.Stack;
+
+import com.grillecube.client.renderer.world.TerrainMeshVertex;
 
 /** represent a block face */
 public class BlockFace {

@@ -1,9 +1,9 @@
 package com.grillecube.client.renderer.gui.animations;
 
 import com.grillecube.client.renderer.gui.components.GuiText;
-import com.grillecube.common.world.Timer;
 
 /** a simple animation which auto rescale the gui on time and loop infinitely */
+@SuppressWarnings("unused")
 public class GuiAnimationTextAutoScale<T extends GuiText> extends GuiAnimation<T> {
 
 	private float scale;

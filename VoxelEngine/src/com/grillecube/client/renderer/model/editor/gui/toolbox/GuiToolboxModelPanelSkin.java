@@ -193,13 +193,13 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 
 	private void resize(float aspectRatio) {
 		float width, height;
-		if (aspectRatio > 1.0f) {
-			height = 0.4f;
-			width = height / (super.getTotalAspectRatio() * aspectRatio);
-		} else {
-			width = 0.7f;
-			height = width * (super.getTotalAspectRatio() * aspectRatio);
+		height = 0.4f;
+		width = height / (super.getTotalAspectRatio() * aspectRatio);
+		if (width >= 0.8f) {
+			width = 0.8f;
+			height = width * super.getTotalAspectRatio() * aspectRatio;
 		}
+		
 		float marginX = (1.0f - width) / 2.0f;
 		float marginY = 0.55f - 0.05f - height;
 		this.skinPreview.setBox(marginX, marginY, width, height, 0);

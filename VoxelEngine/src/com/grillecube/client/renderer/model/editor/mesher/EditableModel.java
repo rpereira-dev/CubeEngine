@@ -2,9 +2,9 @@ package com.grillecube.client.renderer.model.editor.mesher;
 
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelInitializer;
-import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 
+@SuppressWarnings("unused")
 public class EditableModel extends Model {
 
 	public static final ModelMesher DEFAULT_MODEL_MESHER = new ModelMesherCull();

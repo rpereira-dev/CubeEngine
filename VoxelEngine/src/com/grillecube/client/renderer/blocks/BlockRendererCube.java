@@ -2,9 +2,9 @@ package com.grillecube.client.renderer.blocks;
 
 import java.util.Stack;
 
-import com.grillecube.client.renderer.terrain.BlockFace;
-import com.grillecube.client.renderer.terrain.TerrainMeshVertex;
-import com.grillecube.client.renderer.terrain.TerrainMesher;
+import com.grillecube.client.renderer.world.TerrainMeshVertex;
+import com.grillecube.client.renderer.world.TerrainMesher;
+import com.grillecube.client.renderer.world.flat.terrain.BlockFace;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
@@ -123,9 +123,9 @@ public class BlockRendererCube extends BlockRenderer {
 		Vector3i[] neighboors = FACES_NEIGHBORS[face.getID()][vertexID];
 
 		// position
-		float px = x * Terrain.BLOCK_SIZE + FACES_VERTICES[face.getID()][vertexID].x * Terrain.BLOCK_SIZE;
-		float py = y * Terrain.BLOCK_SIZE + FACES_VERTICES[face.getID()][vertexID].y * Terrain.BLOCK_SIZE;
-		float pz = z * Terrain.BLOCK_SIZE + FACES_VERTICES[face.getID()][vertexID].z * Terrain.BLOCK_SIZE;
+		float px = (x + FACES_VERTICES[face.getID()][vertexID].x) * Terrain.BLOCK_SIZE;
+		float py = (y + FACES_VERTICES[face.getID()][vertexID].y) * Terrain.BLOCK_SIZE;
+		float pz = (z + FACES_VERTICES[face.getID()][vertexID].z) * Terrain.BLOCK_SIZE;
 
 		// uv
 		float uvx = FACES_UV[vertexID][0];

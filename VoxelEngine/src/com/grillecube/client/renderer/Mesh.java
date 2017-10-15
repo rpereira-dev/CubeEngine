@@ -23,7 +23,7 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLVertexArray;
 import com.grillecube.client.opengl.object.GLVertexBuffer;
 import com.grillecube.client.renderer.camera.Camera;
-import com.grillecube.client.renderer.terrain.TerrainMesher;
+import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;

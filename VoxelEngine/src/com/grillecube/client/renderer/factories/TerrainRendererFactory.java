@@ -9,10 +9,10 @@ import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.camera.CameraProjective;
-import com.grillecube.client.renderer.terrain.TerrainMesh;
-import com.grillecube.client.renderer.terrain.TerrainMesher;
-import com.grillecube.client.renderer.terrain.TerrainMesherGreedy;
-import com.grillecube.client.renderer.terrain.TerrainRenderer;
+import com.grillecube.client.renderer.world.TerrainMesh;
+import com.grillecube.client.renderer.world.TerrainMesher;
+import com.grillecube.client.renderer.world.TerrainRenderer;
+import com.grillecube.client.renderer.world.flat.terrain.FlatTerrainMesherGreedy;
 import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.world.EventTerrainBlocklightUpdate;
 import com.grillecube.common.event.world.EventTerrainDespawn;
@@ -21,7 +21,7 @@ import com.grillecube.common.event.world.EventTerrainSunlightUpdate;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.resources.ResourceManager;
-import com.grillecube.common.world.World;
+import com.grillecube.common.world.WorldFlat;
 import com.grillecube.common.world.terrain.Terrain;
 
 /** a factory class which create terrain renderer lists */
@@ -61,7 +61,7 @@ public class TerrainRendererFactory extends RendererFactory {
 	private ArrayList<TerrainMesh> renderingList;
 
 	/** the world on which terrain should be considered */
-	private World world;
+	private WorldFlat world;
 	private CameraProjective camera;
 
 	// TODO : Terrain.STATE_VERTICES_UP_TO_DATE , remove this (server has
@@ -72,7 +72,7 @@ public class TerrainRendererFactory extends RendererFactory {
 		super(mainRenderer);
 
 		this.meshesData = new HashMap<Terrain, TerrainMeshData>(8192);
-		this.mesher = new TerrainMesherGreedy();
+		this.mesher = new FlatTerrainMesherGreedy();
 		// this.mesher = new TerrainMesherCull();
 		this.renderingList = new ArrayList<TerrainMesh>();
 
@@ -187,7 +187,7 @@ public class TerrainRendererFactory extends RendererFactory {
 		CameraProjective camera = this.getCamera();
 		float distance = (float) Vector3f.distanceSquare(center, camera.getPosition());
 		return (distance < camera.getSquaredRenderDistance()
-				&& camera.isBoxInFrustum(terrain.getWorldPos(), Terrain.DIM_SIZE));
+				&& camera.isBoxInFrustum(terrain.getWorldPos(), Terrain.TERRAIN_SIZE));
 	}
 
 	/** unload the meshes */
@@ -236,7 +236,7 @@ public class TerrainRendererFactory extends RendererFactory {
 		terrainRenderer.render(this.getCamera(), this.getWorld(), this.renderingList);
 	}
 
-	public final World getWorld() {
+	public final WorldFlat getWorld() {
 		return (this.world);
 	}
 
@@ -244,7 +244,7 @@ public class TerrainRendererFactory extends RendererFactory {
 		return (this.camera);
 	}
 
-	public final void setWorld(World world) {
+	public final void setWorld(WorldFlat world) {
 		this.world = world;
 	}
 

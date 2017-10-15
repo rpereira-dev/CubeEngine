@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.renderer.terrain;
+package com.grillecube.client.renderer.world;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,7 +32,7 @@ import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.World;
+import com.grillecube.common.world.WorldFlat;
 
 public class TerrainRenderer extends Renderer {
 
@@ -50,7 +50,6 @@ public class TerrainRenderer extends Renderer {
 
 	@Override
 	public void deinitialize() {
-
 		GLH.glhDeleteObject(this.terrainProgram);
 		this.terrainProgram = null;
 	}
@@ -79,7 +78,7 @@ public class TerrainRenderer extends Renderer {
 
 	}
 
-	public void render(CameraProjective camera, World world, ArrayList<TerrainMesh> meshes) {
+	public void render(CameraProjective camera, WorldFlat world, ArrayList<TerrainMesh> meshes) {
 
 		if (meshes == null || meshes.size() == 0) {
 			return;

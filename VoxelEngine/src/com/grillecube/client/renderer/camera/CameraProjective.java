@@ -41,7 +41,6 @@ public abstract class CameraProjective extends CameraView {
 	public CameraProjective(GLFWWindow window) {
 		super();
 		this.setWindow(window);
-		this.cameraPicker = new CameraPicker(this);
 		this.projectionMatrix = new Matrix4f();
 		this.mvpMatrix = new Matrix4f();
 		this.setAspect(16 / 9.0f);
@@ -53,7 +52,6 @@ public abstract class CameraProjective extends CameraView {
 
 		this.createProjectionMatrix(this.getProjectionMatrix());
 		Matrix4f.mul(this.getProjectionMatrix(), this.getViewMatrix(), this.getMVPMatrix());
-		this.cameraPicker.update();
 	}
 
 	public final void addWindowListeners() {

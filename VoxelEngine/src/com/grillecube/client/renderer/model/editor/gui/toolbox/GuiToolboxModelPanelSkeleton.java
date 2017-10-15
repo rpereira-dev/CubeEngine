@@ -6,6 +6,7 @@ import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiSliderBar;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
+import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 
@@ -114,10 +115,24 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.rotZ.select((Object) 0);
 		}
 
+		this.refresh();
 	}
 
 	@Override
 	public void refresh() {
+		if (this.getBone() == null) {
+			this.boneTransformLabel.setVisible(false);
+			this.posX.setVisible(false);
+			this.posY.setVisible(false);
+			this.posZ.setVisible(false);
+			this.rotX.setVisible(false);
+			this.rotY.setVisible(false);
+			this.rotZ.setVisible(false);
+		}
+	}
+
+	private final Bone getBone() {
+		return ((Bone) this.bones.getPickedObject());
 	}
 
 	@Override

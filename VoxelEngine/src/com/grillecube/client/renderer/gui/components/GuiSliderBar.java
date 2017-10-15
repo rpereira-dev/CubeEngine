@@ -148,7 +148,7 @@ public class GuiSliderBar extends Gui {
 
 	@Override
 	protected void onInputUpdate() {
-		if (super.isPressed() && super.hasFocus()) {
+		if (super.isPressed() && super.hasFocus() && super.isEnabled()) {
 			this.select(this.getMouseX());
 		}
 	}

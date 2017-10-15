@@ -1,6 +1,7 @@
 package com.grillecube.client.resources;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import com.grillecube.client.event.renderer.model.EventModelInstanceAdded;
@@ -90,7 +91,9 @@ public class ModelManager extends GenericManager<Model> {
 
 	/** remove every model instances */
 	public final void removeModelInstances() {
-		for (ModelInstance modelInstance : this.entitiesModelInstance.values()) {
+		Collection<ModelInstance> collection = this.entitiesModelInstance.values();
+		ModelInstance[] modelInstances = collection.toArray(new ModelInstance[collection.size()]);
+		for (ModelInstance modelInstance : modelInstances) {
 			this.removeModelInstance(modelInstance);
 		}
 	}

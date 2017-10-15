@@ -13,12 +13,12 @@ public class GuiModelEditor extends Gui {
 
 		// the toolbox
 		this.toolbox = new GuiToolbox();
-		this.toolbox.setBox(0.0f, 0, 0.25f, 1.0f, 0);
+		this.toolbox.setBox(0.0f, 0, 0.20f, 1.0f, 0);
 		this.addChild(this.toolbox);
 
 		// the model viewer
 		this.viewModel = new GuiModelView();
-		this.viewModel.setBox(0.25f, 0, 0.75f, 1.0f, 0);
+		this.viewModel.setBox(0.20f, 0, 0.80f, 1.0f, 0);
 		this.addChild(this.viewModel);
 	}
 

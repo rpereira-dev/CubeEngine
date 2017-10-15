@@ -34,7 +34,7 @@ import com.grillecube.client.renderer.lines.LineRenderer;
 import com.grillecube.client.renderer.model.ModelRenderer;
 import com.grillecube.client.renderer.particles.ParticleRenderer;
 import com.grillecube.client.renderer.sky.SkyRenderer;
-import com.grillecube.client.renderer.terrain.TerrainRenderer;
+import com.grillecube.client.renderer.world.TerrainRenderer;
 import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;

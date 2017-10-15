@@ -13,8 +13,8 @@ public class WorldGeneratorFlat extends WorldGenerator {
 		if (terrain.getWorldIndex3().y != 0) {
 			return;
 		}
-		for (int x = 0; x < Terrain.DIM; x++) {
-			for (int z = 0; z < Terrain.DIM; z++) {
+		for (int x = 0; x < Terrain.DIMX; x++) {
+			for (int z = 0; z < Terrain.DIMZ; z++) {
 				terrain.setBlockAt(Blocks.GRASS, x, 4, z);
 				terrain.setBlockAt(Blocks.STONE, x, 3, z);
 				terrain.setBlockAt(Blocks.STONE, x, 2, z);
