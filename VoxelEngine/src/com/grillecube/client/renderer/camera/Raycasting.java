@@ -29,46 +29,67 @@ public class Raycasting {
 	 * @return the face normal of collision
 	 */
 	public static Vector3f raycast(Vector3f origin, Vector3f dir, float radius, RaycastingCallback callback) {
-		return raycast(origin, dir, radius, radius, radius, callback);
+		return raycast(origin, dir, radius, radius, radius, 1.0f, 1.0f, 1.0f, callback);
 	}
 
-	public static Vector3f raycast(Vector3f origin, Vector3f dir, float rx, float ry, float rz,
+	public static Vector3f raycast(Vector3f origin, Vector3f dir, float radius, float scale,
 			RaycastingCallback callback) {
+		return raycast(origin, dir, radius, radius, radius, scale, scale, scale, callback);
+	}
+
+	/**
+	 * Launch a ray, and callback touched blocks
+	 * 
+	 * @param origin
+	 *            : origin of the raycast
+	 * @param dir
+	 *            : direction of the raycast (no need to normalize it)
+	 * @param rx
+	 * @param ry
+	 * @param rz
+	 * @param sx
+	 * @param sy
+	 * @param sz
+	 * @param callback
+	 * @return
+	 */
+	public static Vector3f raycast(Vector3f origin, Vector3f dir, float rx, float ry, float rz, float sx, float sy,
+			float sz, RaycastingCallback callback) {
 
 		if (dir.lengthSquared() < 0.001f) {
 			return (null);
 		}
 
-		float ox = (float) Math.floor(origin.x);
-		float oy = (float) Math.floor(origin.y);
-		float oz = (float) Math.floor(origin.z);
+		float ox = Maths.floor(origin.x, sx);
+		float oy = Maths.floor(origin.y, sy);
+		float oz = Maths.floor(origin.z, sz);
 		float x = ox;
 		float y = oy;
 		float z = oz;
 		int nx = 1;
 		int ny = 1;
 		int nz = 1;
-		
-		float dirx = dir.x;
-		float diry = dir.y;
-		float dirz = dir.z;
 
-		float stepX = Maths.sign(dirx);
-		float stepY = Maths.sign(diry);
-		float stepZ = Maths.sign(dirz);
+		float stepX = Maths.sign(dir.x) * sx;
+		float stepY = Maths.sign(dir.y) * sy;
+		float stepZ = Maths.sign(dir.z) * sz;
 
-		float maxX = Maths.intbound(origin.x, dirx);
-		float maxY = Maths.intbound(origin.y, diry);
-		float maxZ = Maths.intbound(origin.z, dirz);
+		float scaleX = 1.0f / sx;
+		float scaleY = 1.0f / sy;
+		float scaleZ = 1.0f / sz;
 
-		float dx = stepX / dirx;
-		float dy = stepY / diry;
-		float dz = stepZ / dirz;
+		float maxX = Maths.intbound(origin.x, dir.x);
+		float maxY = Maths.intbound(origin.y, dir.y);
+		float maxZ = Maths.intbound(origin.z, dir.z);
+
+		float dx = stepX / dir.x;
+		float dy = stepY / dir.y;
+		float dz = stepZ / dir.z;
 
 		Vector3f face = new Vector3f();
 
 		while (true) {
-			if (callback.onRaycastCoordinates(x, y, z, face)) {
+			if (callback.onRaycastCoordinates((int) (x * scaleX), (int) (y * scaleY), (int) (z * scaleZ), face)) {
 				return (face);
 			}
 

@@ -7,8 +7,8 @@ public class BlockData {
 	private final float[] weights;
 
 	public BlockData() {
-		this.boneIds = new int[3];
-		this.weights = new float[3];
+		this.boneIds = new int[] { 0, 0, 0 };
+		this.weights = new float[] { 1, 0, 0 };
 	}
 
 	public final int getBoneID(int i) {
@@ -32,7 +32,7 @@ public class BlockData {
 		this.boneIds[i] = boneID;
 		this.weights[i] = weight;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

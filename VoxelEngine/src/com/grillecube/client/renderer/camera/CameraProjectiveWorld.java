@@ -43,7 +43,7 @@ public abstract class CameraProjectiveWorld extends CameraProjective implements 
 	}
 
 	@Override
-	public boolean onRaycastCoordinates(float x, float y, float z, Vector3f face) {
+	public boolean onRaycastCoordinates(int x, int y, int z, Vector3f face) {
 		if (this.world == null) {
 			return (true);
 		}

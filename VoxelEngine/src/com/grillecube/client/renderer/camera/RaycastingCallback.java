@@ -4,6 +4,6 @@ import com.grillecube.common.maths.Vector3f;
 
 public interface RaycastingCallback {
 	/** return true if the raytracing should stop */
-	public boolean onRaycastCoordinates(float x, float y, float z, Vector3f face);
+	public boolean onRaycastCoordinates(int x, int y, int z, Vector3f face);
 
 }

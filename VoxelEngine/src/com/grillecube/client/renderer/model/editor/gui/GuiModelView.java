@@ -13,7 +13,6 @@ import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiViewDebug;
 import com.grillecube.client.renderer.gui.components.GuiViewWorld;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
-import com.grillecube.client.renderer.gui.event.GuiEventMouseMove;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.ModelEditorMod;
@@ -23,7 +22,6 @@ import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.block.Block;
 
 /** the gui which displays the model */
 public class GuiModelView extends Gui {
@@ -76,16 +74,23 @@ public class GuiModelView extends Gui {
 	}
 
 	private final void updateHoveredBlock() {
+		EditableModel model = getSelectedModel();
+		if (model == null) {
+			this.theBox.setMinSize(0, 0, 0, 1, 1, 1);
+			this.guiViewWorld.getWorldRenderer().getLineRendererFactory().setBox(this.theBox, this.boxID);
+			return;
+		}
+
+		float s = model.getBlockSizeUnit();
 		ModelEditorCamera camera = (ModelEditorCamera) this.guiViewWorld.getWorldRenderer().getCamera();
 		Vector3f ray = new Vector3f();
 		CameraPicker.ray(ray, camera, this.getMouseX(), this.getMouseY());
-		Raycasting.raycast(camera.getPosition(), ray, 256.0f, new RaycastingCallback() {
+		Raycasting.raycast(camera.getPosition(), ray, 256.0f, s, new RaycastingCallback() {
 			@Override
-			public boolean onRaycastCoordinates(float x, float y, float z, Vector3f face) {
-				World world = getWorld();
-				Block block = world.getBlock(x, y, z);
-				if (block.isVisible() && !block.bypassRaycast()) {
-					theBox.setMinSize(x + face.x, y + face.y, z + face.z, 1, 1, 1);
+			public boolean onRaycastCoordinates(int x, int y, int z, Vector3f face) {
+				// System.out.println(x + " : " + y + " : " + z);
+				if (y == model.getMinY() || model.getBlockData(x, y, z) != null) {
+					theBox.setMinSize((x + face.x) * s, (y + face.y) * s, (z + face.z) * s, s, s, s);
 					guiViewWorld.getWorldRenderer().getLineRendererFactory().setBox(theBox, boxID);
 					return (true);
 				}

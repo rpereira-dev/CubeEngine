@@ -4,12 +4,12 @@ package com.grillecube.common.maths;
  * 
  * @author Romain
  *
- *	A small maths library based on my C implementation
+ *         A small maths library based on my C implementation
  *
- *	https://github.com/rpereira-dev/C_maths/
+ *         https://github.com/rpereira-dev/C_maths/
  */
 public class Maths {
-	
+
 	static float[] SIN_TABLE = new float[180];
 	static float DEG_TO_RAD = 0.01745329251f;
 	static float RAD_TO_DEG = 57.2957795131f;
@@ -19,8 +19,8 @@ public class Maths {
 	static {
 
 		int i, j;
-		for (i = 0, j = 0 ; i < 180; i++) {
-			SIN_TABLE[j++] = (float)Math.sin((double)DEG_TO_RAD * i);
+		for (i = 0, j = 0; i < 180; i++) {
+			SIN_TABLE[j++] = (float) Math.sin((double) DEG_TO_RAD * i);
 		}
 	}
 
@@ -42,7 +42,7 @@ public class Maths {
 	}
 
 	public static float sin(float x) {
-		int index = ((int)(RAD_TO_DEG * abs(x)) % 360);
+		int index = ((int) (RAD_TO_DEG * abs(x)) % 360);
 		return (index > 180 ? -SIN_TABLE[index - 180] : SIN_TABLE[index]);
 	}
 
@@ -52,11 +52,11 @@ public class Maths {
 
 	public static float sqrtFast(float x) {
 		int i = Float.floatToIntBits(x);
-		i  += 127 << 23;
+		i += 127 << 23;
 		i >>= 1;
 		return (Float.intBitsToFloat(i));
 	}
-	
+
 	public static float sqrt(float f) {
 		return ((float) Math.sqrt((double) f));
 	}
@@ -68,6 +68,21 @@ public class Maths {
 	public static int floor(float f) {
 		int i = (int) f;
 		return (f < (float) i ? i - 1 : i);
+	}
+
+	/**
+	 * 
+	 * examples: floor(1.5f, 1.0f) -> 1.0f ; floor(1.6f, 0.25f) -> 1.5f;
+	 * floor(1.21f, 0.1f) -> 1.2f
+	 * 
+	 * @param f
+	 *            : the number to floor
+	 * @param unit
+	 *            : the size unit
+	 * @return
+	 */
+	public static float floor(float f, float unit) {
+		return ((float) Maths.floor(f) + ((int) ((f % 1.0f) / unit)) * unit);
 	}
 
 	public static int floor(double d) {
