@@ -63,15 +63,23 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 	private int width;
 	private int height;
 
-	private LineRendererFactory lineFactory;
-	private ModelRendererFactory modelFactory;
-	private ParticleRendererFactory particleFactory;
+	private final LineRendererFactory lineFactory;
+	private final ModelRendererFactory modelFactory;
+	private final ParticleRendererFactory particleFactory;
 
 	private EventListener<EventModelInstanceAdded> modelInstanceAddCallback;
 	private EventListener<EventModelInstanceRemoved> modelInstanceRemoveCallback;
 
 	public WorldRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
+
+		this.lineFactory = new LineRendererFactory(mainRenderer);
+		this.modelFactory = new ModelRendererFactory(mainRenderer);
+		this.particleFactory = new ParticleRendererFactory(mainRenderer);
+
+		super.addFactory(this.lineFactory);
+		super.addFactory(this.modelFactory);
+		super.addFactory(this.particleFactory);
 	}
 
 	@Override
@@ -100,13 +108,6 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		GLH.glhCheckError("post worldrenderer fbo creation");
 
 		this.setPostProcessingProgram(null);
-		this.lineFactory = new LineRendererFactory(this.getMainRenderer());
-		this.modelFactory = new ModelRendererFactory(this.getMainRenderer());
-		this.particleFactory = new ParticleRendererFactory(this.getMainRenderer());
-
-		super.addFactory(this.lineFactory);
-		super.addFactory(this.modelFactory);
-		super.addFactory(this.particleFactory);
 
 		// callback to add every model instances to the renderer, if they are in
 		// the correct world
@@ -150,7 +151,7 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		eventManager.removeListener(this.modelInstanceRemoveCallback);
 	}
 
-	//TODO : take size as parameter
+	// TODO : take size as parameter
 	public final void resizeFbo() {
 		int W = this.getMainRenderer().getGLFWWindow().getWidth();
 		int H = this.getMainRenderer().getGLFWWindow().getHeight();

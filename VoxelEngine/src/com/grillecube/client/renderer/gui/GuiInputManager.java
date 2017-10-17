@@ -77,8 +77,9 @@ public class GuiInputManager {
 			this.focusedGui.stackEvent(new GuiEventLooseFocus<Gui>(this.focusedGui));
 		}
 		this.focusedGui = gui;
-		Logger.get().log(Logger.Level.DEBUG, "focused gui is now: "
-				+ (this.focusedGui != null ? this.focusedGui.getClass().getSimpleName() : "null"));
+		// Logger.get().log(Logger.Level.DEBUG, "focused gui is now: "
+		// + (this.focusedGui != null ?
+		// this.focusedGui.getClass().getSimpleName() : "null"));
 		if (this.focusedGui != null) {
 			this.focusedGui.focus(true);
 			this.focusedGui.stackEvent(new GuiEventGainFocus<Gui>(this.focusedGui));

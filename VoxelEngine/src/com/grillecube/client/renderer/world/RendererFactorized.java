@@ -40,8 +40,12 @@ public abstract class RendererFactorized extends Renderer {
 
 	protected abstract void onDeinitialized();
 
-	public void addFactory(RendererFactory factory) {
+	public final void addFactory(RendererFactory factory) {
 		this.factories.add(factory);
+	}
+
+	public final void addFactory(RendererFactory factory, int index) {
+		this.factories.add(index, factory);
 	}
 
 	@Override

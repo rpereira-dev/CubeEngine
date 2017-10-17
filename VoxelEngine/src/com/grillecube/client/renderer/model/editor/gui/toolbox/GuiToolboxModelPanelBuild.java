@@ -44,7 +44,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 
 	private final void onBlockSizeUnitChanged() {
 		this.getModel().setBlockSizeUnit((float) this.modelBlockSizeUnit.getSelectedValue());
-		this.getModel().generate();
+		this.getModel().requestMeshUpdate();
 	}
 
 	@Override

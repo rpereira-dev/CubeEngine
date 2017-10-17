@@ -1,6 +1,7 @@
-package com.grillecube.common.world;
+package com.grillecube.common.event.world;
 
 import com.grillecube.common.event.Event;
+import com.grillecube.common.world.World;
 
 /** represents a world event */
 public abstract class EventWorld extends Event {

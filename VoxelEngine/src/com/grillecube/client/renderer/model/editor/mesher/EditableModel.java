@@ -179,7 +179,10 @@ public class EditableModel extends Model {
 		this.blocksData[x][y][z] = null;
 	}
 
-	public final void generate() {
+	/**
+	 * request a mesh update
+	 */
+	public final void requestMeshUpdate() {
 		if (this.modelMesher != null) {
 			return;
 		}

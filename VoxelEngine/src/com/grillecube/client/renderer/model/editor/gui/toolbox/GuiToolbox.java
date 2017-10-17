@@ -131,7 +131,7 @@ public class GuiToolbox extends Gui {
 		EditableModel editableModel = new EditableModel(new JSONEditableModelInitializer(path));
 		try {
 			editableModel.initialize();
-			editableModel.generate();
+			editableModel.requestMeshUpdate();
 		} catch (Exception e) {
 			Logger.get().log(Logger.Level.ERROR, "Error when parsing model", path);
 			e.printStackTrace(Logger.get().getPrintStream());

@@ -13,14 +13,14 @@ public class WorldFlatRenderer extends WorldRenderer<WorldFlat> {
 
 	public WorldFlatRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
+		this.skyFactory = new SkyRendererFactory(mainRenderer);
+		this.terrainFactory = new TerrainRendererFactory(mainRenderer);
+		super.addFactory(this.skyFactory, 0);
+		super.addFactory(this.terrainFactory, 1);
 	}
 
 	@Override
 	protected void onInitialized() {
-		this.skyFactory = new SkyRendererFactory(this.getMainRenderer());
-		this.terrainFactory = new TerrainRendererFactory(this.getMainRenderer());
-		super.addFactory(this.skyFactory);
-		super.addFactory(this.terrainFactory);
 		super.onInitialized();
 	}
 

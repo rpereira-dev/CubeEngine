@@ -182,7 +182,7 @@ public class GuiPrompt extends GuiLabel {
 	}
 
 	public final boolean showCursor() {
-		return (this.cursorTimer < CURSOR_MS);
+		return (this.cursorTimer < CURSOR_MS && this.hasFocus());
 	}
 
 	private final void tickCursor() {
