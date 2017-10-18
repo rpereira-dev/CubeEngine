@@ -50,7 +50,7 @@ public class Terrain {
 
 	public static Vector3f BLOCK_SIZE_VEC = new Vector3f(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 
-	public static final int DIMX = 16;
+	public static final int DIMX = 64;
 	public static final int DIMY = 64;
 	public static final int DIMZ = DIMX;
 	public static final int DEMI_DIMX = DIMX / 2;
@@ -77,7 +77,7 @@ public class Terrain {
 	private final Vector3f worldPosCenter;
 
 	/** block instances */
-	private HashMap<Short, BlockInstance> blockInstances;
+	private HashMap<Integer, BlockInstance> blockInstances;
 
 	/** block ids */
 	protected short[] blocks;
@@ -227,7 +227,7 @@ public class Terrain {
 			return;
 		}
 
-		short index = (short) (Maths.abs(this.getWorld().getRNG().nextInt()) % this.blocks.length);
+		int index = (short) (Maths.abs(this.getWorld().getRNG().nextInt()) % this.blocks.length);
 		int z = this.getZFromIndex(index);
 		int y = this.getYFromIndex(index, z);
 		int x = this.getXFromIndex(index, y, z);
@@ -264,7 +264,7 @@ public class Terrain {
 	 * 
 	 * if the terrain didnt exists, it creates it
 	 */
-	public Terrain getRelativeTerrain(int... xyz) {
+	public Terrain getRelativeTerrain(int xyz[]) {
 		Terrain terrain = this;
 
 		// x test
@@ -326,7 +326,11 @@ public class Terrain {
 		return (terrain);
 	}
 
-	public Block getBlock(int... xyz) {
+	public final Block getBlock(int x, int y, int z) {
+		return (this.getBlock(new int[] { x, y, z }));
+	}
+
+	public final Block getBlock(int xyz[]) {
 		Terrain terrain = this.getRelativeTerrain(xyz);
 		if (terrain == null) {
 			return (Blocks.AIR);
@@ -339,7 +343,7 @@ public class Terrain {
 		return (this.getBlockAt(this.getIndex(x, y, z)));
 	}
 
-	public Block getBlockAt(short index) {
+	public Block getBlockAt(int index) {
 		if (this.blocks == null) {
 			return (Blocks.AIR);
 		}
@@ -350,12 +354,13 @@ public class Terrain {
 	}
 
 	/** secure function to set a block relative to this terrain */
-	public BlockInstance setBlock(Block block, int... xyz) {
+	public BlockInstance setBlock(Block block, int x, int y, int z) {
+		int[] xyz = { x, y, z };
 		Terrain terrain = this.getRelativeTerrain(xyz);
 		if (terrain == null) {
 			return (null);
 		}
-		short index = this.getIndex(xyz[0], xyz[1], xyz[2]);
+		int index = this.getIndex(xyz[0], xyz[1], xyz[2]);
 		return (terrain.setBlock(block, index, xyz[0], xyz[1], xyz[2]));
 	}
 
@@ -364,7 +369,7 @@ public class Terrain {
 		this.setBlock(block, pos.x, pos.y, pos.z);
 	}
 
-	public BlockInstance setBlock(Block block, short index) {
+	public BlockInstance setBlock(Block block, int index) {
 		int z = this.getZFromIndex(index);
 		int y = this.getYFromIndex(index, z);
 		int x = this.getXFromIndex(index, y, z);
@@ -383,8 +388,13 @@ public class Terrain {
 		return (this.setBlock(block, this.getIndex(x, y, z), x, y, z));
 	}
 
+	/** @see #setBlock(Block, int, int, int, int) */
+	public final BlockInstance setBlock(Block block, int index, int xyz[]) {
+		return (this.setBlock(block, index, xyz[0], xyz[1], xyz[2]));
+	}
+
 	/** function to set a block to this terrain */
-	public BlockInstance setBlock(Block block, short index, int... xyz) {
+	public final BlockInstance setBlock(Block block, int index, int x, int y, int z) {
 
 		// if terrain was empty
 		if (this.blocks == null) {
@@ -402,11 +412,6 @@ public class Terrain {
 
 		// get the previous block in this location
 		Block prevblock = Blocks.getBlockByID(this.blocks[index]);
-
-		// get the (x, y, z) coordinates
-		int x = xyz[0];
-		int y = xyz[1];
-		int z = xyz[2];
 
 		// unset the previous block
 		prevblock.onUnset(this, x, y, z);
@@ -454,7 +459,7 @@ public class Terrain {
 			// initialiaze the instance list if needed. (i.e if it is the first
 			// block instance for this terrain)
 			if (this.blockInstances == null) {
-				this.blockInstances = new HashMap<Short, BlockInstance>();
+				this.blockInstances = new HashMap<Integer, BlockInstance>();
 			}
 			// add the instance to the list
 			this.blockInstances.put(index, instance);
@@ -470,7 +475,7 @@ public class Terrain {
 	}
 
 	/** remove and return the block instance at the given location */
-	private BlockInstance removeBlockInstance(Short index) {
+	private BlockInstance removeBlockInstance(Integer index) {
 		if (this.blockInstances == null) {
 			return (null);
 		}
@@ -486,7 +491,7 @@ public class Terrain {
 	/**
 	 * get the block instance at the given location (relative to the terrain)
 	 */
-	public BlockInstance getBlockInstanceAt(Short index) {
+	public BlockInstance getBlockInstanceAt(int index) {
 		if (this.blockInstances == null) {
 			return (null);
 		}
@@ -496,8 +501,8 @@ public class Terrain {
 	/**
 	 * get the block instance at the given location (relative to the terrain)
 	 */
-	public BlockInstance getBlockInstance(int... xyz) {
-		return (this.getBlockInstanceAt(this.getIndex(xyz)));
+	public final BlockInstance getBlockInstance(int x, int y, int z) {
+		return (this.getBlockInstanceAt(this.getIndex(x, y, z)));
 	}
 
 	/**
@@ -511,9 +516,9 @@ public class Terrain {
 
 	public class LightNodeAdd {
 		public final Terrain terrain;
-		public final short index;
+		public final int index;
 
-		public LightNodeAdd(Terrain terrain, short index) {
+		public LightNodeAdd(Terrain terrain, int index) {
 			this.terrain = terrain;
 			this.index = index;
 		}
@@ -521,10 +526,10 @@ public class Terrain {
 
 	public class LightNodeRemoval {
 		public final Terrain terrain;
-		public final short index;
+		public final int index;
 		public final byte value;
 
-		public LightNodeRemoval(Terrain terrain, short index, byte value) {
+		public LightNodeRemoval(Terrain terrain, int index, byte value) {
 			this.terrain = terrain;
 			this.index = index;
 			this.value = value;
@@ -538,7 +543,7 @@ public class Terrain {
 	 */
 
 	/** get sunlight value */
-	public final byte getSunLight(int... xyz) {
+	public final byte getSunLight(int xyz[]) {
 		Terrain terrain = this.getRelativeTerrain(xyz);
 		if (terrain == null) {
 			return (15);
@@ -546,8 +551,12 @@ public class Terrain {
 		return (terrain.getSunLight(terrain.getIndex(xyz[0], xyz[1], xyz[2])));
 	}
 
+	public final byte getSunLight(int x, int y, int z) {
+		return (this.getSunLight(new int[] { x, y, z }));
+	}
+
 	/** get sunlight value */
-	public final byte getSunLight(short index) {
+	public final byte getSunLight(int index) {
 		if (this.lights == null) {
 			return (0);
 		}
@@ -556,7 +565,7 @@ public class Terrain {
 	}
 
 	/** set the sunlight value */
-	private final void setSunLight(byte value, short index) {
+	private final void setSunLight(byte value, int index) {
 		if (this.lights == null) {
 			// initialize it, fill it with 0
 			this.lights = new byte[Terrain.MAX_BLOCK_INDEX];
@@ -571,7 +580,7 @@ public class Terrain {
 	}
 
 	/** add a light to the terrain */
-	private void addSunLight(byte lightValue, short index) {
+	private void addSunLight(byte lightValue, int index) {
 		if (lightValue <= 0) {
 			return;
 		}
@@ -583,11 +592,11 @@ public class Terrain {
 	}
 
 	/** remove the light at given index */
-	private void removeSunLight(short index) {
+	private void removeSunLight(int index) {
 		this.removeSunLight(index, this.getBlockLight(index));
 	}
 
-	private void removeSunLight(short index, byte value) {
+	private void removeSunLight(int index, byte value) {
 
 		if (value <= 0) {
 			return;
@@ -642,7 +651,7 @@ public class Terrain {
 			}
 
 			// get the index
-			short index = lightNode.index;
+			int index = lightNode.index;
 			byte lightValue = nodeTerrain.getSunLight(index);
 
 			// next value
@@ -719,7 +728,7 @@ public class Terrain {
 		}
 	}
 
-	private void floodFillSunlightAdd(short index, byte nextLightValue) {
+	private void floodFillSunlightAdd(int index, byte nextLightValue) {
 		Block next = this.getBlockAt(index);
 		if (!next.isOpaque()) {
 			if (this.getSunLight(index) < nextLightValue) {
@@ -744,7 +753,7 @@ public class Terrain {
 			}
 
 			// clear the light value
-			short nodeIndex = lightValueNode.index;
+			int nodeIndex = lightValueNode.index;
 			byte lightLevel = lightValueNode.value;
 
 			z = nodeTerrain.getZFromIndex(nodeIndex);
@@ -813,7 +822,7 @@ public class Terrain {
 		}
 	}
 
-	private void floodFillSunlightRemove(short index, byte lightLevel) {
+	private void floodFillSunlightRemove(int index, byte lightLevel) {
 		byte neighborLevel = this.getBlockLight(index);
 		if (neighborLevel != 0 && neighborLevel < lightLevel) {
 			this.removeSunLight(index);
@@ -828,7 +837,7 @@ public class Terrain {
 	 * 
 	 */
 	/** get the block light value */
-	public final byte getBlockLight(int... xyz) {
+	public final byte getBlockLight(int xyz[]) {
 		Terrain terrain = this.getRelativeTerrain(xyz);
 		if (terrain == null) {
 			return (0);
@@ -836,8 +845,12 @@ public class Terrain {
 		return (terrain.getBlockLight(terrain.getIndex(xyz[0], xyz[1], xyz[2])));
 	}
 
+	public final byte getBlockLight(int x, int y, int z) {
+		return (this.getBlockLight(new int[] { x, y, z }));
+	}
+
 	/** get the block light value */
-	public byte getBlockLight(short index) {
+	public byte getBlockLight(int index) {
 		if (this.lights == null) {
 			return (0);
 		}
@@ -846,7 +859,7 @@ public class Terrain {
 	}
 
 	/** set tje block light value */
-	private final void setBlockLight(byte val, short index) {
+	private final void setBlockLight(byte val, int index) {
 		if (this.lights == null) {
 			// initialize it, fill it with 0
 			this.lights = new byte[Terrain.MAX_BLOCK_INDEX];
@@ -861,7 +874,7 @@ public class Terrain {
 	}
 
 	/** add a light to the terrain */
-	public void addBlockLight(byte lightValue, short index) {
+	public void addBlockLight(byte lightValue, int index) {
 		if (lightValue == 0) {
 			return;
 		}
@@ -878,11 +891,11 @@ public class Terrain {
 	}
 
 	/** remove the light at given index */
-	public void removeLight(short index) {
+	public void removeLight(int index) {
 		this.removeLight(index, this.getBlockLight(index));
 	}
 
-	private void removeLight(short index, byte value) {
+	private void removeLight(int index, byte value) {
 
 		if (value <= 0) {
 			return;
@@ -937,7 +950,7 @@ public class Terrain {
 			}
 
 			// get the index
-			short index = lightNode.index;
+			int index = lightNode.index;
 			byte lightValue = nodeTerrain.getBlockLight(index);
 
 			// next value
@@ -1014,7 +1027,7 @@ public class Terrain {
 		}
 	}
 
-	private void floodFillLightAdd(short index, byte nextLightValue) {
+	private void floodFillLightAdd(int index, byte nextLightValue) {
 		Block next = this.getBlockAt(index);
 		if (!next.isOpaque()) {
 			if (this.getBlockLight(index) < nextLightValue) {
@@ -1039,7 +1052,7 @@ public class Terrain {
 			}
 
 			// clear the light value
-			short nodeIndex = lightValueNode.index;
+			int nodeIndex = lightValueNode.index;
 			byte lightLevel = lightValueNode.value;
 
 			z = nodeTerrain.getZFromIndex(nodeIndex);
@@ -1108,7 +1121,7 @@ public class Terrain {
 		}
 	}
 
-	private void floodFillLightRemove(short index, byte lightLevel) {
+	private void floodFillLightRemove(int index, byte lightLevel) {
 		byte neighborLevel = this.getBlockLight(index);
 		if (neighborLevel != 0 && neighborLevel < lightLevel) {
 			this.removeLight(index);
@@ -1180,39 +1193,41 @@ public class Terrain {
 	 *
 	 * (x, y, z) are unique for a given index, and we found their value.
 	 */
-	public short getIndex(int x, int y, int z) {
-		return (short) (x + Terrain.DIMX * (y + Terrain.DIMY * z));
+	public final int getIndex(int x, int y, int z) {
+		return (x + Terrain.DIMX * (y + Terrain.DIMY * z));
 	}
 
-	public short getIndex(int... xyz) {
+	public final int getIndex(int xyz[]) {
 		return (this.getIndex(xyz[0], xyz[1], xyz[2]));
 	}
 
-	public int getXFromIndex(short index) {
+	public final int getXFromIndex(int index) {
 		int z = this.getZFromIndex(index);
 		return (this.getXFromIndex(index, this.getYFromIndex(index, z), z));
 	}
 
-	public int getXFromIndex(short index, int y, int z) {
+	public final int getXFromIndex(int index, int y, int z) {
 		return (index - Terrain.DIMX * (y + Terrain.DIMY * z));
 	}
 
-	public int getYFromIndex(short index) {
+	public final int getYFromIndex(int index) {
 		return (this.getYFromIndex(index, this.getZFromIndex(index)));
 	}
 
-	public int getYFromIndex(short index, int z) {
+	public final int getYFromIndex(int index, int z) {
 		return (index / Terrain.DIMX - Terrain.DIMY * z);
 	}
 
-	public int getZFromIndex(short index) {
+	public final int getZFromIndex(int index) {
 		return (index / (Terrain.DIMX * DIMY));
 	}
 
-	public void getPosFromIndex(short index, int... xyz) {
+	public final int[] getPosFromIndex(int index) {
+		int xyz[] = new int[3];
 		xyz[2] = this.getZFromIndex(index);
 		xyz[1] = this.getYFromIndex(index, xyz[2]);
 		xyz[0] = this.getXFromIndex(index, xyz[1], xyz[2]);
+		return (xyz);
 	}
 
 	/**

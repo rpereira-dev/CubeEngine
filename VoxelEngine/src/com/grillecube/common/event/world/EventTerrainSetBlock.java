@@ -4,14 +4,14 @@ import com.grillecube.common.world.terrain.Terrain;
 
 public class EventTerrainSetBlock extends EventTerrain {
 
-	private final short index;
+	private final int index;
 
-	public EventTerrainSetBlock(Terrain terrain, short index) {
+	public EventTerrainSetBlock(Terrain terrain, int index) {
 		super(terrain);
 		this.index = index;
 	}
 
-	public final short getIndex() {
+	public final int getIndex() {
 		return (this.index);
 	}
 

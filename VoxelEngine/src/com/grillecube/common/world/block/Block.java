@@ -87,7 +87,7 @@ public abstract class Block {
 	 * @return a BlockInstance for this block, or null if the block should be
 	 *         instanced (i.e, if the block is a static cube)
 	 */
-	public BlockInstance createBlockInstance(Terrain terrain, short index) {
+	public BlockInstance createBlockInstance(Terrain terrain, int index) {
 		return (null);
 	}
 

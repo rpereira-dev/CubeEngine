@@ -291,7 +291,7 @@ public class WorldFlatTerrainStorage extends WorldTerrainStorage {
 		int xx = this.getRelativeCoordinate((int) x, Terrain.DIMX);
 		int yy = this.getRelativeCoordinate((int) y, Terrain.DIMY);
 		int zz = this.getRelativeCoordinate((int) z, Terrain.DIMZ);
-		short index = terrain.getIndex(xx, yy, zz);
+		int index = terrain.getIndex(xx, yy, zz);
 		return (terrain.getBlockLight(index));
 	}
 

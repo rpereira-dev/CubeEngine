@@ -90,7 +90,7 @@ public class BlockInstanceLiquid extends BlockInstance {
 		Terrain terrainUnder = terrain.getRelativeTerrain(under);
 		if (terrainUnder != null) {
 
-			short indexUnder = terrainUnder.getIndex(under);
+			int indexUnder = terrainUnder.getIndex(under);
 			this.blockUnder = terrainUnder.getBlockAt(indexUnder);
 
 			// if the block under is air
@@ -134,7 +134,7 @@ public class BlockInstanceLiquid extends BlockInstance {
 						continue;
 					}
 
-					short neighborIndex = neighborTerrain.getIndex(bxyz);
+					int neighborIndex = neighborTerrain.getIndex(bxyz);
 					Block neighborBlock = neighborTerrain.getBlockAt(neighborIndex);
 
 					// if the neighbor is air
