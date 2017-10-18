@@ -167,8 +167,8 @@ public class GLH {
 	}
 
 	/**
-	 * create opengl textures ID and fill it data with the given bufferedimage
-	 * (rgba format)
+	 * create opengl textures ID and fill it data with the given bufferedimage (rgba
+	 * format)
 	 */
 	public static GLTexture glhGenTexture(BufferedImage image) {
 		GLTexture texture = GLH.glhGenTexture();

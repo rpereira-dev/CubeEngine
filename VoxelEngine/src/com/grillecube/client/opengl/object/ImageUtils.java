@@ -54,4 +54,23 @@ public class ImageUtils {
 		}
 		return (pixels);
 	}
+
+	/**
+	 * export the given image to the given filepath in png file format
+	 * 
+	 * @param filepath
+	 * @param atlas
+	 */
+	public static void exportPNGImage(String filepath, BufferedImage image) {
+		try {
+			File file = new File(filepath);
+			if (!file.exists()) {
+				file.mkdirs();
+				file.createNewFile();
+			}
+			ImageIO.write(image, "png", file);
+		} catch (IOException e) {
+			Logger.get().log(Logger.Level.WARNING, "Cant save texture: " + e.getMessage());
+		}
+	}
 }

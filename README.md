@@ -108,7 +108,7 @@ Climatic effects can be simulated using particles (dust, pollen, rain...)
 3D models implementation is based on Skeleton system.
 The mesh vertex format is:
 
-(x, y, z, ux, uy, vx, vy, nx, ny, nz , b1, b2, b3, w1, w2, w3)
+(x, y, z, ux, uy, vx, vy, nx, ny, nz, b1, b2, b3, w1, w2, w3)
 ('position', 'texture coordinates', 'normal', 'bones', 'weights')
 
 Each bones 'bn' correspond to the ID of a bone on the skeleton, and the corresponding weight 'wn' is a factor on how much does the bone transformation affect this vertex. (so when animating, the mesh stays static, the bones are transformed, and then we apply the same transformation to vertices but using these weights)

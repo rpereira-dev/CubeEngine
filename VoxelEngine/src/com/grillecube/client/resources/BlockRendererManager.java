@@ -18,11 +18,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
-
-import javax.imageio.ImageIO;
 
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLTexture;
@@ -143,16 +139,8 @@ public class BlockRendererManager extends GenericManager<String> {
 	}
 
 	private void exportTextureAtlas(String label, BufferedImage atlas) {
-		try {
-			File file = new File(R.getResPath("textures/block_atlas/" + label + ".png"));
-			if (!file.exists()) {
-				file.mkdirs();
-				file.createNewFile();
-			}
-			ImageIO.write(atlas, "png", file);
-		} catch (IOException e) {
-			Logger.get().log(Logger.Level.WARNING, "Cant save texture atlas: " + e.getMessage());
-		}
+		String filepath = R.getResPath("textures/block_atlas/" + label + ".png");
+		ImageUtils.exportPNGImage(filepath, atlas);
 	}
 
 	/** get block texture by id */

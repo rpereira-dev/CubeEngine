@@ -16,6 +16,7 @@ package com.grillecube.client.renderer.model;
 
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.object.ImageUtils;
 
 public class ModelSkin {
 
@@ -39,6 +40,8 @@ public class ModelSkin {
 	public ModelSkin(String name, String filepath) {
 		this.name = name;
 		this.filepath = filepath;
+		this.glTexture = GLH.glhGenTexture();
+		this.load();
 	}
 
 	public String getName() {
@@ -55,13 +58,18 @@ public class ModelSkin {
 	}
 
 	public void bind(int texture, int target) {
-		if (this.glTexture == null) {
-			// TODO : clean it when unused
-			if (this.getFilepath() == null) {
-				return;
-			}
-			this.glTexture = GLH.glhGenTexture(this.getFilepath());
-		}
 		this.glTexture.bind(texture, target);
+	}
+
+	public final GLTexture getGLTexture() {
+		return (this.glTexture);
+	}
+
+	public final void save() {
+		ImageUtils.exportPNGImage(this.getFilepath(), this.getGLTexture().getData());
+	}
+
+	public final void load() {
+		this.glTexture.setData(ImageUtils.readImage(this.getFilepath()));
 	}
 }
