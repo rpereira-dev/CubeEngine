@@ -88,14 +88,15 @@ public abstract class Gui {
 	public static final int STATE_INITIALIZED = (1 << 0);
 	public static final int STATE_HOVERED = (1 << 1);
 	public static final int STATE_FOCUSED = (1 << 2);
-	public static final int STATE_PRESSED = (1 << 3);
-	public static final int STATE_SELECTABLE = (1 << 4);
-	public static final int STATE_VISIBLE = (1 << 5);
-	private static final int STATE_ENABLED = (1 << 6);
-	private static final int STATE_REQUESTED_FOCUS = (1 << 7);
-	private static final int STATE_REQUESTED_UNFOCUS = (1 << 8);
-	private static final int STATE_SELECTED = (1 << 9);
-	private static final int STATE_HOVERABLE = (1 << 10);
+	public static final int STATE_LEFT_PRESSED = (1 << 3);
+	public static final int STATE_RIGHT_PRESSED = (1 << 4);
+	public static final int STATE_SELECTABLE = (1 << 5);
+	public static final int STATE_VISIBLE = (1 << 6);
+	private static final int STATE_ENABLED = (1 << 7);
+	private static final int STATE_REQUESTED_FOCUS = (1 << 8);
+	private static final int STATE_REQUESTED_UNFOCUS = (1 << 9);
+	private static final int STATE_SELECTED = (1 << 10);
+	private static final int STATE_HOVERABLE = (1 << 11);
 
 	/** the transformation matrix, relative to the parent */
 	private final Matrix4f guiToParentChangeOfBasis;
@@ -584,7 +585,15 @@ public abstract class Gui {
 	}
 
 	public final void setPressed(boolean isPressed) {
-		this.setState(STATE_PRESSED, isPressed);
+		this.setLeftPressed(isPressed);
+	}
+
+	public final void setLeftPressed(boolean isPressed) {
+		this.setState(STATE_LEFT_PRESSED, isPressed);
+	}
+
+	public final void setRightPressed(boolean isPressed) {
+		this.setState(STATE_RIGHT_PRESSED, isPressed);
 	}
 
 	public final void setSelected(boolean isSelected) {
@@ -622,7 +631,15 @@ public abstract class Gui {
 
 	/** return true if the gui is pressed */
 	public final boolean isPressed() {
-		return (this.hasState(STATE_PRESSED));
+		return (this.isLeftPressed());
+	}
+
+	public final boolean isLeftPressed() {
+		return (this.hasState(STATE_LEFT_PRESSED));
+	}
+
+	public final boolean isRightPressed() {
+		return (this.hasState(STATE_RIGHT_PRESSED));
 	}
 
 	/** return true if the gui is selected */

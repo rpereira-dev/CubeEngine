@@ -41,6 +41,22 @@ import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.resources.R;
 
+/**
+ * Main GUI renderer class
+ * 
+ * 
+ * Optimization to implement later on:
+ * 
+ * -GuiInputManager : only update when needed (rendering list changed, or new
+ * input event occured)
+ * 
+ * -Rendering process: render to a GLTexture, and only re-render if needed (if
+ * any gui's called for redraw)
+ * 
+ * @author Romain
+ *
+ */
+
 public class GuiRenderer extends Renderer {
 	/** rendering program */
 	private ProgramFont programFont;
@@ -55,7 +71,7 @@ public class GuiRenderer extends Renderer {
 
 	/** the main gui, parent of every other guis */
 	private Gui mainGui;
-	private GuiInputManager guiInputManager;
+	private GuiInputManagerDesktop guiInputManager;
 
 	/** gui rendering list (sorted by layers) */
 	private ArrayList<Gui> renderingList;
@@ -72,8 +88,8 @@ public class GuiRenderer extends Renderer {
 		this.programTexturedQuad = new ProgramTexturedQuad();
 		this.programFont = new ProgramFont();
 		this.mainGui = new GuiView();
-		this.guiInputManager = new GuiInputManager();
-		this.guiInputManager.initialize(this.getMainRenderer().getGLFWWindow(), this.mainGui);
+		this.guiInputManager = new GuiInputManagerDesktop();
+		this.guiInputManager.initialize(this.getMainRenderer().getGLFWWindow());
 		this.renderingList = new ArrayList<Gui>();
 		this.loadFonts();
 	}

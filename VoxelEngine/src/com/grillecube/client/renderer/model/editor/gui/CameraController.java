@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
 import com.grillecube.client.renderer.camera.CameraPicker;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
@@ -22,20 +23,21 @@ import com.grillecube.common.world.entity.Entity;
 
 public class CameraController {
 
+	private final WorldRenderer worldRenderer;
 	private final Vector3i hoveredBlock;
 	private final ArrayList<Vector3i> selectedBlocks;
 	private final BoundingBox theBox;
 	private int boxID;
 
 	public CameraController(WorldRenderer<WorldFlat> worldRenderer) {
+		this.worldRenderer = worldRenderer;
 		this.hoveredBlock = new Vector3i();
 		this.selectedBlocks = new ArrayList<Vector3i>();
 		this.theBox = new BoundingBox();
 		this.boxID = worldRenderer.getLineRendererFactory().addBox(this.theBox);
 	}
 
-	public void update(ModelInstance modelInstance, WorldRenderer<WorldFlat> worldRenderer, float mouseX,
-			float mouseY) {
+	public void update(ModelInstance modelInstance, float mouseX, float mouseY) {
 		if (modelInstance == null) {
 			this.theBox.setMinSize(0, 0, 0, 1, 1, 1);
 			worldRenderer.getLineRendererFactory().setBox(this.theBox, this.boxID);
@@ -93,12 +95,22 @@ public class CameraController {
 	}
 
 	public final void onLeftPressed(float mouseX, float mouseY) {
-		// TODO Auto-generated method stub
+		// TODO
 
 	}
 
 	public final void onLeftReleased(float mouseX, float mouseY) {
-		// TODO Auto-generated method stub
+		// TODO
+	}
 
+	public final void onRightPressed(float mouseX, float mouseY) {
+		CameraPerspectiveWorldCentered camera = (CameraPerspectiveWorldCentered) this.worldRenderer.getCamera();
+		camera.setCenter(this.theBox.getMin().x + 0.5f, this.theBox.getMin().y + 0.5f, this.theBox.getMin().z + 0.5f);
+		camera.setDistanceFromCenter((float) Vector3f.distance(camera.getCenter(), camera.getPosition()));
+		// TODO
+	}
+
+	public final void onRightReleased(float mouseX, float mouseY) {
+		// TODO
 	}
 }

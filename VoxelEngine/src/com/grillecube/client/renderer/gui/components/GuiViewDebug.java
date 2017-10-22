@@ -36,7 +36,6 @@ public class GuiViewDebug extends GuiView {
 		this.label = new GuiLabel();
 		this.label.setFontSize(0.65f, 0.65f);
 		this.label.setFontColor(Gui.COLOR_BLUE);
-		this.label.addTextParameter(new GuiTextParameterTextAdjustBox());
 		this.addChild(this.label);
 		this.label.setHoverable(false);
 		this.setHoverable(false);

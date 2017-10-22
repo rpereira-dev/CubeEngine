@@ -14,7 +14,8 @@ public class EditableModel extends Model {
 	private float blockSizeUnit;
 
 	/** the mesher to be used for this model */
-	private ModelMesher modelMesher;
+	private final ModelMesher modelMesher;
+	private boolean meshUpToDate;
 
 	/** blocks data */
 	private BlockData[][][] blocksData;
@@ -43,7 +44,7 @@ public class EditableModel extends Model {
 		this.blockSizeUnit = 1.0f;
 		this.blocksData = null;
 		this.origin = new Vector3i(0, 0, 0);
-		this.modelMesher = null;
+		this.modelMesher = new ModelMesherCull();
 	}
 
 	/** @see ModelBuildingData#origin */
@@ -93,6 +94,11 @@ public class EditableModel extends Model {
 		int iy = y - this.miny;
 		int iz = z - this.minz;
 		return (this.blocksData[ix][iy][iz]);
+	}
+
+	/** */
+	public final BlockData[][][] getRawBlockDatas() {
+		return (this.blocksData);
 	}
 
 	/** set the block data for this model, and ensure the container capacity */
@@ -183,20 +189,16 @@ public class EditableModel extends Model {
 	 * request a mesh update
 	 */
 	public final void requestMeshUpdate() {
-		if (this.modelMesher != null) {
-			return;
-		}
-		this.modelMesher = new ModelMesherCull();
+		this.meshUpToDate = false;
 	}
 
 	@Override
 	public void preRender() {
 		super.preRender();
-		if (this.modelMesher != null) {
+
+		if (!this.meshUpToDate) {
 			this.modelMesher.generate(this);
-			this.getMesh().setIndices(this.modelMesher.getIndices());
-			this.getMesh().setVertices(this.modelMesher.getVertices());
-			this.modelMesher = null;
+			this.meshUpToDate = true;
 		}
 	}
 

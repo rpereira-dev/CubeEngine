@@ -3,71 +3,48 @@ package com.grillecube.client.renderer.gui;
 import java.util.ArrayList;
 
 import com.grillecube.client.opengl.window.GLFWWindow;
-import com.grillecube.client.opengl.window.event.GLFWEventChar;
-import com.grillecube.client.opengl.window.event.GLFWEventKeyPress;
-import com.grillecube.client.opengl.window.event.GLFWListener;
 import com.grillecube.client.renderer.gui.components.Gui;
-import com.grillecube.client.renderer.gui.event.GuiEventChar;
-import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiEventGainFocus;
-import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventLooseFocus;
-import com.grillecube.client.renderer.gui.event.GuiEventMouseEnter;
-import com.grillecube.client.renderer.gui.event.GuiEventMouseExit;
-import com.grillecube.client.renderer.gui.event.GuiEventMouseHover;
-import com.grillecube.client.renderer.gui.event.GuiEventMouseMove;
-import com.grillecube.client.renderer.gui.event.GuiEventPress;
-import com.grillecube.client.renderer.gui.event.GuiEventUnpress;
-import com.grillecube.common.Logger;
-import com.grillecube.common.maths.Matrix4f;
-import com.grillecube.common.maths.Vector4f;
 
 /** catch inputs and send them back to a gui */
-public class GuiInputManager {
+public abstract class GuiInputManager {
 
 	/** the window on which input are catched */
 	private GLFWWindow glfwWindow;
-	private Gui mainGui;
 	private Gui focusedGui;
-	private GLFWListener<GLFWEventKeyPress> keyPressListener;
-	private GLFWListener<GLFWEventChar> charListener;
 
-	/** add listeners to the window */
-	public final void initialize(GLFWWindow glfwWindow, Gui pgui) {
+	public GuiInputManager() {
+	}
+
+	/** initialize the input manager, to be called in a GL context */
+	public final void initialize(GLFWWindow glfwWindow) {
 		this.glfwWindow = glfwWindow;
-		this.mainGui = pgui;
-		this.setFocusedGui(this.mainGui);
-		this.keyPressListener = new GLFWListener<GLFWEventKeyPress>() {
-			@Override
-			public void invoke(GLFWEventKeyPress event) {
-				if (focusedGui != null) {
-					focusedGui.stackEvent(new GuiEventKeyPress<Gui>(focusedGui, event.getGLFWWindow(), event.getKey(),
-							event.getScancode(), event.getMods()));
-				}
-			}
-		};
-
-		this.charListener = new GLFWListener<GLFWEventChar>() {
-			@Override
-			public void invoke(GLFWEventChar event) {
-				if (focusedGui != null) {
-					focusedGui
-							.stackEvent(new GuiEventChar<Gui>(focusedGui, event.getGLFWWindow(), event.getCharacter()));
-				}
-			}
-		};
-
-		this.glfwWindow.addListener(this.keyPressListener);
-		this.glfwWindow.addListener(this.charListener);
+		this.setFocusedGui(null);
+		this.onInitialized();
 	}
 
-	/** remove listeners from the window */
+	protected abstract void onInitialized();
+
+	/** de-initialize the input manager, to be called in a GL context */
 	public final void deinitialize() {
-		this.glfwWindow.removeListener(this.keyPressListener);
-		this.glfwWindow.removeListener(this.charListener);
+		this.onDeinitialized();
 	}
 
-	private final void setFocusedGui(Gui gui) {
+	protected abstract void onDeinitialized();
+
+	/** update the input manager */
+	public final void update(ArrayList<Gui> guis) {
+		Gui g = this.getFocusedGui();
+		if (g != null && g.requestedUnfocus()) {
+			this.setFocusedGui(null);
+		}
+		this.onUpdate(guis);
+	}
+
+	protected abstract void onUpdate(ArrayList<Gui> guis);
+
+	protected final void setFocusedGui(Gui gui) {
 		if (this.focusedGui == gui) {
 			return;
 		}
@@ -86,76 +63,11 @@ public class GuiInputManager {
 		}
 	}
 
-	/** update the given guis, which should be sorted by their layers */
-	public final void update(ArrayList<Gui> guis) {
+	public final Gui getFocusedGui() {
+		return (this.focusedGui);
+	}
 
-		if (this.focusedGui != null && this.focusedGui.requestedUnfocus()) {
-			this.setFocusedGui(null);
-		}
-
-		double xpos = this.glfwWindow.getMouseX();
-		double ypos = this.glfwWindow.getMouseY();
-		float mx = (float) (xpos / this.glfwWindow.getWidth());
-		float my = (float) (1 - (ypos / this.glfwWindow.getHeight()));
-		boolean pressed = this.glfwWindow.isMouseLeftPressed();
-		boolean topestHoveredFound = false;
-
-		int i;
-		for (i = guis.size() - 1; i >= 0; i--) {
-			Gui gui = guis.get(i);
-			gui.update();
-
-			if (gui.requestedFocus()) {
-				this.setFocusedGui(gui);
-				gui.requestFocus(false);
-			}
-
-			// get the coordinates relatively to the gui basis
-			Vector4f mouse = new Vector4f(mx, my, 0.0f, 1.0f);
-			Matrix4f.transform(gui.getWindowToGuiChangeOfBasis(), mouse, mouse);
-
-			// update gui states (stack events)
-			float x = mouse.x;
-			float y = mouse.y;
-			gui.setMouse(x, y);
-
-			// mouse moving relatively to the gui
-			gui.stackEvent(new GuiEventMouseMove<Gui>(gui));
-
-			// if gui is hovered,
-			if (!topestHoveredFound && gui.isHoverable() && (x >= 0.0f && x < 1.0f && y >= 0.0f && y <= 1.0f)) {
-				topestHoveredFound = true;
-				gui.stackEvent(new GuiEventMouseHover<Gui>(gui));
-				// if gui wasnt hovered earlier
-				if (!gui.isHovered()) {
-					gui.setHovered(true);
-					gui.stackEvent(new GuiEventMouseEnter<Gui>(gui));
-				}
-				// if mouse wasnt pressed, and now is pressed, and the gui is
-				// hovered
-				if (!gui.isPressed() && pressed) {
-					gui.setPressed(true);
-					gui.stackEvent(new GuiEventPress<Gui>(gui));
-					if (gui.isSelectable()) {
-						gui.setSelected(!gui.isSelected());
-					}
-				} else if (gui.isPressed() && !pressed) {
-					gui.setPressed(false);
-					gui.stackEvent(new GuiEventUnpress<Gui>(gui));
-					gui.stackEvent(new GuiEventClick<Gui>(gui));
-				}
-			} else {
-				if (gui.isHovered()) {
-					gui.setHovered(false);
-					gui.stackEvent(new GuiEventMouseExit<Gui>(gui));
-				}
-
-				if (gui.isPressed() && !pressed) {
-					gui.setPressed(false);
-					gui.stackEvent(new GuiEventUnpress<Gui>(gui));
-				}
-			}
-			gui.unstackEvents();
-		}
+	public final GLFWWindow getGLFWWindow() {
+		return (this.glfwWindow);
 	}
 }

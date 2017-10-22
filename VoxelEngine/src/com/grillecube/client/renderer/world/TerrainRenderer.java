@@ -33,6 +33,7 @@ import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.WorldFlat;
+import com.grillecube.common.world.terrain.Terrain;
 
 public class TerrainRenderer extends Renderer {
 
@@ -56,17 +57,17 @@ public class TerrainRenderer extends Renderer {
 
 	private final void bindTextureAtlas(TerrainMesh mesh, CameraView camera) {
 
-		float distance = (float) Vector3f.distanceSquare(camera.getPosition(), mesh.getTerrain().getWorldPosCenter());
+		float distance = (float) Vector3f.distance(camera.getPosition(), mesh.getTerrain().getWorldPosCenter());
 		BlockRendererManager manager = this.getMainRenderer().getResourceManager().getBlockTextureManager();
 		GLTexture texture = null;
 
-		if (distance < (1 << 10)) {
+		if (distance < Terrain.SIZE_DIAGONAL3 * 1) {
 			texture = manager.getTextureAtlas(BlockRendererManager.RESOLUTION_16x16);
-		} else if (distance < (1 << 12)) {
+		} else if (distance < Terrain.SIZE_DIAGONAL3 * 2.0f) {
 			texture = manager.getTextureAtlas(BlockRendererManager.RESOLUTION_8x8);
-		} else if (distance < (1 << 14)) {
+		} else if (distance < Terrain.SIZE_DIAGONAL3 * 3.0f) {
 			texture = manager.getTextureAtlas(BlockRendererManager.RESOLUTION_4x4);
-		} else if (distance < (1 << 16)) {
+		} else if (distance < Terrain.SIZE_DIAGONAL3 * 4.0f) {
 			texture = manager.getTextureAtlas(BlockRendererManager.RESOLUTION_2x2);
 		} else {
 			texture = manager.getTextureAtlas(BlockRendererManager.RESOLUTION_1x1);

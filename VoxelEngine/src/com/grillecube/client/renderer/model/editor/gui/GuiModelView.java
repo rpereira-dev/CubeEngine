@@ -7,9 +7,11 @@ import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiViewDebug;
 import com.grillecube.client.renderer.gui.components.GuiViewWorld;
-import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
-import com.grillecube.client.renderer.gui.event.GuiEventPress;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftPress;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftRelease;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseRightPress;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseRightRelease;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.ModelEditorMod;
@@ -52,17 +54,30 @@ public class GuiModelView extends Gui {
 						event.getScancode());
 			}
 		});
-		this.addListener(new GuiListener<GuiEventPress<GuiModelView>>() {
+		this.addListener(new GuiListener<GuiEventMouseLeftPress<GuiModelView>>() {
 			@Override
-			public void invoke(GuiEventPress<GuiModelView> event) {
+			public void invoke(GuiEventMouseLeftPress<GuiModelView> event) {
 				cameraController.onLeftPressed(getMouseX(), getMouseY());
 			}
 		});
 
-		this.addListener(new GuiListener<GuiEventClick<GuiModelView>>() {
+		this.addListener(new GuiListener<GuiEventMouseLeftRelease<GuiModelView>>() {
 			@Override
-			public void invoke(GuiEventClick<GuiModelView> event) {
+			public void invoke(GuiEventMouseLeftRelease<GuiModelView> event) {
 				cameraController.onLeftReleased(getMouseX(), getMouseY());
+			}
+		});
+		this.addListener(new GuiListener<GuiEventMouseRightPress<GuiModelView>>() {
+			@Override
+			public void invoke(GuiEventMouseRightPress<GuiModelView> event) {
+				cameraController.onRightPressed(getMouseX(), getMouseY());
+			}
+		});
+
+		this.addListener(new GuiListener<GuiEventMouseRightRelease<GuiModelView>>() {
+			@Override
+			public void invoke(GuiEventMouseRightRelease<GuiModelView> event) {
+				cameraController.onRightReleased(getMouseX(), getMouseY());
 			}
 		});
 	}
@@ -71,8 +86,7 @@ public class GuiModelView extends Gui {
 	public void onUpdate() {
 		super.onUpdate();
 		this.updateModelInstances();
-		this.cameraController.update(this.getSelectedModelInstance(), this.guiViewWorld.getWorldRenderer(),
-				this.getMouseX(), this.getMouseY());
+		this.cameraController.update(this.getSelectedModelInstance(), this.getMouseX(), this.getMouseY());
 	}
 
 	private final void updateModelInstances() {

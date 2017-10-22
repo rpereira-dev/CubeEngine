@@ -26,6 +26,7 @@ import com.grillecube.common.event.world.EventTerrainSetBlock;
 import com.grillecube.common.event.world.EventTerrainSunlightUpdate;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
+import com.grillecube.common.maths.Vector2f;
 import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
@@ -50,22 +51,21 @@ public class Terrain {
 
 	public static Vector3f BLOCK_SIZE_VEC = new Vector3f(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 
-	public static final int DIMX = 64;
-	public static final int DIMY = 64;
+	public static final int DIMX = 16;
+	public static final int DIMY = 16;
 	public static final int DIMZ = DIMX;
 	public static final int DEMI_DIMX = DIMX / 2;
 	public static final int DEMI_DIMY = DIMY / 2;
 	public static final int DEMI_DIMZ = DIMZ / 2;
 	public static final int DIM3 = DIMX * DIMY * DIMZ;
 	public static final int MAX_BLOCK_INDEX = Terrain.DIMX * Terrain.DIMY * Terrain.DIMZ;
-	public static final float SIZE_DIAGONAL = (float) Vector3f.distance(new Vector3f(0, 0, 0),
+	public static final float SIZE_DIAGONAL3 = (float) Vector3f.distance(new Vector3f(0, 0, 0),
 			new Vector3f(DIMX * BLOCK_SIZE, DIMY * BLOCK_SIZE, DIMZ * BLOCK_SIZE));
-
 	public static float DIMX_SIZE = DIMX * BLOCK_SIZE;
 	public static float DIMY_SIZE = DIMY * BLOCK_SIZE;
 	public static float DIMZ_SIZE = DIMZ * BLOCK_SIZE;
 	public static Vector3f TERRAIN_SIZE = new Vector3f(DIMX_SIZE, DIMY_SIZE, DIMZ_SIZE);
-	public static float DEMI_SIZE_DIAGONAL = SIZE_DIAGONAL / 2.0f;
+	public static float DEMI_SIZE_DIAGONAL = SIZE_DIAGONAL3 / 2.0f;
 	public static float DEMI_DIMX_SIZE = DIMX_SIZE / 2.0f;
 	public static float DEMI_DIMY_SIZE = DIMY_SIZE / 2.0f;
 	public static float DEMI_DIMZ_SIZE = DIMZ_SIZE / 2.0f;

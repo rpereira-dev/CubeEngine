@@ -14,6 +14,8 @@
 
 package com.grillecube.client.renderer.model.editor.mesher;
 
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
@@ -22,11 +24,15 @@ import com.grillecube.common.maths.Vector3i;
 
 public class ModelMesherCull extends ModelMesher {
 
-	public final void generate(EditableModel editableModel) {
+	public final void doGenerate(EditableModel editableModel, Stack<ModelMeshVertex> vertices, Stack<Short> indices,
+			ArrayList<BufferedImage> skinsData) {
+		
+		//TODO : generate model plans
+		
+		//TODO : generate skins from it
+		
+		//TODO
 
-		// prepare the mesh vertex stack
-		Stack<ModelMeshVertex> vertices = new Stack<ModelMeshVertex>();
-		Stack<Short> indices = new Stack<Short>();
 		for (Face face : Face.faces) {
 			for (int x = editableModel.getMinX(); x <= editableModel.getMaxX(); x++) {
 				for (int y = editableModel.getMinY(); y <= editableModel.getMaxY(); y++) {
@@ -59,9 +65,6 @@ public class ModelMesherCull extends ModelMesher {
 				}
 			}
 		}
-
-		super.setIndices(indices);
-		super.setVertices(vertices);
 	}
 
 	private final ModelMeshVertex generateVertex(EditableModel editableModel, Face face, BlockData modelBlockData,
