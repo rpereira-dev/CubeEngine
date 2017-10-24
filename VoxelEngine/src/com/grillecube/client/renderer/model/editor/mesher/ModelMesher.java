@@ -31,6 +31,7 @@ public abstract class ModelMesher {
 	}
 
 	public final void generate(EditableModel editableModel) {
+
 		// prepare the mesh vertex stack
 		Stack<ModelMeshVertex> vertexStack = new Stack<ModelMeshVertex>();
 		Stack<Short> indicesStack = new Stack<Short>();

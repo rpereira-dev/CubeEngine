@@ -1,5 +1,7 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
+import java.util.ArrayList;
+
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelInitializer;
 import com.grillecube.common.maths.Maths;
@@ -18,7 +20,9 @@ public class EditableModel extends Model {
 	private boolean meshUpToDate;
 
 	/** blocks data */
-	private BlockData[][][] blocksData;
+	private ModelBlockData[][][] blocksData;
+	/** the plans of the models (to be uv-mapped on a 2d texture) */
+	private ArrayList<ModelPlane> modelPlans;
 
 	/** minimum coordinates */
 	private int minx;
@@ -41,10 +45,12 @@ public class EditableModel extends Model {
 
 	public EditableModel(ModelInitializer modelInitializer) {
 		super(modelInitializer);
+		this.modelPlans = new ArrayList<ModelPlane>();
 		this.blockSizeUnit = 1.0f;
 		this.blocksData = null;
 		this.origin = new Vector3i(0, 0, 0);
 		this.modelMesher = new ModelMesherCull();
+		this.meshUpToDate = true;
 	}
 
 	/** @see ModelBuildingData#origin */
@@ -86,7 +92,7 @@ public class EditableModel extends Model {
 	 * @param z
 	 * @return
 	 */
-	public final BlockData getBlockData(int x, int y, int z) {
+	public final ModelBlockData getBlockData(int x, int y, int z) {
 		if (x < this.minx || y < this.miny || z < this.minz || x > this.maxx || y > this.maxy || z > this.maxz) {
 			return (null);
 		}
@@ -97,22 +103,25 @@ public class EditableModel extends Model {
 	}
 
 	/** */
-	public final BlockData[][][] getRawBlockDatas() {
+	public final ModelBlockData[][][] getRawBlockDatas() {
 		return (this.blocksData);
 	}
 
 	/** set the block data for this model, and ensure the container capacity */
-	public final void setBlockData(BlockData blockData, int x, int y, int z) {
-		this.ensureCapacity(x, y, z);
-		this.setBlockDataUncheck(blockData, x, y, z);
+	public final void setBlockData(ModelBlockData blockData) {
+		this.ensureCapacity(blockData.getX(), blockData.getY(), blockData.getZ());
+		this.setBlockDataUncheck(blockData);
 	}
 
 	/**
 	 * set the block data for this model, may cause crash if capacity isnt
-	 * enough, @see {@link #setBlockData(BlockData, int, int, int)} to ensure
-	 * the capacity automatically
+	 * enough, @see {@link #setBlockData(ModelBlockData, int, int, int)} to
+	 * ensure the capacity automatically
 	 */
-	public final void setBlockDataUncheck(BlockData blockData, int x, int y, int z) {
+	public final void setBlockDataUncheck(ModelBlockData blockData) {
+		int x = blockData.getX();
+		int y = blockData.getY();
+		int z = blockData.getZ();
 		int ix = x - this.minx;
 		int iy = y - this.miny;
 		int iz = z - this.minz;
@@ -140,7 +149,7 @@ public class EditableModel extends Model {
 		int oldsizex = this.getSizeX();
 		int oldsizey = this.getSizeY();
 		int oldsizez = this.getSizeZ();
-		BlockData[][][] oldBlocksData = this.blocksData;
+		ModelBlockData[][][] oldBlocksData = this.blocksData;
 
 		this.minx = mx;
 		this.miny = my;
@@ -148,7 +157,7 @@ public class EditableModel extends Model {
 		this.maxx = Mx;
 		this.maxy = My;
 		this.maxz = Mz;
-		this.blocksData = new BlockData[this.getSizeX()][this.getSizeY()][this.getSizeZ()];
+		this.blocksData = new ModelBlockData[this.getSizeX()][this.getSizeY()][this.getSizeZ()];
 
 		if (oldBlocksData != null) {
 			int dx = oldminx - mx;
@@ -177,7 +186,7 @@ public class EditableModel extends Model {
 		this.maxx = maxx;
 		this.maxy = maxy;
 		this.maxz = maxz;
-		this.blocksData = new BlockData[this.getSizeX()][this.getSizeY()][this.getSizeZ()];
+		this.blocksData = new ModelBlockData[this.getSizeX()][this.getSizeY()][this.getSizeZ()];
 	}
 
 	/** unset the block data at the given coordinates */
@@ -236,5 +245,9 @@ public class EditableModel extends Model {
 
 	public final int getSizeZ() {
 		return (this.maxz - this.minz + 1);
+	}
+
+	public final ArrayList<ModelPlane> getModelPlans() {
+		return (this.modelPlans);
 	}
 }

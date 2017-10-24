@@ -1,12 +1,17 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
 /** hold the data of a single block of the model */
-public class BlockData {
+public class ModelBlockData {
 
+	/** the plan linked to this block */
 	private final int[] boneIds;
 	private final float[] weights;
+	private final int x, y, z;
 
-	public BlockData() {
+	public ModelBlockData(int bx, int by, int bz) {
+		this.x = bx;
+		this.y = by;
+		this.z = bz;
 		this.boneIds = new int[] { 0, 0, 0 };
 		this.weights = new float[] { 1, 0, 0 };
 	}
@@ -31,6 +36,18 @@ public class BlockData {
 	public final void setBoneWeight(int i, int boneID, float weight) {
 		this.boneIds[i] = boneID;
 		this.weights[i] = weight;
+	}
+
+	public final int getX() {
+		return (this.x);
+	}
+
+	public final int getY() {
+		return (this.y);
+	}
+
+	public final int getZ() {
+		return (this.z);
 	}
 
 	@Override

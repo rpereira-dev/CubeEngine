@@ -7,7 +7,6 @@ import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
-import com.grillecube.common.Logger;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.entity.Entity;
 

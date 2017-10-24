@@ -3,7 +3,6 @@ package com.grillecube.client.tests;
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiPrompt;
 import com.grillecube.client.renderer.gui.components.GuiSliderBar;

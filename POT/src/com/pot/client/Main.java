@@ -5,11 +5,8 @@ import com.grillecube.client.renderer.camera.CameraPerspectiveWorldFree;
 import com.grillecube.client.renderer.gui.components.GuiViewDebug;
 import com.grillecube.client.renderer.gui.components.GuiViewWorld;
 import com.grillecube.common.ModSample;
-import com.grillecube.common.world.World;
-import com.grillecube.common.world.generator.WorldGeneratorHoles;
 import com.pot.common.ModPOT;
 import com.pot.common.world.POTWorlds;
-import com.pot.common.world.entity.EntityTest;
 
 public class Main {
 

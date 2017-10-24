@@ -26,7 +26,6 @@ import com.grillecube.common.event.world.EventTerrainSetBlock;
 import com.grillecube.common.event.world.EventTerrainSunlightUpdate;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
-import com.grillecube.common.maths.Vector2f;
 import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;

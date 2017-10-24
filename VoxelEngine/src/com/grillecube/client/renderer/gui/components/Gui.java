@@ -15,6 +15,7 @@
 package com.grillecube.client.renderer.gui.components;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -128,7 +129,6 @@ public abstract class Gui {
 
 	/** hashmap: class of 'GuiEvent', and list of GuiListener<GuiEvent> */
 	private HashMap<Class<?>, ArrayList<GuiListener<?>>> listeners;
-	private ArrayList<GuiEvent<?>> stackedEvents;
 
 	public static final Comparator<? super Gui> LAYER_COMPARATOR = new Comparator<Gui>() {
 		@Override
@@ -459,40 +459,39 @@ public abstract class Gui {
 
 	/** stack an event, it listeners will be caled using Gui#unstackEvents() */
 	public final void stackEvent(GuiEvent<?> guiEvent) {
-		if (this.stackedEvents == null) {
-			this.stackedEvents = new ArrayList<GuiEvent<?>>();
+		if (this.listeners == null) {
+			return;
 		}
-		this.stackedEvents.add(guiEvent);
+
+		ArrayList<GuiListener<?>> listeners = this.listeners.get(guiEvent.getClass());
+		if (listeners == null) {
+			return;
+		}
+
+		for (GuiListener<?> listener : listeners) {
+			listener.stackEvent(guiEvent);
+		}
 	}
 
 	/** release the stack events and call their listener */
 	public final void unstackEvents() {
-		if (this.stackedEvents == null) {
-			return;
-		}
-
-		ArrayList<GuiEvent<?>> events = this.stackedEvents;
-		this.stackedEvents = null; // little hack for concurrent modification
-
-		for (GuiEvent<?> event : events) {
-			this.invokeEvent(event);
-		}
-		this.onInputUpdate();
-
-	}
-
-	/** invoke the given event */
-	protected final void invokeEvent(GuiEvent event) {
 		if (this.listeners == null) {
 			return;
 		}
-		ArrayList<GuiListener<?>> listeners = this.listeners.get(event.getClass());
+
+		Collection<ArrayList<GuiListener<?>>> allListeners = this.listeners.values();
 		if (listeners == null) {
 			return;
 		}
-		for (GuiListener listener : listeners) {
-			listener.invoke(event);
+
+		for (ArrayList<GuiListener<?>> listeners : allListeners) {
+			for (GuiListener<?> listener : listeners) {
+				listener.invokeEvents();
+				listener.unstackEvents();
+			}
 		}
+
+		this.onInputUpdate();
 	}
 
 	/** update animations and gui tasks */

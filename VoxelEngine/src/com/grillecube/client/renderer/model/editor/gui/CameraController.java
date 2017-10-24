@@ -9,7 +9,7 @@ import com.grillecube.client.renderer.camera.CameraPicker;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
 import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
-import com.grillecube.client.renderer.model.editor.mesher.BlockData;
+import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.world.WorldRenderer;
@@ -73,6 +73,7 @@ public class CameraController {
 							Vector4f boxPos = new Vector4f(bx, by, bz, 1.0f);
 							Matrix4f.transform(Matrix4f.invert(transform, transform), boxPos, boxPos);
 							theBox.setMinSize(boxPos.x, boxPos.y, boxPos.z, s, s, s);
+							theBox.setColor(0, 0, 0, 1);
 							worldRenderer.getLineRendererFactory().setBox(theBox, boxID);
 							hoveredBlock.set(bx, by, bz);
 							return (true);
@@ -87,7 +88,7 @@ public class CameraController {
 			if (key == GLFW.GLFW_KEY_E) {
 				EditableModel model = (EditableModel) modelInstance.getModel();
 				if (model != null) {
-					model.setBlockData(new BlockData(), this.hoveredBlock.x, this.hoveredBlock.y, this.hoveredBlock.z);
+					model.setBlockData(new ModelBlockData(this.hoveredBlock.x, this.hoveredBlock.y, this.hoveredBlock.z));
 					model.requestMeshUpdate();
 				}
 			}

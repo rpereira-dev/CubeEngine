@@ -1,6 +1,5 @@
 package com.grillecube.client.renderer.gui.components;
 
-import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector4f;

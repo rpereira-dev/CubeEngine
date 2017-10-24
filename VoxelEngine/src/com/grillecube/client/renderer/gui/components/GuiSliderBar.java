@@ -86,10 +86,12 @@ public class GuiSliderBar extends Gui {
 			selectedIndex = 0;
 		} else if (selectedIndex >= this.values.size()) {
 			selectedIndex = this.values.size() - 1;
+		} else if (selectedIndex != this.selectedIndex) {
+			int prevIndex = this.selectedIndex;
+			this.selectedIndex = selectedIndex;
+			super.stackEvent(
+					new GuiSliderBarEventValueChanged<GuiSliderBar>(this, prevIndex, this.getValue(prevIndex)));
 		}
-		int prevIndex = this.selectedIndex;
-		this.selectedIndex = selectedIndex;
-		super.stackEvent(new GuiSliderBarEventValueChanged<GuiSliderBar>(this, prevIndex, this.getValue(prevIndex)));
 		return (this.getSelectedValue());
 	}
 

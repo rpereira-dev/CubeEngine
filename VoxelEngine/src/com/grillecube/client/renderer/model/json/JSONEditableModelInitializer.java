@@ -8,10 +8,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.grillecube.client.renderer.model.Model;
-import com.grillecube.client.renderer.model.editor.mesher.BlockData;
+import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.common.Logger;
-import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.utils.JSONHelper;
 
 public class JSONEditableModelInitializer extends JSONModelInitializer {
@@ -52,8 +51,7 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 		model.setBlockSizeUnit((float) (blocks.getDouble("sizeUnit")));
 		JSONArray blocksData = blocks.getJSONArray("blocks");
 
-		ArrayList<BlockData> blockDatas = new ArrayList<BlockData>();
-		ArrayList<Vector3i> pos = new ArrayList<Vector3i>();
+		ArrayList<ModelBlockData> blockDatas = new ArrayList<ModelBlockData>();
 		int minx = 0, miny = 0, minz = 0;
 		int maxx = 0, maxy = 0, maxz = 0;
 		for (int i = 0; i < blocksData.length();) {
@@ -67,12 +65,11 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 			float w2 = (float) blocksData.getDouble(i++);
 			float w3 = (float) blocksData.getDouble(i++);
 
-			BlockData blockData = new BlockData();
+			ModelBlockData blockData = new ModelBlockData(x, y, z);
 			blockData.setBoneWeight(0, b1, w1);
 			blockData.setBoneWeight(1, b2, w2);
 			blockData.setBoneWeight(2, b3, w3);
 			blockDatas.add(blockData);
-			pos.add(new Vector3i(x, y, z));
 			if (x < minx) {
 				minx = x;
 			} else if (x > maxx) {
@@ -93,9 +90,8 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 
 		}
 		model.allocate(minx, miny, minz, maxx, maxy, maxz);
-		for (int i = 0; i < blockDatas.size(); i++) {
-			Vector3i p = pos.get(i);
-			model.setBlockDataUncheck(blockDatas.get(i), p.x, p.y, p.z);
+		for (ModelBlockData blockData : blockDatas) {
+			model.setBlockDataUncheck(blockData);
 		}
 	}
 
