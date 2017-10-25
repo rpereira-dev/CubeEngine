@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.MainRenderer;
@@ -76,6 +77,7 @@ public class ModelRenderer extends Renderer {
 					this.programModel.loadModel(model);
 					mesh.bind();
 					for (ModelInstance instance : models) {
+						model.getSkin(instance.getSkinID()).bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
 						this.programModel.loadModelInstance(instance);
 						mesh.drawElements();
 					}

@@ -28,9 +28,16 @@ public final class ModelPlane {
 	private final int height;
 	private final int depth;
 
-	/** model plan uvx/uvy */
+	/** texture width/height in term of blocks */
+	private final int txWidth;
+	private final int txHeight;
 
-	public ModelPlane(Face face, int xmin, int ymin, int zmin, int width, int height, int depth) {
+	/** uv for the model plane */
+	private int u;
+	private int v;
+
+	public ModelPlane(Face face, int xmin, int ymin, int zmin, int width, int height, int depth, int txWidth,
+			int txHeight) {
 		this.face = face;
 		this.xmin = xmin;
 		this.ymin = ymin;
@@ -38,6 +45,10 @@ public final class ModelPlane {
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
+		this.txWidth = txWidth;
+		this.txHeight = txHeight;
+		this.u = 0;
+		this.v = 0;
 	}
 
 	/**
@@ -87,6 +98,34 @@ public final class ModelPlane {
 	 */
 	public final Face getFace() {
 		return (this.face);
+	}
+
+	/**
+	 * @return the area of this plane
+	 */
+	public final int getArea() {
+		return (this.width * this.height * this.depth);
+	}
+
+	public final int getTextureWidth() {
+		return (this.txWidth);
+	}
+
+	public final int getTextureHeight() {
+		return (this.txHeight);
+	}
+
+	public final int getU() {
+		return (this.u);
+	}
+
+	public final int getV() {
+		return (this.v);
+	}
+
+	public final void setUV(int u, int v) {
+		this.u = u;
+		this.v = v;
 	}
 
 }

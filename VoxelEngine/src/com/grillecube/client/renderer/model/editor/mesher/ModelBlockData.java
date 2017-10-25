@@ -1,5 +1,7 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
+import com.grillecube.common.faces.Face;
+
 /** hold the data of a single block of the model */
 public class ModelBlockData {
 
@@ -7,6 +9,7 @@ public class ModelBlockData {
 	private final int[] boneIds;
 	private final float[] weights;
 	private final int x, y, z;
+	private final ModelPlane[] planes;
 
 	public ModelBlockData(int bx, int by, int bz) {
 		this.x = bx;
@@ -14,6 +17,7 @@ public class ModelBlockData {
 		this.z = bz;
 		this.boneIds = new int[] { 0, 0, 0 };
 		this.weights = new float[] { 1, 0, 0 };
+		this.planes = new ModelPlane[Face.faces.length];
 	}
 
 	public final int getBoneID(int i) {
@@ -67,5 +71,19 @@ public class ModelBlockData {
 		sb.append(this.weights[2]);
 		sb.append("}");
 		return (sb.toString());
+	}
+
+	public final void resetPlanes() {
+		for (Face face : Face.faces) {
+			this.planes[face.getID()] = null;
+		}
+	}
+
+	public final void setPlane(ModelPlane modelPlane, Face face) {
+		this.planes[face.getID()] = modelPlane;
+	}
+
+	public final ModelPlane getPlane(Face face) {
+		return (this.planes[face.getID()]);
 	}
 }

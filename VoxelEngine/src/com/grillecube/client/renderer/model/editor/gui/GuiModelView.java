@@ -15,6 +15,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventMouseRightRelease;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.ModelEditorMod;
+import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolbox;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.world.World;
@@ -87,6 +88,9 @@ public class GuiModelView extends Gui {
 		super.onUpdate();
 		this.updateModelInstances();
 		this.cameraController.update(this.getSelectedModelInstance(), this.getMouseX(), this.getMouseY());
+		if (this.cameraController.requestedPanelRefresh()) {
+			this.getToolbox().refresh();
+		}
 	}
 
 	private final void updateModelInstances() {
@@ -94,6 +98,10 @@ public class GuiModelView extends Gui {
 			modelInstance.getEntity().update();
 			modelInstance.update();
 		}
+	}
+
+	private final GuiToolbox getToolbox() {
+		return (((GuiModelEditor) this.getParent()).getToolbox());
 	}
 
 	private final ModelInstance getSelectedModelInstance() {

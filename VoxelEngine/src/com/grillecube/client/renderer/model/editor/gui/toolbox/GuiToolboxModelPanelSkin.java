@@ -6,6 +6,7 @@ import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiPrompt;
+import com.grillecube.client.renderer.gui.components.GuiSliderBar;
 import com.grillecube.client.renderer.gui.components.GuiTexture;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
@@ -13,6 +14,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseHover;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
+import com.grillecube.client.renderer.gui.event.GuiTextureEventTextureChanged;
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerColor;
@@ -22,7 +24,7 @@ import com.grillecube.common.maths.Vector4f;
 public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 
 	/** the model block size unit slider bar */
-	private final GuiSliderBarEditor pixelPerFace;
+	private final GuiSliderBarEditor pixelPerLine;
 
 	private final GuiButton addSkin;
 	private final GuiSpinnerEditor skins;
@@ -38,10 +40,12 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 
 	private final GuiPrompt skinName;
 
+	private float windowAspectRatio;
+
 	public GuiToolboxModelPanelSkin() {
 		super();
 
-		this.pixelPerFace = new GuiSliderBarEditor();
+		this.pixelPerLine = new GuiSliderBarEditor();
 
 		this.addSkin = new GuiButton();
 		this.skins = new GuiSpinnerEditor();
@@ -61,17 +65,17 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 	public void onInitialized(GuiRenderer guiRenderer) {
 
 		// number of pixels per face
-		this.pixelPerFace.setBox(0, 0.70f, 1.0f, 0.05f, 0);
-		this.pixelPerFace.addValues(1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256);
-		this.pixelPerFace.addListener(new GuiListener<GuiSliderBarEventValueChanged<GuiSliderBarEditor>>() {
+		this.pixelPerLine.setBox(0, 0.70f, 1.0f, 0.05f, 0);
+		this.pixelPerLine.addValuesArray(GuiSliderBar.intRange(1, 64));
+		this.pixelPerLine.setPrefix("Pixel per face line: ");
+		this.pixelPerLine.select((Object) ModelSkin.DEFAULT_PIXELS_PER_LINE);
+		this.pixelPerLine.addListener(new GuiListener<GuiSliderBarEventValueChanged<GuiSliderBarEditor>>() {
 			@Override
 			public void invoke(GuiSliderBarEventValueChanged<GuiSliderBarEditor> event) {
 				onPixelPerFaceChanged();
 			}
 		});
-		this.pixelPerFace.setPrefix("Pixel per face: ");
-		this.pixelPerFace.select((Object) 1.0f);
-		this.addChild(this.pixelPerFace);
+		this.addChild(this.pixelPerLine);
 
 		// skins
 		this.addSkin.setText("Add");
@@ -166,6 +170,12 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 				skinPreview.getGLTexture().setData(data);
 			}
 		});
+		this.skinPreview.addListener(new GuiListener<GuiTextureEventTextureChanged<GuiTexture>>() {
+			@Override
+			public void invoke(GuiTextureEventTextureChanged<GuiTexture> event) {
+				resize();
+			}
+		});
 		this.addChild(this.skinPreview);
 
 		this.skinName.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
@@ -175,8 +185,10 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.skinName.setHint("Enter skin name...");
 		this.addChild(this.skinName);
 
-		this.resize(guiRenderer.getMainRenderer().getGLFWWindow().getAspectRatio());
+		this.windowAspectRatio = guiRenderer.getMainRenderer().getGLFWWindow().getAspectRatio();
 		this.refresh();
+		this.resize();
+
 	}
 
 	public final ModelSkin getSelectedSkin() {
@@ -184,22 +196,26 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 	}
 
 	private final void onPixelPerFaceChanged() {
+		this.getSelectedSkin().setPixelsPerLine((int) this.pixelPerLine.getSelectedValue());
 	}
 
 	@Override
-	public void onWindowResized(int width, int height, float aspectRatio) {
-		this.resize(aspectRatio);
+	public void onWindowResized(int width, int height, float windowAspectRatio) {
+		this.windowAspectRatio = windowAspectRatio;
+		this.resize();
 	}
 
-	private void resize(float aspectRatio) {
+	private void resize() {
+		float imgRatio = this.skinPreview.getGLTexture() == null ? 1.0f
+				: this.skinPreview.getGLTexture().getWidth() / (float) this.skinPreview.getGLTexture().getHeight();
 		float width, height;
+		float ratio = super.getTotalAspectRatio() * this.windowAspectRatio / imgRatio;
 		height = 0.4f;
-		width = height / (super.getTotalAspectRatio() * aspectRatio);
+		width = height / ratio;
 		if (width >= 0.8f) {
 			width = 0.8f;
-			height = width * super.getTotalAspectRatio() * aspectRatio;
+			height = width * ratio;
 		}
-
 		float marginX = (1.0f - width) / 2.0f;
 		float marginY = 0.55f - 0.05f - height;
 		this.skinPreview.setBox(marginX, marginY, width, height, 0);
@@ -210,7 +226,9 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 	public void refresh() {
 		this.removeColor.setEnabled(this.colors.count() > 0);
 		this.removeSkin.setEnabled(this.skins.count() > 1);
-		this.skinPreview.setTexture(this.getSelectedSkin().getGLTexture(), 0, 0, 1, 1);
+		if (this.getSelectedSkin() != null) {
+			this.skinPreview.setTexture(this.getSelectedSkin().getGLTexture(), 0, 0, 1, 1);
+		}
 	}
 
 	@Override

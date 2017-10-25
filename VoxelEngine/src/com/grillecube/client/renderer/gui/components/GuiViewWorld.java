@@ -5,6 +5,7 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.camera.CameraProjective;
+import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
 import com.grillecube.client.renderer.gui.event.GuiListener;
@@ -72,6 +73,9 @@ public class GuiViewWorld extends GuiView {
 	protected void onUpdate() {
 		if (this.worldRenderer == null) {
 			return;
+		}
+		if (this.worldRenderer.getCamera() instanceof CameraProjectiveWorld) {
+			((CameraProjectiveWorld) this.worldRenderer.getCamera()).setWorld(this.worldRenderer.getWorld());
 		}
 		this.worldRenderer.getCamera().update();
 

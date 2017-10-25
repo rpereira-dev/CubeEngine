@@ -3,6 +3,7 @@ package com.grillecube.client.renderer.camera;
 import org.lwjgl.glfw.GLFW;
 
 import com.grillecube.client.opengl.window.GLFWWindow;
+import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.block.Blocks;
 
@@ -87,22 +88,19 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 			// for (int z = -2; z < 2; z++) {
 			// super.setBlock(Blocks.LIQUID_WATER,
 			// Vector3f.add(this.getLookCoords(), new Vector3f(x, y, z), null));
+			//
 			// }
 			// }
 			// }
 
 			// super.setBlock(Blocks.LIQUID_WATER, this.getLookCoords());
 			//
-			if (i++ % 4 != 0) {
-				pos.set(this.getLookCoords());
-				super.setBlock(Blocks.LIGHT_TEST, pos);
-			} else {
-				super.setBlock(Blocks.AIR, pos);
-			}
-			// float wx = this.getPosition().x;
-			// float wz = this.getPosition().z;
-			// Logger.get().log(Logger.Level.DEBUG,
-			// this.getWorld().getTerrainStorage().getHeight(wx, wz));
+			// if (i++ % 4 != 0) {
+			// pos.set(this.getLookCoords());
+			super.setBlock(Blocks.LIGHT_TEST, pos);
+			// } else {
+			// super.setBlock(Blocks.AIR, pos);
+			// }
 
 		}
 	}

@@ -9,8 +9,8 @@ import com.grillecube.client.renderer.camera.CameraPicker;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
 import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
-import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.common.maths.BoundingBox;
@@ -28,6 +28,7 @@ public class CameraController {
 	private final ArrayList<Vector3i> selectedBlocks;
 	private final BoundingBox theBox;
 	private int boxID;
+	private boolean requestPanelsRefresh;
 
 	public CameraController(WorldRenderer<WorldFlat> worldRenderer) {
 		this.worldRenderer = worldRenderer;
@@ -88,8 +89,10 @@ public class CameraController {
 			if (key == GLFW.GLFW_KEY_E) {
 				EditableModel model = (EditableModel) modelInstance.getModel();
 				if (model != null) {
-					model.setBlockData(new ModelBlockData(this.hoveredBlock.x, this.hoveredBlock.y, this.hoveredBlock.z));
+					model.setBlockData(
+							new ModelBlockData(this.hoveredBlock.x, this.hoveredBlock.y, this.hoveredBlock.z));
 					model.requestMeshUpdate();
+					requestPanelsRefresh();
 				}
 			}
 		}
@@ -113,5 +116,13 @@ public class CameraController {
 
 	public final void onRightReleased(float mouseX, float mouseY) {
 		// TODO
+	}
+
+	public final void requestPanelsRefresh() {
+		this.requestPanelsRefresh = true;
+	}
+
+	public final boolean requestedPanelRefresh() {
+		return (this.requestPanelsRefresh);
 	}
 }

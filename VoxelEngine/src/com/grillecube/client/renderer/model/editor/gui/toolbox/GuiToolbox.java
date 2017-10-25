@@ -192,4 +192,12 @@ public class GuiToolbox extends Gui {
 		}
 		return ((EditableModel) (modelInstance.getModel()));
 	}
+
+	public final void refresh() {
+		GuiToolboxModel modelPanels = (GuiToolboxModel) this.modelList.getPickedObject();
+		if (modelPanels == null) {
+			return;
+		}
+		modelPanels.refresh();
+	}
 }

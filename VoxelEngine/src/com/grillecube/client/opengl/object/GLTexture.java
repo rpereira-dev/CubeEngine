@@ -14,6 +14,8 @@
 
 package com.grillecube.client.opengl.object;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
@@ -48,6 +50,14 @@ public class GLTexture implements GLObject {
 		GL11.glDeleteTextures(this.glID);
 		this.width = 0;
 		this.height = 0;
+	}
+
+	public final void setData(Image img, int imWidth, int imHeight) {
+		BufferedImage bufferedImage = new BufferedImage(imWidth, imHeight, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = bufferedImage.createGraphics();
+		g.drawImage(img, 0, 0, null);
+		g.dispose();
+		this.setData(bufferedImage);
 	}
 
 	/** set pixels data */

@@ -22,6 +22,7 @@ import java.util.Stack;
 import org.lwjgl.BufferUtils;
 
 import com.grillecube.client.renderer.model.ModelMesh;
+import com.grillecube.common.Logger;
 
 /** an object which is used to generate model meshes dynamically */
 public abstract class ModelMesher {
@@ -70,6 +71,10 @@ public abstract class ModelMesher {
 		// set model data
 		editableModel.getMesh().setVertices(vertices);
 		editableModel.getMesh().setIndices(indices);
+		if (skinsData.size() != editableModel.getSkins().size()) {
+			Logger.get().log(Logger.Level.WARNING, "ModelMesher didn't generate every ModelSkins BufferedImage: "
+					+ skinsData.size() + "/" + editableModel.getSkins().size());
+		}
 		for (int i = 0; i < skinsData.size(); i++) {
 			editableModel.getSkin(i).getGLTexture().setData(skinsData.get(i));
 		}

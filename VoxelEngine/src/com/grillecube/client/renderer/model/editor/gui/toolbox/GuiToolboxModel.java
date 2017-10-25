@@ -84,8 +84,11 @@ public class GuiToolboxModel extends GuiView {
 		this.refresh();
 	}
 
-	private final void refresh() {
+	public final void refresh() {
 		this.title.setText(this.panels.get(this.selected).getTitle());
+		for (GuiToolboxModelPanel panel : this.panels) {
+			panel.refresh();
+		}
 	}
 
 	private final void select(int index) {
