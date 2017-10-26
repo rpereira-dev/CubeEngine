@@ -8,13 +8,13 @@ public abstract class BlockInstance {
 
 	private final Terrain terrain;
 	private final Block block;
-	private final short index;
+	private final int index;
 
 	/**
 	 * this constructor should be call with given argument inside function:
 	 * Block.createBlockInstance(terrain, x, y, z)
 	 */
-	public BlockInstance(Terrain terrain, Block block, short index) {
+	public BlockInstance(Terrain terrain, Block block, int index) {
 		this.terrain = terrain;
 		this.block = block;
 		this.index = index;
@@ -40,7 +40,7 @@ public abstract class BlockInstance {
 	}
 
 	/** get the position of this block instance relative to the terrain */
-	public final short getIndex() {
+	public final int getIndex() {
 		return (this.index);
 	}
 }

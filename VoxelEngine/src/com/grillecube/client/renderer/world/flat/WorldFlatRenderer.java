@@ -2,19 +2,19 @@ package com.grillecube.client.renderer.world.flat;
 
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.factories.SkyRendererFactory;
-import com.grillecube.client.renderer.factories.TerrainRendererFactory;
+import com.grillecube.client.renderer.factories.FlatTerrainRendererFactory;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.common.world.WorldFlat;
 
 public class WorldFlatRenderer extends WorldRenderer<WorldFlat> {
 
 	private SkyRendererFactory skyFactory;
-	private TerrainRendererFactory terrainFactory;
+	private FlatTerrainRendererFactory terrainFactory;
 
 	public WorldFlatRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
 		this.skyFactory = new SkyRendererFactory(mainRenderer);
-		this.terrainFactory = new TerrainRendererFactory(mainRenderer);
+		this.terrainFactory = new FlatTerrainRendererFactory(mainRenderer);
 		super.addFactory(this.skyFactory, 0);
 		super.addFactory(this.terrainFactory, 1);
 	}
@@ -40,7 +40,7 @@ public class WorldFlatRenderer extends WorldRenderer<WorldFlat> {
 		return (this.skyFactory);
 	}
 
-	public final TerrainRendererFactory getTerrainRendererFactory() {
+	public final FlatTerrainRendererFactory getTerrainRendererFactory() {
 		return (this.terrainFactory);
 	}
 }

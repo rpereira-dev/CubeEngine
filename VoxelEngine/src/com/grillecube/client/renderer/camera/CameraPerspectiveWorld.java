@@ -291,7 +291,8 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 		return (true); // inside
 	}
 
-	// UNDER HERE ARE MY OLD FASHION WAY TO CULL POINTS, MUCH LOWER THAN THE NEW
+	// UNDER HERE ARE MY OLD FASHION WAY TO CULL POINTS, MUCH SLOWER THAN THE
+	// NEW
 	// METHOD VIA PLANES
 
 	// @Override
@@ -309,7 +310,6 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 	//
 	// @Override
 	// public boolean isSphereInFrustum(Vector3f center, float radius) {
-	// // TODO
 	// return (this.isPointInFrustum(center));
 	// }
 	//
@@ -350,7 +350,6 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 	//
 	// @Override
 	// public boolean isSphereInFrustum(Vector3f center, float radius) {
-	// // TODO
 	// return (this.isPointInFrustum(center));
 	// }
 }

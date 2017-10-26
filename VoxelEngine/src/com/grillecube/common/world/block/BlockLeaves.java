@@ -14,7 +14,7 @@
 
 package com.grillecube.common.world.block;
 
-public class BlockLeaves extends BlockCubeOpaque {
+public class BlockLeaves extends BlockCube {
 	public BlockLeaves(int blockID) {
 		super(blockID);
 	}
@@ -22,5 +22,15 @@ public class BlockLeaves extends BlockCubeOpaque {
 	@Override
 	public String getName() {
 		return ("Leaves");
+	}
+
+	@Override
+	public boolean isOpaque() {
+		return (false);
+	}
+
+	@Override
+	public boolean isVisible() {
+		return (true);
 	}
 }

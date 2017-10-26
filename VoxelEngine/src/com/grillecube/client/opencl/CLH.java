@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
 
-//TODO , looks like lwjgl didnt implemented it yet
+//TODO , do we need opencl ?
 
 public class CLH {
 

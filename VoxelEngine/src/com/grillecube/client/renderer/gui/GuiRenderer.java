@@ -265,5 +265,5 @@ public class GuiRenderer extends Renderer {
 		return (new Vector4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, 1.0f));
 	}
 
-	// TODO : more dialogs
+	// TODO : more tiny fd dialogs
 }

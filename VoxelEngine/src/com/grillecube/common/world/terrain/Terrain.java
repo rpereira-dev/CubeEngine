@@ -84,8 +84,9 @@ public class Terrain {
 	/** this terrain heightmap */
 	protected byte[] heightmap;
 
-	/** number of blocks visible */
-	private short blockCount;
+	/** number of blocks opaque or transparent */
+	private int opaqueBlocks;
+	private int transparentBlocks;
 
 	/** blocks */
 	protected byte[] lights; // light values for every blocks
@@ -122,6 +123,8 @@ public class Terrain {
 		this.blocks = null;
 		this.blockInstances = null;
 		this.lights = null;
+		this.opaqueBlocks = 0;
+		this.transparentBlocks = 0;
 		this.facesVisibility = new boolean[6][6];
 		this.blockTickCounter = 0;
 		this.lightTickCounter = 0;
@@ -432,14 +435,24 @@ public class Terrain {
 
 		// update number of block set
 		if (prevblock.getID() != Blocks.AIR_ID && block.getID() == Blocks.AIR_ID) {
-			--this.blockCount;
+			if (prevblock.isOpaque()) {
+				--this.opaqueBlocks;
+			} else {
+				--this.transparentBlocks;
+			}
+
 			int ymax = this.heightmap[x + Terrain.DIMZ * z];
 			while (ymax > 0 && this.blocks[this.getIndex(x, ymax - 1, z)] == Blocks.AIR_ID) {
 				--ymax;
 			}
 			this.heightmap[x + Terrain.DIMX * z] = (byte) (ymax - 1);
 		} else if (prevblock.getID() == Blocks.AIR_ID && block.getID() != Blocks.AIR_ID) {
-			++this.blockCount;
+			if (block.isOpaque()) {
+				++this.opaqueBlocks;
+			} else {
+				++this.transparentBlocks;
+			}
+
 			if (this.heightmap == null) {
 				this.heightmap = new byte[Terrain.DIMX * Terrain.DIMZ];
 
@@ -452,6 +465,7 @@ public class Terrain {
 
 		// get a new block instance for this new block
 		BlockInstance instance = block.createBlockInstance(this, index);
+
 		// if this block actually have (need) an instance
 		if (instance != null) {
 
@@ -465,7 +479,7 @@ public class Terrain {
 			// instance set calback
 			instance.onSet();
 		}
-		this.invokeEvent(new EventTerrainSetBlock(this, index));
+		this.invokeEvent(new EventTerrainSetBlock(this, block, index));
 		return (instance);
 	}
 
@@ -1416,38 +1430,60 @@ public class Terrain {
 	}
 
 	/** return true if the given faces id can be seen from another */
-	public boolean canFaceBeSeenFrom(int faceA, int faceB) {
+	public final boolean canFaceBeSeenFrom(int faceA, int faceB) {
 		return (this.facesVisibility[faceA][faceB]);
 	}
 
-	public boolean canFaceBeSeenFrom(Face faceA, Face faceB) {
+	public final boolean canFaceBeSeenFrom(Face faceA, Face faceB) {
 		return (this.canFaceBeSeenFrom(faceA.getID(), faceB.getID()));
 	}
 
-	public void destroy() {
+	public final void destroy() {
 		this.blocks = null;
 		this.lights = null;
-		this.blockCount = 0;
+		this.opaqueBlocks = 0;
+		this.transparentBlocks = 0;
 		if (this.blockInstances != null) {
 			this.blockInstances.clear();
 			this.blockInstances = null;
 		}
 		this.facesVisibility = null;
+		this.onDestroyed();
+	}
+
+	protected void onDestroyed() {
+
 	}
 
 	/** return raw block data */
-	public short[] getRawBlocks() {
+	public final short[] getRawBlocks() {
 		return (this.blocks);
 	}
 
 	/** get the raw light map */
-	public byte[] getRawLights() {
+	public final byte[] getRawLights() {
 		return (this.lights);
 	}
 
-	/** get the number of non air blocks for this terrain */
-	public int getBlockCount() {
-		return (this.blockCount);
+	/**
+	 * @return the number of non-air blocks set in this terrain
+	 */
+	public final int getBlockCount() {
+		return (this.opaqueBlocks + this.transparentBlocks);
+	}
+
+	/**
+	 * @return the number of transparents blocks set in this terrain
+	 */
+	public final int getTransparentBlockCount() {
+		return (this.opaqueBlocks + this.transparentBlocks);
+	}
+
+	/**
+	 * @return the number of opaque blocks set in this terrain
+	 */
+	public final int getOpaqueBlockCount() {
+		return (this.opaqueBlocks + this.transparentBlocks);
 	}
 
 }

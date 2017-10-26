@@ -23,7 +23,8 @@ public abstract class BlockLiquid extends Block {
 	}
 
 	/** a liquid block need it own instance */
-	public BlockInstance createBlockInstance(Terrain terrain, short index) {
+	@Override
+	public BlockInstance createBlockInstance(Terrain terrain, int index) {
 		return (new BlockInstanceLiquid(terrain, this, index));
 	}
 

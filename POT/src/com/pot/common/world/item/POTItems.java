@@ -7,15 +7,15 @@ import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.items.Item;
 
 public class POTItems implements IModResource {
-	//items
+	// items
 	public static Item I_STICK;
 
-	//items model
+	// items model
 	public static Model M_STICK;
-	
-	//items textures id
+
+	// items textures id
 	public static int T_STICK;
-	
+
 	@Override
 	public void load(Mod mod, ResourceManager manager) {
 
@@ -23,7 +23,6 @@ public class POTItems implements IModResource {
 
 	@Override
 	public void unload(Mod mod, ResourceManager manager) {
-		// TODO Auto-generated method stub
 	}
 
 }

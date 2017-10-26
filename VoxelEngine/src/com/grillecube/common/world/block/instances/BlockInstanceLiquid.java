@@ -31,12 +31,12 @@ public class BlockInstanceLiquid extends BlockInstance {
 
 	/** minimum amount of water before dispersion */
 	private static final int TICK_TO_UPDATE = 2;
-	public static final int MAX_LIQUID_AMOUNT = 16;
-	public static final int MIN_LIQUID_AMOUNT = 1;
+	public static final short MAX_LIQUID_AMOUNT = 16;
+	public static final short MIN_LIQUID_AMOUNT = 1;
 	public static final float LIQUID_HEIGHT_UNIT = MIN_LIQUID_AMOUNT / (float) MAX_LIQUID_AMOUNT;
 	private static final short DEFAULT_WATER_AMOUNT = MAX_LIQUID_AMOUNT;
 
-	public BlockInstanceLiquid(Terrain terrain, Block block, short index) {
+	public BlockInstanceLiquid(Terrain terrain, Block block, int index) {
 		super(terrain, block, index);
 		this.setAmount(DEFAULT_WATER_AMOUNT);
 		this.lastUpdate = terrain.getWorld().getTick();
@@ -72,16 +72,15 @@ public class BlockInstanceLiquid extends BlockInstance {
 	}
 
 	private void disperse() {
-		Terrain terrain = super.getTerrain();
-		short index = super.getIndex();
-		this.getTerrain().setBlock(Blocks.AIR, index);
+		int index = super.getIndex();
+		super.getTerrain().setBlock(Blocks.AIR, index);
 	}
 
 	/** flow the water around */
 	private void flow() {
 
 		Terrain terrain = super.getTerrain();
-		short index = super.getIndex();
+		int index = super.getIndex();
 		int z = terrain.getZFromIndex(index);
 		int y = terrain.getYFromIndex(index, z);
 		int x = terrain.getXFromIndex(index, y, z);

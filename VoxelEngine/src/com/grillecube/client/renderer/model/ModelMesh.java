@@ -27,8 +27,7 @@ public class ModelMesh extends Mesh {
 	}
 
 	@Override
-	public void deinitialize() {
-		super.deinitialize();
+	protected void onDeinitialized() {
 		GLH.glhDeleteObject(this.indicesVBO);
 		this.indicesVBO = null;
 	}

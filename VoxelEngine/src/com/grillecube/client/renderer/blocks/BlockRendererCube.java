@@ -88,11 +88,11 @@ public class BlockRendererCube extends BlockRenderer {
 			BlockFace[][][][] faces, Stack<TerrainMeshVertex> stack) {
 
 		for (Face face : Face.faces) {
-			faces[face.getID()][x][y][z] = this.createBlockFace(terrain, face, x, y, z);
+			faces[face.getID()][x][y][z] = this.createBlockFace(terrain, block, face, x, y, z);
 		}
 	}
 
-	private BlockFace createBlockFace(Terrain terrain, Face face, int x, int y, int z) {
+	private final BlockFace createBlockFace(Terrain terrain, Block block, Face face, int x, int y, int z) {
 
 		Vector3i vec = face.getVector();
 
@@ -100,6 +100,7 @@ public class BlockRendererCube extends BlockRenderer {
 		Block neighbor = terrain.getBlock(x + vec.x, y + vec.y, z + vec.z);
 
 		// if the face-neighboor block is visible and opaque
+		// TODO : find a solution on leaves square
 		if (neighbor.isVisible() && neighbor.isOpaque()) {
 			// the face isnt visible
 			return (null);
@@ -110,7 +111,7 @@ public class BlockRendererCube extends BlockRenderer {
 		TerrainMeshVertex v1 = this.createBlockFaceVertex(terrain, face, x, y, z, 1);
 		TerrainMeshVertex v2 = this.createBlockFaceVertex(terrain, face, x, y, z, 2);
 		TerrainMeshVertex v3 = this.createBlockFaceVertex(terrain, face, x, y, z, 3);
-		BlockFace blockface = new BlockFace(this.textureIDs[face.getID()], v0, v1, v2, v3);
+		BlockFace blockface = new BlockFace(block, this.textureIDs[face.getID()], v0, v1, v2, v3);
 		return (blockface);
 
 	}

@@ -7,11 +7,6 @@ public class Compress {
 	 * memory space
 	 */
 	public static final short[] compressShortArray(short[] data) {
-
-		if (true) {
-			// TODO fix me
-			return (data);
-		}
 		short[] array = new short[data.length * 2];
 		int index = 0;
 		int addr = 0;
@@ -33,10 +28,6 @@ public class Compress {
 	}
 
 	public static final short[] decompressShortArray(short[] data, int dstlen) {
-		if (true) {
-			// TODO fix me
-			return (data);
-		}
 		short[] dst = new short[dstlen];
 		int index = 0;
 		int i = 0;
@@ -55,7 +46,6 @@ public class Compress {
 			}
 		}
 		return (dst);
-
 	}
 
 	/**

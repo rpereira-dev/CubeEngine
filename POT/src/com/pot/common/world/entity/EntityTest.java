@@ -7,13 +7,10 @@ public class EntityTest extends EntityLiving {
 
 	public EntityTest(World world) {
 		super(world);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected void onUpdate() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

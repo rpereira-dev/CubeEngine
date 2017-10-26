@@ -3,9 +3,13 @@ package com.grillecube.client.renderer.world.flat.terrain;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
+import com.grillecube.common.world.block.Block;
 
 /** represent a block face */
 public class BlockFace {
+
+	// the block
+	public final Block block;
 
 	// the vertices
 	public TerrainMeshVertex[] vertices;
@@ -13,7 +17,8 @@ public class BlockFace {
 	// the texture id
 	public int textureID;
 
-	public BlockFace(int textureID, TerrainMeshVertex... vertices) {
+	public BlockFace(Block block, int textureID, TerrainMeshVertex... vertices) {
+		this.block = block;
 		this.textureID = textureID;
 		this.vertices = vertices;
 	}
@@ -64,5 +69,9 @@ public class BlockFace {
 			stack.push(v3);
 			stack.push(v0);
 		}
+	}
+
+	public final Block getBlock() {
+		return (this.block);
 	}
 }

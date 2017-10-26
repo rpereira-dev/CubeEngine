@@ -33,14 +33,12 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 	 * [Terrain.BLOCK_SIZEIZE_X][Terrain.BLOCK_SIZEIZE_Y][Terrain.
 	 * BLOCK_SIZEIZE_Z][6] of terrain faces visibility
 	 */
-	protected Stack<TerrainMeshVertex> getVertexStack(Terrain terrain) {
-		// prepare the mesh vertex stack
-		Stack<TerrainMeshVertex> stack = new Stack<TerrainMeshVertex>();
-
+	protected void fillVertexStacks(Terrain terrain, Stack<TerrainMeshVertex> opaqueStack,
+			Stack<TerrainMeshVertex> transparentStack) {
 		// get visibile faces
-		BlockFace[][][][] faces = this.getFacesVisibility(terrain, stack);
+		BlockFace[][][][] faces = this.getFacesVisibility(terrain, opaqueStack, transparentStack);
 		if (faces == null) {
-			return (stack);
+			return;
 		}
 
 		boolean[][][][] visited = new boolean[Face.faces.length][Terrain.DIMX][Terrain.DIMY][Terrain.DIMZ];
@@ -61,6 +59,8 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 						if (face == null) {
 							continue;
 						}
+
+						Stack<TerrainMeshVertex> stack = face.getBlock().isOpaque() ? opaqueStack : transparentStack;
 
 						// TOP OR BOT FACE
 						if (faceID == Face.TOP || faceID == Face.BOT) {
@@ -198,8 +198,6 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 				}
 			}
 		}
-
-		return (stack);
 	}
 
 	private void setVisited(boolean[][][][] visited, int faceID, int x, int y, int z, int width, int height,
@@ -211,42 +209,5 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 				}
 			}
 		}
-	}
-
-	/**
-	 * return an array which contains standart block faces informations. Non
-	 * cubic blocks are pushed to the stack
-	 */
-	protected BlockFace[][][][] getFacesVisibility(Terrain terrain, Stack<TerrainMeshVertex> stack) {
-
-		short[] blocks = terrain.getRawBlocks();
-
-		if (blocks == null) {
-			return (null);
-		}
-
-		BlockFace[][][][] faces = new BlockFace[Face.faces.length][Terrain.DIMX][Terrain.DIMY][Terrain.DIMZ];
-
-		// for each block
-		int index = 0; // x + Terrain.DIM * (y + Terrain.DIM * z)
-		for (int z = 0; z < Terrain.DIMZ; ++z) {
-			for (int y = 0; y < Terrain.DIMY; ++y) {
-				for (int x = 0; x < Terrain.DIMX; ++x) {
-					Block block = Blocks.getBlockByID(blocks[index]);
-
-					if (block == null) {
-						continue;
-					}
-
-					// if the block is visible
-					if (block.isVisible()) {
-						BlockRenderer blockRenderer = BlockRendererManager.instance().getBlockRenderer(block);
-						blockRenderer.generateBlockVertices(this, terrain, block, x, y, z, faces, stack);
-					}
-					++index;
-				}
-			}
-		}
-		return (faces);
 	}
 }

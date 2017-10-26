@@ -22,9 +22,6 @@ public abstract class Block {
 	/** unique block id, set when the block is registered */
 	private final short id;
 
-	/** block density */
-	private float density;
-
 	/**
 	 * private final Vector3f _color;
 	 * 
@@ -35,16 +32,6 @@ public abstract class Block {
 	 */
 	public Block(int blockID) {
 		this.id = (short) blockID;
-		this.setDensity(1.0f);
-	}
-
-	public Block setDensity(float density) {
-		this.density = density;
-		return (this);
-	}
-
-	public float getDensity() {
-		return (this.density);
 	}
 
 	/** to string function */

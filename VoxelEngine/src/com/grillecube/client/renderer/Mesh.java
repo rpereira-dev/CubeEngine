@@ -68,15 +68,15 @@ public abstract class Mesh {
 
 		this.setAttributes(this.vao, this.vbo);
 
-//		this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
-//		this.vao.unbind();
+		// this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
+		// this.vao.unbind();
 	}
 
-	public boolean isInitialized() {
+	public final boolean isInitialized() {
 		return (this.vao != null);
 	}
 
-	public void deinitialize() {
+	public final void deinitialize() {
 		GLH.glhDeleteObject(this.vao);
 		GLH.glhDeleteObject(this.vbo);
 
@@ -85,6 +85,11 @@ public abstract class Mesh {
 		this.scale = null;
 		this.vao = null;
 		this.vbo = null;
+
+		this.onDeinitialized();
+	}
+
+	protected void onDeinitialized() {
 	}
 
 	protected abstract void setAttributes(GLVertexArray vao, GLVertexBuffer vbo);
@@ -129,6 +134,13 @@ public abstract class Mesh {
 	}
 
 	protected final void setVertices(ByteBuffer buffer, int bytesPerVertex) {
+		if (buffer == null || buffer.capacity() == 0) {
+			if (this.isInitialized()) {
+				this.deinitialize();
+			}
+			return;
+		}
+
 		if (!this.isInitialized()) {
 			this.initialize();
 		}

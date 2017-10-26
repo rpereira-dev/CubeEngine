@@ -25,34 +25,80 @@ import com.grillecube.common.world.WorldFlat;
 import com.grillecube.common.world.terrain.Terrain;
 
 /** a factory class which create terrain renderer lists */
-public class TerrainRendererFactory extends RendererFactory {
+public class FlatTerrainRendererFactory extends RendererFactory {
 
-	class TerrainMeshData {
-		byte state;
-		TerrainMesh mesh;
+	class TerrainRenderingData {
+
+		final Terrain terrain;
+		boolean meshUpToDate;
+		final TerrainMesh opaqueMesh; // mesh holding opaque blocks
+		final TerrainMesh transparentMesh; // mesh holding transparent blocks
 		ByteBuffer vertices;
+		boolean isInFrustrum;
 
-		TerrainMeshData(TerrainMesh mesh) {
-			this.mesh = mesh;
-			this.state = 1;
+		TerrainRenderingData(Terrain terrain) {
+			this.terrain = terrain;
+			this.opaqueMesh = new TerrainMesh(terrain);
+			this.transparentMesh = new TerrainMesh(terrain);
+			this.meshUpToDate = false;
 		}
 
 		void requestUpdate() {
-			this.state = 1;
+			this.meshUpToDate = false;
 		}
 
-		boolean verticesNeedUpdate() {
-			return (this.state == 1);
+		void deinitialize() {
+			this.opaqueMesh.deinitialize();
+			this.transparentMesh.deinitialize();
+		}
+
+		void update(CameraProjective camera) {
+			// calculate square distance from camera
+			Vector3f center = this.terrain.getWorldPosCenter();
+			float distance = (float) Vector3f.distanceSquare(center, camera.getPosition());
+			this.isInFrustrum = (distance < camera.getSquaredRenderDistance()
+					&& camera.isBoxInFrustum(terrain.getWorldPos(), Terrain.TERRAIN_SIZE));
+		}
+
+		boolean isInFrustrum() {
+			return (this.isInFrustrum);
+		}
+
+		void glUpdate(TerrainMesher mesher) {
+			if (!this.meshUpToDate) {
+				this.updateVertices(mesher);
+			}
 		}
 
 		void updateVertices(TerrainMesher mesher) {
-			this.mesh.setVertices(mesher.generateVertices(this.mesh.getTerrain()));
-			this.state = 0;
+			this.meshUpToDate = true;
+
+			if (this.terrain.getOpaqueBlockCount() == 0) {
+				if (this.opaqueMesh.isInitialized()) {
+					this.opaqueMesh.deinitialize();
+				}
+			} else {
+				if (!this.opaqueMesh.isInitialized()) {
+					this.opaqueMesh.initialize();
+				}
+			}
+
+			if (this.terrain.getTransparentBlockCount() == 0) {
+				if (this.transparentMesh.isInitialized()) {
+					this.transparentMesh.deinitialize();
+				}
+			} else {
+				if (!this.transparentMesh.isInitialized()) {
+					this.transparentMesh.initialize();
+				}
+			}
+			mesher.generateVertices(this.terrain, this.opaqueMesh, this.transparentMesh);
 		}
+
 	}
 
 	/** array list of terrain to render */
-	private HashMap<Terrain, TerrainMeshData> meshesData;
+	private HashMap<Terrain, TerrainRenderingData> terrainsRenderingData;
 
 	/** the mesher */
 	private TerrainMesher mesher;
@@ -64,16 +110,12 @@ public class TerrainRendererFactory extends RendererFactory {
 	private WorldFlat world;
 	private CameraProjective camera;
 
-	// TODO : Terrain.STATE_VERTICES_UP_TO_DATE , remove this (server has
-	// nothing to deal with vertices, and it creates conflicts with multiple
-	// world renderer on the same world
-	// to do so, add events to Terrains, and listener to the factory
-	public TerrainRendererFactory(MainRenderer mainRenderer) {
+	public FlatTerrainRendererFactory(MainRenderer mainRenderer) {
 		super(mainRenderer);
 
-		this.meshesData = new HashMap<Terrain, TerrainMeshData>(8192);
+		this.terrainsRenderingData = new HashMap<Terrain, TerrainRenderingData>(4096);
 		this.mesher = new FlatTerrainMesherGreedy();
-		// this.mesher = new TerrainMesherCull();
+		// this.mesher = new FlatTerrainMesherCull();
 		this.renderingList = new ArrayList<TerrainMesh>();
 
 		EventManager eventManager = ResourceManager.instance().getEventManager();
@@ -84,10 +126,10 @@ public class TerrainRendererFactory extends RendererFactory {
 				if (terrain.getWorld() != world) {
 					return;
 				}
-				TerrainMeshData terrainMeshData = meshesData.get(terrain);
-				if (terrainMeshData != null) {
-					terrainMeshData.mesh.deinitialize();
-					meshesData.remove(terrain);
+				TerrainRenderingData terrainRenderingData = terrainsRenderingData.get(terrain);
+				if (terrainRenderingData != null) {
+					terrainRenderingData.deinitialize();
+					terrainsRenderingData.remove(terrain);
 				}
 			}
 		});
@@ -126,18 +168,18 @@ public class TerrainRendererFactory extends RendererFactory {
 	@Override
 	public final void deinitialize() {
 		/** destroy every currently set meshes */
-		Collection<TerrainMeshData> meshesData = this.meshesData.values();
+		Collection<TerrainRenderingData> terrainsRenderingData = this.terrainsRenderingData.values();
 		VoxelEngineClient.instance().addGLTask(new GLTask() {
 			@Override
 			public void run() {
-				for (TerrainMeshData meshData : meshesData) {
-					if (meshData != null) {
-						meshData.mesh.deinitialize();
+				for (TerrainRenderingData terrainRenderingData : terrainsRenderingData) {
+					if (terrainRenderingData != null) {
+						terrainRenderingData.deinitialize();
 					}
 				}
 			}
 		});
-		this.meshesData.clear();
+		this.terrainsRenderingData.clear();
 
 	}
 
@@ -149,81 +191,74 @@ public class TerrainRendererFactory extends RendererFactory {
 
 	private final void updateRenderingList() {
 		this.renderingList.clear();
-		for (TerrainMeshData meshData : this.meshesData.values()) {
-			if (meshData == null) {
-				continue;
-			}
+		Collection<TerrainRenderingData> collection = this.terrainsRenderingData.values();
+		TerrainRenderingData[] terrainsRenderingData = collection.toArray(new TerrainRenderingData[collection.size()]);
 
-			if (this.isMeshInFrustum(meshData.mesh)) {
-				this.renderingList.add(meshData.mesh);
+		// update meshes and add opaques one first (to be rendered first)
+		for (TerrainRenderingData terrainRenderingData : terrainsRenderingData) {
+			terrainRenderingData.update(this.getCamera());
+			// if (terrainRenderingData.isInFrustrum() &&
+			// terrainRenderingData.opaqueMesh.getVertexCount() > 0) {
+			this.renderingList.add(terrainRenderingData.opaqueMesh);
+			// terrainRenderingData.requestUpdate();
+			// }
+		}
+
+		// add the transparent meshes (to be rendered after opaque ones)
+		for (TerrainRenderingData terrainRenderingData : terrainsRenderingData) {
+			if (terrainRenderingData.isInFrustrum() && terrainRenderingData.transparentMesh.getVertexCount() > 0) {
+				this.renderingList.add(terrainRenderingData.transparentMesh);
 			}
 		}
 
 		VoxelEngineClient.instance().addGLTask(new GLTask() {
 			@Override
 			public void run() {
-				for (TerrainMesh mesh : renderingList) {
-					TerrainMeshData meshData = meshesData.get(mesh.getTerrain());
-					if (meshData.verticesNeedUpdate()) {
-						meshData.updateVertices(mesher);
-					}
+				for (TerrainRenderingData terrainRenderingData : terrainsRenderingData) {
+					terrainRenderingData.glUpdate(mesher);
 				}
 			}
 		});
+		// System.out.println(this.renderingList.size() + ": " +
+		// this.terrainsRenderingData.size());
 	}
 
 	private final void requestMeshUpdate(Terrain terrain) {
-		TerrainMeshData meshData = this.meshesData.get(terrain);
-		if (meshData == null) {
+		TerrainRenderingData terrainRenderingData = this.terrainsRenderingData.get(terrain);
+		if (terrainRenderingData == null) {
 			return;
 		}
-		meshData.requestUpdate();
-	}
-
-	private final boolean isMeshInFrustum(TerrainMesh terrainMesh) {
-		// calculate square distance from camera
-		Terrain terrain = terrainMesh.getTerrain();
-		Vector3f center = terrainMesh.getTerrain().getWorldPosCenter();
-		CameraProjective camera = this.getCamera();
-		float distance = (float) Vector3f.distanceSquare(center, camera.getPosition());
-		return (distance < camera.getSquaredRenderDistance()
-				&& camera.isBoxInFrustum(terrain.getWorldPos(), Terrain.TERRAIN_SIZE));
+		terrainRenderingData.requestUpdate();
 	}
 
 	/** unload the meshes */
 	private final void updateLoadedMeshes() {
 
 		// for each terrain in the factory
-		ArrayList<TerrainMesh> oldMeshes = new ArrayList<TerrainMesh>();
-		for (Terrain terrain : this.meshesData.keySet()) {
+		ArrayList<TerrainRenderingData> oldTerrainsRenderingData = new ArrayList<TerrainRenderingData>();
+		for (Terrain terrain : this.terrainsRenderingData.keySet()) {
 			// if this terrain isnt loaded anymore
 			if (!this.getWorld().isTerrainLoaded(terrain)) {
 				// then remove it from the factory
-				TerrainMeshData meshData = this.meshesData.remove(terrain);
-				oldMeshes.add(meshData.mesh);
+				TerrainRenderingData terrainRenderingData = this.terrainsRenderingData.remove(terrain);
+				oldTerrainsRenderingData.add(terrainRenderingData);
 			}
 		}
 
 		// for every loaded terrains
 		Terrain[] terrains = this.getWorld().getLoadedTerrains();
-		ArrayList<TerrainMesh> newMeshes = new ArrayList<TerrainMesh>();
 		for (Terrain terrain : terrains) {
 			// add it to the factory if it hasnt already been added
-			if (!this.meshesData.containsKey(terrain)) {
-				TerrainMesh mesh = new TerrainMesh(terrain);
-				newMeshes.add(mesh);
-				this.meshesData.put(terrain, new TerrainMeshData(mesh));
+			if (!this.terrainsRenderingData.containsKey(terrain)) {
+				this.terrainsRenderingData.put(terrain, new TerrainRenderingData(terrain));
 			}
 		}
 
 		VoxelEngineClient.instance().addGLTask(new GLTask() {
 			@Override
 			public void run() {
-				for (TerrainMesh mesh : oldMeshes) {
-					mesh.deinitialize();
-				}
-				for (TerrainMesh mesh : newMeshes) {
-					mesh.initialize();
+				for (TerrainRenderingData terrainRenderingData : oldTerrainsRenderingData) {
+					terrainRenderingData.deinitialize();
 				}
 			}
 		});

@@ -43,7 +43,7 @@ public class ModelRendererFactory extends RendererFactory {
 			if (modelInstance == null || !modelInstance.getEntity().isVisible()) {
 				continue;
 			}
-			modelInstance.update(); // TODO dont update here
+			modelInstance.update();
 
 			// if entities is not too far and in frustum, then add it to the
 			// list

@@ -111,7 +111,7 @@ public class TerrainRenderer extends Renderer {
 
 			// bind textures
 			for (TerrainMesh mesh : meshes) {
-				if (mesh.getVertexCount() == 0) {
+				if (mesh.getVertexCount() == 0 || !mesh.isInitialized()) {
 					continue;
 				}
 				this.bindTextureAtlas(mesh, camera);

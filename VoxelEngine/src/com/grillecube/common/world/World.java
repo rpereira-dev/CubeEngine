@@ -356,7 +356,5 @@ public abstract class World implements Taskable {
 	}
 
 	private void onUnloaded() {
-		// TODO Auto-generated method stub
-
 	}
 }

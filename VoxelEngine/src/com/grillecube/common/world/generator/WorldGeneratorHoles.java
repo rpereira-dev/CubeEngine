@@ -1,5 +1,7 @@
 package com.grillecube.common.world.generator;
 
+import java.util.Random;
+
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
@@ -52,22 +54,22 @@ public class WorldGeneratorHoles extends WorldGenerator {
 			}
 		}
 
-		// Random rng = new Random();
-		// int x = rng.nextInt(Terrain.DIM);
-		// int z = rng.nextInt(Terrain.DIM);
-		// int y = terrain.getHeightAt(x, z);
-		//
-		// if (y != -1) {
-		// int max = 6 + rng.nextInt(4);
-		// for (int i = 0; i < max; i++) {
-		// terrain.setBlock(Blocks.LOG, x, y + i, z);
-		// }
-		// for (int dx = -3; dx <= 3; dx++) {
-		// for (int dz = -3; dz <= 3; dz++) {
-		// terrain.setBlock(Blocks.LEAVES, x + dx, y + max, z + dz);
-		//
-		// }
-		// }
-		// }
+		Random rng = new Random();
+		int x = rng.nextInt(Terrain.DIMX);
+		int z = rng.nextInt(Terrain.DIMZ);
+		int y = terrain.getHeightAt(x, z);
+
+		if (y != -1) {
+			int max = 6 + rng.nextInt(4);
+			for (int i = 0; i < max; i++) {
+				terrain.setBlock(Blocks.LOG, x, y + i, z);
+			}
+			for (int dx = -3; dx <= 3; dx++) {
+				for (int dz = -3; dz <= 3; dz++) {
+					terrain.setBlock(Blocks.LEAVES, x + dx, y + max, z + dz);
+
+				}
+			}
+		}
 	}
 }

@@ -27,9 +27,9 @@ public class WorldDefault extends WorldFlat {
 	@Override
 	public void onLoaded() {
 		this.setWorldGenerator(new WorldGeneratorHoles());
-		for (int y = 2; y > 0; y--) {
-			for (int x = -4; x < 4; x++) {
-				for (int z = -4; z < 4; z++) {
+		for (int y = 1; y > 0; y--) {
+			for (int x = -2; x < 2; x++) {
+				for (int z = -2; z < 2; z++) {
 					this.generateTerrain(x, y, z);
 				}
 			}

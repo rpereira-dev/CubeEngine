@@ -22,7 +22,6 @@ public class BlockRendererLiquid extends BlockRendererCube {
 	@Override
 	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
 			BlockFace[][][][] faces, Stack<TerrainMeshVertex> stack) {
-
 		for (Face face : Face.values()) {
 			Vector3i vec = face.getVector();
 			// get the neighbor of this face
@@ -37,8 +36,8 @@ public class BlockRendererLiquid extends BlockRendererCube {
 	}
 
 	/** push vertices for a liquid */
-	private void pushFaceVertices(TerrainMesher mesher, Terrain terrain, Block neighbor, Stack<TerrainMeshVertex> stack, int x,
-			int y, int z, Face face) {
+	private void pushFaceVertices(TerrainMesher mesher, Terrain terrain, Block neighbor, Stack<TerrainMeshVertex> stack,
+			int x, int y, int z, Face face) {
 
 		// get the instance for this block
 		BlockInstanceLiquid instance = (BlockInstanceLiquid) terrain.getBlockInstance(x, y, z);
@@ -57,8 +56,8 @@ public class BlockRendererLiquid extends BlockRendererCube {
 				return;
 			}
 		}
+
 		// get every vertices as a standart cube
-		// TODO: move this so it is client side only (Block Renderer?)
 		TerrainMeshVertex v0 = super.createBlockFaceVertex(terrain, face, x, y, z, 0);
 		TerrainMeshVertex v1 = super.createBlockFaceVertex(terrain, face, x, y, z, 1);
 		TerrainMeshVertex v2 = super.createBlockFaceVertex(terrain, face, x, y, z, 2);
@@ -66,7 +65,7 @@ public class BlockRendererLiquid extends BlockRendererCube {
 
 		// offset the standart vertices to create flowing effect
 
-		float unit = 1 - instance.getAmount() * BlockInstanceLiquid.LIQUID_HEIGHT_UNIT;
+		float unit = 1.0f - instance.getAmount() * BlockInstanceLiquid.LIQUID_HEIGHT_UNIT;
 
 		if (instance.getBlockUnder() != Blocks.AIR) {
 			int faceID = face.getID();
@@ -80,7 +79,6 @@ public class BlockRendererLiquid extends BlockRendererCube {
 				v3.posy -= unit;
 			}
 		}
-
 		stack.push(v0);
 		stack.push(v1);
 		stack.push(v2);

@@ -16,13 +16,9 @@ package com.grillecube.client.renderer.world.flat.terrain;
 
 import java.util.Stack;
 
-import com.grillecube.client.renderer.blocks.BlockRenderer;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
-import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
-import com.grillecube.common.world.block.Block;
-import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 /** the simplest terrain mesher (cull colliding faces) */
@@ -33,14 +29,12 @@ public class FlatTerrainMesherCull extends TerrainMesher {
 	 * [Terrain.BLOCK_SIZEIZE_X][Terrain.BLOCK_SIZEIZE_Y][Terrain.
 	 * BLOCK_SIZEIZE_Z][6] of terrain faces visibility
 	 */
-	protected Stack<TerrainMeshVertex> getVertexStack(Terrain terrain) {
-		// prepare the mesh vertex stack
-		Stack<TerrainMeshVertex> stack = new Stack<TerrainMeshVertex>();
-
+	protected void fillVertexStacks(Terrain terrain, Stack<TerrainMeshVertex> opaqueStack,
+			Stack<TerrainMeshVertex> transparentStack) {
 		// get visibile faces
-		BlockFace[][][][] faces = this.getFacesVisibility(terrain, stack);
+		BlockFace[][][][] faces = super.getFacesVisibility(terrain, opaqueStack, transparentStack);
 		if (faces == null) {
-			return (stack);
+			return;
 		}
 
 		// for each face
@@ -57,51 +51,10 @@ public class FlatTerrainMesherCull extends TerrainMesher {
 						// n.y][z + n.z] != null) {
 						// continue;
 						// }
-						blockFace.pushVertices(stack);
+						blockFace.pushVertices(opaqueStack);
 					}
 				}
 			}
 		}
-
-		return (stack);
-
 	}
-
-	/**
-	 * return an array which contains standart block faces informations. Non
-	 * cubic blocks are pushed to the stack
-	 */
-	protected BlockFace[][][][] getFacesVisibility(Terrain terrain, Stack<TerrainMeshVertex> stack) {
-
-		short[] blocks = terrain.getRawBlocks();
-
-		if (blocks == null) {
-			return (null);
-		}
-
-		BlockFace[][][][] faces = new BlockFace[Face.faces.length][Terrain.DIMX][Terrain.DIMY][Terrain.DIMZ];
-
-		// for each block
-		int index = 0; // x + Terrain.DIM * (y + Terrain.DIM * z)
-		for (int z = 0; z < Terrain.DIMZ; ++z) {
-			for (int y = 0; y < Terrain.DIMY; ++y) {
-				for (int x = 0; x < Terrain.DIMX; ++x) {
-					Block block = Blocks.getBlockByID(blocks[index]);
-
-					if (block == null) {
-						continue;
-					}
-
-					// if the block is visible
-					if (block.isVisible()) {
-						BlockRenderer blockRenderer = BlockRendererManager.instance().getBlockRenderer(block);
-						blockRenderer.generateBlockVertices(this, terrain, block, x, y, z, faces, stack);
-					}
-					++index;
-				}
-			}
-		}
-		return (faces);
-	}
-
 }

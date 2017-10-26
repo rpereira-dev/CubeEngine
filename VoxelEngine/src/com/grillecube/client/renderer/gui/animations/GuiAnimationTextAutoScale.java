@@ -3,7 +3,6 @@ package com.grillecube.client.renderer.gui.animations;
 import com.grillecube.client.renderer.gui.components.GuiText;
 
 /** a simple animation which auto rescale the gui on time and loop infinitely */
-@SuppressWarnings("unused")
 public class GuiAnimationTextAutoScale<T extends GuiText> extends GuiAnimation<T> {
 
 	private float scale;
@@ -38,7 +37,5 @@ public class GuiAnimationTextAutoScale<T extends GuiText> extends GuiAnimation<T
 
 	@Override
 	public void onStop(T gui) {
-		// TODO Auto-generated method stub
-
 	}
 }

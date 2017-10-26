@@ -3,7 +3,7 @@ package com.grillecube.client.renderer.world.flat.terrain;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 
-//TODO ?
+//TODO dont need heightmaps yet, but thinkign about implemeneting it
 public class Heightmap {
 
 	private Matrix4f matrix;
