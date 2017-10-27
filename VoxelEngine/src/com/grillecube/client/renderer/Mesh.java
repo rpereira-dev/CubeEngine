@@ -44,6 +44,11 @@ public abstract class Mesh {
 	private Matrix4f transfMatrix;
 
 	public Mesh() {
+		this.transfMatrix = new Matrix4f();
+		this.rotation = new Vector3f();
+		this.position = new Vector3f();
+		this.scale = new Vector3f(1.0f, 1.0f, 1.0f);
+		this.updateTransformationMatrix();
 	}
 
 	/** initialize opengl stuff (vao, vbo) */
@@ -53,12 +58,6 @@ public abstract class Mesh {
 			Logger.get().log(Logger.Level.WARNING, "tried to initialized a mesh that was already initialized!!");
 			return;
 		}
-
-		this.transfMatrix = new Matrix4f();
-		this.rotation = new Vector3f();
-		this.position = new Vector3f();
-		this.scale = new Vector3f(1.0f, 1.0f, 1.0f);
-		this.updateTransformationMatrix();
 
 		this.vao = GLH.glhGenVAO();
 		this.vbo = GLH.glhGenVBO();

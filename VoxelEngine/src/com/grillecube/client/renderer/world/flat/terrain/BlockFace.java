@@ -2,6 +2,7 @@ package com.grillecube.client.renderer.world.flat.terrain;
 
 import java.util.Stack;
 
+import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.common.world.block.Block;
 
@@ -46,7 +47,7 @@ public class BlockFace {
 	}
 
 	/** push this face vertices to the stack */
-	public void pushVertices(Stack<TerrainMeshVertex> stack) {
+	public void pushVertices(Stack<TerrainMeshTriangle> stack) {
 
 		TerrainMeshVertex v0 = this.vertices[0];
 		TerrainMeshVertex v1 = this.vertices[1];
@@ -54,20 +55,12 @@ public class BlockFace {
 		TerrainMeshVertex v3 = this.vertices[3];
 
 		if (v0.getAO() + v2.getAO() < v1.getAO() + v3.getAO()) {
-			stack.push(v0);
-			stack.push(v1);
-			stack.push(v2);
-			stack.push(v0);
-			stack.push(v2);
-			stack.push(v3);
+			stack.push(new TerrainMeshTriangle(v0, v1, v2));
+			stack.push(new TerrainMeshTriangle(v0, v2, v3));
 		} else {
 			// flip quad
-			stack.push(v1);
-			stack.push(v2);
-			stack.push(v3);
-			stack.push(v1);
-			stack.push(v3);
-			stack.push(v0);
+			stack.push(new TerrainMeshTriangle(v1, v2, v3));
+			stack.push(new TerrainMeshTriangle(v1, v3, v0));
 		}
 	}
 

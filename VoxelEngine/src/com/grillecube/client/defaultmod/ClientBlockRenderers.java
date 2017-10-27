@@ -2,6 +2,7 @@ package com.grillecube.client.defaultmod;
 
 import com.grillecube.client.renderer.blocks.BlockRendererCube;
 import com.grillecube.client.renderer.blocks.BlockRendererLiquid;
+import com.grillecube.client.renderer.blocks.BlockRendererPlant;
 import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.faces.Face;
@@ -26,6 +27,7 @@ public class ClientBlockRenderers implements IModResource {
 	public static int T_LOG_SIDE;
 	public static int T_LOG_INSIDE;
 	public static int T_LEAVES;
+	public static int[] T_PLANTS = new int[Blocks.PLANTS.length];
 
 	@Override
 	public void load(Mod mod, ResourceManager manager) {
@@ -43,6 +45,11 @@ public class ClientBlockRenderers implements IModResource {
 		T_LOG_SIDE = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/log_side.png"));
 		T_LOG_INSIDE = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/log_inside.png"));
 		T_LEAVES = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/leaves.png"));
+		T_PLANTS[0] = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/flower1.png"));
+		T_PLANTS[1] = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/flower2.png"));
+		T_PLANTS[2] = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/flower3.png"));
+		T_PLANTS[3] = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/herb.png"));
+		T_PLANTS[4] = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/herb2.png"));
 
 		blockTextureManager.setBlockRenderer(Blocks.DIRT, new BlockRendererCube(ClientBlockRenderers.T_DIRT));
 
@@ -64,6 +71,11 @@ public class ClientBlockRenderers implements IModResource {
 		blockTextureManager.setBlockRenderer(Blocks.STONE, new BlockRendererCube(ClientBlockRenderers.T_STONE));
 		blockTextureManager.setBlockRenderer(Blocks.LIQUID_WATER,
 				new BlockRendererLiquid(ClientBlockRenderers.T_LIQUID));
+
+		for (int i = 0; i < Blocks.PLANTS.length; i++) {
+			blockTextureManager.setBlockRenderer(Blocks.PLANTS[i],
+					new BlockRendererPlant(ClientBlockRenderers.T_PLANTS[i]));
+		}
 	}
 
 	@Override

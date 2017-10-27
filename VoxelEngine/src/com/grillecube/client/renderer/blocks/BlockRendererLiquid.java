@@ -2,6 +2,7 @@ package com.grillecube.client.renderer.blocks;
 
 import java.util.Stack;
 
+import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.renderer.world.flat.terrain.BlockFace;
@@ -21,7 +22,7 @@ public class BlockRendererLiquid extends BlockRendererCube {
 
 	@Override
 	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
-			BlockFace[][][][] faces, Stack<TerrainMeshVertex> stack) {
+			BlockFace[][][][] faces, Stack<TerrainMeshTriangle> stack) {
 		for (Face face : Face.values()) {
 			Vector3i vec = face.getVector();
 			// get the neighbor of this face
@@ -36,8 +37,8 @@ public class BlockRendererLiquid extends BlockRendererCube {
 	}
 
 	/** push vertices for a liquid */
-	private void pushFaceVertices(TerrainMesher mesher, Terrain terrain, Block neighbor, Stack<TerrainMeshVertex> stack,
-			int x, int y, int z, Face face) {
+	private void pushFaceVertices(TerrainMesher mesher, Terrain terrain, Block neighbor,
+			Stack<TerrainMeshTriangle> stack, int x, int y, int z, Face face) {
 
 		// get the instance for this block
 		BlockInstanceLiquid instance = (BlockInstanceLiquid) terrain.getBlockInstance(x, y, z);
@@ -79,18 +80,8 @@ public class BlockRendererLiquid extends BlockRendererCube {
 				v3.posy -= unit;
 			}
 		}
-		stack.push(v0);
-		stack.push(v1);
-		stack.push(v2);
-
-		stack.push(v0);
-		stack.push(v2);
-		stack.push(v3);
-	}
-
-	@Override
-	public boolean hasTransparency() {
-		return (true);
+		stack.push(new TerrainMeshTriangle(v0, v1, v2));
+		stack.push(new TerrainMeshTriangle(v0, v2, v3));
 	}
 
 	@Override

@@ -34,47 +34,50 @@ public abstract class TerrainMesher {
 	public TerrainMesher() {
 	}
 
-	public final void generateVertices(Terrain terrain, TerrainMesh opaqueMesh, TerrainMesh transparentMesh) {
-		Stack<TerrainMeshVertex> opaqueStack = new Stack<TerrainMeshVertex>();
-		Stack<TerrainMeshVertex> transparentStack = new Stack<TerrainMeshVertex>();
-		this.fillVertexStacks(terrain, opaqueStack, transparentStack);
-		this.setMeshVertex(opaqueMesh, opaqueStack);
-		this.setMeshVertex(transparentMesh, transparentStack);
+	public final void pushVerticesToStacks(Terrain terrain, TerrainMesh opaqueMesh, TerrainMesh transparentMesh,
+			Stack<TerrainMeshTriangle> opaqueVertices, Stack<TerrainMeshTriangle> transparentVertices) {
+		this.fillVertexStacks(terrain, opaqueVertices, transparentVertices);
 	}
 
-	private final void setMeshVertex(TerrainMesh mesh, Stack<TerrainMeshVertex> stack) {
-		ByteBuffer buffer = BufferUtils.createByteBuffer(stack.size() * TerrainMesh.BYTES_PER_VERTEX);
-		for (TerrainMeshVertex vertex : stack) {
-			buffer.putFloat(vertex.posx);
-			buffer.putFloat(vertex.posy);
-			buffer.putFloat(vertex.posz);
-			buffer.putFloat(vertex.normalx);
-			buffer.putFloat(vertex.normaly);
-			buffer.putFloat(vertex.normalz);
-			buffer.putFloat(vertex.atlasX);
-			buffer.putFloat(vertex.atlasY);
-			buffer.putFloat(vertex.uvx);
-			buffer.putFloat(vertex.uvy);
-			buffer.putInt(vertex.color);
-			buffer.putFloat(vertex.brightness);
+	public final void setMeshVertices(TerrainMesh mesh, Stack<TerrainMeshTriangle> stack) {
+		ByteBuffer buffer = BufferUtils.createByteBuffer(stack.size() * 3 * TerrainMesh.BYTES_PER_VERTEX);
+		for (TerrainMeshTriangle triangle : stack) {
+			this.putVertex(buffer, triangle.v0);
+			this.putVertex(buffer, triangle.v1);
+			this.putVertex(buffer, triangle.v2);
 		}
 		buffer.flip();
 		mesh.setVertices(buffer);
+	}
+
+	private void putVertex(ByteBuffer buffer, TerrainMeshVertex vertex) {
+		buffer.putFloat(vertex.posx);
+		buffer.putFloat(vertex.posy);
+		buffer.putFloat(vertex.posz);
+		buffer.putFloat(vertex.normalx);
+		buffer.putFloat(vertex.normaly);
+		buffer.putFloat(vertex.normalz);
+		buffer.putFloat(vertex.atlasX);
+		buffer.putFloat(vertex.atlasY);
+		buffer.putFloat(vertex.uvx);
+		buffer.putFloat(vertex.uvy);
+		buffer.putInt(vertex.color);
+		buffer.putFloat(vertex.brightness);
 	}
 
 	/**
 	 * generate a stack which contains every vertices ordered to render back
 	 * face culled triangles
 	 */
-	protected abstract void fillVertexStacks(Terrain terrain, Stack<TerrainMeshVertex> opaqueStack,
-			Stack<TerrainMeshVertex> transparentStack);
+	protected abstract void fillVertexStacks(Terrain terrain, Stack<TerrainMeshTriangle> opaqueStack,
+			Stack<TerrainMeshTriangle> transparentStack);
 
 	/**
 	 * return an array which contains standart block faces informations. Non
 	 * cubic blocks are pushed to the stack
 	 */
-	protected final BlockFace[][][][] getFacesVisibility(Terrain terrain, Stack<TerrainMeshVertex> opaqueStack,
-			Stack<TerrainMeshVertex> transparentStack) {
+	protected final BlockFace[][][][] getFacesVisibility(Terrain terrain, Stack<TerrainMeshTriangle> opaqueStack,
+			Stack<TerrainMeshTriangle> transparentStack) {
 
 		short[] blocks = terrain.getRawBlocks();
 

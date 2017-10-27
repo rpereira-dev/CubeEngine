@@ -15,6 +15,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventMouseRightRelease;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.ModelEditorMod;
+import com.grillecube.client.renderer.model.editor.camera.CameraController;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolbox;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;

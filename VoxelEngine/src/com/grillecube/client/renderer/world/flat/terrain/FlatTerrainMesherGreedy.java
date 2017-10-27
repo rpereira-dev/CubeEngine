@@ -17,12 +17,10 @@ package com.grillecube.client.renderer.world.flat.terrain;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
+import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
-import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
-import com.grillecube.common.world.block.Block;
-import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 /** an object which is used to generate terrain meshes dynamically */
@@ -33,8 +31,9 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 	 * [Terrain.BLOCK_SIZEIZE_X][Terrain.BLOCK_SIZEIZE_Y][Terrain.
 	 * BLOCK_SIZEIZE_Z][6] of terrain faces visibility
 	 */
-	protected void fillVertexStacks(Terrain terrain, Stack<TerrainMeshVertex> opaqueStack,
-			Stack<TerrainMeshVertex> transparentStack) {
+	@Override
+	protected void fillVertexStacks(Terrain terrain, Stack<TerrainMeshTriangle> opaqueStack,
+			Stack<TerrainMeshTriangle> transparentStack) {
 		// get visibile faces
 		BlockFace[][][][] faces = this.getFacesVisibility(terrain, opaqueStack, transparentStack);
 		if (faces == null) {
@@ -60,7 +59,7 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 							continue;
 						}
 
-						Stack<TerrainMeshVertex> stack = face.getBlock().isOpaque() ? opaqueStack : transparentStack;
+						Stack<TerrainMeshTriangle> stack = face.getBlock().isOpaque() ? opaqueStack : transparentStack;
 
 						// TOP OR BOT FACE
 						if (faceID == Face.TOP || faceID == Face.BOT) {

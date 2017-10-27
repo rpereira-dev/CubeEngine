@@ -17,6 +17,7 @@ public class Blocks implements IModResource {
 	public static Block LOG;
 	public static Block LEAVES;
 	public static Block LIQUID_WATER;
+	public static Block[] PLANTS = new Block[5];
 
 	@Override
 	public void load(Mod mod, ResourceManager manager) {
@@ -37,6 +38,10 @@ public class Blocks implements IModResource {
 		Blocks.LOG = blockmanager.registerBlock(new BlockLog(blockmanager.getNextID()));
 		Blocks.LEAVES = blockmanager.registerBlock(new BlockLeaves(blockmanager.getNextID()));
 		Blocks.LIQUID_WATER = blockmanager.registerBlock(new BlockLiquidWater(blockmanager.getNextID()));
+
+		for (int i = 0; i < Blocks.PLANTS.length; i++) {
+			Blocks.PLANTS[i] = blockmanager.registerBlock(new BlockPlant(blockmanager.getNextID()));
+		}
 	}
 
 	@Override

@@ -16,7 +16,7 @@ package com.grillecube.client.renderer.world.flat.terrain;
 
 import java.util.Stack;
 
-import com.grillecube.client.renderer.world.TerrainMeshVertex;
+import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.world.terrain.Terrain;
@@ -29,8 +29,8 @@ public class FlatTerrainMesherCull extends TerrainMesher {
 	 * [Terrain.BLOCK_SIZEIZE_X][Terrain.BLOCK_SIZEIZE_Y][Terrain.
 	 * BLOCK_SIZEIZE_Z][6] of terrain faces visibility
 	 */
-	protected void fillVertexStacks(Terrain terrain, Stack<TerrainMeshVertex> opaqueStack,
-			Stack<TerrainMeshVertex> transparentStack) {
+	protected void fillVertexStacks(Terrain terrain, Stack<TerrainMeshTriangle> opaqueStack,
+			Stack<TerrainMeshTriangle> transparentStack) {
 		// get visibile faces
 		BlockFace[][][][] faces = super.getFacesVisibility(terrain, opaqueStack, transparentStack);
 		if (faces == null) {

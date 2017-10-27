@@ -2,7 +2,7 @@ package com.grillecube.client.renderer.blocks;
 
 import java.util.Stack;
 
-import com.grillecube.client.renderer.world.TerrainMeshVertex;
+import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.renderer.world.flat.terrain.BlockFace;
 import com.grillecube.client.resources.BlockRendererManager;
@@ -182,10 +182,11 @@ public abstract class BlockRenderer {
 	 * stack
 	 */
 	public abstract void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y,
-			int z, BlockFace[][][][] faces, Stack<TerrainMeshVertex> stack);
+			int z, BlockFace[][][][] faces, Stack<TerrainMeshTriangle> stack);
 
 	/** return true if this block has transparency */
-	public abstract boolean hasTransparency();
+	// public abstract boolean hasTransparency(); //TODO : implement it here,
+	// instead of #Terrain#opaqueBlockCount and stuff...
 
 	/** return the x texture coodinates for this textureID */
 	public int getAtlasX(int textureID) {

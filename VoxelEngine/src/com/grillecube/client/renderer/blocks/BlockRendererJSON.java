@@ -2,7 +2,7 @@ package com.grillecube.client.renderer.blocks;
 
 import java.util.Stack;
 
-import com.grillecube.client.renderer.world.TerrainMeshVertex;
+import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.renderer.world.flat.terrain.BlockFace;
 import com.grillecube.common.world.block.Block;
@@ -13,15 +13,8 @@ public class BlockRendererJSON extends BlockRenderer {
 
 	@Override
 	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
-			BlockFace[][][][] faces, Stack<TerrainMeshVertex> stack) {
+			BlockFace[][][][] faces, Stack<TerrainMeshTriangle> stack) {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public boolean hasTransparency() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	// TODO
 }

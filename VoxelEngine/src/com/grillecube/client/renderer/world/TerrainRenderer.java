@@ -15,7 +15,6 @@
 package com.grillecube.client.renderer.world;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -79,54 +78,46 @@ public class TerrainRenderer extends Renderer {
 
 	}
 
-	public void render(CameraProjective camera, WorldFlat world, ArrayList<TerrainMesh> meshes) {
-
-		if (meshes == null || meshes.size() == 0) {
-			return;
-		}
-
-		meshes.sort(new Comparator<TerrainMesh>() {
-			@Override
-			public int compare(TerrainMesh t1, TerrainMesh t2) {
-				double d1 = Vector3f.distanceSquare(camera.getPosition(), t1.getTerrain().getWorldPosCenter());
-				double d2 = Vector3f.distanceSquare(camera.getPosition(), t2.getTerrain().getWorldPosCenter());
-				return ((int) (d2 - d1));
-			}
-		});
+	public void render(CameraProjective camera, WorldFlat world, ArrayList<TerrainMesh> opaqueMeshes,
+			ArrayList<TerrainMesh> transparentMeshes) {
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
-
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 		if (this.getMainRenderer().getGLFWWindow().isKeyPressed(GLFW.GLFW_KEY_F)) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		}
 
 		this.terrainProgram.useStart();
-		{
-			this.terrainProgram.loadUniforms(camera, world);
+		this.terrainProgram.loadUniforms(camera, world);
 
-			// bind textures
-			for (TerrainMesh mesh : meshes) {
-				if (mesh.getVertexCount() == 0 || !mesh.isInitialized()) {
-					continue;
-				}
-				this.bindTextureAtlas(mesh, camera);
-				this.terrainProgram.loadInstanceUniforms(mesh);
-				mesh.bind();
-				mesh.draw();
-			}
+		if (opaqueMeshes != null && opaqueMeshes.size() > 0) {
+			GL11.glEnable(GL11.GL_CULL_FACE);
+			GL11.glCullFace(GL11.GL_BACK);
+			this.drawMeshes(camera, opaqueMeshes);
+			GL11.glDisable(GL11.GL_CULL_FACE);
 		}
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+		if (transparentMeshes != null && transparentMeshes.size() > 0) {
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			// bind textures
+			this.drawMeshes(camera, transparentMeshes);
+			GL11.glDisable(GL11.GL_BLEND);
+		}
 
 		GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+	}
 
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_CULL_FACE);
-
+	private final void drawMeshes(CameraProjective camera, ArrayList<TerrainMesh> transparentMeshes) {
+		for (TerrainMesh mesh : transparentMeshes) {
+			if (!mesh.isInitialized()) {
+				continue;
+			}
+			this.bindTextureAtlas(mesh, camera);
+			this.terrainProgram.loadInstanceUniforms(mesh);
+			mesh.bind();
+			mesh.draw();
+		}
 	}
 
 	@Override

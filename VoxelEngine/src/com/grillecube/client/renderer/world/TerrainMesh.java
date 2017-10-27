@@ -34,11 +34,6 @@ public class TerrainMesh extends Mesh {
 	public TerrainMesh(Terrain terrain) {
 		super();
 		this.terrain = terrain;
-	}
-
-	@Override
-	public void initialize() {
-		super.initialize();
 		super.getPosition().set(this.terrain.getWorldPos());
 		super.updateTransformationMatrix();
 	}
