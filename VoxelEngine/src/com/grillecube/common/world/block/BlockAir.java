@@ -37,6 +37,11 @@ public class BlockAir extends Block {
 	}
 
 	@Override
+	public boolean hasTransparency() {
+		return (true);
+	}
+
+	@Override
 	public void update(Terrain terrain, int x, int y, int z) {
 	}
 
@@ -49,14 +54,6 @@ public class BlockAir extends Block {
 	}
 
 	public boolean influenceCollisions() {
-		return (false);
-	}
-
-	/**
-	 * this method should be overriden for every block having a special
-	 * rendering (liquid, chair...)
-	 */
-	public boolean hasSpecialRendering() {
 		return (false);
 	}
 }

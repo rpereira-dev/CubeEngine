@@ -30,6 +30,11 @@ public class BlockLeaves extends BlockCube {
 	}
 
 	@Override
+	public boolean hasTransparency() {
+		return (true);
+	}
+
+	@Override
 	public boolean isVisible() {
 		return (true);
 	}

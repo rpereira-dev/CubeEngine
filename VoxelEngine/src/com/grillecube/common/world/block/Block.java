@@ -45,15 +45,30 @@ public abstract class Block {
 	/** return true if this block is visible */
 	public abstract boolean isVisible();
 
-	/** return true if this block is opaque */
+	/**
+	 * return true if every pixel of this block are opaques (channel alpha at 0 or
+	 * 1)
+	 */
 	public abstract boolean isOpaque();
+
+	/**
+	 * return true if some pixels of this block have an alpha channel different from
+	 */
+	public final boolean isTransparent() {
+		return (!this.isOpaque() || this.hasTransparency());
+	}
+
+	/**
+	 * return true if some pixels of this block have an alpha channel != 1
+	 */
+	protected abstract boolean hasTransparency();
 
 	/**
 	 * update this block for this terrain at given coordinates (relative to the
 	 * given terrain)
 	 * 
-	 * WARNING : this update every block of this type. If you want one special
-	 * block to act a certain way, you should have a look at BlockInstance
+	 * WARNING : this update every block of this type. If you want one special block
+	 * to act a certain way, you should have a look at BlockInstance
 	 * 
 	 * @see createBlockInstance(Terrain terrain, short index)
 	 */

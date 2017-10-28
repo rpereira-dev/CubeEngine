@@ -12,9 +12,9 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.renderer.world.flat.terrain;
+package com.grillecube.client.renderer.world.flat;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
@@ -32,8 +32,8 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 	 * BLOCK_SIZEIZE_Z][6] of terrain faces visibility
 	 */
 	@Override
-	protected void fillVertexStacks(Terrain terrain, Stack<TerrainMeshTriangle> opaqueStack,
-			Stack<TerrainMeshTriangle> transparentStack) {
+	protected void fillVertexStacks(Terrain terrain, ArrayList<TerrainMeshTriangle> opaqueStack,
+			ArrayList<TerrainMeshTriangle> transparentStack) {
 		// get visibile faces
 		BlockFace[][][][] faces = this.getFacesVisibility(terrain, opaqueStack, transparentStack);
 		if (faces == null) {
@@ -59,7 +59,8 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 							continue;
 						}
 
-						Stack<TerrainMeshTriangle> stack = face.getBlock().isOpaque() ? opaqueStack : transparentStack;
+						ArrayList<TerrainMeshTriangle> stack = face.getBlock().isOpaque() ? opaqueStack
+								: transparentStack;
 
 						// TOP OR BOT FACE
 						if (faceID == Face.TOP || faceID == Face.BOT) {

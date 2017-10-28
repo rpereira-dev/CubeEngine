@@ -20,7 +20,12 @@ public class BlockPlant extends Block {
 
 	@Override
 	public boolean isOpaque() {
-		return (false);
+		return (true);
+	}
+
+	@Override
+	public boolean hasTransparency() {
+		return (true);
 	}
 
 	@Override

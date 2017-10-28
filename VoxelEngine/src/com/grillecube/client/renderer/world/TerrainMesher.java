@@ -15,12 +15,12 @@
 package com.grillecube.client.renderer.world;
 
 import java.nio.ByteBuffer;
-import java.util.Stack;
+import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
-import com.grillecube.client.renderer.world.flat.terrain.BlockFace;
+import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.world.block.Block;
@@ -35,49 +35,32 @@ public abstract class TerrainMesher {
 	}
 
 	public final void pushVerticesToStacks(Terrain terrain, TerrainMesh opaqueMesh, TerrainMesh transparentMesh,
-			Stack<TerrainMeshTriangle> opaqueVertices, Stack<TerrainMeshTriangle> transparentVertices) {
+			ArrayList<TerrainMeshTriangle> opaqueVertices, ArrayList<TerrainMeshTriangle> transparentVertices) {
 		this.fillVertexStacks(terrain, opaqueVertices, transparentVertices);
 	}
 
-	public final void setMeshVertices(TerrainMesh mesh, Stack<TerrainMeshTriangle> stack) {
+	public final void setMeshVertices(TerrainMesh mesh, ArrayList<TerrainMeshTriangle> stack) {
 		ByteBuffer buffer = BufferUtils.createByteBuffer(stack.size() * 3 * TerrainMesh.BYTES_PER_VERTEX);
 		for (TerrainMeshTriangle triangle : stack) {
-			this.putVertex(buffer, triangle.v0);
-			this.putVertex(buffer, triangle.v1);
-			this.putVertex(buffer, triangle.v2);
+			triangle.store(buffer);
 		}
 		buffer.flip();
 		mesh.setVertices(buffer);
 	}
 
-	private void putVertex(ByteBuffer buffer, TerrainMeshVertex vertex) {
-		buffer.putFloat(vertex.posx);
-		buffer.putFloat(vertex.posy);
-		buffer.putFloat(vertex.posz);
-		buffer.putFloat(vertex.normalx);
-		buffer.putFloat(vertex.normaly);
-		buffer.putFloat(vertex.normalz);
-		buffer.putFloat(vertex.atlasX);
-		buffer.putFloat(vertex.atlasY);
-		buffer.putFloat(vertex.uvx);
-		buffer.putFloat(vertex.uvy);
-		buffer.putInt(vertex.color);
-		buffer.putFloat(vertex.brightness);
-	}
+	/**
+	 * generate a stack which contains every vertices ordered to render back face
+	 * culled triangles
+	 */
+	protected abstract void fillVertexStacks(Terrain terrain, ArrayList<TerrainMeshTriangle> opaqueStack,
+			ArrayList<TerrainMeshTriangle> transparentStack);
 
 	/**
-	 * generate a stack which contains every vertices ordered to render back
-	 * face culled triangles
+	 * return an array which contains standart block faces informations. Non cubic
+	 * blocks are pushed to the stack
 	 */
-	protected abstract void fillVertexStacks(Terrain terrain, Stack<TerrainMeshTriangle> opaqueStack,
-			Stack<TerrainMeshTriangle> transparentStack);
-
-	/**
-	 * return an array which contains standart block faces informations. Non
-	 * cubic blocks are pushed to the stack
-	 */
-	protected final BlockFace[][][][] getFacesVisibility(Terrain terrain, Stack<TerrainMeshTriangle> opaqueStack,
-			Stack<TerrainMeshTriangle> transparentStack) {
+	protected final BlockFace[][][][] getFacesVisibility(Terrain terrain, ArrayList<TerrainMeshTriangle> opaqueStack,
+			ArrayList<TerrainMeshTriangle> transparentStack) {
 
 		short[] blocks = terrain.getRawBlocks();
 

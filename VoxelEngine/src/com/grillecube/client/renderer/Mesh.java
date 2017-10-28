@@ -111,7 +111,11 @@ public abstract class Mesh {
 
 	/** called in the rendering thread */
 	public final void draw() {
+		this.preDraw();
 		this.vao.draw(GL11.GL_TRIANGLES, 0, this.vertexCount);
+	}
+
+	protected void preDraw() {
 	}
 
 	/** draw with index buffer */

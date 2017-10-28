@@ -187,7 +187,11 @@ public class GLH {
 
 	/** program helper */
 	public static GLShader glhLoadShader(String filepath, int type) {
-		GLShader shader = GLShader.load(filepath, type);
+		return (glhLoadShader(filepath, type, ""));
+	}
+
+	public static GLShader glhLoadShader(String filepath, int type, String header) {
+		GLShader shader = GLShader.load(filepath, type, header);
 		GLH.glhAddObject(shader);
 		return (shader);
 	}

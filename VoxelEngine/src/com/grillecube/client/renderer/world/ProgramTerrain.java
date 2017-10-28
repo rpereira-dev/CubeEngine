@@ -25,10 +25,14 @@ import com.grillecube.common.world.WorldFlat;
 
 public class ProgramTerrain extends GLProgram {
 
+	public static final int MESH_TYPE_OPAQUE = 0;
+	public static final int MESH_TYPE_TRANSPARENT = 1;
+
 	/** uniforms location */
 	private int _view_matrix;
 	private int _proj_matrix;
 	private int _transf_matrix;
+	private int _mesh_type;
 
 	private int _fog_color;
 	private int _fog_density;
@@ -49,8 +53,10 @@ public class ProgramTerrain extends GLProgram {
 
 	public ProgramTerrain() {
 		super();
-		this.addShader(GLH.glhLoadShader(R.getResPath("shaders/terrain.fs"), GL20.GL_FRAGMENT_SHADER));
-		this.addShader(GLH.glhLoadShader(R.getResPath("shaders/terrain.vs"), GL20.GL_VERTEX_SHADER));
+		String header = "# define MESH_TYPE_OPAQUE (" + MESH_TYPE_OPAQUE + ")\n" + "# define MESH_TYPE_TRANSPARENT ("
+				+ MESH_TYPE_TRANSPARENT + ")\n";
+		this.addShader(GLH.glhLoadShader(R.getResPath("shaders/terrain.fs"), GL20.GL_FRAGMENT_SHADER, header));
+		this.addShader(GLH.glhLoadShader(R.getResPath("shaders/terrain.vs"), GL20.GL_VERTEX_SHADER, header));
 		this.link();
 	}
 
@@ -70,7 +76,7 @@ public class ProgramTerrain extends GLProgram {
 		this._proj_matrix = super.getUniform("proj_matrix");
 		this._view_matrix = super.getUniform("view_matrix");
 		this._transf_matrix = super.getUniform("transf_matrix");
-
+		this._mesh_type = super.getUniform("mesh_type");
 		this._fog_color = super.getUniform("fog_color");
 		this._fog_gradient = super.getUniform("fog_gradient");
 		this._fog_density = super.getUniform("fog_density");
@@ -114,5 +120,9 @@ public class ProgramTerrain extends GLProgram {
 	/** load terrain instance uniforms variable */
 	public void loadInstanceUniforms(TerrainMesh mesh) {
 		this.loadUniformMatrix(this._transf_matrix, mesh.getTransformationMatrix());
+	}
+
+	public void loadTypeUniform(int meshType) {
+		this.loadUniformInteger(this._mesh_type, meshType);
 	}
 }

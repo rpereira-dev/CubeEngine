@@ -43,14 +43,14 @@ public class WorldGeneratorHoles extends WorldGenerator {
 		}
 
 		for (int x = 0; x < Terrain.DIMX; x++) {
-			for (int y = 0; y < Terrain.DIMY; y++) {
-				for (int z = 0; z < Terrain.DIMZ; z++) {
-					if (y - 1 >= 0 && terrain.getBlockAt(x, y, z) == Blocks.AIR) {
-						if (terrain.getBlockAt(x, y - 1, z) != Blocks.AIR) {
-							terrain.setBlock(Blocks.GRASS, x, y - 1, z);
-						}
-					}
+			for (int z = 0; z < Terrain.DIMZ; z++) {
+				int y = terrain.getHeightAt(x, z) - 1;
+				if (y < 0) {
+					continue;
 				}
+				terrain.setBlock(Blocks.PLANTS[3], x, y + 1, z);
+				terrain.setBlock(Blocks.GRASS, x, y, z);
+
 			}
 		}
 

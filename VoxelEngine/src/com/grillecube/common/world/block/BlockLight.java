@@ -16,7 +16,7 @@ package com.grillecube.common.world.block;
 
 import com.grillecube.common.world.terrain.Terrain;
 
-public abstract class BlockLight extends Block {
+public class BlockLight extends BlockCubeOpaque {
 	public BlockLight(int blockID) {
 		super(blockID);
 	}
@@ -27,20 +27,12 @@ public abstract class BlockLight extends Block {
 	}
 
 	@Override
-	public boolean isVisible() {
-		return (true);
-	}
-
-	@Override
-	public boolean isOpaque() {
-		return (true);
-	}
-
-	@Override
 	public void update(Terrain terrain, int x, int y, int z) {
 	}
 
-	public abstract byte getLightValue();
+	public byte getLightValue() {
+		return (15);
+	}
 
 	@Override
 	public void onSet(Terrain terrain, int x, int y, int z) {

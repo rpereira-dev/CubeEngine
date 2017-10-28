@@ -18,6 +18,10 @@ public class BlockLiquidWater extends BlockLiquid {
 		return (false);
 	}
 
+	public boolean hasTransparency() {
+		return (true);
+	}
+
 	@Override
 	public void update(Terrain terrain, int x, int y, int z) {
 		// if (terrain.getWorld().getRNG().nextInt(128) == 0) {

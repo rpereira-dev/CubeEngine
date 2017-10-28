@@ -85,8 +85,7 @@ public class Terrain {
 	protected byte[] heightmap;
 
 	/** number of blocks opaque or transparent */
-	private int opaqueBlocks;
-	private int transparentBlocks;
+	private int blockCount;
 
 	/** blocks */
 	protected byte[] lights; // light values for every blocks
@@ -123,8 +122,7 @@ public class Terrain {
 		this.blocks = null;
 		this.blockInstances = null;
 		this.lights = null;
-		this.opaqueBlocks = 0;
-		this.transparentBlocks = 0;
+		this.blockCount = 0;
 		this.facesVisibility = new boolean[6][6];
 		this.blockTickCounter = 0;
 		this.lightTickCounter = 0;
@@ -141,8 +139,8 @@ public class Terrain {
 	}
 
 	/******
-	 * EVERY TERRAINS UPDATE RELATIVE FUNCTIONS (COMPLEX ALGORYTHM) ARE CALLED
-	 * IN A SEPARATE THREAD. STARTS HERE
+	 * EVERY TERRAINS UPDATE RELATIVE FUNCTIONS (COMPLEX ALGORYTHM) ARE CALLED IN A
+	 * SEPARATE THREAD. STARTS HERE
 	 */
 	/** update the terrain once */
 	public void update() {
@@ -239,8 +237,8 @@ public class Terrain {
 	}
 
 	/******
-	 * EVERY TERRAINS UPDATE RELATIVE FUNCTIONS (COMPLEX ALGORYTHM) ARE CALLED
-	 * IN A SEPARATE THREAD. END HERE
+	 * EVERY TERRAINS UPDATE RELATIVE FUNCTIONS (COMPLEX ALGORYTHM) ARE CALLED IN A
+	 * SEPARATE THREAD. END HERE
 	 */
 
 	public boolean hasState(int state) {
@@ -260,9 +258,8 @@ public class Terrain {
 	}
 
 	/**
-	 * return the terrain at the given position, relative to this instance It
-	 * fills the 'dst' Vector3i with it terrain-relative coordinates and return
-	 * it
+	 * return the terrain at the given position, relative to this instance It fills
+	 * the 'dst' Vector3i with it terrain-relative coordinates and return it
 	 * 
 	 * if the terrain didnt exists, it creates it
 	 */
@@ -379,8 +376,8 @@ public class Terrain {
 	}
 
 	/**
-	 * WARNING : this function doest check bound, only use if you know what
-	 * you're doing
+	 * WARNING : this function doest check bound, only use if you know what you're
+	 * doing
 	 * 
 	 * @param block
 	 * @param xyz
@@ -435,24 +432,14 @@ public class Terrain {
 
 		// update number of block set
 		if (prevblock.getID() != Blocks.AIR_ID && block.getID() == Blocks.AIR_ID) {
-			if (prevblock.isOpaque()) {
-				--this.opaqueBlocks;
-			} else {
-				--this.transparentBlocks;
-			}
-
+			--this.blockCount;
 			int ymax = this.heightmap[x + Terrain.DIMZ * z];
 			while (ymax > 0 && this.blocks[this.getIndex(x, ymax - 1, z)] == Blocks.AIR_ID) {
 				--ymax;
 			}
 			this.heightmap[x + Terrain.DIMX * z] = (byte) (ymax - 1);
 		} else if (prevblock.getID() == Blocks.AIR_ID && block.getID() != Blocks.AIR_ID) {
-			if (block.isOpaque()) {
-				++this.opaqueBlocks;
-			} else {
-				++this.transparentBlocks;
-			}
-
+			++this.blockCount;
 			if (this.heightmap == null) {
 				this.heightmap = new byte[Terrain.DIMX * Terrain.DIMZ];
 
@@ -743,7 +730,7 @@ public class Terrain {
 
 	private void floodFillSunlightAdd(int index, byte nextLightValue) {
 		Block next = this.getBlockAt(index);
-		if (!next.isOpaque()) {
+		if (next.isTransparent()) {
 			if (this.getSunLight(index) < nextLightValue) {
 				this.addSunLight(nextLightValue, index);
 			}
@@ -1042,7 +1029,7 @@ public class Terrain {
 
 	private void floodFillLightAdd(int index, byte nextLightValue) {
 		Block next = this.getBlockAt(index);
-		if (!next.isOpaque()) {
+		if (next.isTransparent()) {
 			if (this.getBlockLight(index) < nextLightValue) {
 				this.addBlockLight(nextLightValue, index);
 			}
@@ -1184,19 +1171,18 @@ public class Terrain {
 	 * 
 	 * 0 <= x <= D - 1 0 <= y <= D - 1 0 <= z <= D - 1
 	 *
-	 * => 0 <= x + D * (y + z.D) <= (D - 1) + D . ((D - 1) + D . (D - 1)) => 0
-	 * <= index <= (D - 1) + D . ((D - 1) + D^2 - D)) => 0 <= index <= (D - 1) +
-	 * D . (D^2 - 1) => 0 <= index <= (D - 1) + D^3 - D) => 0 <= index <= D^3 -
-	 * 1 => 0 <= index <= this.blocks.length : OK
+	 * => 0 <= x + D * (y + z.D) <= (D - 1) + D . ((D - 1) + D . (D - 1)) => 0 <=
+	 * index <= (D - 1) + D . ((D - 1) + D^2 - D)) => 0 <= index <= (D - 1) + D .
+	 * (D^2 - 1) => 0 <= index <= (D - 1) + D^3 - D) => 0 <= index <= D^3 - 1 => 0
+	 * <= index <= this.blocks.length : OK
 	 *
-	 * unicity proof: index = x + D * (y + D * z) = x + y.D + z.D^2 = z.D^2 +
-	 * y.D + x
+	 * unicity proof: index = x + D * (y + D * z) = x + y.D + z.D^2 = z.D^2 + y.D +
+	 * x
 	 *
-	 * if x < D, then x / D = 0 (we are doing division using integers). Then we
-	 * know that:
+	 * if x < D, then x / D = 0 (we are doing division using integers). Then we know
+	 * that:
 	 *
-	 * index / D = (z.D^2 + y.D + x) / D = z.D + y + x / D = z.D + y + 0 = z.D +
-	 * y
+	 * index / D = (z.D^2 + y.D + x) / D = z.D + y + x / D = z.D + y + 0 = z.D + y
 	 *
 	 * index / D^2 = (index / D) / D = (z.D + y) / D = z + y / D = z
 	 *
@@ -1244,8 +1230,8 @@ public class Terrain {
 	}
 
 	/**
-	 * thoses functions return the left, right, top, bot, front or back terrain
-	 * to this one
+	 * thoses functions return the left, right, top, bot, front or back terrain to
+	 * this one
 	 */
 	public Terrain getNeighbor(int id) {
 
@@ -1321,10 +1307,9 @@ public class Terrain {
 
 	/**
 	 * this function updates the visibility of each face toward another using a
-	 * flood fill algorythm for each cell which werent already visited: - use
-	 * flood fill algorythm, and register which faces are touched by the flood -
-	 * for each of touched faces, set the visibility linked with the others
-	 * touched
+	 * flood fill algorythm for each cell which werent already visited: - use flood
+	 * fill algorythm, and register which faces are touched by the flood - for each
+	 * of touched faces, set the visibility linked with the others touched
 	 */
 
 	/**
@@ -1357,7 +1342,7 @@ public class Terrain {
 		for (int x = 0; x < Terrain.DIMX; x++) {
 			for (int y = 0; y < Terrain.DIMY; y++) {
 				for (int z = 0; z < Terrain.DIMZ; z++) {
-					if (!this.getBlockAt(x, y, z).isOpaque() && flood[x][y][z] == 0) {
+					if (this.getBlockAt(x, y, z).isTransparent() && flood[x][y][z] == 0) {
 						for (int i = 0; i < 6; i++) {
 							touchedByFlood[i] = false;
 						}
@@ -1398,7 +1383,8 @@ public class Terrain {
 								continue;
 							}
 
-							if (this.getBlockAt(pos.x, pos.y, pos.z).isOpaque() || flood[pos.x][pos.y][pos.z] != 0) {
+							if (this.getBlockAt(pos.x, pos.y, pos.z).isTransparent()
+									|| flood[pos.x][pos.y][pos.z] != 0) {
 								// hitted a full block
 								continue;
 							}
@@ -1441,8 +1427,7 @@ public class Terrain {
 	public final void destroy() {
 		this.blocks = null;
 		this.lights = null;
-		this.opaqueBlocks = 0;
-		this.transparentBlocks = 0;
+		this.blockCount = 0;
 		if (this.blockInstances != null) {
 			this.blockInstances.clear();
 			this.blockInstances = null;
@@ -1469,21 +1454,6 @@ public class Terrain {
 	 * @return the number of non-air blocks set in this terrain
 	 */
 	public final int getBlockCount() {
-		return (this.opaqueBlocks + this.transparentBlocks);
+		return (this.blockCount);
 	}
-
-	/**
-	 * @return the number of transparents blocks set in this terrain
-	 */
-	public final int getTransparentBlockCount() {
-		return (this.opaqueBlocks + this.transparentBlocks);
-	}
-
-	/**
-	 * @return the number of opaque blocks set in this terrain
-	 */
-	public final int getOpaqueBlockCount() {
-		return (this.opaqueBlocks + this.transparentBlocks);
-	}
-
 }

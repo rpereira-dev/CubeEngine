@@ -1,10 +1,10 @@
 package com.grillecube.client.renderer.blocks;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMesher;
-import com.grillecube.client.renderer.world.flat.terrain.BlockFace;
+import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
@@ -172,8 +172,8 @@ public abstract class BlockRenderer {
 	public static float[][] FACES_UV = { { 0, 0 }, { 0, 1 }, { 1, 1 }, { 1, 0 } };
 
 	/**
-	 * generate the vertices for the given block, in the given terrain and (x,
-	 * y, z) terrain-relative coordinates.
+	 * generate the vertices for the given block, in the given terrain and (x, y, z)
+	 * terrain-relative coordinates.
 	 *
 	 * If this block has faces (1x1), it should be set: faces[faceID][x][y][z] =
 	 * blockFace, so it can be cull if needed
@@ -182,7 +182,7 @@ public abstract class BlockRenderer {
 	 * stack
 	 */
 	public abstract void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y,
-			int z, BlockFace[][][][] faces, Stack<TerrainMeshTriangle> stack);
+			int z, BlockFace[][][][] faces, ArrayList<TerrainMeshTriangle> stack);
 
 	/** return true if this block has transparency */
 	// public abstract boolean hasTransparency(); //TODO : implement it here,

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Stack;
 
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.MainRenderer;
@@ -13,10 +12,9 @@ import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.world.TerrainMesh;
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
-import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.renderer.world.TerrainRenderer;
-import com.grillecube.client.renderer.world.flat.terrain.FlatTerrainMesherGreedy;
+import com.grillecube.client.renderer.world.flat.FlatTerrainMesherGreedy;
 import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.world.EventTerrainBlocklightUpdate;
 import com.grillecube.common.event.world.EventTerrainDespawn;
@@ -34,13 +32,12 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 
 	class TerrainRenderingData {
 
-		// TODO : optimize this by setting null when ununsed
 		final Terrain terrain;
 		boolean meshUpToDate;
 		final TerrainMesh opaqueMesh; // mesh holding opaque blocks
 		final TerrainMesh transparentMesh; // mesh holding transparent blocks
-		final Stack<TerrainMeshTriangle> opaqueTriangles;
-		final Stack<TerrainMeshTriangle> transparentTriangles;
+		final ArrayList<TerrainMeshTriangle> opaqueTriangles;
+		final ArrayList<TerrainMeshTriangle> transparentTriangles;
 		ByteBuffer vertices;
 		boolean isInFrustrum;
 		Vector3f lastCameraPos;
@@ -50,8 +47,8 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			this.terrain = terrain;
 			this.opaqueMesh = new TerrainMesh(terrain);
 			this.transparentMesh = new TerrainMesh(terrain);
-			this.opaqueTriangles = new Stack<TerrainMeshTriangle>();
-			this.transparentTriangles = new Stack<TerrainMeshTriangle>();
+			this.opaqueTriangles = new ArrayList<TerrainMeshTriangle>();
+			this.transparentTriangles = new ArrayList<TerrainMeshTriangle>();
 			this.meshUpToDate = false;
 			this.lastCameraPos = new Vector3f();
 			this.timer = new Timer();
@@ -80,69 +77,41 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 		}
 
 		void glUpdate(TerrainMesher mesher) {
-			// if mesh need update, regenerate them
-			if (!this.meshUpToDate) {
-				this.updateVertices(mesher);
+			if (this.meshUpToDate) {
+				return;
 			}
+
+			this.meshUpToDate = true;
+			mesher.pushVerticesToStacks(this.terrain, this.opaqueMesh, this.transparentMesh, this.opaqueTriangles,
+					this.transparentTriangles);
+			mesher.setMeshVertices(this.opaqueMesh, this.opaqueTriangles);
+			mesher.setMeshVertices(this.transparentMesh, this.transparentTriangles);
+			this.opaqueTriangles.clear();
+			this.transparentTriangles.clear();
 
 			// TODO : can this be done more properly?
 			// if there is transparent triangles, and camera moved
-			if (!camera.getPosition().equals(this.lastCameraPos) && this.transparentTriangles.size() > 0
-					&& this.timer.getTime() > 0.5d) {
-				this.timer.restart();
-				// sort them back to front of the camera
-				this.transparentTriangles.sort(TRIANGLE_SORT);
-				// update vbo
-				mesher.setMeshVertices(this.transparentMesh, this.transparentTriangles);
-				this.lastCameraPos.set(camera.getPosition());
-			}
+			// if (this.transparentTriangles.size() > 0 &&
+			// !camera.getPosition().equals(this.lastCameraPos)
+			// && this.timer.getTime() > 0.5d) {
+			// this.timer.restart();
+			// // sort them back to front of the camera
+			// for (TerrainMeshTriangle triangle : this.transparentTriangles) {
+			// triangle.calculateCameraDistance(camera);
+			// }
+			// this.transparentTriangles.sort(TRIANGLE_SORT);
+			// // update vbo
+			// mesher.setMeshVertices(this.transparentMesh, this.transparentTriangles);
+			// this.lastCameraPos.set(camera.getPosition());
+			// }
 		}
 
 		Comparator<TerrainMeshTriangle> TRIANGLE_SORT = new Comparator<TerrainMeshTriangle>() {
 			@Override
 			public int compare(TerrainMeshTriangle t1, TerrainMeshTriangle t2) {
-				float cx = camera.getPosition().x;
-				float cy = camera.getPosition().y;
-				float cz = camera.getPosition().z;
-				TerrainMeshVertex v1 = t1.v0;
-				TerrainMeshVertex v2 = t2.v0;
-				double d1 = Vector3f.distanceSquare(cx, cy, cz, v1.posx, v1.posy, v1.posz);
-				double d2 = Vector3f.distanceSquare(cx, cy, cz, v2.posx, v2.posy, v2.posz);
-				return (int) ((d2 - d1) * 10.0f);
+				return (int) (t2.cameraDistance - t1.cameraDistance);
 			}
 		};
-
-		void updateVertices(TerrainMesher mesher) {
-			this.meshUpToDate = true;
-
-			if (this.terrain.getOpaqueBlockCount() == 0) {
-				if (this.opaqueMesh.isInitialized()) {
-					this.opaqueMesh.deinitialize();
-				}
-			} else {
-				if (!this.opaqueMesh.isInitialized()) {
-					this.opaqueMesh.initialize();
-				}
-			}
-
-			if (this.terrain.getTransparentBlockCount() == 0) {
-				if (this.transparentMesh.isInitialized()) {
-					this.transparentMesh.deinitialize();
-				}
-			} else {
-				if (!this.transparentMesh.isInitialized()) {
-					this.transparentMesh.initialize();
-				}
-			}
-			mesher.pushVerticesToStacks(this.terrain, this.opaqueMesh, this.transparentMesh, this.opaqueTriangles,
-					this.transparentTriangles);
-			mesher.setMeshVertices(this.opaqueMesh, this.opaqueTriangles);
-			mesher.setMeshVertices(this.transparentMesh, this.transparentTriangles);
-
-			this.timer.restart();
-			this.lastCameraPos.set(camera.getPosition());
-		}
-
 	}
 
 	/** array list of terrain to render */

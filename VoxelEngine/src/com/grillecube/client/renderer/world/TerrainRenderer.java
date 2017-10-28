@@ -91,24 +91,22 @@ public class TerrainRenderer extends Renderer {
 		this.terrainProgram.loadUniforms(camera, world);
 
 		if (opaqueMeshes != null && opaqueMeshes.size() > 0) {
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			GL11.glCullFace(GL11.GL_BACK);
-			this.drawMeshes(camera, opaqueMeshes);
-			GL11.glDisable(GL11.GL_CULL_FACE);
+			this.drawMeshes(camera, opaqueMeshes, ProgramTerrain.MESH_TYPE_OPAQUE);
 		}
 
 		if (transparentMeshes != null && transparentMeshes.size() > 0) {
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			// bind textures
-			this.drawMeshes(camera, transparentMeshes);
+			this.drawMeshes(camera, transparentMeshes, ProgramTerrain.MESH_TYPE_TRANSPARENT);
 			GL11.glDisable(GL11.GL_BLEND);
 		}
 
 		GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 	}
 
-	private final void drawMeshes(CameraProjective camera, ArrayList<TerrainMesh> transparentMeshes) {
+	private final void drawMeshes(CameraProjective camera, ArrayList<TerrainMesh> transparentMeshes, int meshType) {
+		this.terrainProgram.loadTypeUniform(meshType);
 		for (TerrainMesh mesh : transparentMeshes) {
 			if (!mesh.isInitialized()) {
 				continue;

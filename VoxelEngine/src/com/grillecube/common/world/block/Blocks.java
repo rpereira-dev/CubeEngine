@@ -30,11 +30,7 @@ public class Blocks implements IModResource {
 		Blocks.DIRT = blockmanager.registerBlock(new BlockDirt(blockmanager.getNextID()));
 		Blocks.GRASS = blockmanager.registerBlock(new BlockGrass(blockmanager.getNextID()));
 		Blocks.STONE = blockmanager.registerBlock(new BlockStone(blockmanager.getNextID()));
-		Blocks.LIGHT_TEST = blockmanager.registerBlock(new BlockLight(blockmanager.getNextID()) {
-			public byte getLightValue() {
-				return (15);
-			}
-		});
+		Blocks.LIGHT_TEST = blockmanager.registerBlock(new BlockLight(blockmanager.getNextID()));
 		Blocks.LOG = blockmanager.registerBlock(new BlockLog(blockmanager.getNextID()));
 		Blocks.LEAVES = blockmanager.registerBlock(new BlockLeaves(blockmanager.getNextID()));
 		Blocks.LIQUID_WATER = blockmanager.registerBlock(new BlockLiquidWater(blockmanager.getNextID()));

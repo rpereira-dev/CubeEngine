@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.world.flat.terrain;
+package com.grillecube.client.renderer.world.flat;
 
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;

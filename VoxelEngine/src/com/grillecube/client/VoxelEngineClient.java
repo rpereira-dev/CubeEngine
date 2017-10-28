@@ -15,11 +15,12 @@ import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.Logger;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.EventGetTasks;
+import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.EventOnLoop;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
+import com.grillecube.common.world.Timer;
 
 public class VoxelEngineClient extends VoxelEngine {
 
@@ -66,6 +67,8 @@ public class VoxelEngineClient extends VoxelEngine {
 		File[] files = new File(R.getResPath("textures/blocks/")).listFiles();
 		this.getGLFWWindow().setIcon(files[new Random().nextInt(files.length)]);
 
+		Timer timer = new Timer();
+
 		// event callback
 		this.registerEventCallback(new EventListener<EventOnLoop>() {
 			@Override
@@ -93,9 +96,13 @@ public class VoxelEngineClient extends VoxelEngine {
 					stopRunning();
 				}
 
-				// TODO remove hard sleep here (keep it for tests)
+				timer.update();
 				try {
-					Thread.sleep(12);
+					// ensure 60 fps, not more, not less
+					long toSleep = 1000 / (60 + 20) - (long) (timer.getDt() * 1000) + 1;
+					if (toSleep > 0 && toSleep < 20) {
+						Thread.sleep(toSleep);
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -124,8 +131,7 @@ public class VoxelEngineClient extends VoxelEngine {
 	}
 
 	/**
-	 * a task to be run on a gl context (will be run on the next main thread
-	 * update)
+	 * a task to be run on a gl context (will be run on the next main thread update)
 	 */
 	public final void addGLTask(GLTask glTask) {
 		this.glTasks.add(glTask);

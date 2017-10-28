@@ -1,11 +1,11 @@
 package com.grillecube.client.renderer.blocks;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
-import com.grillecube.client.renderer.world.flat.terrain.BlockFace;
+import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
@@ -32,9 +32,8 @@ public class BlockRendererCube extends BlockRenderer {
 	 *            : the face and texture ID's
 	 * 
 	 *            e.g: new BlockRendererCube(Blocks.GRASS, Face.LEFT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.RIGHT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.FRONT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.BACK,
+	 *            ClientBlocks.T_GRASS_SIDE, Face.RIGHT, ClientBlocks.T_GRASS_SIDE,
+	 *            Face.FRONT, ClientBlocks.T_GRASS_SIDE, Face.BACK,
 	 *            ClientBlocks.T_GRASS_SIDE, Face.TOP, ClientBlocks.T_GRASS_TOP,
 	 *            Face.BOT, ClientBlocks.T_DIRT);
 	 */
@@ -86,7 +85,7 @@ public class BlockRendererCube extends BlockRenderer {
 
 	@Override
 	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
-			BlockFace[][][][] faces, Stack<TerrainMeshTriangle> stack) {
+			BlockFace[][][][] faces, ArrayList<TerrainMeshTriangle> stack) {
 
 		for (Face face : Face.faces) {
 			faces[face.getID()][x][y][z] = this.createBlockFace(terrain, block, face, x, y, z);
@@ -100,9 +99,9 @@ public class BlockRendererCube extends BlockRenderer {
 		// get the neighbor of this face
 		Block neighbor = terrain.getBlock(x + vec.x, y + vec.y, z + vec.z);
 
-		// if the face-neighboor block is visible and opaque
+		// if the face-neighboor block is visible isnt transparent
 		// TODO : find a solution on leaves square
-		if (neighbor.isVisible() && neighbor.isOpaque()) {
+		if (neighbor.isVisible() && !neighbor.isTransparent()) {
 			// the face isnt visible
 			return (null);
 		}
@@ -118,8 +117,8 @@ public class BlockRendererCube extends BlockRenderer {
 	}
 
 	/**
-	 * return the vertex for the given face at the given coordinates, for it
-	 * given id
+	 * return the vertex for the given face at the given coordinates, for it given
+	 * id
 	 */
 	public TerrainMeshVertex createBlockFaceVertex(Terrain terrain, Face face, int x, int y, int z, int vertexID) {
 		Vector3i[] neighboors = FACES_NEIGHBORS[face.getID()][vertexID];

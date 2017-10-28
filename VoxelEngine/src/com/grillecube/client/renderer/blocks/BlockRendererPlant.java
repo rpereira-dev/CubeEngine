@@ -1,11 +1,11 @@
 package com.grillecube.client.renderer.blocks;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
-import com.grillecube.client.renderer.world.flat.terrain.BlockFace;
+import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
@@ -37,11 +37,11 @@ public class BlockRendererPlant extends BlockRenderer {
 
 	@Override
 	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
-			BlockFace[][][][] faces, Stack<TerrainMeshTriangle> stack) {
+			BlockFace[][][][] faces, ArrayList<TerrainMeshTriangle> stack) {
 		for (Face face : Face.faces) {
 			Vector3i vec = face.getVector();
 			Block neighbor = terrain.getBlock(x + vec.x, y + vec.y, z + vec.z);
-			if (!neighbor.isVisible() || !neighbor.isOpaque()) {
+			if (!neighbor.isVisible() || neighbor.isTransparent()) {
 				this.createPlantVertices(terrain, block, x, y, z, stack);
 				break;
 			}
@@ -49,7 +49,7 @@ public class BlockRendererPlant extends BlockRenderer {
 	}
 
 	private final void createPlantVertices(Terrain terrain, Block block, int x, int y, int z,
-			Stack<TerrainMeshTriangle> stack) {
+			ArrayList<TerrainMeshTriangle> stack) {
 		TerrainMeshVertex v0 = this.createBlockFaceVertex(terrain, Face.F_RIGHT, x, y, z, 0);
 		TerrainMeshVertex v1 = this.createBlockFaceVertex(terrain, Face.F_RIGHT, x, y, z, 1);
 		TerrainMeshVertex v2 = this.createBlockFaceVertex(terrain, Face.F_RIGHT, x, y, z, 2);
@@ -59,11 +59,11 @@ public class BlockRendererPlant extends BlockRenderer {
 		TerrainMeshVertex v6 = this.createBlockFaceVertex(terrain, Face.F_FRONT, x, y, z, 2);
 		TerrainMeshVertex v7 = this.createBlockFaceVertex(terrain, Face.F_FRONT, x, y, z, 3);
 
-		stack.push(new TerrainMeshTriangle(v0, v1, v2));
-		stack.push(new TerrainMeshTriangle(v0, v2, v3));
+		stack.add(new TerrainMeshTriangle(v0, v1, v2));
+		stack.add(new TerrainMeshTriangle(v0, v2, v3));
 
-		stack.push(new TerrainMeshTriangle(v4, v5, v6));
-		stack.push(new TerrainMeshTriangle(v4, v6, v7));
+		stack.add(new TerrainMeshTriangle(v4, v5, v6));
+		stack.add(new TerrainMeshTriangle(v4, v6, v7));
 	}
 
 	/**

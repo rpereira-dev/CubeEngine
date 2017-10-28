@@ -1,11 +1,11 @@
 package com.grillecube.client.renderer.blocks;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
-import com.grillecube.client.renderer.world.flat.terrain.BlockFace;
+import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
@@ -22,14 +22,14 @@ public class BlockRendererLiquid extends BlockRendererCube {
 
 	@Override
 	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
-			BlockFace[][][][] faces, Stack<TerrainMeshTriangle> stack) {
+			BlockFace[][][][] faces, ArrayList<TerrainMeshTriangle> stack) {
 		for (Face face : Face.values()) {
 			Vector3i vec = face.getVector();
 			// get the neighbor of this face
 			Block neighbor = terrain.getBlock(x + vec.x, y + vec.y, z + vec.z);
 
 			// if the face-neighboor block is invisible or non opaque
-			if (!neighbor.isVisible() || !neighbor.isOpaque()) {
+			if (!neighbor.isVisible() || neighbor.isTransparent()) {
 				// then add the face
 				this.pushFaceVertices(terrainMesher, terrain, neighbor, stack, x, y, z, face);
 			}
@@ -38,7 +38,7 @@ public class BlockRendererLiquid extends BlockRendererCube {
 
 	/** push vertices for a liquid */
 	private void pushFaceVertices(TerrainMesher mesher, Terrain terrain, Block neighbor,
-			Stack<TerrainMeshTriangle> stack, int x, int y, int z, Face face) {
+			ArrayList<TerrainMeshTriangle> stack, int x, int y, int z, Face face) {
 
 		// get the instance for this block
 		BlockInstanceLiquid instance = (BlockInstanceLiquid) terrain.getBlockInstance(x, y, z);
@@ -80,8 +80,8 @@ public class BlockRendererLiquid extends BlockRendererCube {
 				v3.posy -= unit;
 			}
 		}
-		stack.push(new TerrainMeshTriangle(v0, v1, v2));
-		stack.push(new TerrainMeshTriangle(v0, v2, v3));
+		stack.add(new TerrainMeshTriangle(v0, v1, v2));
+		stack.add(new TerrainMeshTriangle(v0, v2, v3));
 	}
 
 	@Override

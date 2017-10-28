@@ -30,12 +30,34 @@ public class TerrainMesh extends Mesh {
 
 	/** the terrain */
 	private final Terrain terrain;
+	private boolean cull;
 
 	public TerrainMesh(Terrain terrain) {
 		super();
 		this.terrain = terrain;
 		super.getPosition().set(this.terrain.getWorldPos());
 		super.updateTransformationMatrix();
+		this.cull = false;
+	}
+
+	/** return true if this terrain can be gl-culled (GL_BACK_FACE_CULLING) */
+	public final boolean cull() {
+		return (this.cull);
+	}
+
+	/** enable of disable culling for this terrain */
+	public final void cull(boolean cull) { // TODO : enable culling on meshes that are full of standard cubes
+		this.cull = cull;
+	}
+
+	@Override
+	protected void preDraw() {
+		if (this.cull()) {
+			GL11.glEnable(GL11.GL_CULL_FACE);
+			GL11.glCullFace(GL11.GL_BACK);
+		} else {
+			GL11.glDisable(GL11.GL_CULL_FACE);
+		}
 	}
 
 	public Terrain getTerrain() {

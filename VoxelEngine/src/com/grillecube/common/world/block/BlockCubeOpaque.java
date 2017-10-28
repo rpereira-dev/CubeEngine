@@ -28,4 +28,9 @@ public abstract class BlockCubeOpaque extends BlockCube {
 	public boolean isOpaque() {
 		return (true);
 	}
+
+	@Override
+	public boolean hasTransparency() {
+		return (false);
+	}
 }
