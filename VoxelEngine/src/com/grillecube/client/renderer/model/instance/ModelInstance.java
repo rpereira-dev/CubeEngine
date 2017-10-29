@@ -16,9 +16,9 @@ package com.grillecube.client.renderer.model.instance;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import com.grillecube.client.renderer.model.Model;
-import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 import com.grillecube.common.world.entity.Entity;
 
@@ -51,6 +51,7 @@ public class ModelInstance {
 		ModelSkeletonAnimation modelAnimation = model.getAnimation(0);
 		if (modelAnimation != null) {
 			AnimationInstance instance = new AnimationInstance(modelAnimation);
+			instance.setTime(Math.abs(new Random().nextLong()));
 			instance.loop();
 			this.animationInstances.add(instance);
 		}
@@ -98,7 +99,7 @@ public class ModelInstance {
 	}
 
 	/** get the skeleton instance */
-	public ModelSkeleton getSkeleton() {
+	public ModelSkeletonInstance getSkeleton() {
 		return (this.skeleton);
 	}
 

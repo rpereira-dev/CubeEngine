@@ -27,4 +27,10 @@ public class TerrainMeshTriangle extends MeshTriangle<TerrainMeshVertex> {
 		return ((float) Vector3f.distanceSquare(cx, cy, cz, x, y, z));
 	}
 
+	@Override
+	public MeshTriangle<TerrainMeshVertex> clone() {
+		return (new TerrainMeshTriangle((TerrainMeshVertex) this.v0.clone(), (TerrainMeshVertex) this.v1.clone(),
+				(TerrainMeshVertex) this.v2.clone()));
+	}
+
 }

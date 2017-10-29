@@ -10,8 +10,7 @@ import com.grillecube.common.maths.Vector3i;
 public class EditableModel extends Model {
 
 	/**
-	 * the size of a single block of this model (N.B: a terrain block size is
-	 * 1.0f)
+	 * the size of a single block of this model (N.B: a terrain block size is 1.0f)
 	 */
 	private float blockSizeUnit;
 
@@ -33,9 +32,9 @@ public class EditableModel extends Model {
 	private int maxz;
 
 	/**
-	 * the model origin (the origin coordinates, in the model referential), so
-	 * when and entity is located at (x, y, z), the concrete model's block at
-	 * coordinate (x, y, z) is the one at this origin
+	 * the model origin (the origin coordinates, in the model referential), so when
+	 * and entity is located at (x, y, z), the concrete model's block at coordinate
+	 * (x, y, z) is the one at this origin
 	 */
 	private final Vector3i origin;
 
@@ -69,11 +68,10 @@ public class EditableModel extends Model {
 	}
 
 	/**
-	 * the size of a single block of this model (N.B: a terrain block size is
-	 * 1.0f).
+	 * the size of a single block of this model (N.B: a terrain block size is 1.0f).
 	 * 
-	 * Notice that each block of a model has the same size, they are "uniforms"
-	 * to make things easier for now
+	 * Notice that each block of a model has the same size, they are "uniforms" to
+	 * make things easier for now
 	 */
 	public final void setBlockSizeUnit(float size) {
 		this.blockSizeUnit = size;
@@ -84,8 +82,8 @@ public class EditableModel extends Model {
 	}
 
 	/**
-	 * return the block data at given coordinates relatively to the model basis
-	 * (0 == model center)
+	 * return the block data at given coordinates relatively to the model basis (0
+	 * == model center)
 	 * 
 	 * @param x
 	 * @param y
@@ -115,8 +113,8 @@ public class EditableModel extends Model {
 
 	/**
 	 * set the block data for this model, may cause crash if capacity isnt
-	 * enough, @see {@link #setBlockData(ModelBlockData, int, int, int)} to
-	 * ensure the capacity automatically
+	 * enough, @see {@link #setBlockData(ModelBlockData, int, int, int)} to ensure
+	 * the capacity automatically
 	 */
 	public final void setBlockDataUncheck(ModelBlockData blockData) {
 		int x = blockData.getX();
@@ -202,9 +200,7 @@ public class EditableModel extends Model {
 	}
 
 	@Override
-	public void preRender() {
-		super.preRender();
-
+	protected void onBound() {
 		if (!this.meshUpToDate) {
 			this.modelMesher.generate(this);
 			this.meshUpToDate = true;

@@ -9,4 +9,6 @@ public abstract class MeshVertex {
 
 	public abstract void store(ByteBuffer buffer);
 
+	public abstract MeshVertex clone();
+
 }

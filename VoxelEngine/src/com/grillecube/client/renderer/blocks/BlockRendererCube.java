@@ -8,7 +8,6 @@ import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
-import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.terrain.Terrain;
@@ -144,18 +143,10 @@ public class BlockRendererCube extends BlockRenderer {
 		float ao = this.getVertexAO(terrain, side1, side2, corner);
 
 		// the block light
-		byte l1, l2, l3;
-
-		l1 = terrain.getBlockLight(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
-		l2 = terrain.getBlockLight(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
-		l3 = terrain.getBlockLight(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
-		float blockLight = (l1 + l2 + l3) / (3.0f * 16.0f);
+		float blockLight = super.getBlockLight(terrain, x, y, z, neighboors);
 
 		// the sun light
-		l1 = terrain.getSunLight(x + neighboors[0].x, y + Maths.abs(neighboors[0].y), z + neighboors[0].z);
-		l2 = terrain.getSunLight(x + neighboors[1].x, y + Maths.abs(neighboors[1].y), z + neighboors[1].z);
-		l3 = terrain.getSunLight(x + neighboors[2].x, y + Maths.abs(neighboors[2].y), z + neighboors[2].z);
-		float sunLight = (l1 + l2 + l3) / (3.0f * 16.0f);
+		float sunLight = super.getSunLight(terrain, x, y, z, neighboors);
 
 		// final brightness
 		float brightness = 0.1f + sunLight + blockLight - ao;
@@ -165,7 +156,10 @@ public class BlockRendererCube extends BlockRenderer {
 
 		// light color
 		int color = 0xFFFFFFFF;// ColorInt.get(255, 255, 255, 255);
-		return (new TerrainMeshVertex(px, py, pz, face.getNormal(), atlasX, atlasY, uvx, uvy, color, brightness, ao));
+		float nx = face.getNormal().x;
+		float ny = face.getNormal().y;
+		float nz = face.getNormal().z;
+		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, uvx, uvy, color, brightness, ao));
 	}
 
 	// the float returned is the ratio of black which will be used for this
@@ -176,9 +170,9 @@ public class BlockRendererCube extends BlockRenderer {
 	protected static final float AO_3 = 0.18f;
 
 	protected float getVertexAO(Terrain terrain, Block side1, Block side2, Block corner) {
-		boolean s1 = side1.isVisible();
-		boolean s2 = side2.isVisible();
-		boolean c = corner.isVisible();
+		boolean s1 = side1.isVisible() && !side1.isTransparent();
+		boolean s2 = side2.isVisible() && !side2.isTransparent();
+		boolean c = corner.isVisible() && !corner.isTransparent();
 		if (s1 && s2) {
 			return (AO_3);
 		}

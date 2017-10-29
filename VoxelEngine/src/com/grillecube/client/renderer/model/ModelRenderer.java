@@ -72,14 +72,11 @@ public class ModelRenderer extends Renderer {
 			for (ArrayList<ModelInstance> models : renderingList.values()) {
 				if (models.size() > 0) {
 					Model model = models.get(0).getModel();
-					model.preRender();
-					ModelMesh mesh = model.getMesh();
+					model.bind();
 					this.programModel.loadModel(model);
-					mesh.bind();
 					for (ModelInstance instance : models) {
-						model.getSkin(instance.getSkinID()).bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
 						this.programModel.loadModelInstance(instance);
-						mesh.drawElements();
+						model.draw();
 					}
 				}
 			}

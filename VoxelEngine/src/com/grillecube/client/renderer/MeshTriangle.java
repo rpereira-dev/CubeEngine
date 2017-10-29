@@ -2,7 +2,7 @@ package com.grillecube.client.renderer;
 
 import java.nio.ByteBuffer;
 
-public class MeshTriangle<T extends MeshVertex> {
+public abstract class MeshTriangle<T extends MeshVertex> {
 
 	public final T v0;
 	public final T v1;
@@ -20,4 +20,6 @@ public class MeshTriangle<T extends MeshVertex> {
 		this.v1.store(buffer);
 		this.v2.store(buffer);
 	}
+
+	public abstract MeshTriangle<T> clone();
 }

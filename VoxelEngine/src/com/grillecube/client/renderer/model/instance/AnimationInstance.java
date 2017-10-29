@@ -33,15 +33,7 @@ public class AnimationInstance {
 			return;
 		}
 
-		long duration = this.animation.getDuration();
-		this.time += dt;
-		if (this.time >= duration) {
-			if (this.state == STATE_LOOP) {
-				this.time %= duration;
-			} else {
-				this.state = STATE_STOP;
-			}
-		}
+		this.setTime(this.time + dt);
 	}
 
 	/** freeze the animation */
@@ -89,5 +81,17 @@ public class AnimationInstance {
 
 	public long getTime() {
 		return (this.time);
+	}
+
+	public void setTime(long t) {
+		long duration = this.animation.getDuration();
+		this.time = t;
+		if (this.time >= duration) {
+			if (this.state == STATE_LOOP) {
+				this.time %= duration;
+			} else {
+				this.state = STATE_STOP;
+			}
+		}
 	}
 }

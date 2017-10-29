@@ -147,10 +147,26 @@ public class Model {
 		return (this.modelInitializer);
 	}
 
-	/** to be called before the model is rendered, in a GL context */
-	public void preRender() {
+	/** bind this model before rendering */
+	public final void bind() {
 		if (!this.isInitialized()) {
 			this.initialize();
 		}
+		this.getMesh().bind();
+		this.onBound();
+	}
+
+	/** bound callback */
+	protected void onBound() {
+	}
+
+	/** draw the mesh */
+	public final void draw() {
+		this.getMesh().drawElements();
+		this.onDraw();
+	}
+
+	/** draw callback */
+	protected void onDraw() {
 	}
 }

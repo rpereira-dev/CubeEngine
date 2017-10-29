@@ -171,7 +171,7 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 			this.getFBO().bind();
 			this.getFBO().clear();
 
-			// TODO change viewport here to have it modular
+			// change viewport here to have it modular
 			this.getFBO().viewport(0, 0, this.width, this.height);
 
 			super.render();

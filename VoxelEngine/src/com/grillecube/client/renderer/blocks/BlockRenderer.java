@@ -7,6 +7,7 @@ import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
+import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.terrain.Terrain;
@@ -196,6 +197,24 @@ public abstract class BlockRenderer {
 	/** return the y texture coodinates for this textureID */
 	public int getAtlasY(int textureID) {
 		return (textureID / BlockRendererManager.TEXTURE_PER_LINE);
+	}
+
+	/** get block light by getting the average of neighboors blocks */
+	public float getBlockLight(Terrain terrain, int x, int y, int z, Vector3i... neighboors) {
+		float blockLight = 0.0f;
+		for (Vector3i n : neighboors) {
+			blockLight += terrain.getBlockLight(x + n.x, y + n.y, z + n.z);
+		}
+		return (blockLight / (neighboors.length * 16.0f));
+	}
+
+	/** get block light by getting the average of neighboors blocks */
+	public float getSunLight(Terrain terrain, int x, int y, int z, Vector3i... neighboors) {
+		float sunLight = 0.0f;
+		for (Vector3i n : neighboors) {
+			sunLight += terrain.getSunLight(x + n.x, y + Maths.abs(n.y), z + n.z);
+		}
+		return (sunLight / (neighboors.length * 16.0f));
 	}
 
 }

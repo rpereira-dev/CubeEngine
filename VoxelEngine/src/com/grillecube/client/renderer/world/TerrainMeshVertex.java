@@ -17,7 +17,6 @@ package com.grillecube.client.renderer.world;
 import java.nio.ByteBuffer;
 
 import com.grillecube.client.renderer.MeshVertex;
-import com.grillecube.common.maths.Vector3f;
 
 public class TerrainMeshVertex extends MeshVertex {
 
@@ -43,17 +42,17 @@ public class TerrainMeshVertex extends MeshVertex {
 		super();
 	}
 
-	public TerrainMeshVertex(float posx, float posy, float posz, Vector3f normal, float atlasX, float atlasY, float uvx,
-			float uvy, int color, float brightness, float ao) {
+	public TerrainMeshVertex(float posx, float posy, float posz, float normalx, float normaly, float normalz,
+			float atlasX, float atlasY, float uvx, float uvy, int color, float brightness, float ao) {
 		super();
 
 		this.posx = posx;
 		this.posy = posy;
 		this.posz = posz;
 
-		this.normalx = normal.x;
-		this.normaly = normal.y;
-		this.normalz = normal.z;
+		this.normalx = normalx;
+		this.normaly = normaly;
+		this.normalz = normalz;
 
 		this.atlasX = atlasX;
 		this.atlasY = atlasY;
@@ -79,6 +78,11 @@ public class TerrainMeshVertex extends MeshVertex {
 		buffer.putFloat(this.uvy);
 		buffer.putInt(this.color);
 		buffer.putFloat(this.brightness);
+	}
 
+	@Override
+	public MeshVertex clone() {
+		return (new TerrainMeshVertex(this.posx, this.posy, this.posz, this.normalx, this.normaly, this.normalz,
+				this.atlasX, this.atlasY, this.uvx, this.uvy, this.color, this.brightness, this.ao));
 	}
 }

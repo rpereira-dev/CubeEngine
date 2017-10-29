@@ -34,7 +34,7 @@ public class ProgramModel extends GLProgram {
 	private int transfMatrix;
 	private int[] jointTransforms;
 
-	private int diffuseMap;
+	private int skinTexture;
 
 	public ProgramModel() {
 		super();
@@ -62,7 +62,7 @@ public class ProgramModel extends GLProgram {
 			this.jointTransforms[i] = super.getUniform("jointTransforms[" + i + "]");
 		}
 
-		this.diffuseMap = super.getUniform("diffuseMap");
+		this.skinTexture = super.getUniform("skinTexture");
 	}
 
 	public void loadCamera(CameraProjective camera) {
@@ -91,7 +91,6 @@ public class ProgramModel extends GLProgram {
 		// the skin
 		ModelSkin skin = modelInstance.getModel().getSkin(modelInstance.getSkinID());
 		skin.bind(GL13.GL_TEXTURE1, GL11.GL_TEXTURE_2D);
-		this.loadUniformInteger(this.diffuseMap, 1);
-
+		this.loadUniformInteger(this.skinTexture, 1);
 	}
 }

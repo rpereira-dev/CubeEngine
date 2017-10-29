@@ -26,9 +26,6 @@ public class Bone {
 	private final Matrix4f localBindTransform;
 	private final Matrix4f inverseBindTransform;
 
-	/** joint transformation matrix */
-	private final Matrix4f animatedTransform;
-
 	/**
 	 * @param id
 	 *            - the joint's index (ID).
@@ -43,7 +40,6 @@ public class Bone {
 		this.modelSkeleton = modelSkeleton;
 		this.name = name;
 		this.parentName = parentName;
-		this.animatedTransform = new Matrix4f();
 		this.localBindTransform = new Matrix4f(localBindTransform);
 		this.inverseBindTransform = new Matrix4f();
 	}
@@ -54,38 +50,9 @@ public class Bone {
 	}
 
 	/**
-	 * The animated transform is the transform that gets loaded up to the shader
-	 * and is used to deform the vertices of the "skin". It represents the
-	 * transformation from the joint's bind position (original position in
-	 * model-space) to the joint's desired animation pose (also in model-space).
-	 * This matrix is calculated by taking the desired model-space transform of
-	 * the joint and multiplying it by the inverse of the starting model-space
-	 * transform of the joint.
-	 * 
-	 * @return The transformation matrix of the joint which is used to deform
-	 *         associated vertices of the skin in the shaders.
-	 */
-	public final Matrix4f getTransformation() {
-		return (this.animatedTransform);
-	}
-
-	/**
-	 * This method allows those all important "joint transforms" (as I referred
-	 * to them in the tutorial) to be set by the animator. This is used to put
-	 * the joints of the animated model in a certain pose.
-	 * 
-	 * @param animationTransform
-	 *            - the new joint transform.
-	 */
-	public final void setAnimationTransform(Matrix4f animationTransform) {
-		this.animatedTransform.set(animationTransform);
-	}
-
-	/**
 	 * Adds a child joint to this joint. Used during the creation of the joint
-	 * hierarchy. Bones can have multiple children, which is why they are stored
-	 * in a list (e.g. a "hand" joint may have multiple "finger" children
-	 * joints).
+	 * hierarchy. Bones can have multiple children, which is why they are stored in
+	 * a list (e.g. a "hand" joint may have multiple "finger" children joints).
 	 * 
 	 * @param child
 	 *            - the new child joint of this joint.
@@ -124,11 +91,11 @@ public class Bone {
 	}
 
 	/**
-	 * This returns the inverted model-space bind transform. The bind transform
-	 * is the original model-space transform of the joint (when no animation is
-	 * applied). This returns the inverse of that, which is used to calculate
-	 * the animated transform matrix which gets used to transform vertices in
-	 * the shader.
+	 * This returns the inverted model-space bind transform. The bind transform is
+	 * the original model-space transform of the joint (when no animation is
+	 * applied). This returns the inverse of that, which is used to calculate the
+	 * animated transform matrix which gets used to transform vertices in the
+	 * shader.
 	 * 
 	 * @return The inverse of the joint's bind transform (in model-space).
 	 */
@@ -137,20 +104,18 @@ public class Bone {
 	}
 
 	/**
-	 * This is called during set-up, after the joints hierarchy has been
-	 * created. This calculates the model-space bind transform of this joint
-	 * like so: </br>
+	 * This is called during set-up, after the joints hierarchy has been created.
+	 * This calculates the model-space bind transform of this joint like so: </br>
 	 * </br>
 	 * {@code bindTransform = parentBindTransform * localBindTransform}</br>
 	 * </br>
 	 * where "bindTransform" is the model-space bind transform of this joint,
-	 * "parentBindTransform" is the model-space bind transform of the parent
-	 * joint, and "localBindTransform" is the bone-space bind transform of this
-	 * joint. It then calculates and stores the inverse of this model-space bind
-	 * transform, for use when calculating the final animation transform each
-	 * frame. It then recursively calls the method for all of the children
-	 * joints, so that they too calculate and store their inverse bind-pose
-	 * transform.
+	 * "parentBindTransform" is the model-space bind transform of the parent joint,
+	 * and "localBindTransform" is the bone-space bind transform of this joint. It
+	 * then calculates and stores the inverse of this model-space bind transform,
+	 * for use when calculating the final animation transform each frame. It then
+	 * recursively calls the method for all of the children joints, so that they too
+	 * calculate and store their inverse bind-pose transform.
 	 * 
 	 * @param parentBindTransform
 	 *            - the model-space bind transform of the parent joint.

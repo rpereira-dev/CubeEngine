@@ -86,10 +86,7 @@ public class BlockRendererPlant extends BlockRenderer {
 		// get light value
 
 		// the ambiant occlusion
-		Block side1 = terrain.getBlock(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
-		Block side2 = terrain.getBlock(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
-		Block corner = terrain.getBlock(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
-		float ao = 0;// this.getVertexAO(terrain, side1, side2, corner);
+		float ao = 0;
 
 		// the block light
 		byte l1, l2, l3;
@@ -113,6 +110,9 @@ public class BlockRendererPlant extends BlockRenderer {
 
 		// light color
 		int color = 0xFFFFFFFF;// ColorInt.get(255, 255, 255, 255);
-		return (new TerrainMeshVertex(px, py, pz, face.getNormal(), atlasX, atlasY, uvx, uvy, color, brightness, ao));
+		float nx = face.getNormal().x;
+		float ny = face.getNormal().y;
+		float nz = face.getNormal().z;
+		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, uvx, uvy, color, brightness, ao));
 	}
 }
