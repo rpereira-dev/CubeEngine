@@ -22,8 +22,8 @@ import java.util.HashMap;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.animations.GuiAnimation;
-import com.grillecube.client.renderer.gui.animations.GuiAnimationAddChild;
-import com.grillecube.client.renderer.gui.animations.GuiAnimationRemoveChild;
+import com.grillecube.client.renderer.gui.animations.GuiAnimationFadeIn;
+import com.grillecube.client.renderer.gui.animations.GuiAnimationFadeOut;
 import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
 import com.grillecube.client.renderer.gui.event.GuiEvent;
 import com.grillecube.client.renderer.gui.event.GuiEventAddChild;
@@ -929,11 +929,11 @@ public abstract class Gui {
 	}
 
 	public void fadeOut(double t) {
-		this.getParent().startAnimation(new GuiAnimationRemoveChild<Gui, Gui>(this, 0.15d));
+		this.getParent().startAnimation(new GuiAnimationFadeOut<Gui, Gui>(this, 0.15d));
 	}
 
 	public void fadeIn(Gui parent, double t) {
-		parent.startAnimation(new GuiAnimationAddChild<Gui, Gui>(this, 0.15d));
+		parent.startAnimation(new GuiAnimationFadeIn<Gui, Gui>(this, 0.15d));
 	}
 
 	/**

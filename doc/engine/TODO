@@ -1,0 +1,5 @@
+Document core engine
+
+- abstract engine / client engine / server engine
+- thread pool
+- client engine: opengl single thread (GLTasks, Tasks...)

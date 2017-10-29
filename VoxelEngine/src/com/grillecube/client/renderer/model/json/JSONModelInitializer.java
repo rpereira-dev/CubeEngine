@@ -78,8 +78,6 @@ public class JSONModelInitializer implements ModelInitializer {
 
 			ModelSkeleton modelSkeleton = model.getSkeleton();
 			JSONObject skeleton = new JSONObject(JSONHelper.readFile(skeletonPath));
-			// get the root bone
-			modelSkeleton.setRootBone(skeleton.getString("rootBone"));
 
 			// get all bones
 			JSONArray jsonBones = skeleton.getJSONArray("bones");
@@ -101,7 +99,10 @@ public class JSONModelInitializer implements ModelInitializer {
 				String boneParentName = jsonBone.has("parentName") ? jsonBone.getString("parentName") : null;
 
 				// add the bone
-				Bone bone = modelSkeleton.addBone(boneName, boneParentName, boneBindTransform);
+				Bone bone = new Bone(modelSkeleton, boneName);
+				bone.setParent(boneParentName);
+				bone.setLocalBindTransform(boneBindTransform);
+				modelSkeleton.addBone(bone);
 
 				// set children
 				JSONArray childrenNames = jsonBone.has("childrenNames") ? jsonBone.getJSONArray("childrenNames") : null;
@@ -114,7 +115,9 @@ public class JSONModelInitializer implements ModelInitializer {
 			}
 
 			// finally, calculate bind matrices recursively
-			modelSkeleton.getRootBone().calcInverseBindTransform(Matrix4f.IDENTITY);
+			for (Bone bone : modelSkeleton.getRootBones()) {
+				bone.calcInverseBindTransform(Matrix4f.IDENTITY);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace(Logger.get().getPrintStream());

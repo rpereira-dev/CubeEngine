@@ -27,20 +27,16 @@ public class Bone {
 	private final Matrix4f inverseBindTransform;
 
 	/**
-	 * @param id
-	 *            - the joint's index (ID).
+	 * @param ModelSkeleton
+	 *            : the parent skeleton
 	 * @param name
-	 *            - the name of the joint. This is how the joint is named in the
-	 *            collada file, and so is used to identify which joint a joint
-	 *            transform in an animation keyframe refers to.
-	 * @param bindLocalTransform
-	 *            - the bone-space transform of the joint in the bind position.
+	 *            - the name of the bone
 	 */
-	public Bone(ModelSkeleton modelSkeleton, String name, String parentName, Matrix4f localBindTransform) {
+	public Bone(ModelSkeleton modelSkeleton, String name) {
 		this.modelSkeleton = modelSkeleton;
 		this.name = name;
-		this.parentName = parentName;
-		this.localBindTransform = new Matrix4f(localBindTransform);
+		this.parentName = null;
+		this.localBindTransform = new Matrix4f();
 		this.inverseBindTransform = new Matrix4f();
 	}
 
@@ -82,7 +78,7 @@ public class Bone {
 		return (this.childrenNames);
 	}
 
-	public final void setParentName(String parentName) {
+	public final void setParent(String parentName) {
 		this.parentName = parentName;
 	}
 
@@ -103,19 +99,16 @@ public class Bone {
 		return (this.inverseBindTransform);
 	}
 
+	public void setLocalBindTransform(Matrix4f setLocalBindTransform) {
+		this.localBindTransform.set(setLocalBindTransform);
+	}
+
 	/**
-	 * This is called during set-up, after the joints hierarchy has been created.
-	 * This calculates the model-space bind transform of this joint like so: </br>
-	 * </br>
-	 * {@code bindTransform = parentBindTransform * localBindTransform}</br>
-	 * </br>
-	 * where "bindTransform" is the model-space bind transform of this joint,
-	 * "parentBindTransform" is the model-space bind transform of the parent joint,
-	 * and "localBindTransform" is the bone-space bind transform of this joint. It
-	 * then calculates and stores the inverse of this model-space bind transform,
-	 * for use when calculating the final animation transform each frame. It then
-	 * recursively calls the method for all of the children joints, so that they too
-	 * calculate and store their inverse bind-pose transform.
+	 * 
+	 * @see #Bone{@link #calcInverseBindTransform()}
+	 * 
+	 *      It then recursively calls the method for all of the children joints, so
+	 *      that they too calculate and store their inverse bind-pose transform.
 	 * 
 	 * @param parentBindTransform
 	 *            - the model-space bind transform of the parent joint.
@@ -128,6 +121,35 @@ public class Bone {
 				this.modelSkeleton.getBone(childName).calcInverseBindTransform(bindTransform);
 			}
 		}
+	}
+
+	/**
+	 * This is called during set-up, after the joints hierarchy has been created.
+	 * This calculates the model-space bind transform of this joint like so: </br>
+	 * </br>
+	 * {@code bindTransform = parentBindTransform * localBindTransform}</br>
+	 * </br>
+	 * where "bindTransform" is the model-space bind transform of this joint,
+	 * "parentBindTransform" is the model-space bind transform of the parent joint,
+	 * and "localBindTransform" is the bone-space bind transform of this joint. It
+	 * then calculates and stores the inverse of this model-space bind transform,
+	 * for use when calculating the final animation transform each frame.
+	 * 
+	 * This method should be called to calculate only one specific bone
+	 * bindTransform (basically, when this bone referential changes, but the rest of
+	 * the bones in the skeleton remain un-changed)
+	 * 
+	 * To calculate very bind transform matrices more efficiently, call
+	 * {@link #calcInverseBindTransform(Matrix4f.IDENTITY)} on the root bone.
+	 */
+	public void calcInverseBindTransform() {
+		Matrix4f bindTransform = new Matrix4f();
+		Bone parent = this;
+		do {
+			Matrix4f.mul(parent.localBindTransform, bindTransform, bindTransform);
+			parent = this.modelSkeleton.getBone(parent.getParentName());
+		} while (parent != null && parent.getParentName() != null);
+		Matrix4f.invert(bindTransform, this.inverseBindTransform);
 	}
 
 	public interface BoneTraveller {

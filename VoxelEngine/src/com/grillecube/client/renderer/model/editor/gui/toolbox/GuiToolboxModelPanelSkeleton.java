@@ -6,6 +6,9 @@ import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiSliderBar;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
+import com.grillecube.client.renderer.gui.event.GuiEventClick;
+import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
@@ -53,6 +56,14 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.addBone.setBox(0.0f, 0.70f, 1 / 3.0f, 0.05f, 0.0f);
 			this.addBone.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 			this.addBone.addTextParameter(new GuiTextParameterTextCenterBox());
+			this.addBone.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
+				@Override
+				public void invoke(GuiEventClick<GuiButton> event) {
+					Bone bone = new Bone(getModel().getSkeleton(), (System.currentTimeMillis() % 10000) + "");
+					getModelSkeleton().addBone(bone);
+					refresh();
+				}
+			});
 
 			this.bones.setHint("Bones...");
 			this.bones.setBox(1 / 3.0f, 0.70f, 1 / 3.0f, 0.05f, 0);
@@ -61,6 +72,13 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.removeBone.setBox(2 * 1 / 3.0f, 0.70f, 1 / 3.0f, 0.05f, 0.0f);
 			this.removeBone.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 			this.removeBone.addTextParameter(new GuiTextParameterTextCenterBox());
+			this.removeBone.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
+				@Override
+				public void invoke(GuiEventClick<GuiButton> event) {
+					getModelSkeleton().removeBone(getSelectedBone());
+					refresh();
+				}
+			});
 		}
 
 		{
@@ -120,7 +138,12 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 
 	@Override
 	public void refresh() {
-		if (this.getBone() == null) {
+		this.bones.removeAll();
+		for (Bone bone : this.getModelSkeleton().getBones()) {
+			this.bones.add(bone, bone.getName());
+		}
+
+		if (this.bones.count() == 0) {
 			this.boneTransformLabel.setVisible(false);
 			this.posX.setVisible(false);
 			this.posY.setVisible(false);
@@ -128,10 +151,16 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.rotX.setVisible(false);
 			this.rotY.setVisible(false);
 			this.rotZ.setVisible(false);
+		} else {
+			this.bones.pick(0);
 		}
 	}
 
-	private final Bone getBone() {
+	public final ModelSkeleton getModelSkeleton() {
+		return (this.getModel().getSkeleton());
+	}
+
+	private final Bone getSelectedBone() {
 		return ((Bone) this.bones.getPickedObject());
 	}
 

@@ -10,7 +10,6 @@ import com.grillecube.client.renderer.model.animation.BoneTransform;
 import com.grillecube.client.renderer.model.animation.KeyFrame;
 import com.grillecube.common.maths.Matrix4f;
 
-//TODO : bone instances
 public class ModelSkeletonInstance {
 
 	private final ModelSkeleton modelSkeleton;
@@ -39,7 +38,9 @@ public class ModelSkeletonInstance {
 			KeyFrame prev = frames[0];
 			KeyFrame next = frames[1];
 			HashMap<String, Matrix4f> currentPose = this.interpolateFrames(animationInstance, prev, next);
-			this.applyPoseToBones(currentPose, this.getSkeleton().getRootBone(), Matrix4f.IDENTITY);
+			for (Bone bone : this.getSkeleton().getRootBones()) {
+				this.applyPoseToBones(currentPose, bone, Matrix4f.IDENTITY);
+			}
 		}
 	}
 

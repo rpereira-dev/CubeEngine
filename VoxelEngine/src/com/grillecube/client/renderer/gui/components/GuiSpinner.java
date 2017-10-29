@@ -8,6 +8,7 @@ import com.grillecube.client.renderer.gui.event.GuiSpinnerEventAdd;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventExpanded;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventRemove;
+import com.grillecube.client.renderer.gui.event.GuiSpinnerEventRemoveAll;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventSorted;
 import com.grillecube.common.utils.Pair;
 
@@ -90,6 +91,17 @@ public abstract class GuiSpinner extends Gui {
 		this.values.sort(comparator);
 		this.onObjectsSorted();
 		super.stackEvent(new GuiSpinnerEventSorted<GuiSpinner>(this));
+	}
+
+	/** remove every items of this spinner */
+	public final void removeAll() {
+		this.values.clear();
+		this.onObjectsRemoved();
+		super.stackEvent(new GuiSpinnerEventRemoveAll<GuiSpinner>(this));
+	}
+
+	/** callback when #GuiSpinner{@link #removeAll()} is called */
+	protected void onObjectsRemoved() {
 	}
 
 	/** pick the given index */

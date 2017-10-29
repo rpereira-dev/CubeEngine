@@ -1,0 +1,9 @@
+Document how terrains are stored / rendered
+
+- single terrain representation, world hashmap
+- block compression
+- block instances
+- lighting
+- meshing (stupid, culling, greedy)
+- block renderer (water example)
+- Transparency: opaque vs transparent blocks, how to render them in opengl

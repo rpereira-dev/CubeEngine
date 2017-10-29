@@ -55,7 +55,7 @@ public class GuiToolboxModel extends GuiView {
 		this.title = new GuiLabel();
 		this.title.setBox(1 / 3.0f, 0.75f, 2 / 3.0f, 0.05f, 0);
 		this.title.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
-		this.title.addTextParameter(center);
+		// this.title.addTextParameter(center);
 		this.addChild(this.title);
 
 		this.next = new GuiButton();
@@ -79,6 +79,12 @@ public class GuiToolboxModel extends GuiView {
 		this.panels.add(new GuiToolboxModelPanelBuild());
 		this.panels.add(new GuiToolboxModelPanelSkin());
 		this.panels.add(new GuiToolboxModelPanelSkeleton());
+
+		for (GuiToolboxModelPanel panel : this.panels) {
+			panel.setVisible(false);
+			this.addChild(panel);
+		}
+
 		this.panels.get(0).fadeIn(this, 0.15d);
 
 		this.refresh();

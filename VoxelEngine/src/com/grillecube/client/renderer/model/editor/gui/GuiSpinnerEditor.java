@@ -60,7 +60,6 @@ public class GuiSpinnerEditor extends GuiSpinner {
 	}
 
 	private void refreshButtons() {
-
 		// update title
 		this.title.setSelectable(this.count() != 0);
 		this.title.setSelected(this.isExpanded() && this.title.isSelectable());
@@ -104,6 +103,16 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		GuiButton guiButton = this.guiButtons.remove(this.guiButtons.size() - 1);
 		this.removeChild(guiButton);
 		guiButton.deinitialize();
+		this.refreshButtons();
+	}
+
+	@Override
+	protected void onObjectsRemoved() {
+		for (GuiButton btn : this.guiButtons) {
+			this.removeChild(btn);
+			btn.deinitialize();
+		}
+		this.guiButtons.clear();
 		this.refreshButtons();
 	}
 

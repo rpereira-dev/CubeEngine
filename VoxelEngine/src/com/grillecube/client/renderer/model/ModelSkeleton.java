@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.grillecube.client.renderer.model.animation.Bone;
-import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.Logger;
 
 public class ModelSkeleton {
 
 	/** root bone instance */
 	private final HashMap<String, Bone> bonesMap;
 	private final ArrayList<Bone> bonesList;
-	private String rootBone;
+	private ArrayList<Bone> rootBones;
 
 	public ModelSkeleton() {
-		this.rootBone = null;
+		this.rootBones = new ArrayList<Bone>();
 		this.bonesMap = new HashMap<String, Bone>();
 		this.bonesList = new ArrayList<Bone>();
 	}
@@ -22,35 +22,19 @@ public class ModelSkeleton {
 	public ModelSkeleton(ModelSkeleton skeleton) {
 		this.bonesMap = new HashMap<String, Bone>(skeleton.bonesMap);
 		this.bonesList = new ArrayList<Bone>(skeleton.bonesList);
-		this.rootBone = skeleton.rootBone;
+		this.rootBones = skeleton.rootBones;
 	}
 
 	/**
-	 * @return : the root bone
+	 * @return : the root bones names
 	 */
-	public final Bone getRootBone() {
-		return (this.bonesMap.get(this.rootBone));
-	}
-
-	/**
-	 * @return : the root bone name
-	 */
-	public final String getRootBoneName() {
-		return (this.rootBone);
+	public final ArrayList<Bone> getRootBones() {
+		return (this.rootBones);
 	}
 
 	/** get the number of bones for this skeleton */
 	public final int getJointCount() {
 		return (this.bonesMap.size());
-	}
-
-	/**
-	 * set the root bone of this model skeleton
-	 * 
-	 * @param rootBoneName
-	 */
-	public final void setRootBone(String rootBoneName) {
-		this.rootBone = rootBoneName;
 	}
 
 	/**
@@ -61,12 +45,14 @@ public class ModelSkeleton {
 	 * @param boneBindLocalTransform
 	 * @return
 	 */
-	public final Bone addBone(String boneName, String boneParentName, Matrix4f boneBindLocalTransform) {
-		Bone bone = new Bone(this, boneName, boneParentName, boneBindLocalTransform);
+	public final void addBone(Bone bone) {
 		this.bonesMap.put(bone.getName(), bone);
 		bone.setID(this.bonesList.size());
 		this.bonesList.add(bone);
-		return (bone);
+		if (bone.getParentName() == null) {
+			Logger.get().log(Logger.Level.DEBUG, "added a root bone (" + bone.getName() + ") to a ModelSkeleton");
+			this.rootBones.add(bone);
+		}
 	}
 
 	/** get a bone by it name */
@@ -75,7 +61,7 @@ public class ModelSkeleton {
 	}
 
 	/** remove a bone */
-	private final void removeBone(Bone bone) {
+	public final void removeBone(Bone bone) {
 		this.bonesMap.remove(bone.getName());
 
 		int boneID = bone.getID();
