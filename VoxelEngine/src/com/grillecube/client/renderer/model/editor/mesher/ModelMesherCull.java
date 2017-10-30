@@ -280,9 +280,9 @@ public class ModelMesherCull extends ModelMesher {
 		int y = modelBlockData.getY();
 		int z = modelBlockData.getZ();
 
-		vertex.x = (x + BlockRenderer.FACES_EDGES[face.getID()][vertexID].x) * sizeUnit;
-		vertex.y = (y + BlockRenderer.FACES_EDGES[face.getID()][vertexID].y) * sizeUnit;
-		vertex.z = (z + BlockRenderer.FACES_EDGES[face.getID()][vertexID].z) * sizeUnit;
+		vertex.x = (x + BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[face.getID()][vertexID]].x) * sizeUnit;
+		vertex.y = (y + BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[face.getID()][vertexID]].y) * sizeUnit;
+		vertex.z = (z + BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[face.getID()][vertexID]].z) * sizeUnit;
 
 		vertex.uvx = uvx;
 		vertex.uvy = uvy;
