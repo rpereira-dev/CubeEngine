@@ -91,9 +91,11 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 								TerrainMeshVertex vertex = face.vertices[i];
 
 								vertex.posx = x * Terrain.BLOCK_SIZE
-										+ BlockRenderer.FACES_VERTICES[faceID][i].x * Terrain.BLOCK_SIZE * width;
+										+ BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[faceID][i]].x
+												* Terrain.BLOCK_SIZE * width;
 								vertex.posz = z * Terrain.BLOCK_SIZE
-										+ BlockRenderer.FACES_VERTICES[faceID][i].z * Terrain.BLOCK_SIZE * depth;
+										+ BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[faceID][i]].z
+												* Terrain.BLOCK_SIZE * depth;
 
 								vertex.uvx *= depth;
 								vertex.uvy *= width;
@@ -135,9 +137,11 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 								TerrainMeshVertex vertex = face.vertices[i];
 
 								vertex.posx = x * Terrain.BLOCK_SIZE
-										+ BlockRenderer.FACES_VERTICES[faceID][i].x * Terrain.BLOCK_SIZE * width;
+										+ BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[faceID][i]].x
+												* Terrain.BLOCK_SIZE * width;
 								vertex.posy = y * Terrain.BLOCK_SIZE
-										+ BlockRenderer.FACES_VERTICES[faceID][i].y * Terrain.BLOCK_SIZE * height;
+										+ BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[faceID][i]].y
+												* Terrain.BLOCK_SIZE * height;
 
 								vertex.uvx *= width;
 								vertex.uvy *= height;
@@ -180,9 +184,11 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 								TerrainMeshVertex vertex = face.vertices[i];
 
 								vertex.posz = z * Terrain.BLOCK_SIZE
-										+ BlockRenderer.FACES_VERTICES[faceID][i].z * Terrain.BLOCK_SIZE * depth;
+										+ BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[faceID][i]].z
+												* Terrain.BLOCK_SIZE * depth;
 								vertex.posy = y * Terrain.BLOCK_SIZE
-										+ BlockRenderer.FACES_VERTICES[faceID][i].y * Terrain.BLOCK_SIZE * height;
+										+ BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[faceID][i]].y
+												* Terrain.BLOCK_SIZE * height;
 
 								vertex.uvx *= depth;
 								vertex.uvy *= height;

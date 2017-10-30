@@ -93,10 +93,13 @@ public class Vector3i extends Vector {
 	}
 
 	public static Vector3i sub(Vector3i a, Vector3i b) {
-		return (sub(new Vector3i(), a, b));
+		return (sub(a, b, new Vector3i()));
 	}
 
-	public static Vector3i sub(Vector3i dst, Vector3i a, Vector3i b) {
+	public static Vector3i sub(Vector3i a, Vector3i b, Vector3i dst) {
+		if (dst == null) {
+			dst = new Vector3i();
+		}
 		return (dst.set(a.x - b.x, a.y - b.y, a.z - b.z));
 	}
 

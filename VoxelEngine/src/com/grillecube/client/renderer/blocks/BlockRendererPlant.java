@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer.blocks;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
@@ -9,6 +10,7 @@ import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
+import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.terrain.Terrain;
 
@@ -73,9 +75,18 @@ public class BlockRendererPlant extends BlockRenderer {
 		Vector3i[] neighboors = FACES_NEIGHBORS[face.getID()][vertexID];
 
 		// position
-		float px = (x + FACES_VERTICES[face.getID()][vertexID].x - face.getNormal().x * 0.5f) * Terrain.BLOCK_SIZE;
-		float py = (y + FACES_VERTICES[face.getID()][vertexID].y) * Terrain.BLOCK_SIZE;
-		float pz = (z + FACES_VERTICES[face.getID()][vertexID].z - face.getNormal().z * 0.5f) * Terrain.BLOCK_SIZE;
+		float px = x + EDGES[FACES_EDGES[face.getID()][vertexID]].x;
+		float py = y + EDGES[FACES_EDGES[face.getID()][vertexID]].y;
+		float pz = z + EDGES[FACES_EDGES[face.getID()][vertexID]].z;
+
+		// TODO : noise is regular on each terrain for now, keep this?
+		float d = ((float) World.NOISE_OCTAVE.noise(x, z)) * 0.3f;
+		px -= 0.5f * face.getNormal().x + d;
+		pz -= 0.5f * face.getNormal().z + d;
+
+		px *= Terrain.BLOCK_SIZE;
+		py *= Terrain.BLOCK_SIZE;
+		pz *= Terrain.BLOCK_SIZE;
 
 		// uv
 		float uvx = FACES_UV[vertexID][0];

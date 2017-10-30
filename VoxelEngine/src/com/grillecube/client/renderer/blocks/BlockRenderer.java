@@ -15,32 +15,77 @@ import com.grillecube.common.world.terrain.Terrain;
 /** the block renderer class */
 public abstract class BlockRenderer {
 
-	/** mesher stuff starts here */
-	public static Vector3i[][] FACES_VERTICES = new Vector3i[6][4];
-	// blocks offset which affect ao
-	public static Vector3i[][][] FACES_NEIGHBORS = new Vector3i[6][4][3];
-	private static Vector3i[] VERTICES = new Vector3i[8];
-
-	/*
-	 * 7---------6 /| | 3---------2 | | | | | | | | | | 4______|__5 | / | /
-	 * 0---------1
+	/**
+	 * 5------------6 /| /| / | / | 3------------2--| | | | | | | | | |
+	 * 4---------|--7 | / | / |/ |/ 0------------1
 	 */
 
+	/** edges offset */
+	public static Vector3i[] EDGES = new Vector3i[8];
+
+	/** edges for a face */
+	public static int[][] FACES_EDGES = new int[Face.faces.length][4];
+	/**
+	 * lists the index of the endpoint vertices for each of the 12edges of the cube
+	 */
+	public static final int EDGE_CONNECTIONS[][] = new int[12][2];
+
+	/**
+	 * 12x3 : lists the direction vector (vertex1-vertex0) for each edge in the cube
+	 */
+	public static final Vector3i[] EDGE_DIRECTIONS = new Vector3i[12];
+
+	/** blocks offset which affect ambiant occlusion */
+	public static Vector3i[][][] FACES_NEIGHBORS = new Vector3i[6][4][3];
+
 	static {
-		VERTICES[0] = new Vector3i(0, 1, 0);
-		VERTICES[1] = new Vector3i(0, 0, 0);
-		VERTICES[2] = new Vector3i(0, 0, 1);
-		VERTICES[3] = new Vector3i(0, 1, 1);
-		VERTICES[4] = new Vector3i(1, 1, 0);
-		VERTICES[5] = new Vector3i(1, 0, 0);
-		VERTICES[6] = new Vector3i(1, 0, 1);
-		VERTICES[7] = new Vector3i(1, 1, 1);
+		EDGES[0] = new Vector3i(0, 0, 0);
+		EDGES[1] = new Vector3i(1, 0, 0);
+		EDGES[2] = new Vector3i(1, 1, 0);
+		EDGES[3] = new Vector3i(0, 1, 0);
+		EDGES[4] = new Vector3i(0, 0, 1);
+		EDGES[5] = new Vector3i(1, 0, 1);
+		EDGES[6] = new Vector3i(1, 1, 1);
+		EDGES[7] = new Vector3i(0, 1, 1);
+
+		/** edges connections */
+		EDGE_CONNECTIONS[0][0] = 0;
+		EDGE_CONNECTIONS[0][1] = 1;
+		EDGE_CONNECTIONS[1][0] = 1;
+		EDGE_CONNECTIONS[1][1] = 2;
+		EDGE_CONNECTIONS[2][0] = 2;
+		EDGE_CONNECTIONS[2][1] = 3;
+		EDGE_CONNECTIONS[3][0] = 3;
+		EDGE_CONNECTIONS[3][1] = 0;
+
+		EDGE_CONNECTIONS[4][0] = 4;
+		EDGE_CONNECTIONS[4][1] = 5;
+		EDGE_CONNECTIONS[5][0] = 5;
+		EDGE_CONNECTIONS[5][1] = 6;
+		EDGE_CONNECTIONS[6][0] = 6;
+		EDGE_CONNECTIONS[6][1] = 7;
+		EDGE_CONNECTIONS[7][0] = 7;
+		EDGE_CONNECTIONS[7][1] = 4;
+
+		EDGE_CONNECTIONS[8][0] = 0;
+		EDGE_CONNECTIONS[8][1] = 4;
+		EDGE_CONNECTIONS[9][0] = 1;
+		EDGE_CONNECTIONS[9][1] = 5;
+		EDGE_CONNECTIONS[10][0] = 2;
+		EDGE_CONNECTIONS[10][1] = 6;
+		EDGE_CONNECTIONS[11][0] = 3;
+		EDGE_CONNECTIONS[11][1] = 7;
+
+		/** edge directions */
+		for (int i = 0; i < EDGE_CONNECTIONS.length; i++) {
+			EDGE_DIRECTIONS[i] = Vector3i.sub(EDGES[EDGE_CONNECTIONS[i][1]], EDGES[EDGE_CONNECTIONS[i][0]], null);
+		}
 
 		/** left face */
-		FACES_VERTICES[Face.LEFT][0] = VERTICES[4];
-		FACES_VERTICES[Face.LEFT][1] = VERTICES[5];
-		FACES_VERTICES[Face.LEFT][2] = VERTICES[1];
-		FACES_VERTICES[Face.LEFT][3] = VERTICES[0];
+		FACES_EDGES[Face.LEFT][0] = 2;
+		FACES_EDGES[Face.LEFT][1] = 1;
+		FACES_EDGES[Face.LEFT][2] = 0;
+		FACES_EDGES[Face.LEFT][3] = 3;
 
 		FACES_NEIGHBORS[Face.LEFT][0][0] = new Vector3i(0, 1, -1);
 		FACES_NEIGHBORS[Face.LEFT][0][1] = new Vector3i(1, 0, -1);
@@ -59,10 +104,10 @@ public abstract class BlockRenderer {
 		FACES_NEIGHBORS[Face.LEFT][3][2] = new Vector3i(-1, 1, -1);
 
 		/** right face */
-		FACES_VERTICES[Face.RIGHT][0] = VERTICES[3];
-		FACES_VERTICES[Face.RIGHT][1] = VERTICES[2];
-		FACES_VERTICES[Face.RIGHT][2] = VERTICES[6];
-		FACES_VERTICES[Face.RIGHT][3] = VERTICES[7];
+		FACES_EDGES[Face.RIGHT][0] = 7;
+		FACES_EDGES[Face.RIGHT][1] = 4;
+		FACES_EDGES[Face.RIGHT][2] = 5;
+		FACES_EDGES[Face.RIGHT][3] = 6;
 
 		FACES_NEIGHBORS[Face.RIGHT][0][0] = new Vector3i(0, 1, 1);
 		FACES_NEIGHBORS[Face.RIGHT][0][1] = new Vector3i(-1, 0, 1);
@@ -81,10 +126,10 @@ public abstract class BlockRenderer {
 		FACES_NEIGHBORS[Face.RIGHT][3][2] = new Vector3i(1, 1, 1);
 
 		/** back face */
-		FACES_VERTICES[Face.BACK][0] = VERTICES[7];
-		FACES_VERTICES[Face.BACK][1] = VERTICES[6];
-		FACES_VERTICES[Face.BACK][2] = VERTICES[5];
-		FACES_VERTICES[Face.BACK][3] = VERTICES[4];
+		FACES_EDGES[Face.BACK][0] = 6;
+		FACES_EDGES[Face.BACK][1] = 5;
+		FACES_EDGES[Face.BACK][2] = 1;
+		FACES_EDGES[Face.BACK][3] = 2;
 
 		FACES_NEIGHBORS[Face.BACK][0][0] = new Vector3i(1, 1, 0);
 		FACES_NEIGHBORS[Face.BACK][0][1] = new Vector3i(1, 0, 1);
@@ -103,10 +148,10 @@ public abstract class BlockRenderer {
 		FACES_NEIGHBORS[Face.BACK][3][2] = new Vector3i(1, 1, -1);
 
 		/** front face */
-		FACES_VERTICES[Face.FRONT][0] = VERTICES[0];
-		FACES_VERTICES[Face.FRONT][1] = VERTICES[1];
-		FACES_VERTICES[Face.FRONT][2] = VERTICES[2];
-		FACES_VERTICES[Face.FRONT][3] = VERTICES[3];
+		FACES_EDGES[Face.FRONT][0] = 3;
+		FACES_EDGES[Face.FRONT][1] = 0;
+		FACES_EDGES[Face.FRONT][2] = 4;
+		FACES_EDGES[Face.FRONT][3] = 7;
 
 		FACES_NEIGHBORS[Face.FRONT][0][0] = new Vector3i(-1, 1, 0);
 		FACES_NEIGHBORS[Face.FRONT][0][1] = new Vector3i(-1, 0, -1);
@@ -125,10 +170,10 @@ public abstract class BlockRenderer {
 		FACES_NEIGHBORS[Face.FRONT][3][2] = new Vector3i(-1, 1, 1);
 
 		/** bottom face */
-		FACES_VERTICES[Face.BOT][0] = VERTICES[1];
-		FACES_VERTICES[Face.BOT][1] = VERTICES[5];
-		FACES_VERTICES[Face.BOT][2] = VERTICES[6];
-		FACES_VERTICES[Face.BOT][3] = VERTICES[2];
+		FACES_EDGES[Face.BOT][0] = 0;
+		FACES_EDGES[Face.BOT][1] = 1;
+		FACES_EDGES[Face.BOT][2] = 5;
+		FACES_EDGES[Face.BOT][3] = 4;
 
 		FACES_NEIGHBORS[Face.BOT][0][0] = new Vector3i(0, -1, -1);
 		FACES_NEIGHBORS[Face.BOT][0][1] = new Vector3i(-1, -1, 0);
@@ -147,10 +192,10 @@ public abstract class BlockRenderer {
 		FACES_NEIGHBORS[Face.BOT][3][2] = new Vector3i(-1, -1, 1);
 
 		/** top face */
-		FACES_VERTICES[Face.TOP][0] = VERTICES[4];
-		FACES_VERTICES[Face.TOP][1] = VERTICES[0];
-		FACES_VERTICES[Face.TOP][2] = VERTICES[3];
-		FACES_VERTICES[Face.TOP][3] = VERTICES[7];
+		FACES_EDGES[Face.TOP][0] = 2;
+		FACES_EDGES[Face.TOP][1] = 3;
+		FACES_EDGES[Face.TOP][2] = 7;
+		FACES_EDGES[Face.TOP][3] = 6;
 
 		FACES_NEIGHBORS[Face.TOP][0][0] = new Vector3i(0, 1, -1);
 		FACES_NEIGHBORS[Face.TOP][0][1] = new Vector3i(1, 1, 0);

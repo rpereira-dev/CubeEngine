@@ -42,19 +42,20 @@ public class WorldGeneratorHoles extends WorldGenerator {
 			}
 		}
 
+		Random rng = new Random();
+
 		for (int x = 0; x < Terrain.DIMX; x++) {
 			for (int z = 0; z < Terrain.DIMZ; z++) {
 				int y = terrain.getHeightAt(x, z) - 1;
 				if (y < 0) {
 					continue;
 				}
-				terrain.setBlock(Blocks.PLANTS[3], x, y + 1, z);
+				terrain.setBlock(Blocks.PLANTS[rng.nextInt(Blocks.PLANTS.length)], x, y + 1, z);
 				terrain.setBlock(Blocks.GRASS, x, y, z);
 
 			}
 		}
 
-		Random rng = new Random();
 		int x = rng.nextInt(Terrain.DIMX);
 		int z = rng.nextInt(Terrain.DIMZ);
 		int y = terrain.getHeightAt(x, z);
