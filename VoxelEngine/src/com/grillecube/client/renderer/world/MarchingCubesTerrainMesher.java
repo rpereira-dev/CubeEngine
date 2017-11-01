@@ -3,7 +3,10 @@ package com.grillecube.client.renderer.world;
 import java.util.ArrayList;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
+import com.grillecube.client.renderer.blocks.BlockRendererCube;
+import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class MarchingCubesTerrainMesher extends TerrainMesher {
@@ -291,10 +294,12 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 		for (int z = 0; z < Terrain.DIMZ; z++) {
 			for (int y = 0; y < Terrain.DIMY; y++) {
 				for (int x = 0; x < Terrain.DIMX; x++) {
-					polygonize(terrain, x, y, z);
+					polygonize(opaqueStack, terrain, x, y, z);
 				}
 			}
 		}
+		System.out.println(opaqueStack.size());
+
 	}
 
 	// fSample1 finds the distance of (fX, fY, fZ) from three moving points
@@ -302,6 +307,9 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 		double fResult = 0.0;
 		double fDx, fDy, fDz;
 		Vector3f[] sSourcePoint = new Vector3f[3];
+		sSourcePoint[0] = new Vector3f(0.5f, 0.5f, 0.5f);
+		sSourcePoint[1] = new Vector3f(0.5f, 0.5f, 0.5f);
+		sSourcePoint[2] = new Vector3f(0.5f, 0.5f, 0.5f);
 		fDx = fX - sSourcePoint[0].x;
 		fDy = fY - sSourcePoint[0].y;
 		fDz = fZ - sSourcePoint[0].z;
@@ -320,77 +328,63 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 		return ((float) fResult);
 	}
 
-	static float fTargetValue = 48.0f;
-
-	private void polygonize(Terrain terrain, int x, int y, int z) {
+	private void polygonize(ArrayList<TerrainMeshTriangle> opaqueStack, Terrain terrain, int x, int y, int z) {
 		float fOffset;
-		Vector3f sColor = new Vector3f();
-		float afCubeValue[] = new float[8];
 		Vector3f asEdgeVertex[] = new Vector3f[12];
-		Vector3f asEdgeNorm[] = new Vector3f[12];
 
 		// Make a local copy of the values at the cube's corners
-		for (int iVertex = 0; iVertex < 8; iVertex++) {
-			afCubeValue[iVertex] = fSample(x + BlockRenderer.EDGES[iVertex].x, y + BlockRenderer.EDGES[iVertex].y,
-					z + BlockRenderer.EDGES[iVertex].z);
-		}
-
 		// Find which vertices are inside of the surface and which are outside
-		int iFlagIndex = 0;
-		for (int iVertexTest = 0; iVertexTest < 8; iVertexTest++) {
-			if (afCubeValue[iVertexTest] <= fTargetValue)
-				iFlagIndex |= 1 << iVertexTest;
+		int indexFlags = 0;
+		for (int vertexID = 0; vertexID < 8; vertexID++) {
+			if (terrain.getBlock(x + BlockRenderer.VERTICES[vertexID].x, y + BlockRenderer.VERTICES[vertexID].y,
+					z + BlockRenderer.VERTICES[vertexID].z) != Blocks.AIR) {
+				indexFlags |= 1 << vertexID;
+			}
 		}
 
 		// Find which edges are intersected by the surface
-		int iEdgeFlags = EDGE_TABLE[iFlagIndex];
+		int edgeFlags = EDGE_TABLE[indexFlags];
 
 		// If the cube is entirely inside or outside of the surface, then there will be
 		// no intersections
-		if (iEdgeFlags == 0) {
+		if (edgeFlags == 0) {
 			return;
 		}
 
 		// Find the point of intersection of the surface with each edge
-		// // Then find the normal to the surface at those points
-		// for (int iEdge = 0; iEdge < 12; iEdge++) {
-		// // if there is an intersection on this edge
-		// if ((iEdgeFlags & (1 << iEdge)) != 0) {
-		// fOffset = fGetOffset(afCubeValue[BlockRenderer.EDGE_CONNECTIONS[iEdge][0]],
-		// afCubeValue[BlockRenderer.EDGE_CONNECTIONS[iEdge][1]], fTargetValue);
-		//
-		// asEdgeVertex[iEdge].x = x +
-		// (BlockRenderer.EDGES[BlockRenderer.EDGE_CONNECTIONS[iEdge][0]].x
-		// + fOffset * BlockRenderer.EDGE_DIRECTIONS[iEdge].x);
-		// asEdgeVertex[iEdge].y = y +
-		// (BlockRenderer.EDGES[BlockRenderer.EDGE_CONNECTIONS[iEdge][0]].y
-		// + fOffset * BlockRenderer.EDGE_DIRECTIONS[iEdge].y);
-		// asEdgeVertex[iEdge].z = z +
-		// (BlockRenderer.EDGES[BlockRenderer.EDGE_CONNECTIONS[iEdge][0]].z
-		// + fOffset * BlockRenderer.EDGE_DIRECTIONS[iEdge].z);
-		//
-		// vGetNormal(asEdgeNorm[iEdge], asEdgeVertex[iEdge].x, asEdgeVertex[iEdge].y,
-		// asEdgeVertex[iEdge].z);
-		// }
-		// }
-		//
-		// // Draw the triangles that were found. There can be up to five per cube
-		// for (int iTriangle = 0; iTriangle < 5; iTriangle++) {
-		// if (a2iTriangleConnectionTable[iFlagIndex][3 * iTriangle] < 0)
-		// break;
-		//
-		// for (int iCorner = 0; iCorner < 3; iCorner++) {
-		// int iVertex = a2iTriangleConnectionTable[iFlagIndex][3 * iTriangle +
-		// iCorner];
-		//
-		// vGetColor(sColor, asEdgeVertex[iVertex], asEdgeNorm[iVertex]);
-		// glColor3f(sColor.fX, sColor.fY, sColor.fZ);
-		// glNormal3f(asEdgeNorm[iVertex].fX, asEdgeNorm[iVertex].fY,
-		// asEdgeNorm[iVertex].fZ);
-		// glVertex3f(asEdgeVertex[iVertex].fX, asEdgeVertex[iVertex].fY,
-		// asEdgeVertex[iVertex].fZ);
-		// }
-		// }
-	}
+		// Then find the normal to the surface at those points
+		for (int edgeID = 0; edgeID < 12; edgeID++) {
+			// if there is an intersection on this edge
+			if ((edgeFlags & (1 << edgeID)) != 0) {
+				fOffset = 0.5f;
+				asEdgeVertex[edgeID] = new Vector3f();
+				asEdgeVertex[edgeID].x = x + (BlockRenderer.VERTICES[BlockRenderer.EDGES[edgeID][0]].x
+						+ fOffset * BlockRenderer.EDGES_DIRECTIONS[edgeID].x);
+				asEdgeVertex[edgeID].y = y + (BlockRenderer.VERTICES[BlockRenderer.EDGES[edgeID][0]].y
+						+ fOffset * BlockRenderer.EDGES_DIRECTIONS[edgeID].y);
+				asEdgeVertex[edgeID].z = z + (BlockRenderer.VERTICES[BlockRenderer.EDGES[edgeID][0]].z
+						+ fOffset * BlockRenderer.EDGES_DIRECTIONS[edgeID].z);
+			}
+		}
 
+		// Draw the triangles that were found. There can be up to five per cube
+		for (int triangleID = 0; triangleID < 5; triangleID++) {
+			if (TRI_TABLE[indexFlags][3 * triangleID] < 0)
+				break;
+
+			// the sun light
+			float sunLight = BlockRenderer.getSunLight(terrain, x, y, z, BlockRenderer.FACES_NEIGHBORS[Face.TOP][0]);
+			int i0 = TRI_TABLE[indexFlags][3 * triangleID + 0];
+			int i1 = TRI_TABLE[indexFlags][3 * triangleID + 1];
+			int i2 = TRI_TABLE[indexFlags][3 * triangleID + 2];
+			TerrainMeshVertex v0 = new TerrainMeshVertex(asEdgeVertex[i0].x, asEdgeVertex[i0].y, asEdgeVertex[i0].z, 0,
+					1, 0, 0, 0, 0, 0, 0xffffffff, sunLight, 0);
+			TerrainMeshVertex v1 = new TerrainMeshVertex(asEdgeVertex[i1].x, asEdgeVertex[i1].y, asEdgeVertex[i1].z, 0,
+					1, 0, 0, 0, 0, 0, 0xffffffff, sunLight, 0);
+			TerrainMeshVertex v2 = new TerrainMeshVertex(asEdgeVertex[i2].x, asEdgeVertex[i2].y, asEdgeVertex[i2].z, 0,
+					1, 0, 0, 0, 0, 0, 0xffffffff, sunLight, 0);
+			TerrainMeshTriangle triangle = new TerrainMeshTriangle(v0, v1, v2);
+			opaqueStack.add(triangle);
+		}
+	}
 }

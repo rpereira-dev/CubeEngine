@@ -10,11 +10,11 @@ import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
 import com.grillecube.client.renderer.camera.CameraProjective;
+import com.grillecube.client.renderer.world.MarchingCubesTerrainMesher;
 import com.grillecube.client.renderer.world.TerrainMesh;
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.renderer.world.TerrainRenderer;
-import com.grillecube.client.renderer.world.flat.FlatTerrainMesherGreedy;
 import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.world.EventTerrainBlocklightUpdate;
 import com.grillecube.common.event.world.EventTerrainDespawn;
@@ -132,7 +132,8 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 		super(mainRenderer);
 
 		this.terrainsRenderingData = new HashMap<Terrain, TerrainRenderingData>(4096);
-		this.mesher = new FlatTerrainMesherGreedy();
+		this.mesher = new MarchingCubesTerrainMesher();
+		// this.mesher = new FlatTerrainMesherGreedy();
 		// this.mesher = new FlatTerrainMesherCull();
 		this.opaqueRenderingList = new ArrayList<TerrainMesh>();
 		this.transparentRenderingList = new ArrayList<TerrainMesh>();

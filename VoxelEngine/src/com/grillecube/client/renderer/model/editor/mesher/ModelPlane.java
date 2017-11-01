@@ -23,11 +23,6 @@ public final class ModelPlane {
 	private final int ymin;
 	private final int zmin;
 
-	/** width/height (or depth, but a plan only have two dimensions!) */
-	private final int width;
-	private final int height;
-	private final int depth;
-
 	/** texture width/height in term of blocks */
 	private final int txWidth;
 	private final int txHeight;
@@ -36,15 +31,11 @@ public final class ModelPlane {
 	private int u;
 	private int v;
 
-	public ModelPlane(Face face, int xmin, int ymin, int zmin, int width, int height, int depth, int txWidth,
-			int txHeight) {
+	public ModelPlane(Face face, int xmin, int ymin, int zmin, int txWidth, int txHeight) {
 		this.face = face;
 		this.xmin = xmin;
 		this.ymin = ymin;
 		this.zmin = zmin;
-		this.width = width;
-		this.height = height;
-		this.depth = depth;
 		this.txWidth = txWidth;
 		this.txHeight = txHeight;
 		this.u = 0;
@@ -73,27 +64,6 @@ public final class ModelPlane {
 	}
 
 	/**
-	 * @return @see {@link #width}
-	 */
-	public final int getWidth() {
-		return (this.width);
-	}
-
-	/**
-	 * @return @see {@link #height}
-	 */
-	public final int getHeight() {
-		return (this.height);
-	}
-
-	/**
-	 * @return @see {@link #depth}
-	 */
-	public final int getDepth() {
-		return (this.depth);
-	}
-
-	/**
 	 * @return @see {@link #face}
 	 */
 	public final Face getFace() {
@@ -104,7 +74,7 @@ public final class ModelPlane {
 	 * @return the area of this plane
 	 */
 	public final int getArea() {
-		return (this.width * this.height * this.depth);
+		return (this.txWidth * this.txHeight);
 	}
 
 	public final int getTextureWidth() {

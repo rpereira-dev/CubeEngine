@@ -123,9 +123,9 @@ public class BlockRendererCube extends BlockRenderer {
 		Vector3i[] neighboors = FACES_NEIGHBORS[face.getID()][vertexID];
 
 		// position
-		float px = (x + EDGES[FACES_EDGES[face.getID()][vertexID]].x) * Terrain.BLOCK_SIZE;
-		float py = (y + EDGES[FACES_EDGES[face.getID()][vertexID]].y) * Terrain.BLOCK_SIZE;
-		float pz = (z + EDGES[FACES_EDGES[face.getID()][vertexID]].z) * Terrain.BLOCK_SIZE;
+		float px = (x + VERTICES[FACES_VERTICES[face.getID()][vertexID]].x) * Terrain.BLOCK_SIZE;
+		float py = (y + VERTICES[FACES_VERTICES[face.getID()][vertexID]].y) * Terrain.BLOCK_SIZE;
+		float pz = (z + VERTICES[FACES_VERTICES[face.getID()][vertexID]].z) * Terrain.BLOCK_SIZE;
 
 		// uv
 		float uvx = FACES_UV[vertexID][0];

@@ -81,48 +81,51 @@ public class ModelMesherCull extends ModelMesher {
 		float uh = 1.0f / (float) txHeight;
 		for (ModelPlane plane : planes) {
 			Face planeFace = plane.getFace();
-			for (int dx = 0; dx < plane.getWidth(); dx++) {
-				for (int dy = 0; dy < plane.getHeight(); dy++) {
-					for (int dz = 0; dz < plane.getDepth(); dz++) {
+			for (int d1 = 0; d1 < plane.getTextureWidth(); d1++) {
+				for (int d2 = 0; d2 < plane.getTextureHeight(); d2++) {
 
-						int x = plane.getXMin() + dx;
-						int y = plane.getYMin() + dy;
-						int z = plane.getZMin() + dz;
+					// add indices (quad)
+					int i = vertices.size();
+					indices.add((short) i);
+					indices.add((short) (i + 1));
+					indices.add((short) (i + 2));
+					indices.add((short) i);
+					indices.add((short) (i + 2));
+					indices.add((short) (i + 3));
 
-						ModelBlockData data = datas[x][y][z];
-
-						// add indices (quad)
-						int i = vertices.size();
-						indices.add((short) i);
-						indices.add((short) (i + 1));
-						indices.add((short) (i + 2));
-						indices.add((short) i);
-						indices.add((short) (i + 2));
-						indices.add((short) (i + 3));
-
-						// add vertices
-						float ux, uy, vx, vy;
-						if (planeFace.equals(Face.F_TOP) || planeFace.equals(Face.F_BOT)) {
-							ux = (plane.getU() + dx) * uw;
-							uy = (plane.getV() + dz) * uh;
-							vx = (plane.getU() + dx + 1) * uw;
-							vy = (plane.getV() + dz + 1) * uh;
-						} else if (planeFace.equals(Face.F_RIGHT) || planeFace.equals(Face.F_LEFT)) {
-							ux = (plane.getU() + dx) * uw;
-							uy = (plane.getV() + dy) * uh;
-							vx = (plane.getU() + dx + 1) * uw;
-							vy = (plane.getV() + dy + 1) * uh;
-						} else {
-							ux = (plane.getU() + dy) * uw;
-							uy = (plane.getV() + dz) * uh;
-							vx = (plane.getU() + dy + 1) * uw;
-							vy = (plane.getV() + dz + 1) * uh;
-						}
-						vertices.push(this.generateVertex(editableModel, planeFace, ux, uy, data, 0));
-						vertices.push(this.generateVertex(editableModel, planeFace, vx, uy, data, 1));
-						vertices.push(this.generateVertex(editableModel, planeFace, vx, vy, data, 2));
-						vertices.push(this.generateVertex(editableModel, planeFace, ux, vy, data, 3));
+					// add vertices
+					int x = plane.getXMin();
+					int y = plane.getYMin();
+					int z = plane.getZMin();
+					float ux, uy, vx, vy;
+					if (planeFace.equals(Face.F_TOP) || planeFace.equals(Face.F_BOT)) {
+						x += d1;
+						z += d2;
+						ux = (plane.getU() + d1) * uw;
+						uy = (plane.getV() + d2) * uh;
+						vx = (plane.getU() + d1 + 1) * uw;
+						vy = (plane.getV() + d2 + 1) * uh;
+					} else if (planeFace.equals(Face.F_RIGHT) || planeFace.equals(Face.F_LEFT)) {
+						x += d1;
+						y += d2;
+						ux = (plane.getU() + d1) * uw;
+						uy = (plane.getV() + d2) * uh;
+						vx = (plane.getU() + d1 + 1) * uw;
+						vy = (plane.getV() + d2 + 1) * uh;
+					} else {
+						y += d1;
+						z += d2;
+						ux = (plane.getU() + d1) * uw;
+						uy = (plane.getV() + d2) * uh;
+						vx = (plane.getU() + d1 + 1) * uw;
+						vy = (plane.getV() + d2 + 1) * uh;
 					}
+
+					ModelBlockData data = datas[x][y][z];
+					vertices.push(this.generateVertex(editableModel, planeFace, ux, uy, data, 0));
+					vertices.push(this.generateVertex(editableModel, planeFace, vx, uy, data, 1));
+					vertices.push(this.generateVertex(editableModel, planeFace, vx, vy, data, 2));
+					vertices.push(this.generateVertex(editableModel, planeFace, ux, vy, data, 3));
 				}
 			}
 		}
@@ -195,7 +198,7 @@ public class ModelMesherCull extends ModelMesher {
 								}
 								++depth;
 							}
-							modelPlane = new ModelPlane(face, x, y, z, width, 1, depth, width, depth);
+							modelPlane = new ModelPlane(face, x, y, z, width, depth);
 							this.setVisited(visited, faceID, x, y, z, width, 1, depth);
 							x += width - 1;
 						}
@@ -220,7 +223,7 @@ public class ModelMesherCull extends ModelMesher {
 								}
 								++height;
 							}
-							modelPlane = new ModelPlane(face, x, y, z, width, height, 1, width, height);
+							modelPlane = new ModelPlane(face, x, y, z, width, height);
 							this.setVisited(visited, faceID, x, y, z, width, height, 1);
 							x += width - 1;
 						}
@@ -246,7 +249,7 @@ public class ModelMesherCull extends ModelMesher {
 								}
 								++height;
 							}
-							modelPlane = new ModelPlane(face, x, y, z, 1, height, depth, height, depth);
+							modelPlane = new ModelPlane(face, x, y, z, height, depth);
 							this.setVisited(visited, faceID, x, y, z, 1, height, depth);
 						}
 						modelPlanes.add(modelPlane);
@@ -280,9 +283,9 @@ public class ModelMesherCull extends ModelMesher {
 		int y = modelBlockData.getY();
 		int z = modelBlockData.getZ();
 
-		vertex.x = (x + BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[face.getID()][vertexID]].x) * sizeUnit;
-		vertex.y = (y + BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[face.getID()][vertexID]].y) * sizeUnit;
-		vertex.z = (z + BlockRenderer.EDGES[BlockRenderer.FACES_EDGES[face.getID()][vertexID]].z) * sizeUnit;
+		vertex.x = (x + BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][vertexID]].x) * sizeUnit;
+		vertex.y = (y + BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][vertexID]].y) * sizeUnit;
+		vertex.z = (z + BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][vertexID]].z) * sizeUnit;
 
 		vertex.uvx = uvx;
 		vertex.uvy = uvy;

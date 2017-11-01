@@ -75,9 +75,9 @@ public class BlockRendererPlant extends BlockRenderer {
 		Vector3i[] neighboors = FACES_NEIGHBORS[face.getID()][vertexID];
 
 		// position
-		float px = x + EDGES[FACES_EDGES[face.getID()][vertexID]].x;
-		float py = y + EDGES[FACES_EDGES[face.getID()][vertexID]].y;
-		float pz = z + EDGES[FACES_EDGES[face.getID()][vertexID]].z;
+		float px = x + VERTICES[FACES_VERTICES[face.getID()][vertexID]].x;
+		float py = y + VERTICES[FACES_VERTICES[face.getID()][vertexID]].y;
+		float pz = z + VERTICES[FACES_VERTICES[face.getID()][vertexID]].z;
 
 		// TODO : noise is regular on each terrain for now, keep this?
 		float d = ((float) World.NOISE_OCTAVE.noise(x, z)) * 0.3f;
