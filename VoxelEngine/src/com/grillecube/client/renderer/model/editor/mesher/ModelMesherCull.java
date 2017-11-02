@@ -294,13 +294,13 @@ public class ModelMesherCull extends ModelMesher {
 		vertex.ny = face.getNormal().getY();
 		vertex.nz = face.getNormal().getZ();
 
-		vertex.b1 = modelBlockData.getBoneID(0);
-		vertex.b2 = modelBlockData.getBoneID(1);
-		vertex.b3 = modelBlockData.getBoneID(2);
+		vertex.b1 = 0;// modelBlockData.getBoneID(0);
+		vertex.b2 = 0;// modelBlockData.getBoneID(1);
+		vertex.b3 = 0;// modelBlockData.getBoneID(2);
 
-		vertex.w1 = modelBlockData.getBoneWeight(0);
-		vertex.w2 = modelBlockData.getBoneWeight(1);
-		vertex.w3 = modelBlockData.getBoneWeight(2);
+		vertex.w1 = 1;// modelBlockData.getBoneWeight(0);
+		vertex.w2 = 0;// modelBlockData.getBoneWeight(1);
+		vertex.w3 = 0;// modelBlockData.getBoneWeight(2);
 
 		return (vertex);
 	}

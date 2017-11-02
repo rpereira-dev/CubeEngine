@@ -16,15 +16,23 @@ import com.grillecube.common.world.terrain.Terrain;
 public abstract class BlockRenderer {
 
 	/**
-	 * 5------------6 /| /| / | / | 3------------2--| | | | | | | | | |
+	 * 5------------6 /| /| / | / | 3------------2--| | | | | | | | | | | | | |
 	 * 4---------|--7 | / | / |/ |/ 0------------1
+	 *
+	 *
 	 */
 
 	/** edges offset */
-	public static Vector3i[] VERTICES = new Vector3i[8];
+	public static final Vector3i[] VERTICES = new Vector3i[8];
 
-	/** edges for a face */
-	public static int[][] FACES_VERTICES = new int[Face.faces.length][4];
+	/** vertices faces */
+	public static final int[][] VERTICES_FACES = new int[8][3];
+
+	/** vertices id relatively to the face */
+	public static final int[][] VERTICES_FACES_ID = new int[8][Face.faces.length];
+
+	/** vertices for a face */
+	public static final int[][] FACES_VERTICES = new int[Face.faces.length][4];
 	/**
 	 * lists the index of the endpoint vertices for each of the 12edges of the cube
 	 */
@@ -36,7 +44,8 @@ public abstract class BlockRenderer {
 	public static final Vector3i[] EDGES_DIRECTIONS = new Vector3i[12];
 
 	/** blocks offset which affect ambiant occlusion */
-	public static Vector3i[][][] FACES_NEIGHBORS = new Vector3i[6][4][3];
+	public static final Vector3i[][] VERTEX_NEIGHBORS = new Vector3i[8][4];
+	public static final Vector3i[][][] FACES_NEIGHBORS = new Vector3i[6][4][3];
 
 	static {
 		VERTICES[0] = new Vector3i(0, 0, 0);
@@ -213,6 +222,31 @@ public abstract class BlockRenderer {
 		FACES_NEIGHBORS[Face.TOP][3][1] = new Vector3i(1, 1, 0);
 		FACES_NEIGHBORS[Face.TOP][3][2] = new Vector3i(1, 1, 1);
 
+		/** vertices faces */
+		for (int vertexID = 0; vertexID < 8; vertexID++) {
+			int faceID = 0;
+			for (Face face : Face.faces) {
+				for (int vertex : FACES_VERTICES[face.getID()]) {
+					if (vertexID == vertex) {
+						VERTICES_FACES[vertexID][faceID++] = face.getID();
+						break;
+					}
+				}
+			}
+		}
+
+		/** vertices id relatively to faces */
+		for (int vertexID = 0; vertexID < 8; vertexID++) {
+			for (int faceID = 0; faceID < Face.faces.length; faceID++) {
+				VERTICES_FACES_ID[vertexID][faceID] = -1;
+				for (int i = 0; i < 4; i++) {
+					if (FACES_VERTICES[faceID][i] == vertexID) {
+						VERTICES_FACES_ID[vertexID][faceID] = i;
+						break;
+					}
+				}
+			}
+		}
 	};
 
 	public static float[][] FACES_UV = { { 0, 0 }, { 0, 1 }, { 1, 1 }, { 1, 0 } };
@@ -235,17 +269,17 @@ public abstract class BlockRenderer {
 	// instead of #Terrain#opaqueBlockCount and stuff...
 
 	/** return the x texture coodinates for this textureID */
-	public int getAtlasX(int textureID) {
+	public static final int getAtlasX(int textureID) {
 		return (textureID % BlockRendererManager.TEXTURE_PER_LINE);
 	}
 
 	/** return the y texture coodinates for this textureID */
-	public int getAtlasY(int textureID) {
+	public static final int getAtlasY(int textureID) {
 		return (textureID / BlockRendererManager.TEXTURE_PER_LINE);
 	}
 
 	/** get block light by getting the average of neighboors blocks */
-	public float getBlockLight(Terrain terrain, int x, int y, int z, Vector3i... neighboors) {
+	public static final float getBlockLight(Terrain terrain, int x, int y, int z, Vector3i... neighboors) {
 		float blockLight = 0.0f;
 		for (Vector3i n : neighboors) {
 			blockLight += terrain.getBlockLight(x + n.x, y + n.y, z + n.z);
@@ -260,6 +294,29 @@ public abstract class BlockRenderer {
 			sunLight += terrain.getSunLight(x + n.x, y + Maths.abs(n.y), z + n.z);
 		}
 		return (sunLight / (neighboors.length * 16.0f));
+	}
+
+	/** return the default texture id of this block renderer */
+	public abstract int getDefaultTextureID();
+
+	public static final float AO_UNIT = 0.06f;
+
+	public static final float getAmbiantOcclusion(Terrain terrain, int x, int y, int z, Vector3i... neighboors) {
+		Block side1 = terrain.getBlock(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
+		Block side2 = terrain.getBlock(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
+		Block corner = terrain.getBlock(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
+
+		boolean s1 = side1.isVisible() && !side1.isTransparent();
+		boolean s2 = side2.isVisible() && !side2.isTransparent();
+		boolean c = corner.isVisible() && !corner.isTransparent();
+		if (s1 && s2) {
+			return (3.0f * AO_UNIT);
+		}
+
+		if (s1 || s2) {
+			return (c ? 2.0f * AO_UNIT : AO_UNIT);
+		}
+		return (c ? AO_UNIT : 0.0f);
 	}
 
 }

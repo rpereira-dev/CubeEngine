@@ -1,13 +1,11 @@
-package com.grillecube.client.renderer.factories;
+package com.grillecube.client.renderer.particles;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 import com.grillecube.client.renderer.MainRenderer;
+import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.client.renderer.camera.CameraProjective;
-import com.grillecube.client.renderer.particles.ParticleBillboarded;
-import com.grillecube.client.renderer.particles.ParticleCube;
-import com.grillecube.client.renderer.particles.ParticleRenderer;
 import com.grillecube.common.maths.Vector3f;
 
 public class ParticleRendererFactory extends RendererFactory {

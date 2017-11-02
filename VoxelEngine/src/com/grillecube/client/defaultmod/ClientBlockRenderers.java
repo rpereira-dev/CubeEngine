@@ -60,7 +60,7 @@ public class ClientBlockRenderers implements IModResource {
 						ClientBlockRenderers.T_DIRT));
 
 		blockTextureManager.setBlockRenderer(Blocks.LEAVES, new BlockRendererCube(ClientBlockRenderers.T_LEAVES));
-		blockTextureManager.setBlockRenderer(Blocks.LIGHT_TEST, new BlockRendererCube(ClientBlockRenderers.T_LEAVES));
+		blockTextureManager.setBlockRenderer(Blocks.LIGHT_TEST, new BlockRendererCube(ClientBlockRenderers.T_STONE));
 
 		blockTextureManager.setBlockRenderer(Blocks.LOG,
 				new BlockRendererCube(Face.LEFT, ClientBlockRenderers.T_LOG_SIDE, Face.RIGHT,

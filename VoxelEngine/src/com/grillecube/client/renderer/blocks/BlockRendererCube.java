@@ -137,10 +137,7 @@ public class BlockRendererCube extends BlockRenderer {
 		// get light value
 
 		// the ambiant occlusion
-		Block side1 = terrain.getBlock(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
-		Block side2 = terrain.getBlock(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
-		Block corner = terrain.getBlock(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
-		float ao = this.getVertexAO(terrain, side1, side2, corner);
+		float ao = BlockRenderer.getAmbiantOcclusion(terrain, x, y, z, neighboors);
 
 		// the block light
 		float blockLight = super.getBlockLight(terrain, x, y, z, neighboors);
@@ -162,25 +159,8 @@ public class BlockRendererCube extends BlockRenderer {
 		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, uvx, uvy, color, brightness, ao));
 	}
 
-	// the float returned is the ratio of black which will be used for this
-	// vertex
-	protected static final float AO_0 = 0.00f;
-	protected static final float AO_1 = 0.06f;
-	protected static final float AO_2 = 0.12f;
-	protected static final float AO_3 = 0.18f;
-
-	protected float getVertexAO(Terrain terrain, Block side1, Block side2, Block corner) {
-		boolean s1 = side1.isVisible() && !side1.isTransparent();
-		boolean s2 = side2.isVisible() && !side2.isTransparent();
-		boolean c = corner.isVisible() && !corner.isTransparent();
-		if (s1 && s2) {
-			return (AO_3);
-		}
-
-		if (s1 || s2) {
-			return (c ? AO_2 : AO_1);
-		}
-
-		return (c ? AO_1 : AO_0);
+	@Override
+	public int getDefaultTextureID() {
+		return (this.textureIDs[Face.TOP]);
 	}
 }

@@ -1,10 +1,10 @@
-package com.grillecube.client.renderer.factories;
+package com.grillecube.client.renderer.lines;
 
 import java.util.ArrayList;
 
 import com.grillecube.client.renderer.MainRenderer;
+import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.client.renderer.camera.CameraProjective;
-import com.grillecube.client.renderer.lines.Line;
 import com.grillecube.common.maths.BoundingBox;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;

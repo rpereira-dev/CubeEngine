@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.factories;
+package com.grillecube.client.renderer.world.flat;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -6,11 +6,14 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.MainRenderer.GLTask;
+import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.client.renderer.camera.CameraProjective;
-import com.grillecube.client.renderer.world.MarchingCubesTerrainMesher;
 import com.grillecube.client.renderer.world.TerrainMesh;
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMesher;
@@ -42,6 +45,7 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 		boolean isInFrustrum;
 		Vector3f lastCameraPos;
 		Timer timer;
+		private float distance;
 
 		TerrainRenderingData(Terrain terrain) {
 			this.terrain = terrain;
@@ -67,8 +71,8 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			this.timer.update();
 			// calculate square distance from camera
 			Vector3f center = this.terrain.getWorldPosCenter();
-			float distance = (float) Vector3f.distanceSquare(center, camera.getPosition());
-			this.isInFrustrum = (distance < camera.getSquaredRenderDistance()
+			this.distance = (float) Vector3f.distanceSquare(center, camera.getPosition());
+			this.isInFrustrum = (this.distance < camera.getSquaredRenderDistance()
 					&& camera.isBoxInFrustum(terrain.getWorldPos(), Terrain.TERRAIN_SIZE));
 		}
 
@@ -76,11 +80,10 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			return (this.isInFrustrum);
 		}
 
-		void glUpdate(TerrainMesher mesher) {
+		void glUpdate() {
 			if (this.meshUpToDate) {
 				return;
 			}
-
 			this.meshUpToDate = true;
 			mesher.pushVerticesToStacks(this.terrain, this.opaqueMesh, this.transparentMesh, this.opaqueTriangles,
 					this.transparentTriangles);
@@ -117,9 +120,6 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 	/** array list of terrain to render */
 	private HashMap<Terrain, TerrainRenderingData> terrainsRenderingData;
 
-	/** the mesher */
-	private TerrainMesher mesher;
-
 	/** next rendering list */
 	private ArrayList<TerrainMesh> opaqueRenderingList;
 	private ArrayList<TerrainMesh> transparentRenderingList;
@@ -127,6 +127,8 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 	/** the world on which terrain should be considered */
 	private WorldFlat world;
 	private CameraProjective camera;
+
+	private TerrainMesher mesher;
 
 	public FlatTerrainRendererFactory(MainRenderer mainRenderer) {
 		super(mainRenderer);
@@ -203,8 +205,18 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 
 	}
 
+	static int i = 0;
+
 	@Override
 	public final void update() {
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X) && System.currentTimeMillis() % 1000 < 1000) {
+//			this.mesher = new MarchingCubesTerrainMesher(0);
+			 this.mesher = new FlatTerrainMesherGreedy();
+
+			for (TerrainRenderingData terrainRenderingData : terrainsRenderingData.values()) {
+				terrainRenderingData.requestUpdate();
+			}
+		}
 		this.updateLoadedMeshes();
 		this.updateRenderingList();
 	}
@@ -226,11 +238,9 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 		// update meshes and add opaques one first (to be rendered first)
 		for (TerrainRenderingData terrainRenderingData : terrainsRenderingData) {
 			terrainRenderingData.update(this.getCamera());
-			// if (terrainRenderingData.isInFrustrum() &&
-			// terrainRenderingData.opaqueMesh.getVertexCount() > 0) {
-			this.opaqueRenderingList.add(terrainRenderingData.opaqueMesh);
-			// terrainRenderingData.requestUpdate();
-			// }
+			if (terrainRenderingData.isInFrustrum() && terrainRenderingData.opaqueMesh.getVertexCount() > 0) {
+				this.opaqueRenderingList.add(terrainRenderingData.opaqueMesh);
+			}
 		}
 		this.opaqueRenderingList.sort(DISTANCE_DESC_SORT);
 
@@ -245,7 +255,7 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			@Override
 			public void run() {
 				for (TerrainRenderingData terrainRenderingData : terrainsRenderingData) {
-					terrainRenderingData.glUpdate(mesher);
+					terrainRenderingData.glUpdate();
 				}
 			}
 		});

@@ -50,7 +50,8 @@ public class WorldGeneratorHoles extends WorldGenerator {
 				if (y < 0) {
 					continue;
 				}
-				terrain.setBlock(Blocks.PLANTS[rng.nextInt(Blocks.PLANTS.length)], x, y + 1, z);
+				// terrain.setBlock(Blocks.PLANTS[rng.nextInt(Blocks.PLANTS.length)], x, y + 1,
+				// z);
 				terrain.setBlock(Blocks.GRASS, x, y, z);
 
 			}

@@ -46,11 +46,6 @@ public class FlatTerrainMesherCull extends TerrainMesher {
 						if (blockFace == null) {
 							continue;
 						}
-						// Vector3i n = face.getVector();
-						// if (faces[face.getOpposite().getID()][x + n.x][y +
-						// n.y][z + n.z] != null) {
-						// continue;
-						// }
 						blockFace.pushVertices(opaqueStack);
 					}
 				}

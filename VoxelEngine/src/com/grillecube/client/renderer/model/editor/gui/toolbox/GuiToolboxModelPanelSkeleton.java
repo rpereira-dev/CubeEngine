@@ -8,10 +8,12 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
 import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
+import com.grillecube.common.maths.Matrix4f;
 
 public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 
@@ -133,7 +135,25 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.rotZ.select((Object) 0);
 		}
 
-		this.refresh();
+		GuiListener<GuiSliderBarEventValueChanged<GuiSliderBar>> listener = new GuiListener<GuiSliderBarEventValueChanged<GuiSliderBar>>() {
+			@Override
+			public void invoke(GuiSliderBarEventValueChanged<GuiSliderBar> event) {
+				Matrix4f localBindTransform = new Matrix4f();
+				localBindTransform.rotateXYZ((float) ((Integer) rotX.getSelectedValue() / 180.0f * Math.PI),
+						(float) ((Integer) rotY.getSelectedValue() / 180.0f * Math.PI),
+						(float) ((Integer) rotZ.getSelectedValue() / 180.0f * Math.PI));
+				localBindTransform.translate(-(Integer) posX.getSelectedValue(), -(Integer) posY.getSelectedValue(),
+						-(Integer) posZ.getSelectedValue());
+				getSelectedBone().setLocalBindTransform(localBindTransform);
+				getSelectedBone().calcInverseBindTransform();
+			}
+		};
+		this.posX.addListener(listener);
+		this.posY.addListener(listener);
+		this.posZ.addListener(listener);
+		this.rotX.addListener(listener);
+		this.rotY.addListener(listener);
+		this.rotZ.addListener(listener);
 	}
 
 	@Override

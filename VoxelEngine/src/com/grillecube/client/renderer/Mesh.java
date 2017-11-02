@@ -79,9 +79,6 @@ public abstract class Mesh {
 		GLH.glhDeleteObject(this.vao);
 		GLH.glhDeleteObject(this.vbo);
 
-		this.position = null;
-		this.rotation = null;
-		this.scale = null;
 		this.vao = null;
 		this.vbo = null;
 

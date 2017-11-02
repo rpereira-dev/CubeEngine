@@ -13,7 +13,6 @@ import com.grillecube.client.opengl.object.GLVertexBuffer;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
-import com.grillecube.client.renderer.factories.LineRendererFactory;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;

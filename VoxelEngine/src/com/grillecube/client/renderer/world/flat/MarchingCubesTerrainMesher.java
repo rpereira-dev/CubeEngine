@@ -1,12 +1,14 @@
-package com.grillecube.client.renderer.world;
+package com.grillecube.client.renderer.world.flat;
 
 import java.util.ArrayList;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
-import com.grillecube.client.renderer.blocks.BlockRendererCube;
-import com.grillecube.common.faces.Face;
-import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.block.Blocks;
+import com.grillecube.client.renderer.world.TerrainMeshTriangle;
+import com.grillecube.client.renderer.world.TerrainMeshVertex;
+import com.grillecube.client.renderer.world.TerrainMesher;
+import com.grillecube.client.resources.BlockRendererManager;
+import com.grillecube.common.maths.Maths;
+import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class MarchingCubesTerrainMesher extends TerrainMesher {
@@ -288,56 +290,50 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 			{ 0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 } };
 
+	private final int lodx;
+	private final int lody;
+	private final int lodz;
+
+	public MarchingCubesTerrainMesher(int lod) {
+		this(lod, lod, lod);
+	}
+
+	public MarchingCubesTerrainMesher(int lodx, int lody, int lodz) {
+		this.lodx = Maths.clamp(lodx, 1, Terrain.DIMX);
+		this.lody = Maths.clamp(lody, 1, Terrain.DIMY);
+		this.lodz = Maths.clamp(lodz, 1, Terrain.DIMZ);
+	}
+
+	public MarchingCubesTerrainMesher() {
+		this(1);
+	}
+
 	@Override
 	protected void fillVertexStacks(Terrain terrain, ArrayList<TerrainMeshTriangle> opaqueStack,
 			ArrayList<TerrainMeshTriangle> transparentStack) {
-		for (int z = 0; z < Terrain.DIMZ; z++) {
-			for (int y = 0; y < Terrain.DIMY; y++) {
-				for (int x = 0; x < Terrain.DIMX; x++) {
-					polygonize(opaqueStack, terrain, x, y, z);
+		for (int z = 0; z < Terrain.DIMZ; z += this.lodz) {
+			for (int y = 0; y < Terrain.DIMY; y += this.lody) {
+				for (int x = 0; x < Terrain.DIMX; x += this.lodx) {
+					this.polygonize(opaqueStack, terrain, x, y, z);
 				}
 			}
 		}
-		System.out.println(opaqueStack.size());
-
-	}
-
-	// fSample1 finds the distance of (fX, fY, fZ) from three moving points
-	private float fSample(float fX, float fY, float fZ) {
-		double fResult = 0.0;
-		double fDx, fDy, fDz;
-		Vector3f[] sSourcePoint = new Vector3f[3];
-		sSourcePoint[0] = new Vector3f(0.5f, 0.5f, 0.5f);
-		sSourcePoint[1] = new Vector3f(0.5f, 0.5f, 0.5f);
-		sSourcePoint[2] = new Vector3f(0.5f, 0.5f, 0.5f);
-		fDx = fX - sSourcePoint[0].x;
-		fDy = fY - sSourcePoint[0].y;
-		fDz = fZ - sSourcePoint[0].z;
-		fResult += 0.5 / (fDx * fDx + fDy * fDy + fDz * fDz);
-
-		fDx = fX - sSourcePoint[1].x;
-		fDy = fY - sSourcePoint[1].y;
-		fDz = fZ - sSourcePoint[1].z;
-		fResult += 1.0 / (fDx * fDx + fDy * fDy + fDz * fDz);
-
-		fDx = fX - sSourcePoint[2].x;
-		fDy = fY - sSourcePoint[2].y;
-		fDz = fZ - sSourcePoint[2].z;
-		fResult += 1.5 / (fDx * fDx + fDy * fDy + fDz * fDz);
-
-		return ((float) fResult);
 	}
 
 	private void polygonize(ArrayList<TerrainMeshTriangle> opaqueStack, Terrain terrain, int x, int y, int z) {
-		float fOffset;
-		Vector3f asEdgeVertex[] = new Vector3f[12];
+		TerrainMeshVertex edgeVertices[] = new TerrainMeshVertex[12];
+
+		Block block = terrain.getBlock(x, y, z);
+		BlockRenderer blockRenderer = BlockRendererManager.instance().getBlockRenderer(block);
 
 		// Make a local copy of the values at the cube's corners
 		// Find which vertices are inside of the surface and which are outside
 		int indexFlags = 0;
 		for (int vertexID = 0; vertexID < 8; vertexID++) {
-			if (terrain.getBlock(x + BlockRenderer.VERTICES[vertexID].x, y + BlockRenderer.VERTICES[vertexID].y,
-					z + BlockRenderer.VERTICES[vertexID].z) != Blocks.AIR) {
+			Block neighbor = terrain.getBlock(x + BlockRenderer.VERTICES[vertexID].x * this.lodx,
+					y + BlockRenderer.VERTICES[vertexID].y * this.lody,
+					z + BlockRenderer.VERTICES[vertexID].z * this.lodz);
+			if (neighbor.isVisible()) {
 				indexFlags |= 1 << vertexID;
 			}
 		}
@@ -356,35 +352,73 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 		for (int edgeID = 0; edgeID < 12; edgeID++) {
 			// if there is an intersection on this edge
 			if ((edgeFlags & (1 << edgeID)) != 0) {
-				fOffset = 0.5f;
-				asEdgeVertex[edgeID] = new Vector3f();
-				asEdgeVertex[edgeID].x = x + (BlockRenderer.VERTICES[BlockRenderer.EDGES[edgeID][0]].x
-						+ fOffset * BlockRenderer.EDGES_DIRECTIONS[edgeID].x);
-				asEdgeVertex[edgeID].y = y + (BlockRenderer.VERTICES[BlockRenderer.EDGES[edgeID][0]].y
-						+ fOffset * BlockRenderer.EDGES_DIRECTIONS[edgeID].y);
-				asEdgeVertex[edgeID].z = z + (BlockRenderer.VERTICES[BlockRenderer.EDGES[edgeID][0]].z
-						+ fOffset * BlockRenderer.EDGES_DIRECTIONS[edgeID].z);
+				int v0 = BlockRenderer.EDGES[edgeID][0];
+				int v1 = BlockRenderer.EDGES[edgeID][1];
+				float offset = 0.5f;
+				float offx = offset * BlockRenderer.EDGES_DIRECTIONS[edgeID].x;
+				float offy = offset * BlockRenderer.EDGES_DIRECTIONS[edgeID].y;
+				float offz = offset * BlockRenderer.EDGES_DIRECTIONS[edgeID].z;
+				float dx = BlockRenderer.VERTICES[v0].x + offx;
+				float dy = BlockRenderer.VERTICES[v0].y + offy;
+				float dz = BlockRenderer.VERTICES[v0].z + offz;
+				float posx = x + dx * this.lodx;
+				float posy = y + dy * this.lody;
+				float posz = z + dz * this.lodz;
+
+				// brightness
+				float sl = 0.0f;
+				float bl = 0.0f;
+				int faceID, vertexID;
+				for (int i = 0; i < 3; i++) {
+					faceID = BlockRenderer.VERTICES_FACES[v0][i];
+					vertexID = BlockRenderer.VERTICES_FACES_ID[v0][faceID];
+					sl += BlockRenderer.getSunLight(terrain, x, y, z, BlockRenderer.FACES_NEIGHBORS[faceID][vertexID]);
+					bl += BlockRenderer.getBlockLight(terrain, x, y, z,
+							BlockRenderer.FACES_NEIGHBORS[faceID][vertexID]);
+
+					faceID = BlockRenderer.VERTICES_FACES[v1][i];
+					vertexID = BlockRenderer.VERTICES_FACES_ID[v1][faceID];
+					sl += BlockRenderer.getSunLight(terrain, x, y, z, BlockRenderer.FACES_NEIGHBORS[faceID][vertexID]);
+					bl += BlockRenderer.getBlockLight(terrain, x, y, z,
+							BlockRenderer.FACES_NEIGHBORS[faceID][vertexID]);
+
+				}
+				sl /= (float) 6.0f;
+				sl = Maths.clamp(sl, 0.0f, 1.0f);
+				bl /= (float) 6.0f;
+				bl = Maths.clamp(bl, 0.0f, 1.0f);
+
+				// uv
+				int textureID = blockRenderer == null ? 1 : blockRenderer.getDefaultTextureID();
+				float atlasX = BlockRenderer.getAtlasX(textureID);
+				float atlasY = BlockRenderer.getAtlasY(textureID);
+				float uvx = 1;
+				float uvy = 1;
+
+				// brightness
+				float b = 0.1f + sl + bl;
+
+				// build vertex
+				edgeVertices[edgeID] = new TerrainMeshVertex(posx, posy, posz, 0, 1, 0, atlasX, atlasY, uvx, uvy,
+						0xffffffff, b, 0.0f);
+
 			}
 		}
 
 		// Draw the triangles that were found. There can be up to five per cube
 		for (int triangleID = 0; triangleID < 5; triangleID++) {
-			if (TRI_TABLE[indexFlags][3 * triangleID] < 0)
+			if (TRI_TABLE[indexFlags][3 * triangleID] < 0) {
 				break;
+			}
 
-			// the sun light
-			float sunLight = BlockRenderer.getSunLight(terrain, x, y, z, BlockRenderer.FACES_NEIGHBORS[Face.TOP][0]);
 			int i0 = TRI_TABLE[indexFlags][3 * triangleID + 0];
 			int i1 = TRI_TABLE[indexFlags][3 * triangleID + 1];
 			int i2 = TRI_TABLE[indexFlags][3 * triangleID + 2];
-			TerrainMeshVertex v0 = new TerrainMeshVertex(asEdgeVertex[i0].x, asEdgeVertex[i0].y, asEdgeVertex[i0].z, 0,
-					1, 0, 0, 0, 0, 0, 0xffffffff, sunLight, 0);
-			TerrainMeshVertex v1 = new TerrainMeshVertex(asEdgeVertex[i1].x, asEdgeVertex[i1].y, asEdgeVertex[i1].z, 0,
-					1, 0, 0, 0, 0, 0, 0xffffffff, sunLight, 0);
-			TerrainMeshVertex v2 = new TerrainMeshVertex(asEdgeVertex[i2].x, asEdgeVertex[i2].y, asEdgeVertex[i2].z, 0,
-					1, 0, 0, 0, 0, 0, 0xffffffff, sunLight, 0);
-			TerrainMeshTriangle triangle = new TerrainMeshTriangle(v0, v1, v2);
+			TerrainMeshTriangle triangle = new TerrainMeshTriangle(edgeVertices[i0], edgeVertices[i1],
+					edgeVertices[i2]);
 			opaqueStack.add(triangle);
 		}
 	}
+
+	static int ABC = 0;
 }

@@ -1,7 +1,6 @@
 package com.grillecube.client.renderer.blocks;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
@@ -125,5 +124,10 @@ public class BlockRendererPlant extends BlockRenderer {
 		float ny = face.getNormal().y;
 		float nz = face.getNormal().z;
 		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, uvx, uvy, color, brightness, ao));
+	}
+
+	@Override
+	public int getDefaultTextureID() {
+		return (this.textureID);
 	}
 }

@@ -83,10 +83,4 @@ public class BlockRendererLiquid extends BlockRendererCube {
 		stack.add(new TerrainMeshTriangle(v0, v1, v2));
 		stack.add(new TerrainMeshTriangle(v0, v2, v3));
 	}
-
-	@Override
-	protected float getVertexAO(Terrain terrain, Block side1, Block side2, Block corner) {
-		return (AO_0);
-	}
-
 }

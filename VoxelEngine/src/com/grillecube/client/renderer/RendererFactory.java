@@ -1,6 +1,5 @@
-package com.grillecube.client.renderer.factories;
+package com.grillecube.client.renderer;
 
-import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.resources.ResourceManagerClient;
 
 public abstract class RendererFactory {

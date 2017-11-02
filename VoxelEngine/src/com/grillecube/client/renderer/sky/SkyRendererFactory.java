@@ -1,6 +1,7 @@
-package com.grillecube.client.renderer.factories;
+package com.grillecube.client.renderer.sky;
 
 import com.grillecube.client.renderer.MainRenderer;
+import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.world.Sky;
 

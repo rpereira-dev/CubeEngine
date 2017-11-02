@@ -1,8 +1,7 @@
 package com.grillecube.client.renderer.world.flat;
 
 import com.grillecube.client.renderer.MainRenderer;
-import com.grillecube.client.renderer.factories.SkyRendererFactory;
-import com.grillecube.client.renderer.factories.FlatTerrainRendererFactory;
+import com.grillecube.client.renderer.sky.SkyRendererFactory;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.common.world.WorldFlat;
 

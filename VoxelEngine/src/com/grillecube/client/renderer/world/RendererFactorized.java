@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
-import com.grillecube.client.renderer.factories.RendererFactory;
+import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
