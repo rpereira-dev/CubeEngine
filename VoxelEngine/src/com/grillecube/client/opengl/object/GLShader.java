@@ -35,8 +35,8 @@ public class GLShader implements GLObject {
 		return (load(filepath, type, ""));
 	}
 
-	public static final GLShader load(String filepath, int type, String header) {
-		GLShader shader = new GLShader(ShaderLoader.loadShader(filepath, type, header));
+	public static final GLShader load(String filepath, int type, String preprocessor) {
+		GLShader shader = new GLShader(ShaderLoader.loadShader(filepath, type, preprocessor));
 		return (shader);
 	}
 
@@ -51,11 +51,11 @@ public class GLShader implements GLObject {
 }
 
 class ShaderLoader {
-	public static int loadShader(String filepath, int type, String header) {
+	public static int loadShader(String filepath, int type, String preprocessor) {
 		Logger.get().log(Logger.Level.FINE, "Loading shader: " + filepath);
 
 		try {
-			String source = header + readFile(filepath);
+			String source = readFile(filepath) + preprocessor;
 			int shader_id = GL20.glCreateShader(type);
 			GL20.glShaderSource(shader_id, source);
 			GL20.glCompileShader(shader_id);

@@ -81,9 +81,13 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 		}
 
 		void glUpdate() {
+			if (COUNT == 2) {
+				return;
+			}
 			if (this.meshUpToDate) {
 				return;
 			}
+			++COUNT;
 			this.meshUpToDate = true;
 			mesher.pushVerticesToStacks(this.terrain, this.opaqueMesh, this.transparentMesh, this.opaqueTriangles,
 					this.transparentTriangles);
@@ -104,7 +108,8 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			// }
 			// this.transparentTriangles.sort(TRIANGLE_SORT);
 			// // update vbo
-			// mesher.setMeshVertices(this.transparentMesh, this.transparentTriangles);
+			// mesher.setMeshVertices(this.transparentMesh,
+			// this.transparentTriangles);
 			// this.lastCameraPos.set(camera.getPosition());
 			// }
 		}
@@ -208,18 +213,21 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 	static int i = 0;
 	static long t = System.currentTimeMillis();
 	static int dt = 0;
+	static int COUNT = 0;
 
 	@Override
 	public final void update() {
+		COUNT = 0;
 		dt += System.currentTimeMillis() - t;
 		t = System.currentTimeMillis();
 		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X) && (dt < 0 || dt > 200)) {
 			dt = 0;
 			int j = i++ % 5;
 			if (j == 4) {
-				this.mesher = new FlatTerrainMesherCull();
+				// this.mesher = new FlatTerrainMesherCull();
+//				this.mesher = new FlatTerrainMesherGreedy();
 			} else {
-				this.mesher = new MarchingCubesTerrainMesher((int) (Math.pow(2, j)));
+				this.mesher = new MarchingCubesTerrainMesher((int)0);// (Math.pow(2, j)));
 			}
 			for (TerrainRenderingData terrainRenderingData : terrainsRenderingData.values()) {
 				terrainRenderingData.requestUpdate();

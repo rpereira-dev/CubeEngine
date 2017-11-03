@@ -127,7 +127,7 @@ public class BlockRendererPlant extends BlockRenderer {
 	}
 
 	@Override
-	public int getDefaultTextureID() {
+	public int getDefaultTextureID(int faceID) {
 		return (this.textureID);
 	}
 }

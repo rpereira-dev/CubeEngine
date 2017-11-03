@@ -97,8 +97,8 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 										+ BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]].z
 												* Terrain.BLOCK_SIZE * depth;
 
-								vertex.uvx *= depth;
-								vertex.uvy *= width;
+								vertex.u *= depth;
+								vertex.v *= width;
 							}
 							face.pushVertices(stack);
 
@@ -143,8 +143,8 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 										+ BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]].y
 												* Terrain.BLOCK_SIZE * height;
 
-								vertex.uvx *= width;
-								vertex.uvy *= height;
+								vertex.u *= width;
+								vertex.v *= height;
 							}
 							face.pushVertices(stack);
 
@@ -190,8 +190,8 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 										+ BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]].y
 												* Terrain.BLOCK_SIZE * height;
 
-								vertex.uvx *= depth;
-								vertex.uvy *= height;
+								vertex.u *= depth;
+								vertex.v *= height;
 							}
 							face.pushVertices(stack);
 

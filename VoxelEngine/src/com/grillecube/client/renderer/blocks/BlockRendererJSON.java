@@ -43,7 +43,7 @@ public class BlockRendererJSON extends BlockRenderer {
 	}
 
 	@Override
-	public int getDefaultTextureID() {
+	public int getDefaultTextureID(int faceID) {
 		return (0);
 	}
 }

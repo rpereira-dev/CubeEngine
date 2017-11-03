@@ -30,8 +30,8 @@ public class TerrainMeshVertex extends MeshVertex {
 
 	public float atlasX;
 	public float atlasY;
-	public float uvx; // [0, 1]
-	public float uvy; // [0, 1]
+	public float u; // [0, 1]
+	public float v; // [0, 1]
 
 	public int color;
 	public float brightness;
@@ -43,7 +43,7 @@ public class TerrainMeshVertex extends MeshVertex {
 	}
 
 	public TerrainMeshVertex(float posx, float posy, float posz, float normalx, float normaly, float normalz,
-			float atlasX, float atlasY, float uvx, float uvy, int color, float brightness, float ao) {
+			float atlasX, float atlasY, float u, float v, int color, float brightness, float ao) {
 		super();
 
 		this.posx = posx;
@@ -56,8 +56,8 @@ public class TerrainMeshVertex extends MeshVertex {
 
 		this.atlasX = atlasX;
 		this.atlasY = atlasY;
-		this.uvx = uvx;
-		this.uvy = uvy;
+		this.u = u;
+		this.v = v;
 
 		this.color = color;
 		this.brightness = brightness;
@@ -74,8 +74,8 @@ public class TerrainMeshVertex extends MeshVertex {
 		buffer.putFloat(this.normalz);
 		buffer.putFloat(this.atlasX);
 		buffer.putFloat(this.atlasY);
-		buffer.putFloat(this.uvx);
-		buffer.putFloat(this.uvy);
+		buffer.putFloat(this.u);
+		buffer.putFloat(this.v);
 		buffer.putInt(this.color);
 		buffer.putFloat(this.brightness);
 	}
@@ -83,6 +83,6 @@ public class TerrainMeshVertex extends MeshVertex {
 	@Override
 	public MeshVertex clone() {
 		return (new TerrainMeshVertex(this.posx, this.posy, this.posz, this.normalx, this.normaly, this.normalz,
-				this.atlasX, this.atlasY, this.uvx, this.uvy, this.color, this.brightness, this.ao));
+				this.atlasX, this.atlasY, this.u, this.v, this.color, this.brightness, this.ao));
 	}
 }

@@ -31,8 +31,9 @@ public class BlockRendererCube extends BlockRenderer {
 	 *            : the face and texture ID's
 	 * 
 	 *            e.g: new BlockRendererCube(Blocks.GRASS, Face.LEFT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.RIGHT, ClientBlocks.T_GRASS_SIDE,
-	 *            Face.FRONT, ClientBlocks.T_GRASS_SIDE, Face.BACK,
+	 *            ClientBlocks.T_GRASS_SIDE, Face.RIGHT,
+	 *            ClientBlocks.T_GRASS_SIDE, Face.FRONT,
+	 *            ClientBlocks.T_GRASS_SIDE, Face.BACK,
 	 *            ClientBlocks.T_GRASS_SIDE, Face.TOP, ClientBlocks.T_GRASS_TOP,
 	 *            Face.BOT, ClientBlocks.T_DIRT);
 	 */
@@ -120,8 +121,8 @@ public class BlockRendererCube extends BlockRenderer {
 	}
 
 	/**
-	 * return the vertex for the given face at the given coordinates, for it given
-	 * id
+	 * return the vertex for the given face at the given coordinates, for it
+	 * given id
 	 */
 	public TerrainMeshVertex createBlockFaceVertex(Terrain terrain, Face face, int x, int y, int z, int vertexID) {
 		Vector3i[] neighboors = FACES_NEIGHBORS[face.getID()][vertexID];
@@ -164,7 +165,7 @@ public class BlockRendererCube extends BlockRenderer {
 	}
 
 	@Override
-	public int getDefaultTextureID() {
-		return (this.textureIDs[Face.TOP]);
+	public int getDefaultTextureID(int faceID) {
+		return (this.textureIDs[faceID]);
 	}
 }

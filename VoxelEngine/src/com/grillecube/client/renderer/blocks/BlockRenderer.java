@@ -15,12 +15,54 @@ import com.grillecube.common.world.terrain.Terrain;
 /** the block renderer class */
 public abstract class BlockRenderer {
 
+
+	
 	/**
-	 * 5------------6 /| /| / | / | 3------------2--| | | | | | | | | | | | | |
-	 * 4---------|--7 | / | / |/ |/ 0------------1
-	 *
-	 *
-	 */
+	 ** 
+	 **				7-------------6
+	 **			   /|            /|
+	 **			  / |           / |
+	 **			 /  |          /  |
+	 **			3-------------2---|
+	 **			|   |         |   |
+	 **			|   |         |   |
+	 **			|   |         |   |
+	 **			|   4---------|---5
+	 **			|  /          |  /
+	 **			| /           | /
+	 **			|/            |/
+	 **			0-------------1
+	 **
+	 **
+	 **
+	 **
+	 **							TOP
+	 **
+	 **										RIGHT
+	 **						x------6------x
+	 **					   /|            /|	
+	 **					 11 |          10 |
+	 **					 /  |          /  |
+	 **					x-------2-----x---|
+	 **					|   7         |   |
+	 **					|   |         |   5			BACK
+	 **		FRONT		|   |         |   |
+	 **					3   x-----4---1---x
+	 **					|  /          |  /
+	 **					| 8           | 9
+	 **					|/            |/
+	 **			LEFT	x------0------x
+	 **
+	 **						BOT
+	 **
+	 **			^
+	 **			|    ^
+	 **			|   /
+	 **			y  z
+	 **			| /
+	 **			|/
+	 **			------x----->
+	 **/
 
 	/** edges offset */
 	public static final Vector3i[] VERTICES = new Vector3i[8];
@@ -34,12 +76,14 @@ public abstract class BlockRenderer {
 	/** vertices for a face */
 	public static final int[][] FACES_VERTICES = new int[Face.faces.length][4];
 	/**
-	 * lists the index of the endpoint vertices for each of the 12edges of the cube
+	 * lists the index of the endpoint vertices for each of the 12edges of the
+	 * cube
 	 */
 	public static final int EDGES[][] = new int[12][2];
 
 	/**
-	 * 12x3 : lists the direction vector (vertex1-vertex0) for each edge in the cube
+	 * 12x3 : lists the direction vector (vertex1-vertex0) for each edge in the
+	 * cube
 	 */
 	public static final Vector3i[] EDGES_DIRECTIONS = new Vector3i[12];
 
@@ -249,11 +293,13 @@ public abstract class BlockRenderer {
 		}
 	};
 
-	public static float[][] FACES_UV = { { 0, 0 }, { 0, 1 }, { 1, 1 }, { 1, 0 } };
+	public static final float[][] FACES_UV = { { 0, 0 }, { 0, 1 }, { 1, 1 }, { 1, 0 } };
+	public static final float[][] EDGES_UV = { { 0.5f, 1.0f }, { 1, 0.5f }, { 0.5f, 0 }, { 0, 0.5f }, { 1, 0.5f },
+			{ 0.5f, 0 }, { 0, 0.5f }, { 0.5f, 1.0f }, { 0.5f, 0 }, { 0, 0.5f }, { 0.5f, 1.0f }, { 1, 0.5f } };
 
 	/**
-	 * generate the vertices for the given block, in the given terrain and (x, y, z)
-	 * terrain-relative coordinates.
+	 * generate the vertices for the given block, in the given terrain and (x,
+	 * y, z) terrain-relative coordinates.
 	 *
 	 * If this block has faces (1x1), it should be set: faces[faceID][x][y][z] =
 	 * blockFace, so it can be cull if needed
@@ -296,8 +342,8 @@ public abstract class BlockRenderer {
 		return (sunLight / (neighboors.length * 16.0f));
 	}
 
-	/** return the default texture id of this block renderer */
-	public abstract int getDefaultTextureID();
+	/** return the default texture id of this block renderer for the given face */
+	public abstract int getDefaultTextureID(int faceID);
 
 	public static final float AO_UNIT = 0.06f;
 
