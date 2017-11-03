@@ -93,14 +93,9 @@ public class BlockRendererCube extends BlockRenderer {
 
 	private final BlockFace createBlockFace(Terrain terrain, Block block, Face face, int x, int y, int z) {
 
-		Vector3i vec = face.getVector();
-
-		// get the neighbor of this face
-		Block neighbor = terrain.getBlock(x + vec.x, y + vec.y, z + vec.z);
-
 		// if the face-neighboor block is visible isnt transparent
 		// TODO : find a solution on leaves square
-		if (neighbor.isVisible() && !neighbor.isTransparent()) {
+		if (!this.canRenderFace(terrain, block, face, x, y, z)) {
 			// the face isnt visible
 			return (null);
 		}
@@ -113,6 +108,15 @@ public class BlockRendererCube extends BlockRenderer {
 		BlockFace blockface = new BlockFace(block, this.textureIDs[face.getID()], v0, v1, v2, v3);
 		return (blockface);
 
+	}
+
+	protected boolean canRenderFace(Terrain terrain, Block block, Face face, int x, int y, int z) {
+		Vector3i vec = face.getVector();
+
+		// get the neighbor of this face
+		Block neighbor = terrain.getBlock(x + vec.x, y + vec.y, z + vec.z);
+
+		return (!neighbor.isVisible() || neighbor.isTransparent());
 	}
 
 	/**

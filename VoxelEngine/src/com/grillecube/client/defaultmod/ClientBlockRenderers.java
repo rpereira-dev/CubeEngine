@@ -1,6 +1,7 @@
 package com.grillecube.client.defaultmod;
 
 import com.grillecube.client.renderer.blocks.BlockRendererCube;
+import com.grillecube.client.renderer.blocks.BlockRendererLeaves;
 import com.grillecube.client.renderer.blocks.BlockRendererLiquid;
 import com.grillecube.client.renderer.blocks.BlockRendererPlant;
 import com.grillecube.client.resources.BlockRendererManager;
@@ -27,6 +28,7 @@ public class ClientBlockRenderers implements IModResource {
 	public static int T_LOG_SIDE;
 	public static int T_LOG_INSIDE;
 	public static int T_LEAVES;
+	public static int T_LIGHT;
 	public static int[] T_PLANTS = new int[Blocks.PLANTS.length];
 
 	@Override
@@ -45,6 +47,7 @@ public class ClientBlockRenderers implements IModResource {
 		T_LOG_SIDE = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/log_side.png"));
 		T_LOG_INSIDE = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/log_inside.png"));
 		T_LEAVES = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/leaves.png"));
+		T_LIGHT = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/light.png"));
 		T_PLANTS[0] = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/flower1.png"));
 		T_PLANTS[1] = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/flower2.png"));
 		T_PLANTS[2] = blockTextureManager.registerBlockTexture(R.getResPath("textures/blocks/flower3.png"));
@@ -59,8 +62,8 @@ public class ClientBlockRenderers implements IModResource {
 						ClientBlockRenderers.T_GRASS_SIDE, Face.TOP, ClientBlockRenderers.T_GRASS_TOP, Face.BOT,
 						ClientBlockRenderers.T_DIRT));
 
-		blockTextureManager.setBlockRenderer(Blocks.LEAVES, new BlockRendererCube(ClientBlockRenderers.T_LEAVES));
-		blockTextureManager.setBlockRenderer(Blocks.LIGHT_TEST, new BlockRendererCube(ClientBlockRenderers.T_STONE));
+		blockTextureManager.setBlockRenderer(Blocks.LEAVES, new BlockRendererLeaves(ClientBlockRenderers.T_LEAVES));
+		blockTextureManager.setBlockRenderer(Blocks.LIGHT, new BlockRendererCube(ClientBlockRenderers.T_LIGHT));
 
 		blockTextureManager.setBlockRenderer(Blocks.LOG,
 				new BlockRendererCube(Face.LEFT, ClientBlockRenderers.T_LOG_SIDE, Face.RIGHT,

@@ -61,7 +61,7 @@ public abstract class Block {
 	/**
 	 * return true if some pixels of this block have an alpha channel != 1
 	 */
-	protected abstract boolean hasTransparency();
+	public abstract boolean hasTransparency();
 
 	/**
 	 * update this block for this terrain at given coordinates (relative to the

@@ -46,7 +46,7 @@ public class FlatTerrainMesherCull extends TerrainMesher {
 						if (blockFace == null) {
 							continue;
 						}
-						blockFace.pushVertices(opaqueStack);
+						blockFace.pushVertices(blockFace.getBlock().isOpaque() ? opaqueStack : transparentStack);
 					}
 				}
 			}

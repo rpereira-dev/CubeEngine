@@ -13,7 +13,7 @@ public class Blocks implements IModResource {
 	public static Block DIRT;
 	public static Block GRASS;
 	public static Block STONE;
-	public static Block LIGHT_TEST;
+	public static Block LIGHT;
 	public static Block LOG;
 	public static Block LEAVES;
 	public static Block LIQUID_WATER;
@@ -30,7 +30,7 @@ public class Blocks implements IModResource {
 		Blocks.DIRT = blockmanager.registerBlock(new BlockDirt(blockmanager.getNextID()));
 		Blocks.GRASS = blockmanager.registerBlock(new BlockGrass(blockmanager.getNextID()));
 		Blocks.STONE = blockmanager.registerBlock(new BlockStone(blockmanager.getNextID()));
-		Blocks.LIGHT_TEST = blockmanager.registerBlock(new BlockLight(blockmanager.getNextID()));
+		Blocks.LIGHT = blockmanager.registerBlock(new BlockLight(blockmanager.getNextID()));
 		Blocks.LOG = blockmanager.registerBlock(new BlockLog(blockmanager.getNextID()));
 		Blocks.LEAVES = blockmanager.registerBlock(new BlockLeaves(blockmanager.getNextID()));
 		Blocks.LIQUID_WATER = blockmanager.registerBlock(new BlockLiquidWater(blockmanager.getNextID()));

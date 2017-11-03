@@ -98,7 +98,7 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 			//
 			// if (i++ % 4 != 0) {
 			pos.set(this.getLookCoords());
-			super.setBlock(Blocks.LIGHT_TEST, pos);
+			super.setBlock(Blocks.LIGHT, pos);
 			// } else {
 			// super.setBlock(Blocks.AIR, pos);
 			// }

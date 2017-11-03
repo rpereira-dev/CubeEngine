@@ -7,6 +7,7 @@ import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.resources.BlockRendererManager;
+import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.terrain.Terrain;
@@ -314,17 +315,27 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 		for (int z = 0; z < Terrain.DIMZ; z += this.lodz) {
 			for (int y = 0; y < Terrain.DIMY; y += this.lody) {
 				for (int x = 0; x < Terrain.DIMX; x += this.lodx) {
-					this.polygonize(opaqueStack, terrain, x, y, z);
+					this.polygonize(opaqueStack, transparentStack, terrain, x, y, z);
 				}
 			}
 		}
 	}
 
-	private void polygonize(ArrayList<TerrainMeshTriangle> opaqueStack, Terrain terrain, int x, int y, int z) {
+	private void polygonize(ArrayList<TerrainMeshTriangle> opaqueStack, ArrayList<TerrainMeshTriangle> transparentStack,
+			Terrain terrain, int x, int y, int z) {
 		TerrainMeshVertex edgeVertices[] = new TerrainMeshVertex[12];
 
 		Block block = terrain.getBlock(x, y, z);
 		BlockRenderer blockRenderer = BlockRendererManager.instance().getBlockRenderer(block);
+		if (blockRenderer == null) {
+			for (Face face : Face.faces) {
+				block = terrain.getBlock(x + face.getVector().x, y + face.getVector().y, z + face.getVector().z);
+				blockRenderer = BlockRendererManager.instance().getBlockRenderer(block);
+				if (blockRenderer != null) {
+					break;
+				}
+			}
+		}
 
 		// Make a local copy of the values at the cube's corners
 		// Find which vertices are inside of the surface and which are outside
@@ -396,7 +407,7 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 				float uvy = 1;
 
 				// brightness
-				float b = 0.1f + sl + bl;
+				float b = Maths.clamp(sl + bl, 0.3f, 1.2f);
 
 				// build vertex
 				edgeVertices[edgeID] = new TerrainMeshVertex(posx, posy, posz, 0, 1, 0, atlasX, atlasY, uvx, uvy,
@@ -416,9 +427,11 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 			int i2 = TRI_TABLE[indexFlags][3 * triangleID + 2];
 			TerrainMeshTriangle triangle = new TerrainMeshTriangle(edgeVertices[i0], edgeVertices[i1],
 					edgeVertices[i2]);
-			opaqueStack.add(triangle);
+			if (block.isOpaque()) {
+				opaqueStack.add(triangle);
+			} else {
+				transparentStack.add(triangle);
+			}
 		}
 	}
-
-	static int ABC = 0;
 }

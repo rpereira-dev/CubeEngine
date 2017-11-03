@@ -206,13 +206,21 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 	}
 
 	static int i = 0;
+	static long t = System.currentTimeMillis();
+	static int dt = 0;
 
 	@Override
 	public final void update() {
-		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X) && System.currentTimeMillis() % 1000 < 1000) {
-//			this.mesher = new MarchingCubesTerrainMesher(0);
-			 this.mesher = new FlatTerrainMesherGreedy();
-
+		dt += System.currentTimeMillis() - t;
+		t = System.currentTimeMillis();
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X) && (dt < 0 || dt > 200)) {
+			dt = 0;
+			int j = i++ % 5;
+			if (j == 4) {
+				this.mesher = new FlatTerrainMesherCull();
+			} else {
+				this.mesher = new MarchingCubesTerrainMesher((int) (Math.pow(2, j)));
+			}
 			for (TerrainRenderingData terrainRenderingData : terrainsRenderingData.values()) {
 				terrainRenderingData.requestUpdate();
 			}
