@@ -81,7 +81,7 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 		}
 
 		void glUpdate() {
-			if (COUNT == 2) {
+			if (COUNT == 1) {
 				return;
 			}
 			if (this.meshUpToDate) {
@@ -95,6 +95,7 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			mesher.setMeshVertices(this.transparentMesh, this.transparentTriangles);
 			this.opaqueTriangles.clear();
 			this.transparentTriangles.clear();
+			// this.opaqueMesh.cull(true);
 
 			// TODO : can this be done more properly?
 			// if there is transparent triangles, and camera moved
@@ -220,23 +221,31 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 		COUNT = 0;
 		dt += System.currentTimeMillis() - t;
 		t = System.currentTimeMillis();
-		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X) && (dt < 0 || dt > 200)) {
-			dt = 0;
-			int j = i++ % 5;
-			if (j == 4) {
-				// this.mesher = new FlatTerrainMesherCull();
-//				this.mesher = new FlatTerrainMesherGreedy();
-			} else {
-				this.mesher = new MarchingCubesTerrainMesher((int)0);// (Math.pow(2, j)));
+		if ((dt < 0 || dt > 200)) {
+
+			if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X)) {
+				dt = 0;
+
+				if (i % 2 == 0) {
+					// this.mesher = new FlatTerrainMesherCull();
+					// this.mesher = new FlatTerrainMesherGreedy();
+				} else {
+					// this.mesher = new FlatTerrainMesherCull();
+					this.mesher = new MarchingCubesTerrainMesher((int) 0);//
+					// (Math.pow(2,
+					// j)));
+				}
+				for (TerrainRenderingData terrainRenderingData : terrainsRenderingData.values()) {
+					terrainRenderingData.requestUpdate();
+				}
 			}
-			for (TerrainRenderingData terrainRenderingData : terrainsRenderingData.values()) {
-				terrainRenderingData.requestUpdate();
-			}
+			++i;
 		}
 		this.updateLoadedMeshes();
 		this.updateRenderingList();
 	}
 
+	public static boolean LIGHT = true;
 	private final Comparator<? super TerrainMesh> DISTANCE_DESC_SORT = new Comparator<TerrainMesh>() {
 		@Override
 		public int compare(TerrainMesh o1, TerrainMesh o2) {

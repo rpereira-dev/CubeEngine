@@ -167,8 +167,8 @@ public class GLH {
 	}
 
 	/**
-	 * create opengl textures ID and fill it data with the given bufferedimage (rgba
-	 * format)
+	 * create opengl textures ID and fill it data with the given bufferedimage
+	 * (rgba format)
 	 */
 	public static GLTexture glhGenTexture(BufferedImage image) {
 		GLTexture texture = GLH.glhGenTexture();
@@ -267,8 +267,8 @@ public class GLH {
 	/** MAIN TESTS */
 
 	/** constants */
-	public static final int DEFAULT_SCREEN_WIDTH = 1100;
-	public static final int DEFAULT_SCREEN_HEIGHT = (int) (DEFAULT_SCREEN_WIDTH / 1.6f);
+	public static final int DEFAULT_SCREEN_WIDTH = 1280;
+	public static final int DEFAULT_SCREEN_HEIGHT = 720;
 
 	public static GLFWWindow glhCreateWindow() {
 		GLFWWindow window = new GLFWWindow();

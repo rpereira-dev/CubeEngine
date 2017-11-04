@@ -110,9 +110,13 @@ public abstract class Mesh {
 	public final void draw() {
 		this.preDraw();
 		this.vao.draw(GL11.GL_TRIANGLES, 0, this.vertexCount);
+		this.postDraw();
 	}
 
 	protected void preDraw() {
+	}
+
+	protected void postDraw() {
 	}
 
 	/** draw with index buffer */

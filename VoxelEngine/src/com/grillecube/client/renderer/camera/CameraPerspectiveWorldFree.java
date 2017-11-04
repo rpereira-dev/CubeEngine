@@ -1,3 +1,4 @@
+
 package com.grillecube.client.renderer.camera;
 
 import org.lwjgl.glfw.GLFW;
@@ -82,19 +83,18 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 		}
 		if (key == GLFW.GLFW_KEY_R) {
 
-			for (int x = -2; x < 2; x++) {
-				for (int y = 4; y < 8; y++) {
-					for (int z = -2; z < 2; z++) {
-						super.setBlock(Blocks.LIQUID_WATER,
-								Vector3f.add(this.getLookCoords(), new Vector3f(x, y, z), null));
-
-					}
-				}
-			}
-
-			// super.setBlock(Blocks.PLANTS[(int) (System.currentTimeMillis() %
-			// Blocks.PLANTS.length)],
-			// this.getLookCoords());
+			// for (int x = -2; x < 2; x++) {
+			// for (int y = 4; y < 8; y++) {
+			// for (int z = -2; z < 2; z++) {
+			// super.setBlock(Blocks.LIQUID_WATER,
+			// Vector3f.add(this.getLookCoords(), new Vector3f(x, y, z), null));
+			//
+			// }
+			// }
+			// }
+//
+//			super.setBlock(Blocks.PLANTS[(int) (System.currentTimeMillis() % Blocks.PLANTS.length)],
+//					this.getLookCoords());
 			//
 			// if (i++ % 4 != 0) {
 			// pos.set(this.getLookCoords());

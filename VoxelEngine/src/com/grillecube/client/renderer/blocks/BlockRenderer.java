@@ -294,8 +294,6 @@ public abstract class BlockRenderer {
 	};
 
 	public static final float[][] FACES_UV = { { 0, 0 }, { 0, 1 }, { 1, 1 }, { 1, 0 } };
-	public static final float[][] EDGES_UV = { { 0.5f, 1.0f }, { 1, 0.5f }, { 0.5f, 0 }, { 0, 0.5f }, { 1, 0.5f },
-			{ 0.5f, 0 }, { 0, 0.5f }, { 0.5f, 1.0f }, { 0.5f, 0 }, { 0, 0.5f }, { 0.5f, 1.0f }, { 1, 0.5f } };
 
 	/**
 	 * generate the vertices for the given block, in the given terrain and (x,

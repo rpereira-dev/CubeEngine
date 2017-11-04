@@ -64,8 +64,8 @@ public class Logger {
 		StackTraceElement[] trace = thrd.getStackTrace();
 		StringBuilder stack = new StringBuilder();
 		int offset = 2;
-		int end = trace.length < stackDepth ? trace.length : stackDepth;
-		for (int i = offset; i < end + offset; i++) {
+		int end = trace.length < stackDepth + offset ? trace.length : stackDepth + offset;
+		for (int i = offset; i < end; i++) {
 			if (trace[i].getFileName() == null) {
 				continue;
 			}

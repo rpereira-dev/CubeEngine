@@ -46,7 +46,8 @@ public class TerrainMesh extends Mesh {
 	}
 
 	/** enable of disable culling for this terrain */
-	public final void cull(boolean cull) { // TODO : enable culling on meshes that are full of standard cubes
+	public final void cull(boolean cull) { // TODO : enable culling on meshes
+											// that are full of standard cubes
 		this.cull = cull;
 	}
 
@@ -56,6 +57,13 @@ public class TerrainMesh extends Mesh {
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glCullFace(GL11.GL_BACK);
 		} else {
+			GL11.glDisable(GL11.GL_CULL_FACE);
+		}
+	}
+
+	@Override
+	protected void postDraw() {
+		if (this.cull()) {
 			GL11.glDisable(GL11.GL_CULL_FACE);
 		}
 	}
