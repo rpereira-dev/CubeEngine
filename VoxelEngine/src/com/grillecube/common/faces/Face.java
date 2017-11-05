@@ -19,6 +19,8 @@ import com.grillecube.common.maths.Vector3i;
 
 public interface Face {
 
+	public static final int NULL = -1;
+
 	/** z - */
 	public static final int LEFT = 0;
 

@@ -184,4 +184,12 @@ public class Vector3i extends Vector {
 	public Vector2i yz() {
 		return (new Vector2i(y, z));
 	}
+
+	public static final Vector3i scale(Vector3i v, Vector3i s, Vector3i dst) {
+		if (dst == null) {
+			dst = new Vector3i();
+		}
+		dst.set(v.x * s.x, v.y * s.y, v.z * s.z);
+		return (dst);
+	}
 }

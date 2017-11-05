@@ -146,10 +146,10 @@ public class BlockRendererCube extends BlockRenderer {
 		float ao = BlockRenderer.getAmbiantOcclusion(terrain, x, y, z, face.getID(), faceVertexID);
 
 		// the block light
-		float blockLight = 0.0f;//super.getBlockLight(terrain, x, y, z, neighboors);
+		float blockLight = super.getBlockLight(terrain, x, y, z, face.getID(), faceVertexID);
 
 		// the sun light
-		float sunLight = 1.0f;//super.getSunLight(terrain, x, y, z, face.getID(), faceVertexID);
+		float sunLight = super.getSunLight(terrain, x, y, z, face.getID(), faceVertexID);
 
 		// final brightness
 		float brightness = 0.1f + sunLight + blockLight - ao;

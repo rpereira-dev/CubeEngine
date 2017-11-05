@@ -338,7 +338,7 @@ public abstract class BlockRenderer {
 	public static final float getSunLight(Terrain terrain, int x, int y, int z, Vector3i... neighboors) {
 		float sunLight = 0.0f;
 		for (Vector3i n : neighboors) {
-			sunLight += terrain.getSunLight(x + n.x, y + Maths.abs(n.y), z + n.z);
+			sunLight += terrain.getSunLight(x + n.x, y + n.y, z + n.z);
 		}
 		return (sunLight / (neighboors.length * 16.0f));
 	}
@@ -353,7 +353,7 @@ public abstract class BlockRenderer {
 	 */
 	public abstract int getDefaultTextureID(int faceID);
 
-	public static final float AO_UNIT = 0.3f;
+	public static final float AO_UNIT = 0.06f;
 
 	public static final float getAmbiantOcclusion(Terrain terrain, int x, int y, int z, Vector3i... neighboors) {
 		Block side1 = terrain.getBlock(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
