@@ -124,17 +124,18 @@ public class BlockRendererCube extends BlockRenderer {
 	 * return the vertex for the given face at the given coordinates, for it
 	 * given id
 	 */
-	public TerrainMeshVertex createBlockFaceVertex(Terrain terrain, Face face, int x, int y, int z, int vertexID) {
-		Vector3i[] neighboors = FACES_NEIGHBORS[face.getID()][vertexID];
+	public TerrainMeshVertex createBlockFaceVertex(Terrain terrain, Face face, int x, int y, int z, int faceVertexID) {
+
+		int vertexID = FACES_VERTICES[face.getID()][faceVertexID];
 
 		// position
-		float px = (x + VERTICES[FACES_VERTICES[face.getID()][vertexID]].x) * Terrain.BLOCK_SIZE;
-		float py = (y + VERTICES[FACES_VERTICES[face.getID()][vertexID]].y) * Terrain.BLOCK_SIZE;
-		float pz = (z + VERTICES[FACES_VERTICES[face.getID()][vertexID]].z) * Terrain.BLOCK_SIZE;
+		float px = (x + VERTICES[vertexID].x) * Terrain.BLOCK_SIZE;
+		float py = (y + VERTICES[vertexID].y) * Terrain.BLOCK_SIZE;
+		float pz = (z + VERTICES[vertexID].z) * Terrain.BLOCK_SIZE;
 
 		// uv
-		float uvx = FACES_UV[vertexID][0];
-		float uvy = FACES_UV[vertexID][1];
+		float uvx = FACES_UV[faceVertexID][0];
+		float uvy = FACES_UV[faceVertexID][1];
 		int textureID = this.textureIDs[face.getID()];
 		float atlasX = super.getAtlasX(textureID);
 		float atlasY = super.getAtlasY(textureID);
@@ -142,13 +143,13 @@ public class BlockRendererCube extends BlockRenderer {
 		// get light value
 
 		// the ambiant occlusion
-		float ao = BlockRenderer.getAmbiantOcclusion(terrain, x, y, z, neighboors);
+		float ao = BlockRenderer.getAmbiantOcclusion(terrain, x, y, z, face.getID(), faceVertexID);
 
 		// the block light
-		float blockLight = super.getBlockLight(terrain, x, y, z, neighboors);
+		float blockLight = 0.0f;//super.getBlockLight(terrain, x, y, z, neighboors);
 
 		// the sun light
-		float sunLight = super.getSunLight(terrain, x, y, z, neighboors);
+		float sunLight = 1.0f;//super.getSunLight(terrain, x, y, z, face.getID(), faceVertexID);
 
 		// final brightness
 		float brightness = 0.1f + sunLight + blockLight - ao;

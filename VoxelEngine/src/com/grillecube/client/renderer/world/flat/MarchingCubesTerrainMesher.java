@@ -45,13 +45,12 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 			ArrayList<TerrainMeshTriangle> transparentStack) {
 
 		EDGE_DEBUG = -1;
-
 		TRI_TABLE = new T[][]{
 				{},
 
 /*V*/				{new T(Face.LEFT, 0, 8, 3, 0.0f, 1.0f, 1.0f, 1.0f, 0.5f, 0.0f)},
-/*V*/				{new T(Face.BACK, 0, 1, 9, 1, 0, 3)},
-/*V*/				{new T(Face.TOP, 1, 8, 3, 3, 1, 0), new T(Face.TOP, 9, 8, 1, 2, 1, 3)},
+/*V*/				{new T(Face.BACK, 0, 1, 9, 0.0f, 1.0f, 0.5f, 0.0f, 1.0f, 1.0f)},
+/*V*/				{new T(Face.LEFT, 1, 8, 3, 3, 1, 0), new T(Face.LEFT, 9, 8, 1, 2, 1, 3)},
 /*V*/				{new T(Face.TOP, 1, 2, 10, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f)},
 /*V*/				{new T(Face.FRONT, 0, 8, 3, 3, 0, 2), new T(Face.TOP, 1, 2, 10, 2, 3, 0)},
 /*V*/				{new T(Face.LEFT, 9, 2, 10, 2, 0, 3), new T(Face.LEFT, 0, 2, 9, 1, 0, 2)},
@@ -67,38 +66,37 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 /*V*/				{new T(Face.LEFT, 4, 7, 8, 1, 0, 2)},				
 /*V*/				{new T(Face.BACK, 4, 3, 0, 1, 3, 2), new T(Face.BACK, 7, 3, 4, 0, 3, 1)},
 /*n*/				{new T(Face.TOP, 0, 1, 9, 0, 0, 0), new T(Face.TOP, 8, 4, 7, 0, 0, 0)},
-/*V*/				{new T(Face.LEFT, 4, 1, 9, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.LEFT, 4, 7, 1, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.TOP, 7, 3, 1, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f)},
+/*V*/				{new T(Face.LEFT, 4, 1, 9, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.LEFT, 4, 7, 1, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.TOP, 7, 3, 1, 0, 1, 2)},
 /*n*/				{new T(Face.TOP, 1, 2, 10, 0, 0, 0), new T(Face.TOP, 8, 4, 7, 0, 0, 0)},				
 /*n*/				{new T(Face.TOP, 3, 4, 7, 0, 0, 0), new T(Face.TOP, 3, 0, 4, 0, 0, 0), new T(Face.TOP, 1, 2, 10, 0, 0, 0)},				
 /*n*/				{new T(Face.TOP, 9, 2, 10, 0, 0, 0), new T(Face.TOP, 9, 0, 2, 0, 0, 0), new T(Face.TOP, 8, 4, 7, 0, 0, 0)},
-/*V*/				{new T(Face.TOP, 2, 10, 9, 0, 3, 2), new T(Face.TOP, 2, 9, 7, 0, 2, 1), new T(Face.TOP, 2, 7, 3, 0, 3, 1), new T(Face.TOP, 7, 9, 4, 3, 2, 0)},
+/*n*/				{new T(Face.TOP, 2, 10, 9, 0, 3, 2), new T(Face.TOP, 2, 9, 7, 0, 2, 1), new T(Face.TOP, 2, 7, 3, 0, 3, 1), new T(Face.TOP, 7, 9, 4, 3, 2, 0)},
 /*n*/				{new T(Face.TOP, 8, 4, 7, 0, 0, 0), new T(Face.TOP, 3, 11, 2, 0, 0, 0)},
-/*V*/				{new T(Face.TOP, 11, 4, 7, 0.0f, 0.0f, 0.0f, 1.0f, -0.4f, 0.5f), new T(Face.TOP, 11, 2, 4, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f), new T(Face.TOP, 2, 0, 4, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f)},
+/*V*/				{new T(Face.LEFT, 11, 4, 7, 0.0f, 0.0f, 0.0f, 1.0f, -0.4f, 0.5f), new T(Face.LEFT, 11, 2, 4, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f), new T(Face.LEFT, 2, 0, 4, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f)},
 /*n*/				{new T(Face.TOP, 9, 0, 1, 0, 0, 0), new T(Face.TOP, 8, 4, 7, 0, 0, 0), new T(Face.TOP, 2, 3, 11, 0, 0, 0)},
-/*V*/				{new T(Face.LEFT, 4, 7, 11, 0.0f, 1.0f, -0.5f, 0.5f, 0.0f, 0.0f), new T(Face.LEFT, 9, 4, 11, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f), new T(Face.LEFT, 9, 11, 2, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.LEFT, 9, 2, 1, 1.0f, 1.0f, 1.0f, 0.0f, 1.5f, 0.5f)},				
+/*V*/				{new T(Face.LEFT, 4, 7, 11, 0.0f, 1.0f, -0.5f, 0.5f, 0.0f, 0.0f), new T(Face.LEFT, 9, 2, 1, 1.0f, 1.0f, 1.0f, 0.0f, 1.5f, 0.5f), new T(Face.LEFT, 4, 11, 2, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.LEFT, 4, 2, 9, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f)},
 /*n*/				{new T(Face.TOP, 3, 10, 1, 0, 0, 0), new T(Face.TOP, 3, 11, 10, 0, 0, 0), new T(Face.TOP, 7, 8, 4, 0, 0, 0)},
 /*n*/				{new T(Face.TOP, 1, 11, 10, 0, 0, 0), new T(Face.TOP, 1, 4, 11, 0, 0, 0), new T(Face.TOP, 1, 0, 4, 0, 0, 0), new T(Face.TOP, 7, 11, 4, 0, 0, 0)},
 /*n*/				{new T(Face.TOP, 4, 7, 8, 0, 0, 0), new T(Face.TOP, 9, 0, 11, 0, 0, 0), new T(Face.TOP, 9, 11, 10, 0, 0, 0), new T(Face.TOP, 11, 0, 3, 0, 0, 0)},
+/*n*/				{new T(Face.TOP, 4, 7, 11, 0, 0, 0), new T(Face.TOP, 4, 11, 9, 0, 0, 0), new T(Face.TOP, 9, 11, 10, 0, 0, 0)},
+/*V*/				{new T(Face.FRONT, 9, 5, 4, 0.0f, 1.0f, 0.5f, 0.0f, 1.0f, 1.0f)},
+/*n*/				{new T(Face.TOP, 9, 5, 4, 0, 0, 0), new T(Face.TOP, 0, 8, 3, 0, 0, 0)},
+/*V*/				{new T(Face.FRONT, 0, 5, 4, 1, 3, 2), new T(Face.FRONT, 1, 5, 0, 0, 3, 1)},
+/*V*/				{new T(Face.LEFT, 8, 5, 4, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.LEFT, 8, 3, 5, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.TOP, 3, 1, 5, 1, 0, 3)},
+/*n*/				{new T(Face.TOP, 1, 2, 10, 0, 0, 0), new T(Face.TOP, 9, 5, 4, 0, 0, 0)},
+/*n*/				{new T(Face.TOP, 3, 0, 8, 0, 0, 0), new T(Face.TOP, 1, 2, 10, 0, 0, 0), new T(Face.TOP, 4, 9, 5, 0, 0, 0)},
+/*V*/				{new T(Face.LEFT, 5, 2, 10, 1.2f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.LEFT, 5, 4, 2, 1.2f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f), new T(Face.LEFT, 4, 0, 2, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f)},
+/*V*/				{new T(Face.LEFT, 8, 3, 2, 0.0f, 1.0f, -0.5f, 0.5f, 0.0f, 0.0f), new T(Face.LEFT, 4, 10, 5, 1.0f, 1.0f, 1.0f, 0.0f, 1.5f, 0.5f), new T(Face.LEFT, 8, 2, 10, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.LEFT, 8, 10, 4, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f)},
+/*n*/				{new T(Face.TOP, 9, 5, 4, 0, 0, 0), new T(Face.TOP, 2, 3, 11, 0, 0, 0)},
+/*n*/				{new T(Face.TOP, 0, 11, 2, 0, 0, 0), new T(Face.TOP, 0, 8, 11, 0, 0, 0), new T(Face.TOP, 4, 9, 5, 0, 0, 0)},
+/*n*/				{new T(Face.TOP, 0, 5, 4, 0, 0, 0), new T(Face.TOP, 0, 1, 5, 0, 0, 0), new T(Face.TOP, 2, 3, 11, 0, 0, 0)},
+/*V*/				{new T(Face.LEFT, 8, 11, 2, 1, 0, 3), new T(Face.LEFT, 8, 2, 1, 1, 3, 2), new T(Face.LEFT, 4, 8, 1, 1, 0, 3), new T(Face.LEFT, 4, 1, 5, 1, 3, 2)},
+/*n*/				{new T(Face.TOP, 10, 3, 11, 0, 0, 0), new T(Face.TOP, 10, 1, 3, 0, 0, 0), new T(Face.TOP, 9, 5, 4, 0, 0, 0)},		
+/*n*/				{new T(Face.TOP, 4, 9, 5, 0, 0, 0), new T(Face.TOP, 0, 8, 1, 0, 0, 0), new T(Face.TOP, 8, 10, 1, 0, 0, 0), new T(Face.TOP, 8, 11, 10, 0, 0, 0)},
+/*n*/				{new T(Face.TOP, 5, 4, 0, 0, 0, 0), new T(Face.TOP, 5, 0, 11, 0, 0, 0), new T(Face.TOP, 5, 11, 10, 0, 0, 0), new T(Face.TOP, 11, 0, 3, 0, 0, 0)},
+/*V*/				{new T(Face.LEFT, 8, 11, 10, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.LEFT, 8, 10, 4, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f), new T(Face.LEFT, 4, 10, 5, 1.0f, 1.0f, 1.0f, 0.0f, 1.5f, 0.5f)},
 					
 					
-					
-					{new T(Face.TOP, 4, 7, 11, 0, 0, 0), new T(Face.TOP, 4, 11, 9, 0, 0, 0), new T(Face.TOP, 9, 11, 10, 0, 0, 0)},					
-					{new T(Face.TOP, 9, 5, 4, 0, 0, 0)},
-					{new T(Face.TOP, 9, 5, 4, 0, 0, 0), new T(Face.TOP, 0, 8, 3, 0, 0, 0)},
-					{new T(Face.TOP, 0, 5, 4, 0, 0, 0), new T(Face.TOP, 1, 5, 0, 0, 0, 0)},
-					{new T(Face.TOP, 8, 5, 4, 0, 0, 0), new T(Face.TOP, 8, 3, 5, 0, 0, 0), new T(Face.TOP, 3, 1, 5, 0, 0, 0)},
-					{new T(Face.TOP, 1, 2, 10, 0, 0, 0), new T(Face.TOP, 9, 5, 4, 0, 0, 0)},
-					{new T(Face.TOP, 3, 0, 8, 0, 0, 0), new T(Face.TOP, 1, 2, 10, 0, 0, 0), new T(Face.TOP, 4, 9, 5, 0, 0, 0)},
-					{new T(Face.TOP, 5, 2, 10, 0, 0, 0), new T(Face.TOP, 5, 4, 2, 0, 0, 0), new T(Face.TOP, 4, 0, 2, 0, 0, 0)},
-					{new T(Face.TOP, 2, 10, 5, 0, 0, 0), new T(Face.TOP, 3, 2, 5, 0, 0, 0), new T(Face.TOP, 3, 5, 4, 0, 0, 0), new T(Face.TOP, 3, 4, 8, 0, 0, 0)},
-					{new T(Face.TOP, 9, 5, 4, 0, 0, 0), new T(Face.TOP, 2, 3, 11, 0, 0, 0)},
-					{new T(Face.TOP, 0, 11, 2, 0, 0, 0), new T(Face.TOP, 0, 8, 11, 0, 0, 0), new T(Face.TOP, 4, 9, 5, 0, 0, 0)},
-					{new T(Face.TOP, 0, 5, 4, 0, 0, 0), new T(Face.TOP, 0, 1, 5, 0, 0, 0), new T(Face.TOP, 2, 3, 11, 0, 0, 0)},
-					{new T(Face.TOP, 2, 1, 5, 0, 0, 0), new T(Face.TOP, 2, 5, 8, 0, 0, 0), new T(Face.TOP, 2, 8, 11, 0, 0, 0), new T(Face.TOP, 4, 8, 5, 0, 0, 0)},
-					{new T(Face.TOP, 10, 3, 11, 0, 0, 0), new T(Face.TOP, 10, 1, 3, 0, 0, 0), new T(Face.TOP, 9, 5, 4, 0, 0, 0)},
-					{new T(Face.TOP, 4, 9, 5, 0, 0, 0), new T(Face.TOP, 0, 8, 1, 0, 0, 0), new T(Face.TOP, 8, 10, 1, 0, 0, 0), new T(Face.TOP, 8, 11, 10, 0, 0, 0)},
-					{new T(Face.TOP, 5, 4, 0, 0, 0, 0), new T(Face.TOP, 5, 0, 11, 0, 0, 0), new T(Face.TOP, 5, 11, 10, 0, 0, 0), new T(Face.TOP, 11, 0, 3, 0, 0, 0)},
-					{new T(Face.TOP, 5, 4, 8, 0, 0, 0), new T(Face.TOP, 5, 8, 10, 0, 0, 0), new T(Face.TOP, 10, 8, 11, 0, 0, 0)},
 					{new T(Face.TOP, 9, 7, 8, 0, 0, 0), new T(Face.TOP, 5, 7, 9, 0, 0, 0)},
 					{new T(Face.TOP, 9, 3, 0, 0, 0, 0), new T(Face.TOP, 9, 5, 3, 0, 0, 0), new T(Face.TOP, 5, 7, 3, 0, 0, 0)},
 					{new T(Face.TOP, 0, 7, 8, 0, 0, 0), new T(Face.TOP, 0, 1, 7, 0, 0, 0), new T(Face.TOP, 1, 5, 7, 0, 0, 0)},
@@ -325,15 +323,6 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 
 		Block block = terrain.getBlock(x, y, z);
 		BlockRenderer blockRenderer = BlockRendererManager.instance().getBlockRenderer(block);
-		if (blockRenderer == null) {
-			for (Face face : Face.faces) {
-				block = terrain.getBlock(x + face.getVector().x, y + face.getVector().y, z + face.getVector().z);
-				blockRenderer = BlockRendererManager.instance().getBlockRenderer(block);
-				if (blockRenderer != null) {
-					break;
-				}
-			}
-		}
 
 		// Make a local copy of the values at the cube's corners
 		// Find which vertices are inside of the surface and which are outside
@@ -344,6 +333,9 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 					z + BlockRenderer.VERTICES[vertexID].z * this.lodz);
 			if (neighbor.isVisible()) {
 				indexFlags |= 1 << vertexID;
+				if (blockRenderer == null) {
+					blockRenderer = BlockRendererManager.instance().getBlockRenderer(neighbor); //TODO ? 
+				}
 			}
 		}
 
@@ -374,6 +366,7 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 				float posy = y + dy * this.lody;
 				float posz = z + dz * this.lodz;
 
+
 				// brightness
 				float sl = 0.0f;
 				float bl = 0.0f;
@@ -398,7 +391,8 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 				bl = Maths.clamp(bl, 0.0f, 1.0f);
 
 				// brightness
-				float b = Maths.clamp(sl + bl, 0.4f, 1.2f);
+				float b = Maths.clamp(sl + bl, 0.6f, 1.2f);
+
 
 				// uv will be calculate later on depending on which triangle
 				// configuration we are on
@@ -436,7 +430,7 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 		vertex.atlasY = atlasY;
 		vertex.u = t.uv[edgeID][0];
 		vertex.v = t.uv[edgeID][1];
-		if (t.faceID == Face.RIGHT || t.edges[edgeID] == EDGE_DEBUG) {
+		if (t.faceID < 0 || t.edges[edgeID] == EDGE_DEBUG) {
 			vertex.brightness = 0;
 		}
 		return (vertex);

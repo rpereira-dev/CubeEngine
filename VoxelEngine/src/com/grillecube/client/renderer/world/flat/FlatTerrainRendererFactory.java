@@ -226,9 +226,11 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X)) {
 				dt = 0;
 
-				// this.mesher = new FlatTerrainMesherCull();
-//				this.mesher = new MarchingCubesTerrainMesher((int) (Math.pow(2, i % 4)));
-				this.mesher = new MarchingCubesTerrainMesher((int) (Math.pow(2, 0)));
+				// this.mesher = new FlatTerrainMesherGreedy();
+				// this.mesher = new MarchingCubesTerrainMesher((int)
+				// (Math.pow(2, i % 4)));
+				// this.mesher = new MarchingCubesTerrainMesher((int)
+				// (Math.pow(2, 0)));
 
 				for (TerrainRenderingData terrainRenderingData : terrainsRenderingData.values()) {
 					terrainRenderingData.requestUpdate();
