@@ -43,21 +43,12 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 		
 		EDGE_DEBUG = -1;
 		
-		/*
-		 * 				  1
-		 * 
-		 * 		5					3
-		 * 
-		 * 			4			8
-		 * 
-		 */
-		
 		
 		/*
-		 * 	10		6
+		 * 	2		6
 		 * 
 		 * 
-		 * 	9		4
+		 * 	3		4
 		 */
 		
 		TRI_TABLE = new T[][]{
@@ -184,7 +175,9 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 					{new T(Face.TOP, 1, 2, 6, 0, 0, 0), new T(Face.TOP, 1, 6, 8, 0, 0, 0), new T(Face.TOP, 1, 8, 9, 0, 0, 0), new T(Face.TOP, 8, 6, 7, 0, 0, 0)},
 					{new T(Face.TOP, 2, 6, 9, 0, 0, 0), new T(Face.TOP, 2, 9, 1, 0, 0, 0), new T(Face.TOP, 6, 7, 9, 0, 0, 0), new T(Face.TOP, 0, 9, 3, 0, 0, 0), new T(Face.TOP, 7, 3, 9, 0, 0, 0)},
 					{new T(Face.TOP, 7, 8, 0, 0, 0, 0), new T(Face.TOP, 7, 0, 6, 0, 0, 0), new T(Face.TOP, 6, 0, 2, 0, 0, 0)},
-/*V*/				{new T(Face.FRONT, 3, 2, 6, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.FRONT, 3, 6, 7, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f)},
+					
+/*V*/				{new T(Face.TOP, 3, 2, 6, 1, 0, 3), new T(Face.TOP, 3, 6, 7, 1, 3, 2)},
+
 					{new T(Face.TOP, 2, 3, 11, 0, 0, 0), new T(Face.TOP, 10, 6, 8, 0, 0, 0), new T(Face.TOP, 10, 8, 9, 0, 0, 0), new T(Face.TOP, 8, 6, 7, 0, 0, 0)},
 					{new T(Face.TOP, 2, 0, 7, 0, 0, 0), new T(Face.TOP, 2, 7, 11, 0, 0, 0), new T(Face.TOP, 0, 9, 7, 0, 0, 0), new T(Face.TOP, 6, 7, 10, 0, 0, 0), new T(Face.TOP, 9, 10, 7, 0, 0, 0)},
 					{new T(Face.TOP, 1, 8, 0, 0, 0, 0), new T(Face.TOP, 1, 7, 8, 0, 0, 0), new T(Face.TOP, 1, 10, 7, 0, 0, 0), new T(Face.TOP, 6, 7, 10, 0, 0, 0), new T(Face.TOP, 2, 3, 11, 0, 0, 0)},
@@ -339,6 +332,9 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 
 		Block block = terrain.getBlock(x, y, z);
 		BlockRenderer blockRenderer = BlockRendererManager.instance().getBlockRenderer(block);
+		int bx = x;
+		int by = y;
+		int bz = z;
 
 		// Make a local copy of the values at the cube's corners
 		// Find which vertices are inside of the surface and which are outside
@@ -353,7 +349,6 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 					block = neighbor;
 					blockRenderer = BlockRendererManager.instance().getBlockRenderer(neighbor);
 				}
-				
 			}
 		}
 
@@ -373,60 +368,56 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 			// if there is an intersection on this edge
 			if ((edgeFlags & (1 << edgeID)) != 0) {
 				int v0 = BlockRenderer.EDGES[edgeID][0];
-				int v1 = BlockRenderer.EDGES[edgeID][1];
 				float offset = 0.5f;
 				float offx = offset * BlockRenderer.EDGES_DIRECTIONS[edgeID].x;
 				float offy = offset * BlockRenderer.EDGES_DIRECTIONS[edgeID].y;
 				float offz = offset * BlockRenderer.EDGES_DIRECTIONS[edgeID].z;
-				float dx = BlockRenderer.VERTICES[v0].x + offx;
-				float dy = BlockRenderer.VERTICES[v0].y + offy;
-				float dz = BlockRenderer.VERTICES[v0].z + offz;
-				float posx = x + dx * this.lod.x;
-				float posy = y + dy * this.lod.y;
-				float posz = z + dz * this.lod.z;
-
-
-				// brightness
-				float sl = 0.0f;
-				float bl = 0.0f;
-				float ao = 0.0f;
-				int faceID, vertexID;
-				for (int i = 0; i < 3; i++) {
-					faceID = BlockRenderer.VERTICES_FACES[v0][i];
-					vertexID = BlockRenderer.VERTICES_FACES_ID[v0][faceID];
-					Vector3i[] neighboors = new Vector3i[3];
-					for (int j = 0 ; j < 3 ; j++) {
-						neighboors[j] = Vector3i.scale(BlockRenderer.FACES_NEIGHBORS[Face.TOP][vertexID][j], this.lod, null);
-					}
-					sl += BlockRenderer.getSunLight(terrain, x, y, z, neighboors);
-					bl += BlockRenderer.getBlockLight(terrain, x, y, z, neighboors);
-					ao += BlockRenderer.getAmbiantOcclusion(terrain, x, y, z, neighboors);
-					
-					faceID = BlockRenderer.VERTICES_FACES[v1][i];
-					vertexID = BlockRenderer.VERTICES_FACES_ID[v1][faceID];
-					for (int j = 0 ; j < 3 ; j++) {
-						neighboors[j] = Vector3i.scale(BlockRenderer.FACES_NEIGHBORS[Face.TOP][vertexID][j], this.lod, null);
-					}
-					sl += BlockRenderer.getSunLight(terrain, x, y, z, neighboors);
-					bl += BlockRenderer.getBlockLight(terrain, x, y, z, neighboors);
-					ao += BlockRenderer.getAmbiantOcclusion(terrain, x, y, z, neighboors);
-				}
-				sl /= (float) 6.0f;
-				sl = Maths.clamp(sl, 0.0f, 1.0f);
-				bl /= (float) 6.0f;
-				bl = Maths.clamp(bl, 0.0f, 1.0f);
-
-				// brightness
-				float b = Maths.clamp(sl + bl - ao, 0.1f, 1.2f);
-
-//				float b = 0.8f;
+				float posx = x + (BlockRenderer.VERTICES[v0].x + offx) * this.lod.x;
+				float posy = y + (BlockRenderer.VERTICES[v0].y + offy) * this.lod.y;
+				float posz = z + (BlockRenderer.VERTICES[v0].z + offz) * this.lod.z;
 
 				// uv will be calculate later on depending on which triangle
 				// configuration we are on
+				
+				
+				// set brightness
+				float tsl = 0.0f;
+				float tbl = 0.0f;
+				int sc = 0;
+				int bc = 0;
+				for (int dx = -1 ; dx <= 1 ; dx++) {
+					for (int dy = -1 ; dy <= 1 ; dy++) {
+						for (int dz = -1 ; dz <= 1 ; dz++) {
+							int ix = x + dx * this.lod.x;
+							int iy = y + dy * this.lod.y;
+							int iz = z + dz * this.lod.z;
+							
+							//sunlight
+							float sl = terrain.getSunLight(ix, iy, iz);
+							if (sl > 0) {
+								tsl += sl;
+								++sc;
+							}
+							
+							//blocklight
+							float bl = terrain.getBlockLight(ix, iy, iz);
+							if (bl > 0) {
+								tbl += bl;
+								++bc;
+							}
+						}
+					}
+				}
+				
+				float sl = sc == 0 ? 0 : (tsl / (sc * 16.0f));
+				float bl = bc == 0 ? 0 : (tbl / (bc * 16.0f));
+				
+				// brightness
+				float b = Maths.clamp(sl + bl, 0.10f, 1.2f);
+				
 
 				// build vertex
-				edgeVertices[edgeID] = new TerrainMeshVertex(posx, posy, posz, 0, 1, 0, 0, 0, 0, 0, 0xffffffff, b,
-						0.0f);
+				edgeVertices[edgeID] = new TerrainMeshVertex(posx, posy, posz, 0, 1, 0, 0, 0, 0, 0, 0xffffffff, b, 0.0f);
 			}
 		}
 		// draw the found triangle (5 max per cube)
@@ -435,9 +426,9 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 			int textureID = t.faceID < 0 || blockRenderer == null ? 1 : blockRenderer.getDefaultTextureID(t.faceID);
 			float atlasX = BlockRenderer.getAtlasX(textureID);
 			float atlasY = BlockRenderer.getAtlasY(textureID);
-			TerrainMeshVertex v0 = this.generateVertex(t, 0, edgeVertices, blockRenderer, atlasX, atlasY);
-			TerrainMeshVertex v1 = this.generateVertex(t, 1, edgeVertices, blockRenderer, atlasX, atlasY);
-			TerrainMeshVertex v2 = this.generateVertex(t, 2, edgeVertices, blockRenderer, atlasX, atlasY);
+			TerrainMeshVertex v0 = this.generateVertex(terrain, x, y, z, t, 0, edgeVertices, blockRenderer, atlasX, atlasY);
+			TerrainMeshVertex v1 = this.generateVertex(terrain, x, y, z, t, 1, edgeVertices, blockRenderer, atlasX, atlasY);
+			TerrainMeshVertex v2 = this.generateVertex(terrain, x, y, z, t, 2, edgeVertices, blockRenderer, atlasX, atlasY);
 
 			TerrainMeshTriangle triangle = new TerrainMeshTriangle(v0, v1, v2);
 			if (block.isOpaque()) {
@@ -448,14 +439,18 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 		}
 	}
 
-	private TerrainMeshVertex generateVertex(T t, int edgeID, TerrainMeshVertex[] edgeVertices,
+	private TerrainMeshVertex generateVertex(Terrain terrain, int x, int y, int z, T t, int edgeID, TerrainMeshVertex[] edgeVertices,
 			BlockRenderer blockRenderer, float atlasX, float atlasY) {
-		TerrainMeshVertex toCopy = edgeVertices[t.edges[edgeID]];
-		TerrainMeshVertex vertex = (TerrainMeshVertex) toCopy.clone();
-		vertex.atlasX = atlasX;
-		vertex.atlasY = atlasY;
-		vertex.u = t.uv[edgeID][0];
-		vertex.v = t.uv[edgeID][1];
+		
+		TerrainMeshVertex toCopy = edgeVertices[t.edges[edgeID]]; //the vertex we need to copiy
+		TerrainMeshVertex vertex = (TerrainMeshVertex) toCopy.clone(); //do the copy
+		
+		vertex.atlasX = atlasX; //set atlas x
+		vertex.atlasY = atlasY; //set atlasY
+		vertex.u = t.uv[edgeID][0]; //set u
+		vertex.v = t.uv[edgeID][1]; //set v
+		
+		//debug
 		if (t.faceID < 0 || t.edges[edgeID] == EDGE_DEBUG) {
 			vertex.brightness = 0;
 		}

@@ -28,8 +28,8 @@ public class WorldDefault extends WorldFlat {
 	public void onLoaded() {
 		this.setWorldGenerator(new WorldGeneratorHoles());
 		for (int y = 1; y > 0; y--) {
-			for (int x = -6; x < 6; x++) {
-				for (int z = -6; z < 6; z++) {
+			for (int x = -2; x < 2; x++) {
+				for (int z = -2; z < 2; z++) {
 					this.generateTerrain(x, y, z);
 				}
 			}
