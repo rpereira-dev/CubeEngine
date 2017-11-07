@@ -8,7 +8,7 @@ import com.grillecube.common.world.terrain.Terrain;
 
 public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 
-	public static final int TERRAIN_RENDER_DISTANCE = 16;
+	public static final int TERRAIN_RENDER_DISTANCE = 32;
 	public static final float RENDER_DISTANCE = Terrain.DIMX_SIZE * TERRAIN_RENDER_DISTANCE;
 	public static final float FAR_DISTANCE = RENDER_DISTANCE * 1.2f;
 	/** planes attributes */

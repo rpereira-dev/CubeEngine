@@ -51,7 +51,7 @@ public class Terrain {
 	public static Vector3f BLOCK_SIZE_VEC = new Vector3f(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 
 	public static final int DIMX = 16;
-	public static final int DIMY = 64;
+	public static final int DIMY = 32;
 	public static final int DIMZ = DIMX;
 	public static final int DEMI_DIMX = DIMX / 2;
 	public static final int DEMI_DIMY = DIMY / 2;

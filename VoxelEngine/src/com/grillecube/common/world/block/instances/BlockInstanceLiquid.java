@@ -30,7 +30,7 @@ public class BlockInstanceLiquid extends BlockInstance {
 	private Block blockUnder;
 
 	/** minimum amount of water before dispersion */
-	public static int TICK_TO_UPDATE = 2;
+	public static int TICK_TO_UPDATE = 4;
 	public static final short MAX_LIQUID_AMOUNT = 16;
 	public static final short MIN_LIQUID_AMOUNT = 1;
 	public static final float LIQUID_HEIGHT_UNIT = MIN_LIQUID_AMOUNT / (float) MAX_LIQUID_AMOUNT;

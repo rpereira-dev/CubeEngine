@@ -28,20 +28,20 @@ public class WorldDefault extends WorldFlat {
 	public void onLoaded() {
 		this.setWorldGenerator(new WorldGeneratorHoles());
 		for (int y = 1; y > 0; y--) {
-			for (int x = -2; x < 2; x++) {
-				for (int z = -2; z < 2; z++) {
+			for (int x = -6; x < 6; x++) {
+				for (int z = -6; z < 6; z++) {
 					this.generateTerrain(x, y, z);
 				}
 			}
 		}
 
-		for (int x = 0; x < 4; x++) {
-			for (int z = 0; z < 4; z++) {
-				EntityTest entityTest = new EntityTest(this);
-				entityTest.setPosition(x * 8.0f, 160.0f, z * 8.0f);
-				this.spawnEntity(entityTest);
-			}
-		}
+//		for (int x = 0; x < 4; x++) {
+//			for (int z = 0; z < 4; z++) {
+//				EntityTest entityTest = new EntityTest(this);
+//				entityTest.setPosition(x * 8.0f, 160.0f, z * 8.0f);
+//				this.spawnEntity(entityTest);
+//			}
+//		}
 	}
 
 	@Override
