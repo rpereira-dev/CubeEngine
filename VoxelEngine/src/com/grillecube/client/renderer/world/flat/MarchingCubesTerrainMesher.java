@@ -42,7 +42,7 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 			ArrayList<TerrainMeshTriangle> transparentStack) {
 		
 		EDGE_DEBUG = -1;
-		
+
 		
 		TRI_TABLE = new T[][]{
 				{},
@@ -65,7 +65,7 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 /*V*/				{new T(Face.LEFT, 0, 10, 1, 0, 3, 2), new T(Face.LEFT, 0, 8, 10, 3, 0, 2), new T(Face.LEFT, 8, 11, 10, 0, 1, 2)},
 /*V*/				{new T(Face.LEFT, 3, 9, 0, 2, 0, 3), new T(Face.LEFT, 3, 11, 9, 1, 0, 2), new T(Face.LEFT, 11, 10, 9, 0, 3, 2)},
 /*V*/				{new T(Face.LEFT, 9, 8, 10, 2, 1, 3), new T(Face.LEFT, 10, 8, 11, 3, 1, 0)},
-/*V*/				{new T(Face.TOP, 4, 7, 8, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)},	
+/*V*/				{new T(Face.FRONT, 4, 7, 8, 0.0f, 1.0f, 0.5f, 0.0f, 1.0f, 1.0f)},
 /*V*/				{new T(Face.BACK, 4, 3, 0, 1, 3, 2), new T(Face.BACK, 7, 3, 4, 0, 3, 1)},
 /*n*/				{new T(Face.TOP, 0, 1, 9, 0, 0, 0), new T(Face.TOP, 8, 4, 7, 0, 0, 0)},
 /*V*/				{new T(Face.LEFT, 4, 1, 9, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.LEFT, 4, 7, 1, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.TOP, 7, 3, 1, 0, 1, 2)},
@@ -81,13 +81,13 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 /*n*/				{new T(Face.TOP, 1, 11, 10, 0, 0, 0), new T(Face.TOP, 1, 4, 11, 0, 0, 0), new T(Face.TOP, 1, 0, 4, 0, 0, 0), new T(Face.TOP, 7, 11, 4, 0, 0, 0)},
 /*n*/				{new T(Face.TOP, 4, 7, 8, 0, 0, 0), new T(Face.TOP, 9, 0, 11, 0, 0, 0), new T(Face.TOP, 9, 11, 10, 0, 0, 0), new T(Face.TOP, 11, 0, 3, 0, 0, 0)},
 /*n*/				{new T(Face.TOP, 4, 7, 11, 0, 0, 0), new T(Face.TOP, 4, 11, 9, 0, 0, 0), new T(Face.TOP, 9, 11, 10, 0, 0, 0)},
-/*V*/				{new T(Face.FRONT, 9, 5, 4, 0.0f, 1.0f, 0.5f, 0.0f, 1.0f, 1.0f)},
+/*V*/				{new T(Face.LEFT, 9, 5, 4, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)},
 /*n*/				{new T(Face.TOP, 9, 5, 4, 0, 0, 0), new T(Face.TOP, 0, 8, 3, 0, 0, 0)},
 /*V*/				{new T(Face.FRONT, 0, 5, 4, 1, 3, 2), new T(Face.FRONT, 1, 5, 0, 0, 3, 1)},
 /*V*/				{new T(Face.LEFT, 8, 5, 4, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.LEFT, 8, 3, 5, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.TOP, 3, 1, 5, 1, 0, 3)},
 /*n*/				{new T(Face.TOP, 1, 2, 10, 0, 0, 0), new T(Face.TOP, 9, 5, 4, 0, 0, 0)},
 /*n*/				{new T(Face.TOP, 3, 0, 8, 0, 0, 0), new T(Face.TOP, 1, 2, 10, 0, 0, 0), new T(Face.TOP, 4, 9, 5, 0, 0, 0)},
-/*V*/				{new T(Face.LEFT, 5, 2, 10, 1.2f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.LEFT, 5, 4, 2, 1.2f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f), new T(Face.LEFT, 4, 0, 2, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f)},
+/*V*/				{new T(Face.TOP, 2, 10, 5, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.TOP, 2, 5, 4, -0.5f, 1.0f, 1.0f, 0.0f, 1.5f, 1.0f), new T(Face.LEFT, 4, 0, 2, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f)},
 /*V*/				{new T(Face.LEFT, 8, 3, 2, 0.0f, 1.0f, -0.5f, 0.5f, 0.0f, 0.0f), new T(Face.LEFT, 4, 10, 5, 1.0f, 1.0f, 1.0f, 0.0f, 1.5f, 0.5f), new T(Face.LEFT, 8, 2, 10, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.LEFT, 8, 10, 4, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f)},
 /*n*/				{new T(Face.TOP, 9, 5, 4, 0, 0, 0), new T(Face.TOP, 2, 3, 11, 0, 0, 0)},
 /*n*/				{new T(Face.TOP, 0, 11, 2, 0, 0, 0), new T(Face.TOP, 0, 8, 11, 0, 0, 0), new T(Face.TOP, 4, 9, 5, 0, 0, 0)},
@@ -98,13 +98,13 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 /*n*/				{new T(Face.TOP, 5, 4, 0, 0, 0, 0), new T(Face.TOP, 5, 0, 11, 0, 0, 0), new T(Face.TOP, 5, 11, 10, 0, 0, 0), new T(Face.TOP, 11, 0, 3, 0, 0, 0)},
 /*V*/				{new T(Face.LEFT, 8, 11, 10, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.LEFT, 8, 10, 4, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f), new T(Face.LEFT, 4, 10, 5, 1.0f, 1.0f, 1.0f, 0.0f, 1.5f, 0.5f)},				
 /*V*/				{new T(Face.FRONT, 9, 7, 8, 1, 3, 2), new T(Face.FRONT, 5, 7, 9, 0, 3, 1)},
-/*V*/				{new T(Face.FRONT, 9, 3, 0, 1, 3, 2), new T(Face.FRONT, 9, 5, 3, 1, 0, 3), new T(Face.TOP, 5, 7, 3, 0, 1, 2)},
-/*V*/				{new T(Face.FRONT, 0, 7, 8, 1, 3, 2), new T(Face.FRONT, 0, 1, 7, 1, 0, 3), new T(Face.TOP, 1, 5, 7, 0, 1, 2)},
+/*V*/				{new T(Face.FRONT, 9, 5, 3, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.FRONT, 9, 3, 0, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.TOP, 5, 7, 3, 0, 1, 2)},
+/*V*/				{new T(Face.FRONT, 0, 1, 7, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.FRONT, 0, 7, 8, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.TOP, 1, 5, 7, 0, 1, 2)},
 /*V*/				{new T(Face.TOP, 1, 5, 3, 0, 3, 1), new T(Face.TOP, 3, 5, 7, 1, 3, 2)},
 /*n*/				{new T(Face.TOP, 9, 7, 8, 0, 0, 0), new T(Face.TOP, 9, 5, 7, 0, 0, 0), new T(Face.TOP, 10, 1, 2, 0, 0, 0)},
 /*n*/				{new T(Face.TOP, 10, 1, 2, 0, 0, 0), new T(Face.TOP, 9, 5, 0, 0, 0, 0), new T(Face.TOP, 5, 3, 0, 0, 0, 0), new T(Face.TOP, 5, 7, 3, 0, 0, 0)},
 /*n*/				{new T(Face.TOP, 8, 0, 2, 0, 0, 0), new T(Face.TOP, 8, 2, 5, 0, 0, 0), new T(Face.TOP, 8, 5, 7, 0, 0, 0), new T(Face.TOP, 10, 5, 2, 0, 0, 0)},
-/*V*/				{new T(Face.FRONT, 3, 2, 10, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.FRONT, 3, 10, 5, -0.5f, 1.0f, 1.0f, 0.0f, 1.5f, 1.0f), new T(Face.TOP, 7, 3, 5, 0, 1, 3)},
+/*V*/				{new T(Face.TOP, 3, 2, 10, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.TOP, 3, 10, 5, -0.5f, 1.0f, 1.0f, 0.0f, 1.5f, 1.0f), new T(Face.TOP, 7, 3, 5, 0, 1, 3)},
 /*n*/				{new T(Face.NULL, 7, 9, 5, 0, 0, 0), new T(Face.NULL, 7, 8, 9, 0, 0, 0), new T(Face.NULL, 3, 11, 2, 0, 0, 0)},
 /*n*/				{new T(Face.NULL, 9, 5, 7, 0, 0, 0), new T(Face.NULL, 9, 7, 2, 0, 0, 0), new T(Face.NULL, 9, 2, 0, 0, 0, 0), new T(Face.NULL, 2, 7, 11, 0, 0, 0)},
 /*n*/				{new T(Face.NULL, 2, 3, 11, 0, 0, 0), new T(Face.NULL, 0, 1, 8, 0, 0, 0), new T(Face.NULL, 1, 7, 8, 0, 0, 0), new T(Face.NULL, 1, 5, 7, 0, 0, 0)},
@@ -152,7 +152,7 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 					{new T(Face.TOP, 1, 4, 9, 0, 0, 0), new T(Face.TOP, 1, 2, 4, 0, 0, 0), new T(Face.TOP, 2, 6, 4, 0, 0, 0)},
 					{new T(Face.TOP, 3, 0, 8, 0, 0, 0), new T(Face.TOP, 1, 2, 9, 0, 0, 0), new T(Face.TOP, 2, 4, 9, 0, 0, 0), new T(Face.TOP, 2, 6, 4, 0, 0, 0)},
 /*V*/				{new T(Face.FRONT, 0, 2, 6, 1, 0, 3), new T(Face.FRONT, 0, 6, 4, 1, 3, 2)},
-					{new T(Face.TOP, 8, 3, 2, 0, 0, 0), new T(Face.TOP, 8, 2, 4, 0, 0, 0), new T(Face.TOP, 4, 2, 6, 0, 0, 0)},
+/*V*/				{new T(Face.RIGHT, 8, 3, 2, 1.0f, 1.0f, 0.5f, 0.5f, 0.0f, 1.0f), new T(Face.RIGHT, 8, 2, 6, 1, 0, 3), new T(Face.RIGHT, 8, 6, 4, 1, 3, 2)},
 					{new T(Face.TOP, 10, 4, 9, 0, 0, 0), new T(Face.TOP, 10, 6, 4, 0, 0, 0), new T(Face.TOP, 11, 2, 3, 0, 0, 0)},
 					{new T(Face.TOP, 0, 8, 2, 0, 0, 0), new T(Face.TOP, 2, 8, 11, 0, 0, 0), new T(Face.TOP, 4, 9, 10, 0, 0, 0), new T(Face.TOP, 4, 10, 6, 0, 0, 0)},
 					{new T(Face.TOP, 3, 11, 2, 0, 0, 0), new T(Face.TOP, 0, 1, 6, 0, 0, 0), new T(Face.TOP, 0, 6, 4, 0, 0, 0), new T(Face.TOP, 6, 1, 10, 0, 0, 0)},
@@ -161,16 +161,14 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 					{new T(Face.TOP, 8, 11, 1, 0, 0, 0), new T(Face.TOP, 8, 1, 0, 0, 0, 0), new T(Face.TOP, 11, 6, 1, 0, 0, 0), new T(Face.TOP, 9, 1, 4, 0, 0, 0), new T(Face.TOP, 6, 4, 1, 0, 0, 0)},
 					{new T(Face.TOP, 3, 11, 6, 0, 0, 0), new T(Face.TOP, 3, 6, 0, 0, 0, 0), new T(Face.TOP, 0, 6, 4, 0, 0, 0)},
 /*V*/				{new T(Face.RIGHT, 8, 11, 6, 1, 0, 3), new T(Face.RIGHT, 8, 6, 4, 1, 3, 2)},
-					{new T(Face.TOP, 7, 10, 6, 0, 0, 0), new T(Face.TOP, 7, 8, 10, 0, 0, 0), new T(Face.TOP, 8, 9, 10, 0, 0, 0)},
+/*V*/				{new T(Face.TOP, 10, 6, 7, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.TOP, 10, 7, 8, -0.5f, 1.0f, 1.0f, 0.0f, 1.5f, 1.0f), new T(Face.LEFT, 9, 10, 8, 1, 0, 2)},
 					{new T(Face.TOP, 0, 7, 3, 0, 0, 0), new T(Face.TOP, 0, 10, 7, 0, 0, 0), new T(Face.TOP, 0, 9, 10, 0, 0, 0), new T(Face.TOP, 6, 7, 10, 0, 0, 0)},
 					{new T(Face.TOP, 10, 6, 7, 0, 0, 0), new T(Face.TOP, 1, 10, 7, 0, 0, 0), new T(Face.TOP, 1, 7, 8, 0, 0, 0), new T(Face.TOP, 1, 8, 0, 0, 0, 0)},
-/*V*/				{new T(Face.LEFT, 1, 10, 6, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.LEFT, 1, 6, 7, -0.5f, 1.0f, 1.0f, 0.0f, 1.5f, 1.0f), new T(Face.TOP, 1, 7, 3, 1, 3, 0)},		
+/*V*/				{new T(Face.TOP, 1, 10, 6, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), new T(Face.TOP, 1, 6, 7, -0.5f, 1.0f, 1.0f, 0.0f, 1.5f, 1.0f), new T(Face.TOP, 1, 7, 3, 1, 3, 0)},		
 					{new T(Face.TOP, 1, 2, 6, 0, 0, 0), new T(Face.TOP, 1, 6, 8, 0, 0, 0), new T(Face.TOP, 1, 8, 9, 0, 0, 0), new T(Face.TOP, 8, 6, 7, 0, 0, 0)},
 					{new T(Face.TOP, 2, 6, 9, 0, 0, 0), new T(Face.TOP, 2, 9, 1, 0, 0, 0), new T(Face.TOP, 6, 7, 9, 0, 0, 0), new T(Face.TOP, 0, 9, 3, 0, 0, 0), new T(Face.TOP, 7, 3, 9, 0, 0, 0)},
 					{new T(Face.TOP, 7, 8, 0, 0, 0, 0), new T(Face.TOP, 7, 0, 6, 0, 0, 0), new T(Face.TOP, 6, 0, 2, 0, 0, 0)},
-					
 /*V*/				{new T(Face.TOP, 3, 2, 6, 1, 0, 3), new T(Face.TOP, 3, 6, 7, 1, 3, 2)},
-
 					{new T(Face.TOP, 2, 3, 11, 0, 0, 0), new T(Face.TOP, 10, 6, 8, 0, 0, 0), new T(Face.TOP, 10, 8, 9, 0, 0, 0), new T(Face.TOP, 8, 6, 7, 0, 0, 0)},
 					{new T(Face.TOP, 2, 0, 7, 0, 0, 0), new T(Face.TOP, 2, 7, 11, 0, 0, 0), new T(Face.TOP, 0, 9, 7, 0, 0, 0), new T(Face.TOP, 6, 7, 10, 0, 0, 0), new T(Face.TOP, 9, 10, 7, 0, 0, 0)},
 					{new T(Face.TOP, 1, 8, 0, 0, 0, 0), new T(Face.TOP, 1, 7, 8, 0, 0, 0), new T(Face.TOP, 1, 10, 7, 0, 0, 0), new T(Face.TOP, 6, 7, 10, 0, 0, 0), new T(Face.TOP, 2, 3, 11, 0, 0, 0)},
@@ -258,7 +256,7 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 /*V*/				{new T(Face.BOT, 3, 7, 5, 1, 0, 3), new T(Face.BOT, 3, 5, 1, 1, 3, 2)},
 /*V*/				{new T(Face.RIGHT, 8, 7, 1, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.RIGHT, 8, 1, 0, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.BOT, 1, 7, 5, 3, 1, 0)},
 /*V*/				{new T(Face.FRONT, 0, 3, 5, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.FRONT, 0, 5, 9, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.TOP, 7, 5, 3, 0, 1, 3)},
-					{new T(Face.TOP, 9, 8, 7, 0, 0, 0), new T(Face.TOP, 5, 9, 7, 0, 0, 0)},
+/*V*/				{new T(Face.RIGHT, 8, 7, 5, 1, 0, 3), new T(Face.RIGHT, 8, 5, 9, 1, 3, 2)},					
 					{new T(Face.TOP, 5, 8, 4, 0, 0, 0), new T(Face.TOP, 5, 10, 8, 0, 0, 0), new T(Face.TOP, 10, 11, 8, 0, 0, 0)},
 					{new T(Face.TOP, 5, 0, 4, 0, 0, 0), new T(Face.TOP, 5, 11, 0, 0, 0, 0), new T(Face.TOP, 5, 10, 11, 0, 0, 0), new T(Face.TOP, 11, 3, 0, 0, 0, 0)},
 					{new T(Face.TOP, 0, 1, 9, 0, 0, 0), new T(Face.TOP, 8, 4, 10, 0, 0, 0), new T(Face.TOP, 8, 10, 11, 0, 0, 0), new T(Face.TOP, 10, 4, 5, 0, 0, 0)},
@@ -290,15 +288,15 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 /*V*/				{new T(Face.LEFT, 9, 1, 7, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.LEFT, 9, 7, 4, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.TOP, 1, 3, 7, 1, 0, 3)},
 					{new T(Face.TOP, 4, 9, 1, 0, 0, 0), new T(Face.TOP, 4, 1, 7, 0, 0, 0), new T(Face.TOP, 0, 8, 1, 0, 0, 0), new T(Face.TOP, 8, 7, 1, 0, 0, 0)},
 					{new T(Face.TOP, 4, 0, 3, 0, 0, 0), new T(Face.TOP, 7, 4, 3, 0, 0, 0)},
-					{new T(Face.TOP, 4, 8, 7, 0, 0, 0)},
-					{new T(Face.TOP, 9, 10, 8, 0, 0, 0), new T(Face.TOP, 10, 11, 8, 0, 0, 0)},
+/*V*/				{new T(Face.RIGHT, 8, 7, 4, 0.0f, 1.0f, 0.5f, 0.0f, 1.0f, 1.0f)},
+/*V*/				{new T(Face.LEFT, 9, 10, 11, 1, 0, 3), new T(Face.LEFT, 9, 11, 8, 1, 3, 2)},
 					{new T(Face.TOP, 3, 0, 9, 0, 0, 0), new T(Face.TOP, 3, 9, 11, 0, 0, 0), new T(Face.TOP, 11, 9, 10, 0, 0, 0)},
-					{new T(Face.TOP, 0, 1, 10, 0, 0, 0), new T(Face.TOP, 0, 10, 8, 0, 0, 0), new T(Face.TOP, 8, 10, 11, 0, 0, 0)},
+/*V*/				{new T(Face.TOP, 1, 10, 8, 0.0f, 1.0f, -0.5f, 0.0f, 1.5f, 0.0f), new T(Face.TOP, 1, 8, 0, 0.0f, 1.0f, 1.5f, 0.0f, 1.0f, 1.0f), new T(Face.TOP, 8, 10, 11, 2, 0, 3)},
 /*V*/				{new T(Face.LEFT, 1, 10, 11, 1, 0, 3), new T(Face.LEFT, 1, 11, 3, 1, 3, 2)},
 					{new T(Face.TOP, 1, 2, 11, 0, 0, 0), new T(Face.TOP, 1, 11, 9, 0, 0, 0), new T(Face.TOP, 9, 11, 8, 0, 0, 0)},
 					{new T(Face.TOP, 3, 0, 9, 0, 0, 0), new T(Face.TOP, 3, 9, 11, 0, 0, 0), new T(Face.TOP, 1, 2, 9, 0, 0, 0), new T(Face.TOP, 2, 11, 9, 0, 0, 0)},
-					{new T(Face.TOP, 0, 2, 11, 0, 0, 0), new T(Face.TOP, 8, 0, 11, 0, 0, 0)},
-					{new T(Face.TOP, 3, 2, 11, 0, 0, 0)},
+/*V*/				{new T(Face.LEFT, 0, 2, 11, 1, 0, 3), new T(Face.LEFT, 0, 11, 8, 1, 3, 2)},
+/*V*/				{new T(Face.TOP, 3, 2, 11, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)},
 					{new T(Face.TOP, 2, 3, 8, 0, 0, 0), new T(Face.TOP, 2, 8, 10, 0, 0, 0), new T(Face.TOP, 10, 8, 9, 0, 0, 0)},
 /*V*/				{new T(Face.LEFT, 9, 10, 2, 1, 0, 3), new T(Face.LEFT, 9, 2, 0, 1, 3, 2)},
 					{new T(Face.TOP, 2, 3, 8, 0, 0, 0), new T(Face.TOP, 2, 8, 10, 0, 0, 0), new T(Face.TOP, 0, 1, 8, 0, 0, 0), new T(Face.TOP, 1, 10, 8, 0, 0, 0)},
@@ -325,9 +323,6 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 
 		Block block = terrain.getBlock(x, y, z);
 		BlockRenderer blockRenderer = BlockRendererManager.instance().getBlockRenderer(block);
-		int bx = x;
-		int by = y;
-		int bz = z;
 
 		// Make a local copy of the values at the cube's corners
 		// Find which vertices are inside of the surface and which are outside
