@@ -23,6 +23,17 @@ You now have 3 projects:
 - Mod sample : a mod example, which will be imported by POT on launch
 
 
+## DEMO VIDEOS
+https://www.youtube.com/playlist?list=PLTsKtD9K5K8nkeK2MzVr3JFv4ofuJTugb
+
+
+
+
+
+
+
+
+
 
 ## TECHNICAL PART:
 Down bellow are all the explanations about how things are implemented (more or less) deeply. It gives a great overview of the engine, and it may allow one to find a wrong implementation, or something that should have been thought differently 
