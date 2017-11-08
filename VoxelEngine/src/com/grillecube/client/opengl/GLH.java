@@ -267,8 +267,9 @@ public class GLH {
 	/** MAIN TESTS */
 
 	/** constants */
-	public static final int DEFAULT_SCREEN_WIDTH = 1280;
-	public static final int DEFAULT_SCREEN_HEIGHT = 720;
+	public static final float f = 0.5f;
+	public static final int DEFAULT_SCREEN_WIDTH = (int) (1280 * f);
+	public static final int DEFAULT_SCREEN_HEIGHT = (int) (720 * f);
 
 	public static GLFWWindow glhCreateWindow() {
 		GLFWWindow window = new GLFWWindow();
