@@ -21,7 +21,7 @@ import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.event.world.entity.EventEntityJump;
-import com.grillecube.common.maths.BoundingBox;
+import com.grillecube.common.maths.AABB;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
@@ -81,7 +81,7 @@ public abstract class Entity {
 	private Vector3f lookVec;
 
 	/** the entity bounding box */
-	private BoundingBox boundingBox;
+	private AABB boundingBox;
 
 	/** speed for this entity, in block per seconde */
 	private float speed;
@@ -98,7 +98,7 @@ public abstract class Entity {
 	public Entity(World world) {
 		this.world = world;
 
-		this.boundingBox = new BoundingBox();
+		this.boundingBox = new AABB();
 
 		this.ais = new ArrayList<EntityAI>();
 
@@ -414,7 +414,7 @@ public abstract class Entity {
 		return (this.vel.y < -1.0e-3f);
 	}
 
-	public BoundingBox getBoundingBox() {
+	public AABB getBoundingBox() {
 		return (this.boundingBox);
 	}
 

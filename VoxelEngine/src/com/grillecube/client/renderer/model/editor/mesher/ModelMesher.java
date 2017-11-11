@@ -22,6 +22,7 @@ import java.util.Stack;
 import org.lwjgl.BufferUtils;
 
 import com.grillecube.client.renderer.model.ModelMesh;
+import com.grillecube.client.renderer.model.editor.ModelMeshVertex;
 import com.grillecube.common.Logger;
 
 /** an object which is used to generate model meshes dynamically */

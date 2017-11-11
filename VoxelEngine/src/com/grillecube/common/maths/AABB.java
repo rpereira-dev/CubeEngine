@@ -40,9 +40,9 @@ package com.grillecube.common.maths;
  
 */
 
-public class BoundingBox {
+public class AABB extends BB {
 
-	public static final BoundingBox EMPTY_BOX = new BoundingBox();
+	public static final AABB EMPTY_BOX = new AABB();
 
 	private Vector3f center;
 	private Vector3f size;
@@ -50,7 +50,7 @@ public class BoundingBox {
 	private Vector3f max;
 	private Vector4f color;
 
-	public BoundingBox() {
+	public AABB() {
 		this.color = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
 		this.center = new Vector3f();
 		this.min = new Vector3f();
@@ -58,7 +58,7 @@ public class BoundingBox {
 		this.size = new Vector3f();
 	}
 
-	public BoundingBox(BoundingBox box) {
+	public AABB(AABB box) {
 		this();
 
 		if (box == null) {
@@ -68,31 +68,24 @@ public class BoundingBox {
 		this.set(box);
 	}
 
-	public BoundingBox(Vector3f min, Vector3f size, Vector4f color) {
+	public AABB(Vector3f min, Vector3f size, Vector4f color) {
 		this();
 		this.color.set(color);
 		this.setMinSize(min, size);
 	}
 
+	@Override
 	public float getArea() {
 		return (this.getSize().x * this.getSize().y * this.getSize().z);
 	}
 
-	/**
-	 * @param point:
-	 *            point to test
-	 * @return true if the point is in the box
-	 */
-	public boolean contains(Vector3f point) {
-		return (this.contains(point.x, point.y, point.z));
-	}
-
+	@Override
 	public boolean contains(float x, float y, float z) {
 		return (x >= this.min.x && x <= this.max.x && y >= this.min.y && y <= this.max.y && z >= this.min.z
 				&& z <= this.max.z);
 	}
 
-	public boolean contains(BoundingBox box) {
+	public boolean contains(AABB box) {
 		return (this.getMin().x < box.getMin().x && this.getMin().y < box.getMin().y && this.getMin().z < box.getMin().z
 				&& this.getMax().x > box.getMax().x && this.getMax().y > box.getMax().y
 				&& this.getMax().z > box.getMax().z);
@@ -104,7 +97,7 @@ public class BoundingBox {
 	 * 
 	 * @return
 	 */
-	public boolean intersect(BoundingBox box) {
+	public boolean intersect(AABB box) {
 		return ((this.getMin().x <= box.getMax().x && this.getMax().x >= box.getMin().x)
 				&& (this.getMin().y <= box.getMax().y && this.getMax().y >= box.getMin().y)
 				&& (this.getMin().z <= box.getMax().z && this.getMax().z >= box.getMin().z));
@@ -329,7 +322,7 @@ public class BoundingBox {
 		this.setMinMax(min, max);
 	}
 
-	public void set(BoundingBox box) {
+	public void set(AABB box) {
 		this.min.set(box.getMin());
 		this.max.set(box.getMax());
 		this.size.set(box.getSize());
@@ -337,7 +330,7 @@ public class BoundingBox {
 		this.center.set(box.getCenter());
 	}
 
-	public void join(BoundingBox box) {
+	public void join(AABB box) {
 		// min
 		if (box.min.x < this.min.x) {
 			this.min.x = box.min.x;

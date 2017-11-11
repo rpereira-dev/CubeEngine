@@ -22,6 +22,7 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLProgram;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
+import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.world.entity.Entity;
@@ -90,6 +91,11 @@ public class ProgramModel extends GLProgram {
 
 		// the skin
 		ModelSkin skin = modelInstance.getModel().getSkin(modelInstance.getSkinID());
+		if (skin == null) {
+//			Logger.get().log(Logger.Level.DEBUG, "Tried to load a NULL model skin: " + modelInstance.getSkinID() + "/"
+//					+ modelInstance.getModel().getSkins().size());
+			return;
+		}
 		skin.bind(GL13.GL_TEXTURE1, GL11.GL_TEXTURE_2D);
 		this.loadUniformInteger(this.skinTexture, 1);
 	}

@@ -40,30 +40,21 @@ public class Main {
 	}
 
 	private static void prepareEngine(VoxelEngineClient engine) {
-		// engine.getGLFWWindow().setCursor(false);
-
-		// int s = 2;
-		// for (int i = 0; i < s; i++) {
-		// for (int j = 0; j < s; j++) {
-		// Entity entity = new EntityShroom(Worlds.DEFAULT);
-		// Worlds.DEFAULT.spawnEntity(entity, i, 100, j);
-		// entity.toggleSkin(i % 2);
-		// }
-		// }
-
-		// Entity entity = new EntityShroom(POTWorlds.DEFAULT);
-		// POTWorlds.DEFAULT.getEntityStorage().add(entity, 64, 256, 64);
-		// CameraPerspectiveWorldEntity cam = new
-		// CameraPerspectiveWorldEntity(engine.getGLFWWindow());
-		// cam.setEntity(entity);
-		// engine.getRenderer().setCamera(cam);
-
 		engine.loadWorld(POTWorlds.DEFAULT);
 		engine.getGLFWWindow().swapInterval(1);
 		engine.getGLFWWindow().setScreenPosition(100, 100);
 
+		// CameraPerspectiveWorldEntity camera = new
+		// CameraPerspectiveWorldEntity(engine.getGLFWWindow());
+		// camera.setPosition(0.0f, 170.0f, -40.0f);
+		// World world = engine.getWorld(POTWorlds.DEFAULT);
+		// EntityBipedTest player = new EntityBipedTest(world);
+		// player.setPosition(16, 200, 16);
+		// world.spawnEntity(player);
+		// camera.setWorld(world);
+		// camera.setEntity(player);
+
 		CameraPerspectiveWorldFree camera = new CameraPerspectiveWorldFree(engine.getGLFWWindow());
-		camera.setPosition(0.0f, 170.0f, -40.0f);
 
 		engine.getRenderer().getGuiRenderer().addGui(new GuiViewWorld(camera, POTWorlds.DEFAULT));
 		engine.getRenderer().getGuiRenderer().addGui(new GuiViewDebug(camera));

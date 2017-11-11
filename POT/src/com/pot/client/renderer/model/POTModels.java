@@ -11,13 +11,15 @@ import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.entity.Entity;
 import com.pot.common.ModPOT;
+import com.pot.common.world.entity.EntityBipedTest;
 import com.pot.common.world.entity.EntityTest;
 
 public class POTModels implements IModResource {
 
 	@Override
 	public void load(Mod mod, ResourceManager manager) {
-		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/playerJSON/"), EntityTest.class);
+		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/physicTest/"), EntityBipedTest.class);
+		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/animTest/"), EntityTest.class);
 	}
 
 	@Override

@@ -19,7 +19,7 @@ import java.util.Collection;
 
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.maths.BoundingBox;
+import com.grillecube.common.maths.AABB;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
@@ -61,7 +61,7 @@ public abstract class WorldFlat extends World {
 	public abstract String getName();
 
 	/** return every blocks which collides with the given bounding box */
-	public final ArrayList<Block> getCollidingBlocks(BoundingBox box) {
+	public final ArrayList<Block> getCollidingBlocks(AABB box) {
 		ArrayList<Block> lst = new ArrayList<Block>();
 
 		int minx = Maths.floor(box.getMin().x);
@@ -88,7 +88,7 @@ public abstract class WorldFlat extends World {
 	}
 
 	/** return every blocks which collides with the given bounding box */
-	public final ArrayList<Entity> getCollidingEntities(BoundingBox box) {
+	public final ArrayList<Entity> getCollidingEntities(AABB box) {
 		ArrayList<Entity> lst = new ArrayList<Entity>();
 		Collection<Entity> entities = this.getEntityStorage().getEntities();
 		for (Entity entity : entities) {
@@ -104,8 +104,8 @@ public abstract class WorldFlat extends World {
 	 * return every bounding box which collides with the given bounding box,
 	 * excluding the given entity
 	 */
-	public Collection<BoundingBox> getCollidingBoundingBox(Entity entity, BoundingBox box) {
-		return (this.getCollidingBoundingBox(entity, box, new ArrayList<BoundingBox>()));
+	public Collection<AABB> getCollidingBoundingBox(Entity entity, AABB box) {
+		return (this.getCollidingBoundingBox(entity, box, new ArrayList<AABB>()));
 	}
 
 	/**
@@ -117,8 +117,8 @@ public abstract class WorldFlat extends World {
 	 *            : the list to push boxes
 	 * @return
 	 */
-	public Collection<BoundingBox> getCollidingBoundingBox(Entity entity, BoundingBox box,
-			Collection<BoundingBox> lst) {
+	public Collection<AABB> getCollidingBoundingBox(Entity entity, AABB box,
+			Collection<AABB> lst) {
 		lst.clear();
 
 		int minx = Maths.floor(box.getMin().x);
@@ -135,7 +135,7 @@ public abstract class WorldFlat extends World {
 					Block block = this.getBlock(x, y, z);
 					if (block.influenceCollisions()) {
 						// generate the AABB for this block
-						BoundingBox blockbox = new BoundingBox();
+						AABB blockbox = new AABB();
 						blockbox.setMinSize(blockbox.getMin().set(x, y, z), Terrain.BLOCK_SIZE_VEC);
 						if (box.intersect(blockbox)) {
 							lst.add(blockbox);

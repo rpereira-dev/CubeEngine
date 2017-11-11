@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.client.renderer.camera.CameraProjective;
-import com.grillecube.common.maths.BoundingBox;
+import com.grillecube.common.maths.AABB;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 
@@ -59,7 +59,7 @@ public class LineRendererFactory extends RendererFactory {
 		corners[7] = new Vector3f(0, 1, 1);
 	}
 
-	public final int setBox(BoundingBox box, int index) {
+	public final int setBox(AABB box, int index) {
 		Vector4f color = box.getColor();
 		Vector3f boxorigin = box.getMin();
 		Vector3f boxsize = box.getSize();
@@ -97,7 +97,7 @@ public class LineRendererFactory extends RendererFactory {
 		return (index);
 	}
 
-	public final int addBox(BoundingBox box) {
+	public final int addBox(AABB box) {
 		return (this.setBox(box, this.renderingList.size()));
 	}
 

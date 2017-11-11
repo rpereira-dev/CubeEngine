@@ -470,7 +470,7 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 		return (dx * dx + dy * dy + dz * dz);
 	}
 
-	public boolean isInBoundingBox(BoundingBox box) {
+	public boolean isInBoundingBox(AABB box) {
 		return (box.contains(this));
 	}
 
