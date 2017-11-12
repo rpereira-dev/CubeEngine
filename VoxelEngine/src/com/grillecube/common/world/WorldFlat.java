@@ -78,7 +78,7 @@ public abstract class WorldFlat extends World {
 			for (pos.z = minz; pos.z < maxz; ++pos.z) {
 				for (pos.y = miny; pos.y < maxy; ++pos.y) {
 					Block block = this.getBlock(pos.x, pos.y, pos.z);
-					if (block.influenceCollisions()) {
+					if (block.isWalkable()) {
 						lst.add(block);
 					}
 				}
@@ -133,7 +133,7 @@ public abstract class WorldFlat extends World {
 			for (int z = minz; z < maxz; ++z) {
 				for (int y = miny; y < maxy; ++y) {
 					Block block = this.getBlock(x, y, z);
-					if (block.influenceCollisions()) {
+					if (block.isWalkable()) {
 						// generate the AABB for this block
 						AABB blockbox = new AABB();
 						blockbox.setMinSize(blockbox.getMin().set(x, y, z), Terrain.BLOCK_SIZE_VEC);

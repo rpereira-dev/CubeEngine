@@ -391,12 +391,12 @@ public abstract class Entity {
 		return (this.move(move.x, move.y, move.z, dt));
 	}
 
-	public final boolean move(float dx, float dy, float dz, float dt) {
-		return (this.move(dx * dt, dy * dt, dz * dt));
+	public final boolean move(float dx, float dy, float dz) {
+		return (this.move(dx, dy, dz, (float) this.timer.getDt()));
 	}
 
-	public final boolean move(float dx, float dy, float dz) {
-		this.pos.add(dx, dy, dz);
+	public final boolean move(float dx, float dy, float dz, float dt) {
+		this.pos.add(dx * dt, dy * dt, dz * dt);
 		return (true);
 	}
 

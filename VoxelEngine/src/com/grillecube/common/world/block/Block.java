@@ -110,8 +110,9 @@ public abstract class Block {
 	/** @see onSet */
 	public abstract void onUnset(Terrain terrain, int x, int y, int z);
 
-	public boolean influenceCollisions() {
-		return (true);
+	/** return true if one can pass though this block (only air or liquid blocks can't basically)*/
+	public boolean isWalkable() {
+		return (false);
 	}
 
 	/** return true if this block bypass raycast */

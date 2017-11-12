@@ -37,6 +37,11 @@ public class BlockAir extends Block {
 	}
 
 	@Override
+	public boolean isWalkable() {
+		return (true);
+	}
+
+	@Override
 	public boolean hasTransparency() {
 		return (true);
 	}
@@ -51,9 +56,5 @@ public class BlockAir extends Block {
 
 	@Override
 	public void onUnset(Terrain terrain, int x, int y, int z) {
-	}
-
-	public boolean influenceCollisions() {
-		return (false);
 	}
 }

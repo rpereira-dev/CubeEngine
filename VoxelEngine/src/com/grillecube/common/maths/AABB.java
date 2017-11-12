@@ -68,12 +68,6 @@ public class AABB extends BB {
 		this.set(box);
 	}
 
-	public AABB(Vector3f min, Vector3f size, Vector4f color) {
-		this();
-		this.color.set(color);
-		this.setMinSize(min, size);
-	}
-
 	@Override
 	public float getArea() {
 		return (this.getSize().x * this.getSize().y * this.getSize().z);

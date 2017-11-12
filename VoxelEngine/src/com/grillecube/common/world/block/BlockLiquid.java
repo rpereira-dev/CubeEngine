@@ -29,6 +29,11 @@ public abstract class BlockLiquid extends Block {
 	}
 
 	@Override
+	public boolean isWalkable() {
+		return (true);
+	}
+
+	@Override
 	public void update(Terrain terrain, int x, int y, int z) {
 	}
 
@@ -36,10 +41,6 @@ public abstract class BlockLiquid extends Block {
 	}
 
 	public void onUnset(Terrain terrain, int x, int y, int z) {
-	}
-
-	public boolean influenceCollisions() {
-		return (false);
 	}
 
 	@Override
