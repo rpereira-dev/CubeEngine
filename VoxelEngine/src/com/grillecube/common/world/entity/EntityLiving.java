@@ -9,10 +9,14 @@ public abstract class EntityLiving extends Entity {
 	private static final int DEFAULT_EQUIPMENT_COUNT = 1;
 
 	/** the items held by this entity */
-	private Item[] equipments;
+	private final Item[] equipments;
 
 	public EntityLiving(World world) {
-		super(world);
+		this(world, 1.0f, 1.0f, 1.0f);
+	}
+
+	public EntityLiving(World world, float width, float height, float depth) {
+		super(world, width, height, depth);
 		if (this.getEquipmentCount() > 0) {
 			this.equipments = new Item[this.getEquipmentCount()];
 		} else {

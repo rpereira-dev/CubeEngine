@@ -21,7 +21,7 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 	@Override
 	public void update() {
 		super.update();
-		this.setSpeed(0.1f);
+		this.setSpeed(0.5f);
 		this.updateMove();
 	}
 

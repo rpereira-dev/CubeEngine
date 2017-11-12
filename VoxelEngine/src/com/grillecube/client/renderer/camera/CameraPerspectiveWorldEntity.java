@@ -7,13 +7,13 @@ import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.entity.Entity;
-import com.grillecube.common.world.entity.physic.EntityPhysic;
+import com.grillecube.common.world.entity.control.Control;
 
 /** a camera which follow the given entity, 3rd perso view */
 public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered {
 
 	/** the entity which this camera follows */
-	private Entity _entity;
+	private Entity entity;
 
 	public CameraPerspectiveWorldEntity(GLFWWindow window) {
 		super(window);
@@ -23,18 +23,18 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 	public void update() {
 		super.update();
 		float x = this.getEntity().getPosition().x;
-		float y = this.getEntity().getPosition().y + this.getEntity().getHeight();
+		float y = this.getEntity().getPosition().y + this.getEntity().getBoundingBox().getSize().y * 0.5f;
 		float z = this.getEntity().getPosition().z;
 		super.setCenter(x, y, z);
 	}
 
 	public void setEntity(Entity entity) {
-		this._entity = entity;
+		this.entity = entity;
 		super.setWorld(entity.getWorld());
 	}
 
 	public Entity getEntity() {
-		return (this._entity);
+		return (this.entity);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 			super.setAngleAroundCenter((float) (super.getAngleAroundCenter() - angle));
 		} else {
 			double dy = -(window.getMouseDX() * 0.2f);
-			this._entity.increaseYaw((float) dy);
+			this.entity.increaseYaw((float) dy);
 			super.increasePitch((float) (window.getMouseDY() * 0.1f));
 			super.increaseAngleAroundCenter((float) dy);
 		}
@@ -55,42 +55,30 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 
 	@Override
 	public void invokeKeyRelease(GLFWWindow glfwWindow, int key, int scancode, int mods) {
-		if (key == GLFW.GLFW_KEY_W) {
-			this._entity.disablePhysic(EntityPhysic.MOVE_FORWARD);
-		}
-		if (key == GLFW.GLFW_KEY_S) {
-			this._entity.disablePhysic(EntityPhysic.MOVE_BACKWARD);
-		}
-		if (key == GLFW.GLFW_KEY_D) {
-			this._entity.disablePhysic(EntityPhysic.STRAFE_RIGHT);
-		}
-		if (key == GLFW.GLFW_KEY_A) {
-			this._entity.disablePhysic(EntityPhysic.STRAFE_LEFT);
-		}
 	}
 
 	@Override
 	public void invokeKeyPress(GLFWWindow glfwWindow, int key, int scancode, int mods) {
 		if (key == GLFW.GLFW_KEY_W) {
-			this._entity.enablePhysic(EntityPhysic.MOVE_FORWARD);
+			this.entity.addControl(Control.FORWARD);
 		}
 		if (key == GLFW.GLFW_KEY_S) {
-			this._entity.enablePhysic(EntityPhysic.MOVE_BACKWARD);
+			this.entity.addControl(Control.BACKWARD);
 		}
 		if (key == GLFW.GLFW_KEY_D) {
-			this._entity.enablePhysic(EntityPhysic.STRAFE_RIGHT);
+			this.entity.addControl(Control.STRAFE_LEFT);
 		}
 		if (key == GLFW.GLFW_KEY_A) {
-			this._entity.enablePhysic(EntityPhysic.STRAFE_LEFT);
+			this.entity.addControl(Control.STRAFE_RIGHT);
 		}
-		if (key == GLFW.GLFW_KEY_SPACE && !this._entity.isJumping()) {
-			this._entity.jump();
+		if (key == GLFW.GLFW_KEY_SPACE && !this.entity.isJumping()) {
+			this.entity.jump();
 		}
 		if (key == GLFW.GLFW_KEY_R) {
 			Vector3f pos = new Vector3f();
-			pos.set(this._entity.getPosition());
-			pos.add(this._entity.getViewVector());
-			pos.add(this._entity.getViewVector());
+			pos.set(this.entity.getPosition());
+			pos.add(this.entity.getViewVector());
+			pos.add(this.entity.getViewVector());
 			super.setBlock(Blocks.LIQUID_WATER, pos);
 		}
 	}

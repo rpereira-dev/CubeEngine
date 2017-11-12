@@ -19,36 +19,22 @@ import java.util.ArrayList;
 import com.grillecube.client.resources.SoundManager;
 import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
-import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.event.world.entity.EventEntityJump;
 import com.grillecube.common.maths.AABB;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.world.Timer;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.entity.ai.EntityAI;
 import com.grillecube.common.world.entity.ai.EntityAIIdle;
-import com.grillecube.common.world.entity.physic.EntityPhysic;
-import com.grillecube.common.world.entity.physic.EntityPhysicAirFriction;
-import com.grillecube.common.world.entity.physic.EntityPhysicGravity;
-import com.grillecube.common.world.entity.physic.EntityPhysicJumping;
-import com.grillecube.common.world.entity.physic.EntityPhysicMoveBackward;
-import com.grillecube.common.world.entity.physic.EntityPhysicMoveForward;
-import com.grillecube.common.world.entity.physic.EntityPhysicRotateLeft;
-import com.grillecube.common.world.entity.physic.EntityPhysicRotateRight;
-import com.grillecube.common.world.entity.physic.EntityPhysicStrafeLeft;
-import com.grillecube.common.world.entity.physic.EntityPhysicStrafeRight;
+import com.grillecube.common.world.entity.control.Control;
+import com.grillecube.common.world.entity.forces.Force;
+import com.grillecube.common.world.terrain.Terrain;
 
 public abstract class Entity {
 
 	/** block under the entity */
 	private Block blockUnder;
-
-	/** entity states , should follow the ids on EntityPhysic.IDS */
-	private EntityPhysic[] physics = { new EntityPhysicMoveForward(), new EntityPhysicMoveBackward(),
-			new EntityPhysicStrafeLeft(), new EntityPhysicStrafeRight(), new EntityPhysicRotateLeft(),
-			new EntityPhysicRotateRight(), new EntityPhysicGravity(), new EntityPhysicAirFriction(),
-			new EntityPhysicJumping() };
 
 	private static final int STATE_VISIBLE = (1 << 0);
 
@@ -59,53 +45,60 @@ public abstract class Entity {
 	private World world;
 
 	/** entity AI */
-	private ArrayList<EntityAI> ais;
+	private final ArrayList<EntityAI> ais;
 
-	/** entity dimensions */
-	private static final float DEFAULT_DIMENSION = 1e-7f; // point
-	private float width;
-	private float height;
-	private float depth;
+	/** entity forces */
+	private final ArrayList<Force<Entity>> forces;
+
+	/** entity controls */
+	private final ArrayList<Control<Entity>> controls;
 
 	/** entity's world pos */
-	private Vector3f pos;
-	private Vector3f vel;
-	private Vector3f acc;
-	private Vector3f forces;
+	private final Vector3f pos;
+	private final Vector3f vel;
+	private final Vector3f acc;
+	private final Vector3f resultant;
+
+	/** entity timer */
+	private final Timer timer;
 
 	/** entity's world rotation */
-	private Vector3f rotation;
-	private Vector3f rotVel;
+	private final Vector3f rotation;
+	private final Vector3f rotVel;
 
 	/** vector where the entity is looking at */
-	private Vector3f lookVec;
+	private final Vector3f lookVec;
 
 	/** the entity bounding box */
-	private AABB boundingBox;
+	private final AABB boundingBox;
 
-	/** speed for this entity, in block per seconde */
+	/** speed for this entity, in block per seconds */
+	private static final float DEFAULT_SPEED = 1.0f / 60.0f;
 	private float speed;
-	private static final float DEFAULT_SPEED = 0.2f;
 
 	/** entity weight */
-	private float weight;
 	private static final float DEFAULT_WEIGHT = 1e-7f;
+	private float weight;
 
 	/** world id */
 	public static final int DEFAULT_ENTITY_ID = 0;
 	private int id = DEFAULT_ENTITY_ID;
 
-	public Entity(World world) {
+	public Entity(World world, float width, float height, float depth) {
 		this.world = world;
 
-		this.boundingBox = new AABB();
+		this.timer = new Timer();
 
-		this.ais = new ArrayList<EntityAI>();
+		this.forces = new ArrayList<Force<Entity>>();
+		this.addForce(Force.GRAVITY);
+		this.addForce(Force.FRICTION);
+
+		this.controls = new ArrayList<Control<Entity>>();
 
 		this.pos = new Vector3f();
 		this.vel = new Vector3f();
 		this.acc = new Vector3f();
-		this.forces = new Vector3f();
+		this.resultant = new Vector3f();
 
 		this.rotation = new Vector3f();
 		this.rotVel = new Vector3f();
@@ -115,16 +108,17 @@ public abstract class Entity {
 		this.speed = DEFAULT_SPEED;
 		this.weight = DEFAULT_WEIGHT;
 
-		this.width = DEFAULT_DIMENSION;
-		this.height = DEFAULT_DIMENSION;
-		this.depth = DEFAULT_DIMENSION;
-
-		this.setState(Entity.STATE_VISIBLE);
-
+		this.ais = new ArrayList<EntityAI>();
 		this.addAI(new EntityAIIdle(this));
 
-		// this.enablePhysic(EntityPhysic.AIR_FRICTION);
-		// this.enablePhysic(EntityPhysic.GRAVITY);
+		this.boundingBox = new AABB();
+		this.boundingBox.setMinSize(this.pos, width, height, depth);
+
+		this.setState(Entity.STATE_VISIBLE);
+	}
+
+	public Entity(World world) {
+		this(world, 1.0f, 1.0f, 1.0f);
 	}
 
 	public Entity() {
@@ -139,40 +133,45 @@ public abstract class Entity {
 	public void onSpawn(World world) {
 	}
 
+	/** get this entity timer */
+	public final Timer getTimer() {
+		return (this.timer);
+	}
+
 	/** update the entity */
 	public void update() {
+		this.timer.update();
 		this.updateAI();
-		this.updatePosition();
 		this.updateRotation();
+		this.updateForces();
+		this.updateControls();
+		this.updatePosition();
+		this.updateBlockUnder();
 		this.updateBoundingBox();
 		this.onUpdate();
 	}
 
-	private void updateBoundingBox() {
-		this.width = 1.5f;
-		this.height = 1.5f;
-		this.depth = 1.5f;
-		this.boundingBox.setCenterSize(this.pos, this.width, this.height, this.depth);
-		this.boundingBox.setColor(1.0f, 0.0f, 0.0f, 1.0f);
+	private final void updateBoundingBox() {
+
 	}
 
-	private void updateAI() {
+	private final void updateAI() {
 		for (int i = 0; i < this.ais.size(); i++) {
 			EntityAI ai = this.ais.get(i);
 			ai.update();
 		}
 	}
 
-	public void addAI(EntityAI ai) {
+	public final void addAI(EntityAI ai) {
 		this.ais.add(ai);
 	}
 
-	public void removeAI(EntityAI ai) {
+	public final void removeAI(EntityAI ai) {
 		this.ais.remove(ai);
 	}
 
 	/** update entity's rotation */
-	private void updateRotation() {
+	private final void updateRotation() {
 		// update looking vector
 		float f = (float) Math.cos(Math.toRadians(this.getPitch()));
 		this.lookVec.setX((float) (f * Math.sin(Math.toRadians(this.getYaw()))));
@@ -191,80 +190,102 @@ public abstract class Entity {
 	 * really basis of the physic engine: the acceleration vector is reset every
 	 * frame and has to be recalculated via 'Entity.addForce(Vector3f force)'
 	 */
-	private void updatePosition() {
-		this.updateForces(); // update forces
-		this.getPositionVelocity().add(this.getPositionAcceleration());
-		this.move(this.getPositionVelocity());
-		this.updateBlockUnder();
+	private final void updatePosition() {
+		float dt = (float) this.timer.getDt(); // dt since last update
+
+		float m = this.getWeight();
+		float ax = this.resultant.x * Terrain.METER_TO_BLOCK / m;
+		float ay = this.resultant.y * Terrain.METER_TO_BLOCK / m;
+		float az = this.resultant.z * Terrain.METER_TO_BLOCK / m;
+		this.acc.set(ax, ay, az);
+		this.vel.add(ax * dt, ay * dt, az * dt);
+		this.move(this.vel.x, this.vel.y, this.vel.z, dt);
 	}
 
 	/** update forces applied to this entity */
-	private void updateForces() {
-
-		for (EntityPhysic physic : this.physics) {
-			if (physic.isSet()) {
-				physic.udpate(this);
-			}
+	private final void updateForces() {
+		this.resultant.set(0, 0, 0);
+		for (Force<Entity> force : this.forces) {
+			force.updateResultant(this, this.resultant);
 		}
-
-		float m = this.getWeight();
-		float ax = this.forces.x / m;
-		float ay = this.forces.y / m;
-		float az = this.forces.z / m;
-		this.getPositionAcceleration().set(ax, ay, az);
-		this.forces.set(0, 0, 0);
 	}
 
-	/** make the entity jump (same as Entity.setState(EntityPhysic.JUMPING) */
-	public void jump() {
-		this.enablePhysic(EntityPhysic.JUMPING);
-		VoxelEngine.instance().getResourceManager().getEventManager().invokeEvent(new EventEntityJump(this));
+	private final void updateControls() {
+		for (Control<Entity> control : this.controls) {
+			control.run(this, this.resultant);
+		}
+		this.controls.clear();
 	}
 
-	public boolean isJumping() {
-		return this.physics[EntityPhysic.JUMPING].isSet();
+	/** make the entity jump */
+	public final void jump() {
+		this.controls.add(Control.JUMP);
 	}
 
 	/** update the value of the block under this entity */
-	private void updateBlockUnder() {
+	private final void updateBlockUnder() {
 		this.blockUnder = (this.getWorld() == null) ? null
 				: this.getWorld().getBlock(this.pos.x, this.pos.y - 1, this.pos.z);
 	}
 
 	/** add a force to this entity */
-	public void addForce(Vector3f force) {
+	public final void addForce(Force<Entity> force) {
 		this.forces.add(force);
 	}
 
-	public Vector3f getRotation() {
+	public final void removeForce(Force<Entity> force) {
+		this.forces.remove(force);
+	}
+
+	public final void addControl(Control<Entity> control) {
+		this.controls.add(control);
+	}
+
+	public final Vector3f getRotation() {
 		return (this.rotation);
 	}
 
-	public float getPitch() {
+	public final float getPitch() {
 		return (this.getRotation().x);
 	}
 
-	public float getYaw() {
+	public final float getYaw() {
 		return (this.getRotation().y);
 	}
 
-	public float getRoll() {
+	public final float getRoll() {
 		return (this.getRotation().z);
+	}
+
+	public final void setPitch(double pitch) {
+		this.rotation.x = (float) pitch;
+	}
+
+	public final void setYaw(double yaw) {
+		this.rotation.y = (float) yaw;
+	}
+
+	public final void setRoll(double roll) {
+		this.rotation.z = (float) roll;
+	}
+
+	public final void rotate(float pitch, float yaw, float roll) {
+		this.rotation.add(pitch, yaw, roll);
 	}
 
 	/** update the entity */
 	protected abstract void onUpdate();
 
 	/** get entity position */
-	public Vector3f getPosition() {
+	public final Vector3f getPosition() {
 		return (this.pos);
 	}
 
-	public Vector3f getPositionVelocity() {
+	public final Vector3f getPositionVelocity() {
 		return (this.vel);
 	}
 
-	public Vector3f getPositionAcceleration() {
+	public final Vector3f getPositionAcceleration() {
 		return (this.acc);
 	}
 
@@ -273,87 +294,75 @@ public abstract class Entity {
 		return (this.world);
 	}
 
-	public void setPosition(Vector3f pos) {
+	public final void setPosition(Vector3f pos) {
 		this.setPosition(pos.x, pos.y, pos.z);
 	}
 
-	public void setPosition(float x, float y, float z) {
+	public final void setPosition(float x, float y, float z) {
 		this.pos.set(x, y, z);
 	}
 
-	public void setWorld(World world) {
+	public final void setWorld(World world) {
 		this.world = world;
 	}
 
 	/** world ID for this entity, this is set on spawn */
-	public void setEntityID(int id) {
+	public final void setEntityID(int id) {
 		this.id = id;
 	}
 
-	public int getEntityID() {
+	public final int getEntityID() {
 		return (this.id);
 	}
 
-	public void increasePitch(float f) {
+	public final void increasePitch(float f) {
 		this.rotation.x += f;
 	}
 
-	public void increaseYaw(float f) {
+	public final void increaseYaw(float f) {
 		this.rotation.y += f;
 	}
 
-	public void increaseRoll(float f) {
+	public final void increaseRoll(float f) {
 		this.rotation.z += f;
 	}
 
-	public float getSpeed() {
+	public final float getSpeed() {
 		return (this.speed);
 	}
 
-	public void setSpeed(float speed) {
+	public final void setSpeed(float speed) {
 		this.speed = speed;
 	}
 
 	/** return true if the entity is moving */
-	public boolean isMoving() {
+	public final boolean isMoving() {
 		return (this.getPositionVelocity().x != 0 || this.getPositionVelocity().y != 0
 				|| this.getPositionVelocity().z != 0);
 	}
 
-	public void setPitch(double pitch) {
-		this.rotation.x = (float) pitch;
-	}
-
-	public void setYaw(double yaw) {
-		this.rotation.y = (float) yaw;
-	}
-
-	public void setRoll(double roll) {
-		this.rotation.z = (float) roll;
-	}
-
 	/** rotation speed vector, x == pitch, y == yaw, z == roll */
-	public Vector3f getRotationSpeed() {
+	public final Vector3f getRotationSpeed() {
 		return (this.rotVel);
 	}
 
-	public void setWeight(float weight) {
+	public final void setWeight(float weight) {
 		this.weight = weight;
 	}
 
-	public float getWeight() {
+	public final float getWeight() {
 		return (this.weight);
 	}
 
-	private final boolean hasState(int state) {
+	public final boolean hasState(int state) {
 		return ((this.state & state) == state);
 	}
 
-	private final void setState(int state) {
+	public final void setState(int state) {
 		this.state = this.state | state;
 	}
 
-	private final void setState(int state, boolean enabled) {
+	public final void setState(int state, boolean enabled) {
 		if (enabled) {
 			this.setState(state);
 		} else {
@@ -361,45 +370,38 @@ public abstract class Entity {
 		}
 	}
 
-	private final void unsetState(int state) {
+	public final void unsetState(int state) {
 		this.state = this.state & ~state;
 	}
 
-	@SuppressWarnings("unused")
-	private final void swapState(int state) {
+	public final void swapState(int state) {
 		this.state = this.state ^ state;
-	}
-
-	public boolean hasPhysicEnabled(int physicID) {
-		return (this.physics[physicID].isSet());
-	}
-
-	public void enablePhysic(int physicID) {
-		this.physics[physicID].enable(this);
-	}
-
-	public void disablePhysic(int physicID) {
-		this.physics[physicID].disable(this);
 	}
 
 	/**
 	 * try to move the entity of the delta position vector 'move'
 	 * 
 	 * @param move:
-	 *            movement vector
+	 *            velocity
+	 * @param dt:
+	 *            time
 	 * @return true if the entity moved, false else way
 	 */
-	public boolean move(Vector3f move) {
-		return (this.move(move.x, move.y, move.z));
+	public final boolean move(Vector3f move, float dt) {
+		return (this.move(move.x, move.y, move.z, dt));
 	}
 
-	public boolean move(float x, float y, float z) {
-		this.getPosition().add(x, y, z);
+	public final boolean move(float dx, float dy, float dz, float dt) {
+		return (this.move(dx * dt, dy * dt, dz * dt));
+	}
+
+	public final boolean move(float dx, float dy, float dz) {
+		this.pos.add(dx, dy, dz);
 		return (true);
 	}
 
-	public EntityPhysic getPhysic(int id) {
-		return (this.physics[id]);
+	public final void teleport(float x, float y, float z) {
+		this.getPosition().set(x, y, z);
 	}
 
 	public Block getBlockUnder() {
@@ -429,36 +431,27 @@ public abstract class Entity {
 	}
 
 	/** set entity width */
-	public void setWidth(float width) {
-		this.width = width;
+	public final void setWidth(float width) {
+		this.boundingBox.setWidth(width);
 	}
 
-	/** set entity width */
-	public void setHeight(float height) {
-		this.height = height;
+	public final void setHeight(float height) {
+		this.boundingBox.setHeight(height);
 	}
 
-	/** set entity width */
-	public void setDepth(float depth) {
-		this.depth = depth;
+	public final void setDepth(float depth) {
+		this.boundingBox.setDepth(depth);
 	}
 
-	/** @return : entity width */
-	public float getWidth() {
-		return (this.width);
-	}
-
-	/** @return : entity width */
-	public float getHeight() {
-		return (this.height);
-	}
-
-	/** @return : entity width */
-	public float getDepth() {
-		return (this.depth);
+	public final void setDimensions(float width, float height, float depth) {
+		this.boundingBox.setSize(width, height, depth);
 	}
 
 	public final boolean isVisible() {
 		return (this.hasState(STATE_VISIBLE));
+	}
+
+	public final boolean isJumping() {
+		return (this.acc.y > 0.0f);
 	}
 }

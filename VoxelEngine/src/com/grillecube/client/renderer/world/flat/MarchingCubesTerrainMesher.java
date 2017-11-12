@@ -309,9 +309,9 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 			};
 
 	
-		for (int z = 0; z < Terrain.DIMZ; z += this.lod.z) {
-			for (int y = 0; y < Terrain.DIMY; y += this.lod.y) {
-				for (int x = 0; x < Terrain.DIMX; x += this.lod.x) {
+		for (int z = -1; z <= Terrain.DIMZ; z += this.lod.z) {
+			for (int y = -1; y <= Terrain.DIMY; y += this.lod.y) {
+				for (int x = -1; x <= Terrain.DIMX; x += this.lod.x) {
 					this.processBlock(opaqueStack, transparentStack, terrain, x, y, z);
 				}
 			}

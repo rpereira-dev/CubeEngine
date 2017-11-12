@@ -201,7 +201,23 @@ public class AABB extends BB {
 	public void setSize(Vector3f size) {
 		this.setMinSize(this.min, size);
 	}
-
+	
+	public void setSize(float width, float height, float depth) {
+		this.setMinSize(this.min, width, height, depth);
+	}
+	
+	public void setWidth(float width) {
+		this.setMinSize(this.min, width, this.size.y, this.size.z);
+	}
+	
+	public void setHeight(float height) {
+		this.setMinSize(this.min, this.size.x, height, this.size.z);
+	}
+	
+	public void setDepth(float depth) {
+		this.setMinSize(this.min, this.size.x, this.size.y, depth);
+	}
+	
 	public Vector3f getCenter() {
 		return (this.center);
 	}

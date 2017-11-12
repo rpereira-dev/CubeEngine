@@ -4,6 +4,11 @@ import com.grillecube.common.world.World;
 
 public abstract class EntityBiped extends EntityLiving {
 
+	public EntityBiped(World world) {
+		super(world);
+		// TODO Auto-generated constructor stub
+	}
+
 	/** equipment ids */
 	public static final int EQUIPMENT_BOOTS = 0;
 	public static final int EQUIPMENT_LEGGINGS = 1;
@@ -14,10 +19,6 @@ public abstract class EntityBiped extends EntityLiving {
 	public static final int EQUIPMENT_LEFT_HAND = 6;
 	public static final int EQUIPMENT_RIGHT_HAND = 7;
 	public static final int EQUIPMENT_COUNT = 8;
-
-	public EntityBiped(World world) {
-		super(world);
-	}
 
 	@Override
 	protected void onUpdate() {
