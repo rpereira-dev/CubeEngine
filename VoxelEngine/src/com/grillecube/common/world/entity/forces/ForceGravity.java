@@ -12,7 +12,7 @@ public class ForceGravity extends Force<Entity> {
 	@Override
 	public void onUpdateResultant(Entity entity, Vector3f resultant) {
 		// F = mg
-		resultant.y -= entity.getWeight() * G;
+		resultant.y -= entity.getMass() * G;
 
 	}
 }

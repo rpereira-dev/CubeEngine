@@ -34,6 +34,8 @@ package com.grillecube.common.maths;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
+import com.grillecube.common.world.entity.collision.AABB;
+
 /**
  *
  * Holds a 3-tuple vector.

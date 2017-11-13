@@ -55,8 +55,7 @@ public class Main {
 		camera.setWorld(world);
 		camera.setEntity(player);
 
-		// CameraPerspectiveWorldFree camera = new
-		// CameraPerspectiveWorldFree(engine.getGLFWWindow());
+//		CameraPerspectiveWorldFree camera = new CameraPerspectiveWorldFree(engine.getGLFWWindow());
 
 		engine.getRenderer().getGuiRenderer().addGui(new GuiViewWorld(camera, POTWorlds.DEFAULT));
 		engine.getRenderer().getGuiRenderer().addGui(new GuiViewDebug(camera));

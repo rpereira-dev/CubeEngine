@@ -22,9 +22,9 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 	@Override
 	public void update() {
 		super.update();
-		float x = this.getEntity().getPosition().x;
-		float y = this.getEntity().getPosition().y + this.getEntity().getBoundingBox().getSize().y * 0.5f;
-		float z = this.getEntity().getPosition().z;
+		float x = this.getEntity().getPositionX() + this.getEntity().getSizeX() * 0.5f;
+		float y = this.getEntity().getPositionY() + this.getEntity().getSizeY() * 1.0f;
+		float z = this.getEntity().getPositionZ() + this.getEntity().getSizeZ() * 0.5f;
 		super.setCenter(x, y, z);
 	}
 
@@ -47,7 +47,7 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 			super.setAngleAroundCenter((float) (super.getAngleAroundCenter() - angle));
 		} else {
 			double dy = -(window.getMouseDX() * 0.2f);
-			this.entity.increaseYaw((float) dy);
+			this.entity.setRotationY(this.entity.getRotationY() + (float) dy);
 			super.increasePitch((float) (window.getMouseDY() * 0.1f));
 			super.increaseAngleAroundCenter((float) dy);
 		}
@@ -76,7 +76,7 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 		}
 		if (key == GLFW.GLFW_KEY_R) {
 			Vector3f pos = new Vector3f();
-			pos.set(this.entity.getPosition());
+			pos.set(this.entity.getPositionX(), this.entity.getPositionY(), this.entity.getPositionZ());
 			pos.add(this.entity.getViewVector());
 			pos.add(this.entity.getViewVector());
 			super.setBlock(Blocks.LIQUID_WATER, pos);
@@ -91,6 +91,6 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 
 	@Override
 	public void setYaw(float yaw) {
-		super.setYaw(yaw + this.getEntity().getYaw());
+		super.setYaw(yaw + this.getEntity().getRotationY());
 	}
 }

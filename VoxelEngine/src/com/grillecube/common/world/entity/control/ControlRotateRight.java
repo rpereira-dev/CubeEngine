@@ -6,6 +6,6 @@ import com.grillecube.common.world.entity.Entity;
 public class ControlRotateRight extends Control<Entity> {
 	@Override
 	public void run(Entity entity, Vector3f resultant) {
-		entity.rotate(0, 2.0f, 0);
+		entity.setRotationY(entity.getRotationY() + 2.0f);
 	}
 }

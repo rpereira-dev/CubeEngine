@@ -44,7 +44,7 @@ public class CameraController {
 		// origin relatively to the model
 		Vector4f origin = new Vector4f(camera.getPosition(), 1.0f);
 		Matrix4f transform = new Matrix4f();
-		transform.translate(entity.getPosition().negate(null));
+		transform.translate(-entity.getPositionX(), -entity.getPositionY(), -entity.getPositionZ());
 		transform.scale(1 / s);
 		Matrix4f.transform(transform, origin, origin);
 

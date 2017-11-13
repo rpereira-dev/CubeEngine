@@ -8,9 +8,8 @@ public class ControlMoveBackward extends Control<Entity> {
 	public void run(Entity entity, Vector3f resultant) {
 		Vector3f view = entity.getViewVector();
 		float dx = -view.x * entity.getSpeed();
-		float dy = 0;
 		float dz = -view.z * entity.getSpeed();
-
-		entity.move(dx, dy, dz);
+		entity.setPositionVelocityX(entity.getPositionVelocityX() + dx);
+		entity.setPositionVelocityZ(entity.getPositionVelocityZ() + dz);
 	}
 }

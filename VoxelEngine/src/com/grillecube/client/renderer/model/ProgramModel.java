@@ -84,16 +84,18 @@ public class ProgramModel extends GLProgram {
 		// transformation matrix
 		Matrix4f transf = new Matrix4f();
 		Entity entity = modelInstance.getEntity();
-		transf.translate(entity.getPosition());
-		transf.rotateXYZ(entity.getRotation());
+		transf.translate(entity.getPositionX(), entity.getPositionY(), entity.getPositionZ());
+		transf.rotateXYZ((float) Math.toRadians(entity.getRotationX()), (float) Math.toRadians(entity.getRotationY()),
+				(float) Math.toRadians(entity.getRotationZ()));
 		// transf.scale(64.0f);
 		this.loadUniformMatrix(this.transfMatrix, transf);
 
 		// the skin
 		ModelSkin skin = modelInstance.getModel().getSkin(modelInstance.getSkinID());
 		if (skin == null) {
-//			Logger.get().log(Logger.Level.DEBUG, "Tried to load a NULL model skin: " + modelInstance.getSkinID() + "/"
-//					+ modelInstance.getModel().getSkins().size());
+			// Logger.get().log(Logger.Level.DEBUG, "Tried to load a NULL model
+			// skin: " + modelInstance.getSkinID() + "/"
+			// + modelInstance.getModel().getSkins().size());
 			return;
 		}
 		skin.bind(GL13.GL_TEXTURE1, GL11.GL_TEXTURE_2D);

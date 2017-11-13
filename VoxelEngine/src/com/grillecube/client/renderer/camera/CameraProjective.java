@@ -8,9 +8,11 @@ import com.grillecube.client.opengl.window.event.GLFWEventMousePress;
 import com.grillecube.client.opengl.window.event.GLFWEventMouseRelease;
 import com.grillecube.client.opengl.window.event.GLFWEventMouseScroll;
 import com.grillecube.client.opengl.window.event.GLFWListener;
-import com.grillecube.common.maths.AABB;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.world.entity.collision.AABB;
+import com.grillecube.common.world.entity.collision.Positioneable;
+import com.grillecube.common.world.entity.collision.Sizeable;
 
 public abstract class CameraProjective extends CameraView {
 
@@ -203,7 +205,13 @@ public abstract class CameraProjective extends CameraView {
 
 	/** return true if this box is in this camera frustum */
 	public boolean isBoxInFrustum(AABB box) {
-		return (this.isBoxInFrustum(box.getMin(), box.getSize()));
+		return (this.isBoxInFrustum(box.getMinX(), box.getMinY(), box.getMinZ(), box.getSizeX(), box.getSizeY(),
+				box.getSizeZ()));
+	}
+
+	public boolean isBoxInFrustum(Positioneable positioneable, Sizeable sizeable) {
+		return (this.isBoxInFrustum(positioneable.getPositionX(), positioneable.getPositionY(),
+				positioneable.getPositionZ(), sizeable.getSizeX(), sizeable.getSizeY(), sizeable.getSizeZ()));
 	}
 
 	/** return true if this box is in this camera frustum */

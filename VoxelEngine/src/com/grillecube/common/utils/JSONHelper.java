@@ -25,8 +25,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.grillecube.common.maths.AABB;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.world.entity.collision.AABB;
 import com.grillecube.common.world.terrain.Terrain;
 
 public class JSONHelper {
@@ -108,8 +108,8 @@ public class JSONHelper {
 
 	public static JSONObject boundingBoxToJSONObject(AABB box) {
 		JSONObject json = new JSONObject();
-		Vector3f min = new Vector3f(box.getMin());
-		Vector3f size = new Vector3f(box.getSize());
+		Vector3f min = new Vector3f(box.getMinX(), box.getMinY(), box.getMinZ());
+		Vector3f size = new Vector3f(box.getSizeX(), box.getSizeY(), box.getSizeZ());
 		min.scale(1 / (float) Terrain.BLOCK_SIZE);
 		size.scale(1 / (float) Terrain.BLOCK_SIZE);
 		json.put("min", JSONHelper.vector3fToJSONArray(min));
@@ -124,10 +124,14 @@ public class JSONHelper {
 		Vector3f size = JSONHelper.getJSONVector3f(object, "size");
 
 		AABB box = new AABB();
-		box.setMinSize(min, size);
+		box.setMinX(min.x);
+		box.setMinY(min.y);
+		box.setMinZ(min.z);
 
-		// important for later calculation
-		box.reequilibrateMinMax();
+		box.setSizeX(size.x);
+		box.setSizeY(size.y);
+		box.setSizeZ(size.z);
+
 		return (box);
 	}
 

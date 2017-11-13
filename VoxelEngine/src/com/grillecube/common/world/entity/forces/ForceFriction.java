@@ -1,5 +1,7 @@
 package com.grillecube.common.world.entity.forces;
 
+import java.awt.Color;
+
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.entity.Entity;
 import com.grillecube.common.world.terrain.Terrain;
@@ -13,13 +15,13 @@ public abstract class ForceFriction extends Force<Entity> {
 	public void onUpdateResultant(Entity entity, Vector3f resultant) {
 		// F = 1/2 * p * v² * C * A
 
-		float vx = entity.getPositionVelocity().x;
-		float vy = entity.getPositionVelocity().y;
-		float vz = entity.getPositionVelocity().z;
+		float vx = entity.getPositionVelocityX();
+		float vy = entity.getPositionVelocityY();
+		float vz = entity.getPositionVelocityZ();
 
-		float sx = entity.getBoundingBox().getSize().x * Terrain.METER_TO_BLOCK;
-		float sy = entity.getBoundingBox().getSize().y * Terrain.METER_TO_BLOCK;
-		float sz = entity.getBoundingBox().getSize().z * Terrain.METER_TO_BLOCK;
+		float sx = entity.getSizeX() * Terrain.BLOCK_TO_METER;
+		float sy = entity.getSizeY() * Terrain.BLOCK_TO_METER;
+		float sz = entity.getSizeZ() * Terrain.BLOCK_TO_METER;
 
 		float Ax = sy * sz;
 		float Ay = sx * sz;

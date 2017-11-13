@@ -7,7 +7,9 @@ public class EntityBipedTest extends EntityBiped {
 
 	public EntityBipedTest(World world) {
 		super(world);
-		super.setDimensions(1.0f, 2.0f, 1.0f);
+		super.setSizeX(1.0f);
+		super.setSizeY(2.0f);
+		super.setSizeZ(1.0f);
 		super.setWeight(100);
 	}
 

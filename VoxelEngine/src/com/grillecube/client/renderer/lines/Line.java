@@ -1,15 +1,15 @@
 package com.grillecube.client.renderer.lines;
 
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 // line object
 public class Line {
 
 	public Vector3f posa, posb;
-	public Vector4f colora, colorb;
+	public Color colora, colorb;
 
-	public Line(Vector3f posa, Vector4f colora, Vector3f posb, Vector4f colorb) {
+	public Line(Vector3f posa, Color colora, Vector3f posb, Color colorb) {
 		this.posa = posa;
 		this.posb = posb;
 		this.colora = colora;

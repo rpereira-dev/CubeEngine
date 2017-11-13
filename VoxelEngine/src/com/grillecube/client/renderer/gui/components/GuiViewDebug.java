@@ -56,28 +56,28 @@ public class GuiViewDebug extends GuiView {
 
 		if (cam instanceof CameraPerspectiveWorldEntity) {
 			Entity entity = ((CameraPerspectiveWorldEntity) cam).getEntity();
-			builder.append("Entity: ");
-			builder.append(Maths.approximatate(entity.getPosition().x, 10.0f));
+			builder.append("Position: ");
+			builder.append(Maths.approximatate(entity.getPositionX(), 10.0f));
 			builder.append(":");
-			builder.append(Maths.approximatate(entity.getPosition().y, 10.0f));
+			builder.append(Maths.approximatate(entity.getPositionY(), 10.0f));
 			builder.append(":");
-			builder.append(Maths.approximatate(entity.getPosition().z, 10.0f));
-
-			builder.append("\n");
-			builder.append("Acceleration: ");
-			builder.append(Maths.approximatate(entity.getPositionAcceleration().x, 1000.0f));
-			builder.append(":");
-			builder.append(Maths.approximatate(entity.getPositionAcceleration().y, 1000.0f));
-			builder.append(":");
-			builder.append(Maths.approximatate(entity.getPositionAcceleration().z, 1000.0f));
+			builder.append(Maths.approximatate(entity.getPositionZ(), 10.0f));
 
 			builder.append("\n");
 			builder.append("Velocity: ");
-			builder.append(Maths.approximatate(entity.getPositionVelocity().x, 10.0f));
+			builder.append(Maths.approximatate(entity.getPositionVelocityX(), 10.0f));
 			builder.append(":");
-			builder.append(Maths.approximatate(entity.getPositionVelocity().y, 10.0f));
+			builder.append(Maths.approximatate(entity.getPositionVelocityY(), 10.0f));
 			builder.append(":");
-			builder.append(Maths.approximatate(entity.getPositionVelocity().z, 10.0f));
+			builder.append(Maths.approximatate(entity.getPositionVelocityZ(), 10.0f));
+
+			builder.append("\n");
+			builder.append("Acceleration: ");
+			builder.append(Maths.approximatate(entity.getPositionAccelerationX(), 10.0f));
+			builder.append(":");
+			builder.append(Maths.approximatate(entity.getPositionAccelerationY(), 10.0f));
+			builder.append(":");
+			builder.append(Maths.approximatate(entity.getPositionAccelerationZ(), 10.0f));
 		} else {
 			builder.append("Position: ");
 			builder.append((int) pos.x);

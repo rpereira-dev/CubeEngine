@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.client.renderer.camera.CameraProjective;
-import com.grillecube.common.maths.AABB;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
+import com.grillecube.common.world.entity.collision.AABB;
 
 public class LineRendererFactory extends RendererFactory {
 
@@ -60,9 +60,9 @@ public class LineRendererFactory extends RendererFactory {
 	}
 
 	public final int setBox(AABB box, int index) {
-		Vector4f color = box.getColor();
-		Vector3f boxorigin = box.getMin();
-		Vector3f boxsize = box.getSize();
+		Color color = Color.BLUE;
+		Vector3f boxorigin = new Vector3f(box.getMinX(), box.getMinY(), box.getMinZ());
+		Vector3f boxsize = new Vector3f(box.getSizeX(), box.getSizeY(), box.getSizeZ());
 		Line[] lines = new Line[12];
 
 		lines[0] = this.getBoxLine(color, boxorigin, boxsize, 0, 0);
@@ -101,7 +101,7 @@ public class LineRendererFactory extends RendererFactory {
 		return (this.setBox(box, this.renderingList.size()));
 	}
 
-	private Line getBoxLine(Vector4f color, Vector3f boxorigin, Vector3f boxsize, int cornera, int cornerb) {
+	private Line getBoxLine(Color color, Vector3f boxorigin, Vector3f boxsize, int cornera, int cornerb) {
 
 		Vector3f a = new Vector3f(corners[cornera]);
 		Vector3f b = new Vector3f(corners[cornerb]);

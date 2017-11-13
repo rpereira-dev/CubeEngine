@@ -43,7 +43,7 @@ public class Terrain {
 	/** terrain dimensions */
 	// block size unit
 	public static final float BLOCK_SIZE = 1.0f;
-	public static final float METER_TO_BLOCK = 2.0f / 1.0f; //2 blocks = 1 m
+	public static final float BLOCK_TO_METER = 2.0f / 1.0f; //2 blocks = 1 m
 
 	// (and use 1 as implicit value to
 	// optimize calculations)

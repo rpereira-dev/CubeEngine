@@ -49,8 +49,8 @@ public class LineRenderer extends Renderer {
 		this.vao.setAttribute(1, 4, GL11.GL_FLOAT, false, FLOAT_PER_LINE_VERTEX * 4, 3 * 4); // color
 		this.vao.enableAttribute(0);
 		this.vao.enableAttribute(1);
-//		this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
-//		this.vao.unbind();
+		// this.vbo.unbind(GL15.GL_ARRAY_BUFFER);
+		// this.vao.unbind();
 	}
 
 	@Override
@@ -72,18 +72,18 @@ public class LineRenderer extends Renderer {
 			this.buffer.putFloat(line.posa.x);
 			this.buffer.putFloat(line.posa.y);
 			this.buffer.putFloat(line.posa.z);
-			this.buffer.putFloat(line.colora.x);
-			this.buffer.putFloat(line.colora.y);
-			this.buffer.putFloat(line.colora.z);
-			this.buffer.putFloat(line.colora.w);
+			this.buffer.putFloat(line.colora.getR());
+			this.buffer.putFloat(line.colora.getG());
+			this.buffer.putFloat(line.colora.getB());
+			this.buffer.putFloat(line.colora.getA());
 
 			this.buffer.putFloat(line.posb.x);
 			this.buffer.putFloat(line.posb.y);
 			this.buffer.putFloat(line.posb.z);
-			this.buffer.putFloat(line.colorb.x);
-			this.buffer.putFloat(line.colorb.y);
-			this.buffer.putFloat(line.colorb.z);
-			this.buffer.putFloat(line.colorb.w);
+			this.buffer.putFloat(line.colorb.getR());
+			this.buffer.putFloat(line.colorb.getG());
+			this.buffer.putFloat(line.colorb.getB());
+			this.buffer.putFloat(line.colorb.getA());
 		}
 		this.buffer.flip();
 
