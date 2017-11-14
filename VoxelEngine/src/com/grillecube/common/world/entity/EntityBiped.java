@@ -21,7 +21,7 @@ public abstract class EntityBiped extends EntityLiving {
 	public static final int EQUIPMENT_COUNT = 8;
 
 	@Override
-	protected void onUpdate() {
+	protected void onUpdate(double dt) {
 	}
 
 	@Override

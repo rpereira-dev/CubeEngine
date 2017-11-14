@@ -19,13 +19,14 @@ import java.util.ArrayList;
 import com.grillecube.client.resources.SoundManager;
 import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
+import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.Timer;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.entity.ai.EntityAI;
 import com.grillecube.common.world.entity.ai.EntityAIIdle;
+import com.grillecube.common.world.entity.collision.Collision;
 import com.grillecube.common.world.entity.collision.CollisionResponse;
 import com.grillecube.common.world.entity.collision.PhysicObject;
 import com.grillecube.common.world.entity.collision.Positioneable;
@@ -56,9 +57,6 @@ public abstract class Entity extends PhysicObject {
 
 	/** entity controls */
 	private final ArrayList<Control<Entity>> controls;
-
-	/** entity timer */
-	private final Timer timer;
 
 	/** entity position */
 	private float x, y, z;
@@ -93,11 +91,9 @@ public abstract class Entity extends PhysicObject {
 	public Entity(World world, float width, float height, float depth) {
 		this.world = world;
 
-		this.timer = new Timer();
-
 		this.forces = new ArrayList<Force<Entity>>();
-		// this.addForce(Force.GRAVITY);
-		// this.addForce(Force.FRICTION);
+		this.addForce(Force.GRAVITY);
+		this.addForce(Force.FRICTION);
 
 		this.controls = new ArrayList<Control<Entity>>();
 
@@ -135,32 +131,25 @@ public abstract class Entity extends PhysicObject {
 	public void onSpawn(World world) {
 	}
 
-	/** get this entity timer */
-	public final Timer getTimer() {
-		return (this.timer);
-	}
-
 	/** update the entity */
-	public void update() {
-		this.timer.update();
-
-		this.updateAI();
-		this.updateRotation();
-		this.updateSize();
-		this.updatePosition();
+	public void update(double dt) {
+		this.updateAI(dt);
+		this.updateRotation(dt);
+		this.updateSize(dt);
+		this.updatePosition(dt);
 		this.updateBlockUnder();
 		this.updateBoundingBox();
-		this.onUpdate();
+		this.onUpdate(dt);
 	}
 
 	private final void updateBoundingBox() {
 
 	}
 
-	private final void updateAI() {
+	private final void updateAI(double dt) {
 		for (int i = 0; i < this.ais.size(); i++) {
 			EntityAI ai = this.ais.get(i);
-			ai.update();
+			ai.update(dt);
 		}
 	}
 
@@ -172,8 +161,12 @@ public abstract class Entity extends PhysicObject {
 		this.ais.remove(ai);
 	}
 
-	/** update entity's rotation */
-	private final void updateRotation() {
+	/**
+	 * update entity's rotation
+	 * 
+	 * @param dt
+	 */
+	private final void updateRotation(double dt) {
 		// update looking vector
 		double rx = Math.toRadians(this.getRotationX());
 		double ry = Math.toRadians(this.getRotationY());
@@ -183,11 +176,11 @@ public abstract class Entity extends PhysicObject {
 		this.lookVec.setZ((float) (f * Math.cos(ry)));
 		this.lookVec.normalise();
 
-		Rotationable.rotate(this, (float) this.timer.getDt());
+		Rotationable.rotate(this, dt);
 	}
 
-	private final void updateSize() {
-		Sizeable.resize(this, this.timer.getDt());
+	private final void updateSize(double dt) {
+		Sizeable.resize(this, dt);
 	}
 
 	/**
@@ -196,8 +189,10 @@ public abstract class Entity extends PhysicObject {
 	 * 
 	 * really basis of the physic engine: the acceleration vector is reset every
 	 * frame and has to be recalculated via 'Entity.addForce(Vector3f force)'
+	 * 
+	 * @param dt2
 	 */
-	private final void updatePosition() {
+	private final void updatePosition(double dt) {
 
 		Vector3f resultant = new Vector3f();
 
@@ -213,22 +208,40 @@ public abstract class Entity extends PhysicObject {
 		this.controls.clear();
 
 		// advance depending on last update
-		float dt = (float) this.timer.getDt();
 		float m = this.getMass();
-		float ax = resultant.x * Terrain.BLOCK_TO_METER / m;
-		float ay = resultant.y * Terrain.BLOCK_TO_METER / m;
-		float az = resultant.z * Terrain.BLOCK_TO_METER / m;
+		float ax = resultant.x * Terrain.METER_TO_BLOCK / m;
+		float ay = resultant.y * Terrain.METER_TO_BLOCK / m;
+		float az = resultant.z * Terrain.METER_TO_BLOCK / m;
 		this.setPositionAccelerationX(ax);
 		this.setPositionAccelerationY(ay);
 		this.setPositionAccelerationZ(az);
 		Positioneable.velocity(this, dt);
-		float vx = this.getPositionVelocityX();
-		float vy = this.getPositionVelocityY();
-		float vz = this.getPositionVelocityZ();
 
-		// TODO
-		// CollisionResponse collisionResponse =
-		// CollisionResponse.collisionResponse(this, vx, vy, vz, dt);
+		// simulate ground
+		Entity ground = new Entity() {
+			@Override
+			protected void onUpdate(double dt) {
+			}
+		};
+		ground.setPosition(-16.0f, 160.0f, -16.0f);
+		ground.setSize(2000.0f, 0.0f, 2000.0f);
+
+		while (dt > 0.000001f) {
+			// swept
+			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(this, ground);
+			// if no collision, move
+			if (collisionResponse == null || collisionResponse.dt > dt) {
+				Positioneable.position(this, dt);
+				break;
+			}
+
+			// if collision, move just before it collides
+			Positioneable.position(this, collisionResponse.dt);
+			dt -= collisionResponse.dt;
+			
+			//bounce, and continue collisions
+			Collision.deflects(this, collisionResponse, 1.0f);
+		}
 	}
 
 	/** make the entity jump */
@@ -255,8 +268,12 @@ public abstract class Entity extends PhysicObject {
 		this.controls.add(control);
 	}
 
-	/** update the entity */
-	protected abstract void onUpdate();
+	/**
+	 * update the entity
+	 * 
+	 * @param dt
+	 */
+	protected abstract void onUpdate(double dt);
 
 	/** get entity world */
 	public World getWorld() {

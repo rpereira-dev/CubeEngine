@@ -14,7 +14,7 @@ public class EntityBipedTest extends EntityBiped {
 	}
 
 	@Override
-	protected void onUpdate() {
+	protected void onUpdate(double dt) {
 	}
 
 }

@@ -19,6 +19,7 @@ import com.grillecube.client.renderer.model.editor.camera.CameraController;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolbox;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
+import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.world.World;
 
 /** the gui which displays the model */
@@ -96,7 +97,7 @@ public class GuiModelView extends Gui {
 
 	private final void updateModelInstances() {
 		for (ModelInstance modelInstance : this.modelInstances) {
-			modelInstance.getEntity().update();
+			modelInstance.getEntity().update(VoxelEngine.instance().getTimer().getDt());
 			modelInstance.update();
 		}
 	}

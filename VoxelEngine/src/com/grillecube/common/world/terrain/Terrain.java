@@ -43,7 +43,7 @@ public class Terrain {
 	/** terrain dimensions */
 	// block size unit
 	public static final float BLOCK_SIZE = 1.0f;
-	public static final float BLOCK_TO_METER = 2.0f / 1.0f; //2 blocks = 1 m
+	public static final float METER_TO_BLOCK = 1.0f / 1.0f; // 2 blocks = 1 m
 
 	// (and use 1 as implicit value to
 	// optimize calculations)
@@ -140,8 +140,8 @@ public class Terrain {
 	}
 
 	/******
-	 * EVERY TERRAINS UPDATE RELATIVE FUNCTIONS (COMPLEX ALGORYTHM) ARE CALLED IN A
-	 * SEPARATE THREAD. STARTS HERE
+	 * EVERY TERRAINS UPDATE RELATIVE FUNCTIONS (COMPLEX ALGORYTHM) ARE CALLED
+	 * IN A SEPARATE THREAD. STARTS HERE
 	 */
 	/** update the terrain once */
 	public void update() {
@@ -238,8 +238,8 @@ public class Terrain {
 	}
 
 	/******
-	 * EVERY TERRAINS UPDATE RELATIVE FUNCTIONS (COMPLEX ALGORYTHM) ARE CALLED IN A
-	 * SEPARATE THREAD. END HERE
+	 * EVERY TERRAINS UPDATE RELATIVE FUNCTIONS (COMPLEX ALGORYTHM) ARE CALLED
+	 * IN A SEPARATE THREAD. END HERE
 	 */
 
 	public boolean hasState(int state) {
@@ -259,8 +259,9 @@ public class Terrain {
 	}
 
 	/**
-	 * return the terrain at the given position, relative to this instance It fills
-	 * the 'dst' Vector3i with it terrain-relative coordinates and return it
+	 * return the terrain at the given position, relative to this instance It
+	 * fills the 'dst' Vector3i with it terrain-relative coordinates and return
+	 * it
 	 * 
 	 * if the terrain didnt exists, it creates it
 	 */
@@ -377,8 +378,8 @@ public class Terrain {
 	}
 
 	/**
-	 * WARNING : this function doest check bound, only use if you know what you're
-	 * doing
+	 * WARNING : this function doest check bound, only use if you know what
+	 * you're doing
 	 * 
 	 * @param block
 	 * @param xyz
@@ -1172,18 +1173,19 @@ public class Terrain {
 	 * 
 	 * 0 <= x <= D - 1 0 <= y <= D - 1 0 <= z <= D - 1
 	 *
-	 * => 0 <= x + D * (y + z.D) <= (D - 1) + D . ((D - 1) + D . (D - 1)) => 0 <=
-	 * index <= (D - 1) + D . ((D - 1) + D^2 - D)) => 0 <= index <= (D - 1) + D .
-	 * (D^2 - 1) => 0 <= index <= (D - 1) + D^3 - D) => 0 <= index <= D^3 - 1 => 0
-	 * <= index <= this.blocks.length : OK
+	 * => 0 <= x + D * (y + z.D) <= (D - 1) + D . ((D - 1) + D . (D - 1)) => 0
+	 * <= index <= (D - 1) + D . ((D - 1) + D^2 - D)) => 0 <= index <= (D - 1) +
+	 * D . (D^2 - 1) => 0 <= index <= (D - 1) + D^3 - D) => 0 <= index <= D^3 -
+	 * 1 => 0 <= index <= this.blocks.length : OK
 	 *
-	 * unicity proof: index = x + D * (y + D * z) = x + y.D + z.D^2 = z.D^2 + y.D +
-	 * x
+	 * unicity proof: index = x + D * (y + D * z) = x + y.D + z.D^2 = z.D^2 +
+	 * y.D + x
 	 *
-	 * if x < D, then x / D = 0 (we are doing division using integers). Then we know
-	 * that:
+	 * if x < D, then x / D = 0 (we are doing division using integers). Then we
+	 * know that:
 	 *
-	 * index / D = (z.D^2 + y.D + x) / D = z.D + y + x / D = z.D + y + 0 = z.D + y
+	 * index / D = (z.D^2 + y.D + x) / D = z.D + y + x / D = z.D + y + 0 = z.D +
+	 * y
 	 *
 	 * index / D^2 = (index / D) / D = (z.D + y) / D = z + y / D = z
 	 *
@@ -1231,8 +1233,8 @@ public class Terrain {
 	}
 
 	/**
-	 * thoses functions return the left, right, top, bot, front or back terrain to
-	 * this one
+	 * thoses functions return the left, right, top, bot, front or back terrain
+	 * to this one
 	 */
 	public Terrain getNeighbor(int id) {
 
@@ -1308,9 +1310,10 @@ public class Terrain {
 
 	/**
 	 * this function updates the visibility of each face toward another using a
-	 * flood fill algorythm for each cell which werent already visited: - use flood
-	 * fill algorythm, and register which faces are touched by the flood - for each
-	 * of touched faces, set the visibility linked with the others touched
+	 * flood fill algorythm for each cell which werent already visited: - use
+	 * flood fill algorythm, and register which faces are touched by the flood -
+	 * for each of touched faces, set the visibility linked with the others
+	 * touched
 	 */
 
 	/**

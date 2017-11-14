@@ -10,7 +10,7 @@ public class EntityTest extends EntityLiving {
 	}
 
 	@Override
-	protected void onUpdate() {
+	protected void onUpdate(double dt) {
 	}
 
 }

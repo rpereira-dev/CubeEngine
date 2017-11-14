@@ -9,17 +9,17 @@ public class EntityAIIdle extends EntityAI {
 		super(entity);
 		super.setUpdateTime(1000);
 	}
-	
+
 	@Override
-	protected void onUpdate() {
+	protected void onUpdate(double dt) {
 
 	}
 
 	@Override
 	protected void onTimedUpdate() {
-//		if (!super.getEntity().isInAir()) {
-//			super.getEntity().jump();
-//		}
+		// if (!super.getEntity().isInAir()) {
+		// super.getEntity().jump();
+		// }
 	}
 
 }

@@ -19,9 +19,9 @@ public abstract class ForceFriction extends Force<Entity> {
 		float vy = entity.getPositionVelocityY();
 		float vz = entity.getPositionVelocityZ();
 
-		float sx = entity.getSizeX() * Terrain.BLOCK_TO_METER;
-		float sy = entity.getSizeY() * Terrain.BLOCK_TO_METER;
-		float sz = entity.getSizeZ() * Terrain.BLOCK_TO_METER;
+		float sx = entity.getSizeX();
+		float sy = entity.getSizeY();
+		float sz = entity.getSizeZ();
 
 		float Ax = sy * sz;
 		float Ay = sx * sz;

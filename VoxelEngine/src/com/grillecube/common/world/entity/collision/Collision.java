@@ -2,8 +2,6 @@ package com.grillecube.common.world.entity.collision;
 
 import org.junit.Test;
 
-import com.grillecube.common.Logger;
-import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.world.entity.Entity;
 
@@ -66,7 +64,7 @@ public class Collision {
 	 * @param vz
 	 * @return
 	 */
-	public static final CollisionResponse collisionResponseAABB(PhysicObject b1, PhysicObject b2) {
+	public static final CollisionResponse collisionResponseAABBSwept(PhysicObject b1, PhysicObject b2) {
 
 		// extract positions
 		float x1 = b1.getPositionX();
@@ -124,7 +122,7 @@ public class Collision {
 		float xEntry, yEntry, zEntry;
 		float xExit, yExit, zExit;
 		if (vx == 0.0f) {
-			xEntry = Float.POSITIVE_INFINITY;
+			xEntry = Float.NEGATIVE_INFINITY;
 			xExit = Float.POSITIVE_INFINITY;
 		} else {
 			xEntry = xInvEntry / vx;
@@ -132,7 +130,7 @@ public class Collision {
 		}
 
 		if (vy == 0.0f) {
-			yEntry = -Float.POSITIVE_INFINITY;
+			yEntry = Float.NEGATIVE_INFINITY;
 			yExit = Float.POSITIVE_INFINITY;
 		} else {
 			yEntry = yInvEntry / vy;
@@ -140,7 +138,7 @@ public class Collision {
 		}
 
 		if (vz == 0.0f) {
-			zEntry = -Float.POSITIVE_INFINITY;
+			zEntry = Float.NEGATIVE_INFINITY;
 			zExit = Float.POSITIVE_INFINITY;
 		} else {
 			zEntry = zInvEntry / vz;
@@ -149,11 +147,10 @@ public class Collision {
 
 		// find the earliest/latest times of collision
 		float entryTime = Maths.max(xEntry, Maths.max(yEntry, zEntry));
-		float exitTime = Maths.min(xExit, Maths.max(yExit, zExit));
+		float exitTime = Maths.min(xExit, Maths.min(yExit, zExit));
 
 		// if there was no collision
 		if (entryTime > exitTime || (xEntry < 0.0f && yEntry < 0.0f && zEntry < 0.0f)) {
-			Logger.get().log(Logger.Level.DEBUG, entryTime, exitTime, xEntry, yEntry, zEntry);
 			return (null);
 		}
 
@@ -225,11 +222,70 @@ public class Collision {
 		return (null);
 	}
 
+	/**
+	 * 
+	 * Simulates a deflection on after the 'physicObject' enters in collision
+	 * with 'collisionResponse'
+	 * 
+	 * @param physicObject
+	 *            : the physic object
+	 * @param collisionResponse
+	 *            : the collision response, (returned by
+	 *            {@link #collisionResponseAABBSwept(PhysicObject, PhysicObject)}
+	 * @param absorption
+	 *            : amount of velocity to be absorbed by the collision
+	 */
+	public static final void deflects(PhysicObject physicObject, CollisionResponse collisionResponse,
+			float absorption) {
+		if (Maths.abs(collisionResponse.nx) > 0.0001f) {
+			physicObject.setPositionVelocityX(-physicObject.getPositionVelocityX() * absorption);
+		}
+		if (Maths.abs(collisionResponse.ny) > 0.0001f) {
+			physicObject.setPositionVelocityY(-physicObject.getPositionVelocityY() * absorption);
+		}
+		if (Maths.abs(collisionResponse.nz) > 0.0001f) {
+			physicObject.setPositionVelocityZ(-physicObject.getPositionVelocityZ() * absorption);
+		}
+	}
+
+	/**
+	 * Simulates a push response after the 'physicObject' enters in collision
+	 * with 'collisionResponse'
+	 * 
+	 * @param physicObject
+	 *            : the physic object
+	 * @param collisionResponse
+	 *            : the collision response, (returned by
+	 *            {@link #collisionResponseAABBSwept(PhysicObject, PhysicObject)}
+	 * @param absorption
+	 *            : amount of velocity to be absorbed by the collision
+	 */
+	public static final void push(PhysicObject physicObject, CollisionResponse collisionResponse) {
+		// TODO
+	}
+
+	/**
+	 * 
+	 * Simulates a slide response after the 'physicObject' enters in collision
+	 * with 'collisionResponse'
+	 * 
+	 * @param physicObject
+	 *            : the physic object
+	 * @param collisionResponse
+	 *            : the collision response, (returned by
+	 *            {@link #collisionResponseAABBSwept(PhysicObject, PhysicObject)}
+	 * @param absorption
+	 *            : amount of velocity to be absorbed by the collision
+	 */
+	public static final void slide(PhysicObject physicObject, CollisionResponse collisionResponse) {
+		// TODO
+	}
+
 	@Test
 	public void entityToWallCollision() {
 		Entity entity = new Entity() {
 			@Override
-			protected void onUpdate() {
+			protected void onUpdate(double dt) {
 			}
 		};
 		entity.setSize(1.0f, 2.0f, 1.0f);
@@ -238,13 +294,13 @@ public class Collision {
 
 		Entity block = new Entity() {
 			@Override
-			protected void onUpdate() {
+			protected void onUpdate(double dt) {
 			}
 		};
 		block.setSize(1.0f, 1.0f, 1.0f);
 		block.setPosition(6.0f, 0, 0.0f);
 
-		CollisionResponse collisionResponse = Collision.collisionResponseAABB(entity, block);
+		CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(entity, block);
 		Assert.assertEquals(collisionResponse, new CollisionResponse(-1.0f, 0.0f, 0.0f, 5.0f));
 	}
 }

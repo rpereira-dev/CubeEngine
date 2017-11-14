@@ -177,7 +177,7 @@ public class WorldEntityStorage extends WorldStorage {
 
 				for (int i = 0; i < entities.length; i++) {
 					Entity entity = entities[i];
-					entity.update();
+					entity.update(engine.getTimer().getDt());
 				}
 				return (WorldEntityStorage.this);
 			}

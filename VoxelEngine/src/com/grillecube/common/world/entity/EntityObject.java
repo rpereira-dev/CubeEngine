@@ -9,6 +9,6 @@ public abstract class EntityObject extends Entity {
 	}
 
 	@Override
-	protected void onUpdate() {
+	protected void onUpdate(double dt) {
 	}
 }

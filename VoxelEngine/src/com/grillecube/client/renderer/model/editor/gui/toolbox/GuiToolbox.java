@@ -120,7 +120,7 @@ public class GuiToolbox extends Gui {
 
 		Entity entity = new Entity() {
 			@Override
-			protected void onUpdate() {
+			protected void onUpdate(double dt) {
 			}
 		};
 		entity.setPosition(0.0f, 0.0f, 0.0f);

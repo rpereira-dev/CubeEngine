@@ -67,8 +67,6 @@ public class VoxelEngineClient extends VoxelEngine {
 		File[] files = new File(R.getResPath("textures/blocks/")).listFiles();
 		this.getGLFWWindow().setIcon(files[new Random().nextInt(files.length)]);
 
-		Timer timer = new Timer();
-
 		// event callback
 		this.registerEventCallback(new EventListener<EventOnLoop>() {
 			@Override
@@ -96,10 +94,11 @@ public class VoxelEngineClient extends VoxelEngine {
 					stopRunning();
 				}
 
-				timer.update();
+				getTimer().update();
+
 				try {
 					// ensure 60 fps, not more, not less
-					long toSleep = 1000 / (60 + 20) - (long) (timer.getDt() * 1000) + 1;
+					long toSleep = 1000 / (60 + 20) - (long) (getTimer().getDt() * 1000) + 1;
 					if (toSleep > 0 && toSleep < 20) {
 						Thread.sleep(toSleep);
 					}
@@ -131,7 +130,8 @@ public class VoxelEngineClient extends VoxelEngine {
 	}
 
 	/**
-	 * a task to be run on a gl context (will be run on the next main thread update)
+	 * a task to be run on a gl context (will be run on the next main thread
+	 * update)
 	 */
 	public final void addGLTask(GLTask glTask) {
 		this.glTasks.add(glTask);

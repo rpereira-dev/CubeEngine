@@ -20,9 +20,9 @@ public abstract class EntityAI {
 	}
 
 	/** called on every entity's update */
-	public final void update() {
-		this.onUpdate();
-		this.accumulator += this.entity.getTimer().getDt();
+	public final void update(double dt) {
+		this.onUpdate(dt);
+		this.accumulator += dt;
 		int n = (int) (this.accumulator / this.updateTime);
 		if (n > 0) {
 			do {
@@ -33,8 +33,12 @@ public abstract class EntityAI {
 		}
 	}
 
-	/** called on every entity's update */
-	protected abstract void onUpdate();
+	/**
+	 * called on every entity's update
+	 * 
+	 * @param dt
+	 */
+	protected abstract void onUpdate(double dt);
 
 	/**
 	 * called until the time stored in {@link #accumulator} <
