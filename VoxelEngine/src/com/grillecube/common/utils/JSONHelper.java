@@ -26,8 +26,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.entity.collision.AABB;
-import com.grillecube.common.world.terrain.Terrain;
 
 public class JSONHelper {
 	/** load a vector3f from a JSON array of 3 floats */
@@ -104,35 +102,6 @@ public class JSONHelper {
 			jsonarray.put(t);
 		}
 		return (jsonarray);
-	}
-
-	public static JSONObject boundingBoxToJSONObject(AABB box) {
-		JSONObject json = new JSONObject();
-		Vector3f min = new Vector3f(box.getMinX(), box.getMinY(), box.getMinZ());
-		Vector3f size = new Vector3f(box.getSizeX(), box.getSizeY(), box.getSizeZ());
-		min.scale(1 / (float) Terrain.BLOCK_SIZE);
-		size.scale(1 / (float) Terrain.BLOCK_SIZE);
-		json.put("min", JSONHelper.vector3fToJSONArray(min));
-		json.put("size", JSONHelper.vector3fToJSONArray(size));
-		return (json);
-	}
-
-	/** return a boundingbox from the given jsonobject */
-	public static AABB jsonObjectToBoundingBox(JSONObject object) {
-
-		Vector3f min = JSONHelper.getJSONVector3f(object, "min");
-		Vector3f size = JSONHelper.getJSONVector3f(object, "size");
-
-		AABB box = new AABB();
-		box.setMinX(min.x);
-		box.setMinY(min.y);
-		box.setMinZ(min.z);
-
-		box.setSizeX(size.x);
-		box.setSizeY(size.y);
-		box.setSizeZ(size.z);
-
-		return (box);
 	}
 
 	public static JSONArray arrayToJSONArray(byte[] array) {

@@ -80,7 +80,7 @@ public class ProgramParticleBillboarded extends GLProgram {
 
 		super.loadUniformVec(this._color, particle.getColor());
 		super.loadUniformVec(this._position, particle.getPosition());
-		super.loadUniformVec(this._scale, particle.getScale());
+		super.loadUniformVec(this._scale, particle.getSize());
 	}
 
 	public void loadGlobalUniforms(CameraProjective camera) {

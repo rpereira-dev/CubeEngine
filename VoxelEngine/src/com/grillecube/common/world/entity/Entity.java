@@ -26,7 +26,7 @@ import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.entity.ai.EntityAI;
 import com.grillecube.common.world.entity.ai.EntityAIIdle;
-import com.grillecube.common.world.entity.collision.AABB;
+import com.grillecube.common.world.entity.collision.CollisionResponse;
 import com.grillecube.common.world.entity.collision.PhysicObject;
 import com.grillecube.common.world.entity.collision.Positioneable;
 import com.grillecube.common.world.entity.collision.Rotationable;
@@ -60,13 +60,20 @@ public abstract class Entity extends PhysicObject {
 	/** entity timer */
 	private final Timer timer;
 
-	/** the entity bounding box */
-	private final AABB aabb;
+	/** entity position */
+	private float x, y, z;
+	private float xVelocity, yVelocity, zVelocity;
+	private float xAcceleration, yAcceleration, zAcceleration;
 
 	/** entity rotation */
-	private float pitch, yaw, roll;
-	private float pitchVelocity, yawVelocity, rollVelocity;
-	private float pitchAcceleration, yawAcceleration, rollAcceleration;
+	private float rx, ry, rz;
+	private float rxVelocity, ryVelocity, rzVelocity;
+	private float rxAcceleration, ryAcceleration, rzAcceleration;
+
+	/** entity size */
+	private float sx, sy, sz;
+	private float sxVelocity, syVelocity, szVelocity;
+	private float sxAcceleration, syAcceleration, szAcceleration;
 
 	/** vector where the entity is looking at */
 	private final Vector3f lookVec;
@@ -94,14 +101,11 @@ public abstract class Entity extends PhysicObject {
 
 		this.controls = new ArrayList<Control<Entity>>();
 
-		// bounding box
-		this.aabb = new AABB();
-
 		// look vector
 		this.lookVec = new Vector3f();
-		this.pitch = 0;
-		this.yaw = 0;
-		this.roll = 0;
+		this.rx = 0;
+		this.ry = 0;
+		this.rz = 0;
 
 		// entity definition
 		this.speed = DEFAULT_SPEED;
@@ -171,12 +175,12 @@ public abstract class Entity extends PhysicObject {
 	/** update entity's rotation */
 	private final void updateRotation() {
 		// update looking vector
-		double pitch = Math.toRadians(this.getRotationX());
-		double yaw = Math.toRadians(this.getRotationY());
-		float f = (float) Math.cos(pitch);
-		this.lookVec.setX((float) (f * Math.sin(yaw)));
-		this.lookVec.setY((float) -Math.sin(pitch));
-		this.lookVec.setZ((float) (f * Math.cos(yaw)));
+		double rx = Math.toRadians(this.getRotationX());
+		double ry = Math.toRadians(this.getRotationY());
+		float f = (float) Math.cos(rx);
+		this.lookVec.setX((float) (f * Math.sin(ry)));
+		this.lookVec.setY((float) -Math.sin(rx));
+		this.lookVec.setZ((float) (f * Math.cos(ry)));
 		this.lookVec.normalise();
 
 		Rotationable.rotate(this, (float) this.timer.getDt());
@@ -214,11 +218,17 @@ public abstract class Entity extends PhysicObject {
 		float ax = resultant.x * Terrain.BLOCK_TO_METER / m;
 		float ay = resultant.y * Terrain.BLOCK_TO_METER / m;
 		float az = resultant.z * Terrain.BLOCK_TO_METER / m;
+		this.setPositionAccelerationX(ax);
+		this.setPositionAccelerationY(ay);
+		this.setPositionAccelerationZ(az);
+		Positioneable.velocity(this, dt);
+		float vx = this.getPositionVelocityX();
+		float vy = this.getPositionVelocityY();
+		float vz = this.getPositionVelocityZ();
 
-		this.aabb.setPositionAccelerationX(ax);
-		this.aabb.setPositionAccelerationY(ay);
-		this.aabb.setPositionAccelerationZ(az);
-		Positioneable.position(this, dt);
+		// TODO
+		// CollisionResponse collisionResponse =
+		// CollisionResponse.collisionResponse(this, vx, vy, vz, dt);
 	}
 
 	/** make the entity jump */
@@ -253,14 +263,6 @@ public abstract class Entity extends PhysicObject {
 		return (this.world);
 	}
 
-	public final void setPosition(Vector3f pos) {
-		this.setPosition(pos.x, pos.y, pos.z);
-	}
-
-	public final void setPosition(float x, float y, float z) {
-		this.teleport(x, y, z);
-	}
-
 	public final void setWorld(World world) {
 		this.world = world;
 	}
@@ -274,10 +276,12 @@ public abstract class Entity extends PhysicObject {
 		return (this.id);
 	}
 
+	/** entity speed in blocks per seconds */
 	public final float getSpeed() {
 		return (this.speed);
 	}
 
+	/** entity speed in blocks per seconds */
 	public final void setSpeed(float speed) {
 		this.speed = speed;
 	}
@@ -327,9 +331,7 @@ public abstract class Entity extends PhysicObject {
 
 	/** teleport the entity to the given position */
 	public final void teleport(float x, float y, float z) {
-		this.setPositionX(x);
-		this.setPositionY(y);
-		this.setPositionZ(z);
+		this.setPosition(x, y, z);
 	}
 
 	public Block getBlockUnder() {
@@ -342,13 +344,6 @@ public abstract class Entity extends PhysicObject {
 
 	public boolean isFalling() {
 		return (this.getPositionVelocityY() < 0.0f);
-	}
-
-	/**
-	 * @return : the entity bounding box
-	 */
-	public final AABB getBoundingBox() {
-		return (this.aabb);
 	}
 
 	/**
@@ -382,21 +377,6 @@ public abstract class Entity extends PhysicObject {
 		this.playSound(ALH.alhLoadSound(filepath));
 	}
 
-	/** set entity width */
-	public final void setWidth(float width) {
-		this.aabb.setSizeX(width);
-	}
-
-	public final void setHeight(float height) {
-		this.aabb.setSizeY(height);
-	}
-
-	public final void setDepth(float depth) {
-		this.aabb.setSizeZ(depth);
-	}
-
-	// TODO DIMENSIONABLE
-
 	public final boolean isVisible() {
 		return (this.hasState(STATE_VISIBLE));
 	}
@@ -405,278 +385,286 @@ public abstract class Entity extends PhysicObject {
 		return (this.getPositionAccelerationY() > 0.0f);
 	}
 
-	/** rotation begins */
-	@Override
-	public float getRotationX() {
-		return (this.pitch);
-	}
-
-	@Override
-	public float getRotationY() {
-		return (this.yaw);
-	}
-
-	@Override
-	public float getRotationZ() {
-		return (this.roll);
-	}
-
-	@Override
-	public float getRotationVelocityX() {
-		return (this.pitchVelocity);
-	}
-
-	@Override
-	public float getRotationVelocityY() {
-		return (this.yawVelocity);
-	}
-
-	@Override
-	public float getRotationVelocityZ() {
-		return (this.rollVelocity);
-	}
-
-	@Override
-	public float getRotationAccelerationX() {
-		return (this.pitchAcceleration);
-	}
-
-	@Override
-	public float getRotationAccelerationY() {
-		return (this.yawAcceleration);
-	}
-
-	@Override
-	public float getRotationAccelerationZ() {
-		return (this.rollAcceleration);
-	}
-
-	@Override
-	public void setRotationX(float x) {
-		this.pitch = x;
-	}
-
-	@Override
-	public void setRotationY(float y) {
-		this.yaw = y;
-	}
-
-	@Override
-	public void setRotationZ(float z) {
-		this.roll = z;
-	}
-
-	@Override
-	public void setRotationVelocityX(float vx) {
-		this.pitchVelocity = vx;
-	}
-
-	@Override
-	public void setRotationVelocityY(float vy) {
-		this.yawVelocity = vy;
-	}
-
-	@Override
-	public void setRotationVelocityZ(float vz) {
-		this.rollVelocity = vz;
-	}
-
-	@Override
-	public void setRotationAccelerationX(float ax) {
-		this.pitchAcceleration = ax;
-	}
-
-	@Override
-	public void setRotationAccelerationY(float ay) {
-		this.yawAcceleration = ay;
-	}
-
-	@Override
-	public void setRotationAccelerationZ(float az) {
-		this.rollAcceleration = az;
-	}
-
+	/***************************************************************************************/
 	/** position begins */
+	/***************************************************************************************/
 
 	@Override
 	public float getPositionX() {
-		return (this.aabb.getPositionX());
+		return (this.x);
 	}
 
 	@Override
 	public float getPositionY() {
-		return (this.aabb.getPositionY());
+		return (this.y);
 	}
 
 	@Override
 	public float getPositionZ() {
-		return (this.aabb.getPositionZ());
+		return (this.z);
 	}
 
 	@Override
 	public float getPositionVelocityX() {
-		return (this.aabb.getPositionVelocityX());
+		return (this.xVelocity);
 	}
 
 	@Override
 	public float getPositionVelocityY() {
-		return (this.aabb.getPositionVelocityY());
+		return (this.yVelocity);
 	}
 
 	@Override
 	public float getPositionVelocityZ() {
-		return (this.aabb.getPositionVelocityZ());
+		return (this.zVelocity);
 	}
 
 	@Override
 	public float getPositionAccelerationX() {
-		return (this.aabb.getPositionAccelerationX());
+		return (this.xAcceleration);
 	}
 
 	@Override
 	public float getPositionAccelerationY() {
-		return (this.aabb.getPositionAccelerationY());
+		return (this.yAcceleration);
 	}
 
 	@Override
 	public float getPositionAccelerationZ() {
-		return (this.aabb.getPositionAccelerationZ());
+		return (this.zAcceleration);
 	}
 
 	@Override
 	public void setPositionX(float x) {
-		this.aabb.setPositionX(x);
+		this.x = x;
 	}
 
 	@Override
 	public void setPositionY(float y) {
-		this.aabb.setPositionY(y);
+		this.y = y;
 	}
 
 	@Override
 	public void setPositionZ(float z) {
-		this.aabb.setPositionZ(z);
+		this.z = z;
 	}
 
 	@Override
 	public void setPositionVelocityX(float vx) {
-		this.aabb.setPositionVelocityX(vx);
+		this.xVelocity = vx;
 	}
 
 	@Override
 	public void setPositionVelocityY(float vy) {
-		this.aabb.setPositionVelocityY(vy);
+		this.yVelocity = vy;
 	}
 
 	@Override
 	public void setPositionVelocityZ(float vz) {
-		this.aabb.setPositionVelocityZ(vz);
+		this.zVelocity = vz;
 	}
 
 	@Override
 	public void setPositionAccelerationX(float ax) {
-		this.aabb.setPositionAccelerationX(ax);
+		this.xAcceleration = ax;
 	}
 
 	@Override
 	public void setPositionAccelerationY(float ay) {
-		this.aabb.setPositionAccelerationY(ay);
+		this.yAcceleration = ay;
 	}
 
 	@Override
 	public void setPositionAccelerationZ(float az) {
-		this.aabb.setPositionAccelerationZ(az);
+		this.zAcceleration = az;
 	}
 
-	/** size begins */
+	/***************************************************************************************/
+	/** rotation begins */
+	/***************************************************************************************/
+
+	@Override
+	public float getRotationX() {
+		return (this.rx);
+	}
+
+	@Override
+	public float getRotationY() {
+		return (this.ry);
+	}
+
+	@Override
+	public float getRotationZ() {
+		return (this.rz);
+	}
+
+	@Override
+	public float getRotationVelocityX() {
+		return (this.rxVelocity);
+	}
+
+	@Override
+	public float getRotationVelocityY() {
+		return (this.ryVelocity);
+	}
+
+	@Override
+	public float getRotationVelocityZ() {
+		return (this.rzVelocity);
+	}
+
+	@Override
+	public float getRotationAccelerationX() {
+		return (this.rxAcceleration);
+	}
+
+	@Override
+	public float getRotationAccelerationY() {
+		return (this.ryAcceleration);
+	}
+
+	@Override
+	public float getRotationAccelerationZ() {
+		return (this.rzAcceleration);
+	}
+
+	@Override
+	public void setRotationX(float x) {
+		this.rx = x;
+	}
+
+	@Override
+	public void setRotationY(float y) {
+		this.ry = y;
+	}
+
+	@Override
+	public void setRotationZ(float z) {
+		this.rz = z;
+	}
+
+	@Override
+	public void setRotationVelocityX(float vx) {
+		this.rxVelocity = vx;
+	}
+
+	@Override
+	public void setRotationVelocityY(float vy) {
+		this.ryVelocity = vy;
+	}
+
+	@Override
+	public void setRotationVelocityZ(float vz) {
+		this.rzVelocity = vz;
+	}
+
+	@Override
+	public void setRotationAccelerationX(float ax) {
+		this.rxAcceleration = ax;
+	}
+
+	@Override
+	public void setRotationAccelerationY(float ay) {
+		this.ryAcceleration = ay;
+	}
+
+	@Override
+	public void setRotationAccelerationZ(float az) {
+		this.rzAcceleration = az;
+	}
+
+	/***************************************************************************************/
+	/** position begins */
+	/***************************************************************************************/
 
 	@Override
 	public float getSizeX() {
-		return (this.aabb.getSizeX());
+		return (this.sx);
 	}
 
 	@Override
 	public float getSizeY() {
-		return (this.aabb.getSizeY());
+		return (this.sy);
 	}
 
 	@Override
 	public float getSizeZ() {
-		return (this.aabb.getSizeZ());
+		return (this.sz);
 	}
 
 	@Override
 	public float getSizeVelocityX() {
-		return (this.aabb.getSizeVelocityX());
+		return (this.sxVelocity);
 	}
 
 	@Override
 	public float getSizeVelocityY() {
-		return (this.aabb.getSizeVelocityY());
+		return (this.syVelocity);
 	}
 
 	@Override
 	public float getSizeVelocityZ() {
-		return (this.aabb.getSizeVelocityZ());
+		return (this.szVelocity);
 	}
 
 	@Override
 	public float getSizeAccelerationX() {
-		return (this.aabb.getSizeAccelerationX());
+		return (this.sxAcceleration);
 	}
 
 	@Override
 	public float getSizeAccelerationY() {
-		return (this.aabb.getSizeAccelerationY());
+		return (this.syAcceleration);
 	}
 
 	@Override
 	public float getSizeAccelerationZ() {
-		return (this.aabb.getSizeAccelerationZ());
+		return (this.szAcceleration);
 	}
 
 	@Override
 	public void setSizeX(float x) {
-		this.aabb.setSizeX(x);
+		this.sx = x;
 	}
 
 	@Override
 	public void setSizeY(float y) {
-		this.aabb.setSizeY(y);
+		this.sy = y;
 	}
 
 	@Override
 	public void setSizeZ(float z) {
-		this.aabb.setSizeZ(z);
+		this.sz = z;
 	}
 
 	@Override
 	public void setSizeVelocityX(float vx) {
-		this.aabb.setSizeVelocityX(vx);
+		this.sxVelocity = vx;
 	}
 
 	@Override
 	public void setSizeVelocityY(float vy) {
-		this.aabb.setSizeVelocityY(vy);
+		this.syVelocity = vy;
 	}
 
 	@Override
 	public void setSizeVelocityZ(float vz) {
-		this.aabb.setSizeVelocityZ(vz);
+		this.szVelocity = vz;
 	}
 
 	@Override
 	public void setSizeAccelerationX(float ax) {
-		this.aabb.setSizeAccelerationX(ax);
+		this.sxAcceleration = ax;
 	}
 
 	@Override
 	public void setSizeAccelerationY(float ay) {
-		this.aabb.setSizeAccelerationY(ay);
+		this.syAcceleration = ay;
 	}
 
 	@Override
 	public void setSizeAccelerationZ(float az) {
-		this.aabb.setSizeAccelerationZ(az);
+		this.szAcceleration = az;
 	}
+
 }

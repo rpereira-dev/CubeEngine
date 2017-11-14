@@ -40,6 +40,6 @@ public class ParticleCube extends Particle {
 	}
 
 	protected void calculateTransformationMatrix(Camera camera) {
-		Matrix4f.createTransformationMatrix(this.transfMatrix, this.getPosition(), this.getRotation(), this.getScale());
+		Matrix4f.createTransformationMatrix(this.transfMatrix, this.getPosition(), this.getRotation(), this.getSize());
 	}
 }

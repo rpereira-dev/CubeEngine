@@ -69,7 +69,7 @@ public class ParticleRendererFactory extends RendererFactory {
 		float z = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
 		cube.setPosition(campos.x + x * 16, campos.y + y * 16, campos.z + z * 16);
 		float size = rng.nextFloat() * 0.1f;
-		cube.setScale(size, size, size);
+		cube.setSize(size, size, size);
 		cube.setHealth(120);
 		Vector3f color = new Vector3f(0.8f, 0.8f, 0.8f);
 		cube.setColor(color.x, color.y, color.z, 0.5f);
@@ -97,9 +97,9 @@ public class ParticleRendererFactory extends RendererFactory {
 			float z = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
 			cube.setPosition(campos.x + x * 16, campos.y + y * 16, campos.z + z * 16);
 			float size = 0.05f;
-			cube.setScale(size, size, size);
+			cube.setSize(size, size, size);
 			cube.setHealth(120);
-			cube.setRotationVel(rng.nextFloat(), rng.nextFloat(), rng.nextFloat());
+			cube.setRotationVelocity(rng.nextFloat(), rng.nextFloat(), rng.nextFloat());
 			Vector3f color = new Vector3f(0.8f, 0.8f, 0.8f);
 			cube.setColor(color.x, color.y, color.z, 0.5f);
 			cube.setColor(0, 0.2f, 0.9f, 0.5f);

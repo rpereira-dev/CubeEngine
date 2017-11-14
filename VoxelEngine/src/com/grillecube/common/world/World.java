@@ -15,19 +15,16 @@
 package com.grillecube.common.world;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Random;
 
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.instances.BlockInstance;
 import com.grillecube.common.world.entity.Entity;
 import com.grillecube.common.world.entity.WorldEntityStorage;
-import com.grillecube.common.world.entity.collision.AABB;
 import com.grillecube.common.world.generator.WorldGenerator;
 import com.grillecube.common.world.generator.WorldGeneratorEmpty;
 import com.grillecube.common.world.terrain.Terrain;
@@ -223,46 +220,6 @@ public abstract class World implements Taskable {
 
 	/** return world name */
 	public abstract String getName();
-
-	/** return every blocks which collides with the given bounding box */
-	public ArrayList<Block> getCollidingBlocks(AABB box) {
-		ArrayList<Block> lst = new ArrayList<Block>();
-
-		int minx = Maths.floor(box.getMinX());
-		int maxx = Maths.floor(box.getMaxX() + 1.0D);
-		int miny = Maths.floor(box.getMinY());
-		int maxy = Maths.floor(box.getMaxY() + 1.0D);
-		int minz = Maths.floor(box.getMinZ());
-		int maxz = Maths.floor(box.getMaxZ() + 1.0D);
-
-		Vector3i pos = new Vector3i();
-
-		// iterate though each blocks
-		for (pos.x = minx; pos.x < maxx; ++pos.x) {
-			for (pos.z = minz; pos.z < maxz; ++pos.z) {
-				for (pos.y = miny; pos.y < maxy; ++pos.y) {
-					Block block = this.getBlock(pos.x, pos.y, pos.z);
-					if (block.isWalkable()) {
-						lst.add(block);
-					}
-				}
-			}
-		}
-		return (lst);
-	}
-
-	/** return every blocks which collides with the given bounding box */
-	public ArrayList<Entity> getCollidingEntities(AABB box) {
-		ArrayList<Entity> lst = new ArrayList<Entity>();
-		Collection<Entity> entities = this.getEntityStorage().getEntities();
-		for (Entity entity : entities) {
-			if (entity.getBoundingBox().intersect(box)) {
-				lst.add(entity);
-			}
-		}
-
-		return (lst);
-	}
 
 	/** world location */
 	public BlockInstance getBlockInstance(float x, float y, float z) {

@@ -52,21 +52,32 @@ public interface Positioneable {
 	}
 
 	/**
-	 * position the positioneable objects depending on the elasped time 'dt' and
-	 * set acceleration and velocities
+	 * update the velocity of the positioneable objects depending on the elasped time 'dt' and
+	 * it current acceleration
 	 * 
 	 * @param positioneable
 	 *            : the positioneable object
 	 * @param dt
 	 *            : elasped time
 	 */
-	public static void position(Positioneable positioneable, float dt) {
+	public static void velocity(Positioneable positioneable, float dt) {
 		positioneable.setPositionVelocityX(
 				positioneable.getPositionVelocityX() + positioneable.getPositionAccelerationX() * dt);
 		positioneable.setPositionVelocityY(
 				positioneable.getPositionVelocityY() + positioneable.getPositionAccelerationY() * dt);
 		positioneable.setPositionVelocityZ(
 				positioneable.getPositionVelocityZ() + positioneable.getPositionAccelerationZ() * dt);
+	}
+	
+	/**
+	 * update the position of the positioneable objects depending on the elasped time 'dt' and
+	 * it current velocity
+	 * 
+	 * @param positioneable
+	 *            : the positioneable object
+	 * @param dt 
+	 */
+	public static void position(Positioneable positioneable, float dt) {
 		positioneable.setPositionX(positioneable.getPositionX() + positioneable.getPositionVelocityX() * dt);
 		positioneable.setPositionY(positioneable.getPositionY() + positioneable.getPositionVelocityY() * dt);
 		positioneable.setPositionZ(positioneable.getPositionZ() + positioneable.getPositionVelocityZ() * dt);

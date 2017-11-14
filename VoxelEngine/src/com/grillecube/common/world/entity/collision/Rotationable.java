@@ -45,7 +45,7 @@ public interface Rotationable {
 	public void setRotationAccelerationZ(float az);
 
 	/**
-	 * @see Rotationable#position(Rotationable, float)
+	 * @see Rotationable#rotate(Rotationable, float)
 	 */
 	public static void rotate(Rotationable rotateable, double dt) {
 		rotate(rotateable, (float) dt);

@@ -3,51 +3,59 @@ package com.grillecube.common.world.entity.ai;
 import com.grillecube.common.world.entity.Entity;
 
 public abstract class EntityAI {
-	
-	/** the entity for this ai */
-	private final Entity _entity;
-	
-	/** in ms */
-	private long _last_update;
 
-	/** time to update */
-	private long _update_time;
+	/** the entity for this ai */
+	private final Entity entity;
+
+	/** in seconds, accumulate times since last update */
+	private double accumulator;
+
+	/** time needed to accumulate before updating */
+	private double updateTime;
 
 	public EntityAI(Entity entity) {
-		this._entity = entity;
-		this._update_time = Long.MAX_VALUE;
+		this.entity = entity;
+		this.accumulator = 0;
+		this.updateTime = Double.MAX_VALUE;
 	}
-	
+
 	/** called on every entity's update */
 	public final void update() {
 		this.onUpdate();
-		long now = System.currentTimeMillis();
-		if (now - this.getLastUpdate() > this.getUpdateTime()) {
-			this.onTimedUpdate();
-			this._last_update = now;			
+		this.accumulator += this.entity.getTimer().getDt();
+		int n = (int) (this.accumulator / this.updateTime);
+		if (n > 0) {
+			do {
+				--n;
+				this.onTimedUpdate();
+			} while (n > 0);
+			this.accumulator -= n * this.updateTime;
 		}
 	}
 
 	/** called on every entity's update */
 	protected abstract void onUpdate();
-	
-	/** called every 'this._update_time' in ms */
+
+	/**
+	 * called until the time stored in {@link #accumulator} <
+	 * {@link #updateTime} needed by the accumulator
+	 */
 	protected abstract void onTimedUpdate();
-	
-	public long getUpdateTime() {
-		return (this._update_time);
+
+	public final double getUpdateTime() {
+		return (this.updateTime);
 	}
 
-	/** set the time on which the update ufnciotn should be called */
-	public void setUpdateTime(long time) {
-		this._update_time = time;
-	}
-	
-	public long getLastUpdate() {
-		return (this._last_update);
+	/** set the time on which the update function should be called */
+	public final void setUpdateTime(double time) {
+		this.updateTime = time;
 	}
 
-	public Entity getEntity() {
-		return (this._entity);
+	public final double getAccumulator() {
+		return (this.accumulator);
+	}
+
+	public final Entity getEntity() {
+		return (this.entity);
 	}
 }

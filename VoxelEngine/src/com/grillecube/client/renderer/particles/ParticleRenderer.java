@@ -122,7 +122,7 @@ public class ParticleRenderer extends Renderer {
 		int i = 0;
 		while (i < particles.size()) {
 			ParticleBillboarded particle = particles.get(i);
-			float radius = Maths.max(particle.getScale().x, particle.getScale().y);
+			float radius = Maths.max(Maths.max(particle.getSizeX(), particle.getSizeY()), particle.getSizeZ());
 			if (particle != null && particle.getCameraSquareDistance() < camera.getSquaredRenderDistance()
 					&& camera.isSphereInFrustum(particle.getPosition(), radius)) {
 				this.programBillboardedParticles.loadInstanceUniforms(particle);
@@ -153,7 +153,7 @@ public class ParticleRenderer extends Renderer {
 			ParticleCube particle = particles.get(i);
 
 			// if not in frustum, do not render it
-			if (!camera.isBoxInFrustum(particle.getPosition(), particle.getScale())) {
+			if (!camera.isBoxInFrustum(particle, particle)) {
 				continue;
 			}
 

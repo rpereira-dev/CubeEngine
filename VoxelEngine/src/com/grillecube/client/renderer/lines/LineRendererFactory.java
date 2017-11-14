@@ -7,7 +7,8 @@ import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.utils.Color;
-import com.grillecube.common.world.entity.collision.AABB;
+import com.grillecube.common.world.entity.collision.Positioneable;
+import com.grillecube.common.world.entity.collision.Sizeable;
 
 public class LineRendererFactory extends RendererFactory {
 
@@ -59,10 +60,10 @@ public class LineRendererFactory extends RendererFactory {
 		corners[7] = new Vector3f(0, 1, 1);
 	}
 
-	public final int setBox(AABB box, int index) {
+	public final int setBox(Positioneable position, Sizeable sizeable, int index) {
 		Color color = Color.BLUE;
-		Vector3f boxorigin = new Vector3f(box.getMinX(), box.getMinY(), box.getMinZ());
-		Vector3f boxsize = new Vector3f(box.getSizeX(), box.getSizeY(), box.getSizeZ());
+		Vector3f boxorigin = new Vector3f(position.getPositionX(), position.getPositionY(), position.getPositionZ());
+		Vector3f boxsize = new Vector3f(sizeable.getSizeX(), sizeable.getSizeY(), sizeable.getSizeZ());
 		Line[] lines = new Line[12];
 
 		lines[0] = this.getBoxLine(color, boxorigin, boxsize, 0, 0);
@@ -97,8 +98,8 @@ public class LineRendererFactory extends RendererFactory {
 		return (index);
 	}
 
-	public final int addBox(AABB box) {
-		return (this.setBox(box, this.renderingList.size()));
+	public final int addBox(Positioneable positionable, Sizeable sizeable) {
+		return (this.setBox(positionable, sizeable, this.renderingList.size()));
 	}
 
 	private Line getBoxLine(Color color, Vector3f boxorigin, Vector3f boxsize, int cornera, int cornerb) {

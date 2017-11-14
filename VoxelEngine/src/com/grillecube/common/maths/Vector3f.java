@@ -34,8 +34,6 @@ package com.grillecube.common.maths;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import com.grillecube.common.world.entity.collision.AABB;
-
 /**
  *
  * Holds a 3-tuple vector.
@@ -470,10 +468,6 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 		float dz = az - bz;
 
 		return (dx * dx + dy * dy + dz * dz);
-	}
-
-	public boolean isInBoundingBox(AABB box) {
-		return (box.contains(this));
 	}
 
 	public Vector3f translate(Vector3f position) {

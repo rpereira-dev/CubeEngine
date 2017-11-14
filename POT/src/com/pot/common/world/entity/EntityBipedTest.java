@@ -10,7 +10,7 @@ public class EntityBipedTest extends EntityBiped {
 		super.setSizeX(1.0f);
 		super.setSizeY(2.0f);
 		super.setSizeZ(1.0f);
-		super.setWeight(100);
+		super.setMass(100);
 	}
 
 	@Override
