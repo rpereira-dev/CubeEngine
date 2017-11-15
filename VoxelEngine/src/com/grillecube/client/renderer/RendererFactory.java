@@ -19,7 +19,7 @@ public abstract class RendererFactory {
 	}
 
 	/** update the factory to generate rendering lists */
-	public abstract void update();
+	public abstract void update(double dt);
 
 	/** render */
 	public abstract void render();

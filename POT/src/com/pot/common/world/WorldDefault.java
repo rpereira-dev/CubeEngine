@@ -15,8 +15,7 @@
 package com.pot.common.world;
 
 import com.grillecube.common.world.WorldFlat;
-import com.grillecube.common.world.generator.WorldGeneratorHoles;
-import com.pot.common.world.entity.EntityTest;
+import com.grillecube.common.world.generator.WorldGeneratorFlat;
 
 public class WorldDefault extends WorldFlat {
 
@@ -26,7 +25,7 @@ public class WorldDefault extends WorldFlat {
 
 	@Override
 	public void onLoaded() {
-		this.setWorldGenerator(new WorldGeneratorHoles());
+		this.setWorldGenerator(new WorldGeneratorFlat());
 		for (int y = 1; y > 0; y--) {
 			for (int x = -4; x < 4; x++) {
 				for (int z = -4; z < 4; z++) {
@@ -35,13 +34,13 @@ public class WorldDefault extends WorldFlat {
 			}
 		}
 
-//		for (int x = 0; x < 4; x++) {
-//			for (int z = 0; z < 4; z++) {
-//				EntityTest entityTest = new EntityTest(this);
-//				entityTest.setPosition(x * 8.0f, 160.0f, z * 8.0f);
-//				this.spawnEntity(entityTest);
-//			}
-//		}
+		// for (int x = 0; x < 4; x++) {
+		// for (int z = 0; z < 4; z++) {
+		// EntityTest entityTest = new EntityTest(this);
+		// entityTest.setPosition(x * 8.0f, 160.0f, z * 8.0f);
+		// this.spawnEntity(entityTest);
+		// }
+		// }
 	}
 
 	@Override

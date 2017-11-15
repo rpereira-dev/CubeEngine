@@ -17,6 +17,7 @@ package com.grillecube.client.renderer.particles;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -34,6 +35,7 @@ import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 
 /** a simple cube rendering system for particles */
@@ -49,19 +51,6 @@ public class ParticleRenderer extends Renderer {
 	private GLVertexBuffer cubeInstancesVBO;
 
 	private static final int MAX_CUBE_PARTICLES = 100000;
-
-	private static final Comparator<ParticleBillboarded> BILLBOARDED_PARTICLE_CMP = new Comparator<ParticleBillboarded>() {
-		@Override
-		public int compare(ParticleBillboarded a, ParticleBillboarded b) {
-			if (a.getCameraSquareDistance() < b.getCameraSquareDistance()) {
-				return (1);
-			} else if (a.getCameraSquareDistance() > b.getCameraSquareDistance()) {
-				return (-1);
-			}
-			return (0);
-		}
-
-	};
 
 	public ParticleRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
@@ -117,13 +106,30 @@ public class ParticleRenderer extends Renderer {
 		this.getMainRenderer().getDefaultVAO().bind();
 
 		this.programBillboardedParticles.loadGlobalUniforms(camera);
-		particles.sort(BILLBOARDED_PARTICLE_CMP);
+
+		HashMap<ParticleBillboarded, Double> distances = new HashMap<ParticleBillboarded, Double>(particles.size() * 4);
+		for (ParticleBillboarded particle : particles) {
+			distances.put(particle, Vector3f.distanceSquare(particle.getPosition(), camera.getPosition()));
+		}
+		particles.sort(new Comparator<ParticleBillboarded>() {
+			@Override
+			public int compare(ParticleBillboarded a, ParticleBillboarded b) {
+				double da = distances.get(a);
+				double db = distances.get(b);
+				if (da < db) {
+					return (1);
+				} else if (da > db) {
+					return (-1);
+				}
+				return (0);
+			}
+		});
 
 		int i = 0;
 		while (i < particles.size()) {
 			ParticleBillboarded particle = particles.get(i);
 			float radius = Maths.max(Maths.max(particle.getSizeX(), particle.getSizeY()), particle.getSizeZ());
-			if (particle != null && particle.getCameraSquareDistance() < camera.getSquaredRenderDistance()
+			if (particle != null && distances.get(particle) < camera.getSquaredRenderDistance()
 					&& camera.isSphereInFrustum(particle.getPosition(), radius)) {
 				this.programBillboardedParticles.loadInstanceUniforms(particle);
 				this.getMainRenderer().getDefaultVAO().draw(GL11.GL_POINTS, 0, 1);

@@ -7,43 +7,43 @@ public class WorldGeneratorFlat extends WorldGenerator {
 
 	@Override
 	public void generate(Terrain terrain) {
-		if (terrain.getWorldIndex3().y == -1) {
-			for (int x = 0; x < Terrain.DIMX; x++) {
-				for (int z = 0; z < Terrain.DIMZ; z++) {
-					// terrain.setBlockAt((x + z) % 2 == 0 ? Blocks.GRASS :
-					// Blocks.LOG, x, 4, z);
-					terrain.setBlockAt(Blocks.GRASS, x, Terrain.DIMY - 1, z);
-					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 2, z);
-					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 3, z);
-					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 4, z);
-					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 5, z);
-				}
+//		if (terrain.getWorldIndex3().y == -1) {
+//			for (int x = 0; x < Terrain.DIMX; x++) {
+//				for (int z = 0; z < Terrain.DIMZ; z++) {
+//					// terrain.setBlockAt((x + z) % 2 == 0 ? Blocks.GRASS :
+//					// Blocks.LOG, x, 4, z);
+//					terrain.setBlockAt(Blocks.GRASS, x, Terrain.DIMY - 1, z);
+//					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 2, z);
+//					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 3, z);
+//					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 4, z);
+//					terrain.setBlockAt(Blocks.STONE, x, Terrain.DIMY - 5, z);
+//				}
+//			}
+//		}
+
+		for (int x = 0; x < Terrain.DIMX; x++) {
+			for (int z = 0; z < Terrain.DIMZ; z++) {
+				// terrain.setBlockAt((x + z) % 2 == 0 ? Blocks.GRASS :
+				// Blocks.LOG, x, 4, z);
+				terrain.setBlockAt(Blocks.GRASS, x, 4, z);
+				terrain.setBlockAt(Blocks.STONE, x, 3, z);
+				terrain.setBlockAt(Blocks.STONE, x, 2, z);
+				terrain.setBlockAt(Blocks.STONE, x, 1, z);
+				terrain.setBlockAt(Blocks.STONE, x, 0, z);
 			}
 		}
 
-//		for (int x = 0; x < Terrain.DIMX; x++) {
-//			for (int z = 0; z < Terrain.DIMZ; z++) {
-//				// terrain.setBlockAt((x + z) % 2 == 0 ? Blocks.GRASS :
-//				// Blocks.LOG, x, 4, z);
-//				terrain.setBlockAt(Blocks.GRASS, x, 4, z);
-//				terrain.setBlockAt(Blocks.STONE, x, 3, z);
-//				terrain.setBlockAt(Blocks.STONE, x, 2, z);
-//				terrain.setBlockAt(Blocks.STONE, x, 1, z);
-//				terrain.setBlockAt(Blocks.STONE, x, 0, z);
-//			}
-//		}
-//		
-//		for (int d = 4 ; d <= 12 ; d++) {
-//			terrain.setBlockAt(Blocks.LOG, d, 5, 4);
-//			terrain.setBlockAt(Blocks.LOG, d, 5, 12);
-//			terrain.setBlockAt(Blocks.LOG, 4, 5, d);
-//			terrain.setBlockAt(Blocks.LOG, 12, 5, d);
-//		}
-//		terrain.setBlockAt(Blocks.LOG, 8, 5, 8);
-//		terrain.setBlockAt(Blocks.LOG, 8, 6, 8);
-//		terrain.setBlockAt(Blocks.LOG, 8, 7, 8);
-//		terrain.setBlockAt(Blocks.LOG, 8, 8, 8);
-//		terrain.setBlockAt(Blocks.LOG, 8, 9, 8);
+		for (int d = 4; d <= 12; d++) {
+			terrain.setBlockAt(Blocks.LOG, d, 5, 4);
+			terrain.setBlockAt(Blocks.LOG, d, 5, 12);
+			terrain.setBlockAt(Blocks.LOG, 4, 5, d);
+			terrain.setBlockAt(Blocks.LOG, 12, 5, d);
+		}
+		terrain.setBlockAt(Blocks.LOG, 8, 5, 8);
+		terrain.setBlockAt(Blocks.LOG, 8, 6, 8);
+		terrain.setBlockAt(Blocks.LOG, 8, 7, 8);
+		terrain.setBlockAt(Blocks.LOG, 8, 8, 8);
+		terrain.setBlockAt(Blocks.LOG, 8, 9, 8);
 		terrain.setBlockAt(Blocks.LOG, 8, 10, 8);
 
 		

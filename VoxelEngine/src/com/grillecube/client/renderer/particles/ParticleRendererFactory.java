@@ -29,7 +29,10 @@ public class ParticleRendererFactory extends RendererFactory {
 		this.camera = camera;
 	}
 
-	public void update() {
+	@Override
+	public void update(double dt) {
+
+		this.ambientParticle();
 
 		CameraProjective camera = this.getCamera();
 
@@ -41,7 +44,7 @@ public class ParticleRendererFactory extends RendererFactory {
 				this.billboardedParticles.remove(i);
 				continue;
 			}
-			particle.update(camera);
+			particle.update(dt);
 			++i;
 		}
 
@@ -53,7 +56,7 @@ public class ParticleRendererFactory extends RendererFactory {
 				this.cubeParticles.remove(i);
 				continue;
 			}
-			particle.update(camera);
+			particle.update(dt);
 			++i;
 		}
 	}
@@ -77,7 +80,7 @@ public class ParticleRendererFactory extends RendererFactory {
 		float velx = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
 		float vely = -rng.nextFloat();
 		float velz = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
-		cube.setPositionVel(velx / 32.0f, vely / 32.0f, velz / 32.0f);
+		cube.setPositionVel(velx, vely, velz);
 		this.spawnParticle(cube);
 	}
 
@@ -86,7 +89,7 @@ public class ParticleRendererFactory extends RendererFactory {
 		Random rng = new Random();
 		Vector3f campos = this.getCamera().getPosition();
 
-		float yfactor = 0.5f;
+		float yfactor = strength * 0.5f;
 
 		for (int i = 0; i < strength; i++) {
 

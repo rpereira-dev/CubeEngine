@@ -15,11 +15,8 @@ public class SkyRendererFactory extends RendererFactory {
 	}
 
 	@Override
-	public void update() {
-		// this.ambientParticle(world);
-		// if (world.getWeather().isRaining()) {
-		// this.rainParticles(world, world.getWeather().getRainStrength());
-		// }
+	public void update(double dt) {
+
 	}
 
 	public final CameraProjective getCamera() {

@@ -38,7 +38,7 @@ public class LineRendererFactory extends RendererFactory {
 	}
 
 	@Override
-	public void update() {
+	public void update(double dt) {
 	}
 
 	/** add a line to the renderer factory */
@@ -61,12 +61,13 @@ public class LineRendererFactory extends RendererFactory {
 	}
 
 	public final int setBox(Positioneable position, Sizeable sizeable, int index) {
+
 		Color color = Color.BLUE;
 		Vector3f boxorigin = new Vector3f(position.getPositionX(), position.getPositionY(), position.getPositionZ());
 		Vector3f boxsize = new Vector3f(sizeable.getSizeX(), sizeable.getSizeY(), sizeable.getSizeZ());
 		Line[] lines = new Line[12];
 
-		lines[0] = this.getBoxLine(color, boxorigin, boxsize, 0, 0);
+		lines[0] = this.getBoxLine(color, boxorigin, boxsize, 0, 1);
 		lines[1] = this.getBoxLine(color, boxorigin, boxsize, 1, 2);
 		lines[2] = this.getBoxLine(color, boxorigin, boxsize, 2, 3);
 		lines[3] = this.getBoxLine(color, boxorigin, boxsize, 3, 0);

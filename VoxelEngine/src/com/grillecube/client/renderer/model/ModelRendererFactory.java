@@ -35,7 +35,7 @@ public class ModelRendererFactory extends RendererFactory {
 	}
 
 	@Override
-	public final void update() {
+	public void update(double dt) {
 		this.renderingList.clear();
 
 		// for each entity of the world (maybe we can do better here?)

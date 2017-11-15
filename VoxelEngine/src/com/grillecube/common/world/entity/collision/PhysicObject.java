@@ -1,6 +1,10 @@
 package com.grillecube.common.world.entity.collision;
 
+import java.util.ArrayList;
+
+import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.world.World;
 
 /**
  * Abstract class for a World object (coordinates should be world-relative)
@@ -109,5 +113,76 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 		this.setSizeAccelerationX(x);
 		this.setSizeAccelerationY(y);
 		this.setSizeAccelerationZ(z);
+	}
+
+	/** move this physic object in the given world, handling collisions */
+	public static final void move(World world, PhysicObject physicObject, double dt) {
+
+		// swept
+		float x = physicObject.getPositionX();
+		float y = physicObject.getPositionY();
+		float z = physicObject.getPositionZ();
+		float vx = physicObject.getPositionVelocityX();
+		float vy = physicObject.getPositionVelocityY();
+		float vz = physicObject.getPositionVelocityZ();
+		float sx = physicObject.getSizeX();
+		float sy = physicObject.getSizeY();
+		float sz = physicObject.getSizeZ();
+		float dx = (float) (vx * dt);
+		float dy = (float) (vy * dt);
+		float dz = (float) (vz * dt);
+
+		float minx, miny, minz;
+		float maxx, maxy, maxz;
+
+		if (dx >= 0) {
+			minx = x;
+			maxx = x + sx + dx;
+		} else {
+			minx = x + dx;
+			maxx = x + sx;
+		}
+
+		if (dy >= 0) {
+			miny = y;
+			maxy = y + sy + dy;
+		} else {
+			miny = y + dy;
+			maxy = y + sy;
+		}
+
+		if (dz >= 0) {
+			minz = z;
+			maxz = z + sz + dz;
+		} else {
+			minz = z + dz;
+			maxz = z + sz;
+		}
+
+		int i = 0;
+		while (dt > 0.0001f) {
+			ArrayList<PhysicObject> blocks = world.getCollidingPhysicObjects(minx, miny, minz, maxx, maxy, maxz);
+			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(physicObject, blocks);
+			// if no collision, move
+			if (collisionResponse == null || collisionResponse.dt > dt) {
+				Positioneable.position(physicObject, dt);
+				break;
+			}
+			// if collision, move just before it collides
+			Positioneable.position(physicObject, collisionResponse.dt);
+
+			// dt now contains the remaning time
+			dt -= collisionResponse.dt;
+
+			// stick right before collision, and continue collisions
+			Collision.deflects(physicObject, collisionResponse, 0.2f);
+
+			if (++i >= 5) {
+				Logger.get().log(Logger.Level.WARNING,
+						"Did 5 iterations when moving physic object... position may be wrong", physicObject);
+				break;
+			}
+		}
+
 	}
 }

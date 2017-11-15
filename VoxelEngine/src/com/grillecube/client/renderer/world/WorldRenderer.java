@@ -15,11 +15,14 @@
 package com.grillecube.client.renderer.world;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 
+import com.grillecube.client.event.renderer.EventPostWorldRender;
+import com.grillecube.client.event.renderer.EventPreWorldRender;
 import com.grillecube.client.event.renderer.model.EventModelInstanceAdded;
 import com.grillecube.client.event.renderer.model.EventModelInstanceRemoved;
 import com.grillecube.client.opengl.GLH;
@@ -37,6 +40,7 @@ import com.grillecube.common.Logger;
 import com.grillecube.common.event.EventListener;
 import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.world.World;
+import com.grillecube.common.world.entity.Entity;
 
 public abstract class WorldRenderer<T extends World> extends RendererFactorized {
 
@@ -65,6 +69,10 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 	private EventListener<EventModelInstanceAdded> modelInstanceAddCallback;
 	private EventListener<EventModelInstanceRemoved> modelInstanceRemoveCallback;
 
+	private final EventPreWorldRender preRenderEvent;
+
+	private final EventPostWorldRender postRenderEvent;
+
 	public WorldRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
 
@@ -75,6 +83,9 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		super.addFactory(this.lineFactory);
 		super.addFactory(this.modelFactory);
 		super.addFactory(this.particleFactory);
+
+		this.preRenderEvent = new EventPreWorldRender(this);
+		this.postRenderEvent = new EventPostWorldRender(this);
 	}
 
 	@Override
@@ -160,10 +171,26 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		this.fboDepthBuffer.storage(GL11.GL_DEPTH_COMPONENT, this.width, this.height);
 	}
 
+	HashMap<Entity, Integer> BB = new HashMap<Entity, Integer>();
+
+	// TODO : remove this
+	private final void renderEntitiesAABB() {
+		for (Entity e : this.world.getEntityStorage().getEntities()) {
+			if (!BB.containsKey(e)) {
+				BB.put(e, this.lineFactory.addBox(e, e));
+			} else {
+				this.lineFactory.setBox(e, e, BB.get(e));
+			}
+		}
+	}
+
 	/** render the given world */
 	@Override
 	public void render() {
-		// System.out.println(this.world.getEntityStorage().getEntities().size());
+
+		this.getMainRenderer().getResourceManager().getEventManager().invokeEvent(this.preRenderEvent);
+
+		this.renderEntitiesAABB();
 
 		// if there is a world
 		if (this.getWorld() != null && this.getCamera() != null) {
@@ -182,6 +209,9 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 			// unbind the fbo
 			this.getFBO().unbind();
 		}
+
+		this.getMainRenderer().getResourceManager().getEventManager().invokeEvent(this.postRenderEvent);
+
 	}
 
 	private void renderPostProcessingEffects() {

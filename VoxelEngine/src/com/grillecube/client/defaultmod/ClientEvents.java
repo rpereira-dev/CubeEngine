@@ -2,7 +2,9 @@ package com.grillecube.client.defaultmod;
 
 import com.grillecube.client.event.renderer.EventPostRender;
 import com.grillecube.client.event.renderer.EventPostRendererInitialisation;
+import com.grillecube.client.event.renderer.EventPostWorldRender;
 import com.grillecube.client.event.renderer.EventPreRender;
+import com.grillecube.client.event.renderer.EventPreWorldRender;
 import com.grillecube.client.event.renderer.model.EventModelInstanceAdded;
 import com.grillecube.client.event.renderer.model.EventModelInstanceRemoved;
 import com.grillecube.common.mod.IModResource;
@@ -20,6 +22,8 @@ public class ClientEvents implements IModResource {
 		// rendering events
 		eventManager.registerEvent(EventPostRender.class);
 		eventManager.registerEvent(EventPreRender.class);
+		eventManager.registerEvent(EventPostWorldRender.class);
+		eventManager.registerEvent(EventPreWorldRender.class);
 		eventManager.registerEvent(EventPostRendererInitialisation.class);
 		eventManager.registerEvent(EventModelInstanceAdded.class);
 		eventManager.registerEvent(EventModelInstanceRemoved.class);

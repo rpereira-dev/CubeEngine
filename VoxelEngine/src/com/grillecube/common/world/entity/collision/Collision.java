@@ -221,21 +221,21 @@ public class Collision {
 	 *            : amount of velocity to be absorbed by the collision
 	 */
 	public static final void stick(PhysicObject physicObject, CollisionResponse collisionResponse) {
-		if (Maths.abs(collisionResponse.nx) > 0.01f) {
+		if (Maths.abs(collisionResponse.nx) > 0.0f) {
 			physicObject.setPositionVelocityX(0.0f);
 		}
-		if (Maths.abs(collisionResponse.ny) > 0.01f) {
+		if (Maths.abs(collisionResponse.ny) > 0.0f) {
 			physicObject.setPositionVelocityY(0.0f);
 		}
-		if (Maths.abs(collisionResponse.nz) > 0.01f) {
+		if (Maths.abs(collisionResponse.nz) > 0.0f) {
 			physicObject.setPositionVelocityZ(0.0f);
 		}
 	}
 
 	/**
 	 * 
-	 * Simulates a deflection on after the 'physicObject' enters in collision with
-	 * 'collisionResponse'
+	 * Simulates a deflection on after the 'physicObject' enters in collision
+	 * with 'collisionResponse'
 	 * 
 	 * @param physicObject
 	 *            : the physic object
@@ -247,7 +247,7 @@ public class Collision {
 	 */
 	public static final void deflects(PhysicObject physicObject, CollisionResponse collisionResponse,
 			float absorption) {
-		if (Maths.abs(collisionResponse.nx) > 0.0001f) {
+		if (Maths.abs(collisionResponse.nx) > 0.00001f) {
 			physicObject.setPositionVelocityX(-physicObject.getPositionVelocityX() * absorption);
 		}
 		if (Maths.abs(collisionResponse.ny) > 0.0001f) {
@@ -259,8 +259,8 @@ public class Collision {
 	}
 
 	/**
-	 * Simulates a push response after the 'physicObject' enters in collision with
-	 * 'collisionResponse'
+	 * Simulates a push response after the 'physicObject' enters in collision
+	 * with 'collisionResponse'
 	 * 
 	 * @param physicObject
 	 *            : the physic object
@@ -272,28 +272,13 @@ public class Collision {
 	 */
 	public static final void push(PhysicObject physicObject, CollisionResponse collisionResponse,
 			double remainingTime) {
-		float vx = physicObject.getPositionVelocityX();
-		float vy = physicObject.getPositionVelocityY();
-		float vz = physicObject.getPositionVelocityZ();
-		float magnitude = (float) (Maths.sqrt((vx * vx + vy * vy + vz * vz)) * remainingTime);
-		float nx = collisionResponse.nx;
-		float ny = collisionResponse.ny;
-		float nz = collisionResponse.nz;
-		float dotprod = vx * nx + vy * ny + vz * nz;
-		if (dotprod > 0.0f) {
-			dotprod = 1.0f;
-		} else if (dotprod < 0.0f) {
-			dotprod = -1.0f;
-		}
-		physicObject.setPositionVelocityX(dotprod * ny * nz * magnitude);
-		physicObject.setPositionVelocityY(dotprod * nx * nz * magnitude);
-		physicObject.setPositionVelocityZ(dotprod * nx * ny * magnitude);
+		//TODO
 	}
 
 	/**
 	 * 
-	 * Simulates a slide response after the 'physicObject' enters in collision with
-	 * 'collisionResponse'
+	 * Simulates a slide response after the 'physicObject' enters in collision
+	 * with 'collisionResponse'
 	 * 
 	 * @param physicObject
 	 *            : the physic object

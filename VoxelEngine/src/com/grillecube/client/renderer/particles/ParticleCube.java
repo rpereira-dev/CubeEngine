@@ -14,8 +14,6 @@
 
 package com.grillecube.client.renderer.particles;
 
-import com.grillecube.client.renderer.camera.Camera;
-import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.maths.Matrix4f;
 
 public class ParticleCube extends Particle {
@@ -35,11 +33,11 @@ public class ParticleCube extends Particle {
 	}
 
 	@Override
-	protected void onUpdate(CameraProjective camera) {
-		this.calculateTransformationMatrix(camera);
+	protected void onUpdate(double dt) {
+		this.calculateTransformationMatrix();
 	}
 
-	protected void calculateTransformationMatrix(Camera camera) {
+	protected void calculateTransformationMatrix() {
 		Matrix4f.createTransformationMatrix(this.transfMatrix, this.getPosition(), this.getRotation(), this.getSize());
 	}
 }

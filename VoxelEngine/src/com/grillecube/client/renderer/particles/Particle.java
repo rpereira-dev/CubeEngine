@@ -1,6 +1,5 @@
 package com.grillecube.client.renderer.particles;
 
-import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.world.entity.collision.PhysicObject;
@@ -24,8 +23,6 @@ public class Particle extends PhysicObject {
 	protected int health;
 	protected float healthRatio;
 
-	private double cameraSquareDistance;
-
 	public Particle(int health) {
 		this.maxhealth = health;
 		this.health = health;
@@ -39,12 +36,6 @@ public class Particle extends PhysicObject {
 		this.sizeVel = new Vector3f(0, 0, 0);
 
 		this.color = new Vector4f(0.8f, 0.5f, 0.3f, 1.0f);
-
-		this.cameraSquareDistance = 0;
-	}
-
-	public double getCameraSquareDistance() {
-		return (this.cameraSquareDistance);
 	}
 
 	/** return true if the partcle is dead */
@@ -81,11 +72,10 @@ public class Particle extends PhysicObject {
 	public final Vector3f getRotation() {
 		return (this.rot);
 	}
-	
+
 	public final Vector3f getSize() {
 		return (this.size);
 	}
-
 
 	public final void setColor(float r, float g, float b, float a) {
 		this.color.set(r, g, b, a);
@@ -100,21 +90,25 @@ public class Particle extends PhysicObject {
 	}
 
 	/** update the particle (move it) */
-	public final void update(CameraProjective camera) {
-		float dt = 1 / 60.0f; // TODO real timer
+	public final void update(double dt) {
 		Positioneable.velocity(this, dt);
-		Positioneable.position(this, dt);
 		Rotationable.rotate(this, dt);
 		Sizeable.resize(this, dt);
+		Positioneable.position(this, dt);
 
+		// World world = VoxelEngineClient.instance().getWorld(0);
+		// if (world == null) {
+		// Positioneable.position(this, dt);
+		// } else {
+		// PhysicObject.move(world, this, dt);
+		// }
 		this.health--;
 		this.healthRatio = this.health / (float) this.maxhealth;
-		this.cameraSquareDistance = Vector3f.distanceSquare(camera.getPosition(), this.getPosition());
 
-		this.onUpdate(camera);
+		this.onUpdate(dt);
 	}
 
-	protected void onUpdate(CameraProjective camera) {
+	protected void onUpdate(double dt) {
 
 	}
 

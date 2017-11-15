@@ -31,6 +31,7 @@ import com.grillecube.common.world.entity.ai.EntityAIIdle;
 import com.grillecube.common.world.entity.collision.Collision;
 import com.grillecube.common.world.entity.collision.CollisionResponse;
 import com.grillecube.common.world.entity.collision.PhysicObject;
+import com.grillecube.common.world.entity.collision.PhysicObjectBlock;
 import com.grillecube.common.world.entity.collision.Positioneable;
 import com.grillecube.common.world.entity.collision.Rotationable;
 import com.grillecube.common.world.entity.collision.Sizeable;
@@ -186,7 +187,8 @@ public abstract class Entity extends PhysicObject {
 	}
 
 	/**
-	 * update this entity's position, depending on forces and controls applied to it
+	 * update this entity's position, depending on forces and controls applied
+	 * to it
 	 * 
 	 * really basis of the physic engine: the acceleration vector is reset every
 	 * frame and has to be recalculated via 'Entity.addForce(Vector3f force)'
@@ -227,25 +229,16 @@ public abstract class Entity extends PhysicObject {
 		// Logger.get().log(Logger.Level.DEBUG, this.getPositionVelocityX(),
 		// this.getPositionVelocityY(),
 		// this.getPositionVelocityZ());
-		// this.teleport(0, 140, 0);
+		// this.teleport(4, 69, 4);
+		// this.setPositionVelocityX(0);
+		// this.setPositionVelocityY(0);
+		// this.setPositionVelocityZ(0);
+		// this.setPositionAccelerationY(0);
 
-		// swept
-		while (dt > 0) {
-			ArrayList<PhysicObject> blocks = this.getWorld().getCollidingBlocks(this);
-			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(this, blocks);
-			// if no collision, move
-			if (collisionResponse == null || collisionResponse.dt > dt) {
-				Positioneable.position(this, dt);
-				break;
-			}
-			// if collision, move just before it collides
-			Positioneable.position(this, collisionResponse.dt);
-
-			// dt now contains the remaning time
-			dt -= collisionResponse.dt;
-
-			// stick right before collision, and continue collisions
-			Collision.stick(this, collisionResponse);
+		if (this.getWorld() == null) {
+			Positioneable.position(this, dt);
+		} else {
+			PhysicObject.move(this.getWorld(), this, dt);
 		}
 	}
 
@@ -370,7 +363,8 @@ public abstract class Entity extends PhysicObject {
 
 	/**
 	 * 
-	 * move the given PhysicObject by the velocity vector (dx, dy, dz) for a time dt
+	 * move the given PhysicObject by the velocity vector (dx, dy, dz) for a
+	 * time dt
 	 * 
 	 * 
 	 * @param object

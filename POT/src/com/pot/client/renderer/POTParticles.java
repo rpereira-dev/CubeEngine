@@ -1,6 +1,12 @@
 package com.pot.client.renderer;
 
-import com.grillecube.client.event.renderer.EventPreRender;
+import java.util.Random;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.grillecube.client.event.renderer.EventPreWorldRender;
+import com.grillecube.client.renderer.particles.ParticleBillboarded;
+import com.grillecube.client.renderer.particles.ParticleRendererFactory;
 import com.grillecube.client.renderer.particles.TextureSprite;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Side;
@@ -47,38 +53,27 @@ public class POTParticles implements IModResource {
 
 }
 
-class PostRenderCallback extends EventListener<EventPreRender> {
+class PostRenderCallback extends EventListener<EventPreWorldRender> {
 	private static Vector3f pos = new Vector3f();
 
 	@Override
-	public void invoke(EventPreRender event) {
-		//
-		if (true) {
-			return;
+	public void invoke(EventPreWorldRender event) {
+
+		ParticleRendererFactory renderer = event.getWorldRenderer().getParticleRendererFactory();
+
+		Random rng = event.getRenderer().getRNG();
+
+		if (event.getGLFWWindow().isKeyPressed(GLFW.GLFW_KEY_E)) {
+			pos.set(event.getWorldRenderer().getCamera().getPosition());
 		}
 
-		// ParticleRenderer renderer =
-		// event.getRenderer().getWorldRenderer().getParticleRenderer();
-		//
-		// Random rng = event.getRenderer().getRNG();
-		//
-		// if (event.getGLFWWindow().isKeyPressed(GLFW.GLFW_KEY_E)) {
-		// pos.set(event.getRenderer().getCamera().getPosition());
-		// }
-		//
-		// if (rng.nextInt(4) != 3) {
-		// return;
-		// }
-		//
-		// ParticleBillboarded p = new ParticleBillboarded(200,
-		// POTParticles.SPRITE_EXPLOSION, false);
-		// p.setPositionVel(rng.nextInt(2) == 0 ? -rng.nextFloat() / 16 :
-		// rng.nextFloat() / 16,
-		// rng.nextInt(2) == 0 ? -rng.nextFloat() / 16 : rng.nextFloat() / 16,
-		// rng.nextInt(2) == 0 ? -rng.nextFloat() / 16 : rng.nextFloat() / 162);
-		// p.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		// p.setPosition(pos.x, pos.y, pos.z);
-		// renderer.spawnParticle(p);
+		ParticleBillboarded p = new ParticleBillboarded(200, POTParticles.SPRITE_MAGIC, false);
+		p.setPositionVel(rng.nextInt(2) == 0 ? -rng.nextFloat() * 4 : rng.nextFloat() * 4,
+				rng.nextInt(2) == 0 ? -rng.nextFloat() * 4 : rng.nextFloat() * 4,
+				rng.nextInt(2) == 0 ? -rng.nextFloat() * 4 : rng.nextFloat() * 4);
+		p.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		p.setPosition(pos.x, pos.y, pos.z);
+		renderer.spawnParticle(p);
 	}
 
 }

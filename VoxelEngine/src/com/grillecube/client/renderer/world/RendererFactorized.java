@@ -61,7 +61,7 @@ public abstract class RendererFactorized extends Renderer {
 			tasks.add(engine.new Callable<Taskable>() {
 				@Override
 				public Taskable call() throws Exception {
-					factory.update();
+					factory.update(engine.getTimer().getDt());
 					return (RendererFactorized.this);
 				}
 

@@ -263,14 +263,51 @@ public abstract class World implements Taskable {
 	private void onUnloaded() {
 	}
 
-	public final ArrayList<PhysicObject> getCollidingBlocks(PhysicObject physicObject) {
+	/**
+	 * get the PhysicObjects (blocks and entities) colliding with the
+	 * PhysicObject
+	 * 
+	 * @param physicObject
+	 * @return : the physic object list
+	 */
+	public final ArrayList<PhysicObject> getCollidingPhysicObjects(float minx, float miny, float minz, float maxx, float maxy, float maxz) {
 		ArrayList<PhysicObject> lst = new ArrayList<PhysicObject>();
 
-		int minx = Maths.floor(physicObject.getPositionX() - 1.0f);
+		int mx = Maths.floor(minx);
+		int Mx = Maths.ceil(maxx + 1.0f);
+		int my = Maths.floor(miny);
+		int My = Maths.ceil(maxy + 1.0f);
+		int mz = Maths.floor(minz);
+		int Mz = Maths.ceil(maxz + 1.0f);
+
+		// iterate though each blocks
+		for (int x = mx; x < Mx; x++) {
+			for (int y = my; y < My; y++) {
+				for (int z = mz; z < Mz; z++) {
+					Block block = this.getBlock(x, y, z);
+					if (!block.isCrossable()) {
+						lst.add(new PhysicObjectBlock(block, x, y, z));
+					}
+				}
+			}
+		}
+		return (lst);
+	}
+
+	/**
+	 * get the blocks colliding with the PhysicObject
+	 * 
+	 * @param physicObject
+	 * @return : the block list
+	 */
+	public final ArrayList<Block> getCollidingBlocks(PhysicObject physicObject) {
+		ArrayList<Block> lst = new ArrayList<Block>();
+
+		int minx = Maths.floor(physicObject.getPositionX());
 		int maxx = Maths.floor(physicObject.getPositionX() + physicObject.getSizeX());
-		int miny = Maths.floor(physicObject.getPositionY() - 1.0f);
+		int miny = Maths.floor(physicObject.getPositionY());
 		int maxy = Maths.floor(physicObject.getPositionY() + physicObject.getSizeY());
-		int minz = Maths.floor(physicObject.getPositionZ() - 1.0f);
+		int minz = Maths.floor(physicObject.getPositionZ());
 		int maxz = Maths.floor(physicObject.getPositionZ() + physicObject.getSizeZ());
 
 		Vector3i pos = new Vector3i();
@@ -280,9 +317,7 @@ public abstract class World implements Taskable {
 			for (pos.z = minz; pos.z < maxz; ++pos.z) {
 				for (pos.y = miny; pos.y < maxy; ++pos.y) {
 					Block block = this.getBlock(pos.x, pos.y, pos.z);
-					if (!block.isCrossable()) {
-						lst.add(new PhysicObjectBlock(block, pos.x, pos.y, pos.z));
-					}
+					lst.add(block);
 				}
 			}
 		}

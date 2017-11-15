@@ -9,6 +9,6 @@ public class EventPostRender extends EventRender {
 
 	@Override
 	public String getName() {
-		return ("Post Render");
+		return ("Post World Render");
 	}
 }

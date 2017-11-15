@@ -8,6 +8,6 @@ public class ControlJump extends Control<Entity> {
 
 	@Override
 	public void run(Entity entity, Vector3f resultant) {
-		entity.setPositionVelocityY(entity.getPositionVelocityY() + 0.1f * ForceGravity.G);
+		entity.setPositionVelocityY(entity.getPositionVelocityY() + 0.5f * ForceGravity.G);
 	}
 }

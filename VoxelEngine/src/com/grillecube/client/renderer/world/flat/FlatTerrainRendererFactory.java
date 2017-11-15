@@ -212,28 +212,25 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 	}
 
 	static int i = 0;
-	static long t = System.currentTimeMillis();
-	static int dt = 0;
+	static double DT = 0;
 	static int COUNT = 0;
 	static int MAX_COUNT = 1;
 
 	@Override
-	public final void update() {
+	public void update(double dt) {
 		COUNT = 0;
-		dt += System.currentTimeMillis() - t;
-		t = System.currentTimeMillis();
-		if ((dt < 0 || dt > 200)) {
-
+		DT += dt;
+		if ((DT < 0 || DT > 200)) {
+			DT = 0;
 			if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X)) {
 				dt = 0;
 
-				 this.mesher = i % 5 == 0 ? new FlatTerrainMesherGreedy()
-				 : new MarchingCubesTerrainMesher((int) (Math.pow(2, i % 5 -
-								1)));
+				this.mesher = i % 5 == 0 ? new FlatTerrainMesherGreedy()
+						: new MarchingCubesTerrainMesher((int) (Math.pow(2, i % 5 - 1)));
 				// this.mesher = new MarchingCubesTerrainMesher((int)
 				// (Math.pow(2, 0)));
-//				this.mesher = i % 2 == 0 ? new FlatTerrainMesherGreedy()
-//						: new MarchingCubesTerrainMesher((int) (Math.pow(2, 0)));
+				// this.mesher = i % 2 == 0 ? new FlatTerrainMesherGreedy()
+				// : new MarchingCubesTerrainMesher((int) (Math.pow(2, 0)));
 
 				for (TerrainRenderingData terrainRenderingData : terrainsRenderingData.values()) {
 					terrainRenderingData.requestUpdate();
