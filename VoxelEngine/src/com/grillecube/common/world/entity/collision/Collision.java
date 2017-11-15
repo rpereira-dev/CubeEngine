@@ -1,5 +1,7 @@
 package com.grillecube.common.world.entity.collision;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import com.grillecube.common.maths.Maths;
@@ -8,46 +10,6 @@ import com.grillecube.common.world.entity.Entity;
 import junit.framework.Assert;
 
 public class Collision {
-
-	/** return every blocks which collides with the given bounding box */
-	// public ArrayList<Block> getCollidingBlocks(AABB box) {
-	// ArrayList<Block> lst = new ArrayList<Block>();
-	//
-	// int minx = Maths.floor(box.getMinX());
-	// int maxx = Maths.floor(box.getMaxX() + 1.0D);
-	// int miny = Maths.floor(box.getMinY());
-	// int maxy = Maths.floor(box.getMaxY() + 1.0D);
-	// int minz = Maths.floor(box.getMinZ());
-	// int maxz = Maths.floor(box.getMaxZ() + 1.0D);
-	//
-	// Vector3i pos = new Vector3i();
-	//
-	// // iterate though each blocks
-	// for (pos.x = minx; pos.x < maxx; ++pos.x) {
-	// for (pos.z = mi.getPositionY(); pos.z < maxz; ++pos.z) {
-	// for (pos.y = miny; pos.y < maxy; ++pos.y) {
-	// Block block = this.getBlock(pos.x, pos.y, pos.z);
-	// if (block.isWalkable()) {
-	// lst.add(block);
-	// }
-	// }
-	// }
-	// }
-	// return (lst);
-	// }
-
-	/** return every blocks which collides with the given bounding box */
-	// public ArrayList<Entity> getCollidingEntities(AABB box) {
-	// ArrayList<Entity> lst = new ArrayList<Entity>();
-	// Collection<Entity> entities = this.getEntityStorage().getEntities();
-	// for (Entity entity : entities) {
-	// if (entity.getBoundingBox().intersect(box)) {
-	// lst.add(entity);
-	// }
-	// }
-	//
-	// return (lst);
-	// }
 
 	/**
 	 * https://www.gamedev.net/articles/programming/general-and-gameplay-programming/swept-aabb-collision-detection-and-response-r3084/
@@ -191,7 +153,30 @@ public class Collision {
 
 		// time of collision
 		float dt = entryTime;
-		return (new CollisionResponse(nx, ny, nz, dt));
+		return (new CollisionResponse(b1, b2, nx, ny, nz, dt));
+	}
+
+	/**
+	 * get a collision response from 'b1' moving, tested on each object of 'b2s'
+	 * 
+	 * @param b1
+	 *            : moving entity to test
+	 * @param b2s
+	 *            : world collideable objects
+	 * @param vx
+	 * @param vy
+	 * @param vz
+	 * @return
+	 */
+	public static final CollisionResponse collisionResponseAABBSwept(PhysicObject b1, ArrayList<PhysicObject> b2s) {
+		CollisionResponse collisionResponse = null;
+		for (PhysicObject b2 : b2s) {
+			CollisionResponse c = collisionResponseAABBSwept(b1, b2);
+			if (c != null && (collisionResponse == null || c.dt < collisionResponse.dt)) {
+				collisionResponse = c;
+			}
+		}
+		return (collisionResponse);
 	}
 
 	/**
@@ -224,8 +209,33 @@ public class Collision {
 
 	/**
 	 * 
-	 * Simulates a deflection on after the 'physicObject' enters in collision
-	 * with 'collisionResponse'
+	 * Simulates a stick on after the 'physicObject' enters in collision with
+	 * 'collisionResponse'
+	 * 
+	 * @param physicObject
+	 *            : the physic object
+	 * @param collisionResponse
+	 *            : the collision response, (returned by
+	 *            {@link #collisionResponseAABBSwept(PhysicObject, PhysicObject)}
+	 * @param absorption
+	 *            : amount of velocity to be absorbed by the collision
+	 */
+	public static final void stick(PhysicObject physicObject, CollisionResponse collisionResponse) {
+		if (Maths.abs(collisionResponse.nx) > 0.01f) {
+			physicObject.setPositionVelocityX(0.0f);
+		}
+		if (Maths.abs(collisionResponse.ny) > 0.01f) {
+			physicObject.setPositionVelocityY(0.0f);
+		}
+		if (Maths.abs(collisionResponse.nz) > 0.01f) {
+			physicObject.setPositionVelocityZ(0.0f);
+		}
+	}
+
+	/**
+	 * 
+	 * Simulates a deflection on after the 'physicObject' enters in collision with
+	 * 'collisionResponse'
 	 * 
 	 * @param physicObject
 	 *            : the physic object
@@ -249,8 +259,8 @@ public class Collision {
 	}
 
 	/**
-	 * Simulates a push response after the 'physicObject' enters in collision
-	 * with 'collisionResponse'
+	 * Simulates a push response after the 'physicObject' enters in collision with
+	 * 'collisionResponse'
 	 * 
 	 * @param physicObject
 	 *            : the physic object
@@ -260,14 +270,30 @@ public class Collision {
 	 * @param absorption
 	 *            : amount of velocity to be absorbed by the collision
 	 */
-	public static final void push(PhysicObject physicObject, CollisionResponse collisionResponse) {
-		// TODO
+	public static final void push(PhysicObject physicObject, CollisionResponse collisionResponse,
+			double remainingTime) {
+		float vx = physicObject.getPositionVelocityX();
+		float vy = physicObject.getPositionVelocityY();
+		float vz = physicObject.getPositionVelocityZ();
+		float magnitude = (float) (Maths.sqrt((vx * vx + vy * vy + vz * vz)) * remainingTime);
+		float nx = collisionResponse.nx;
+		float ny = collisionResponse.ny;
+		float nz = collisionResponse.nz;
+		float dotprod = vx * nx + vy * ny + vz * nz;
+		if (dotprod > 0.0f) {
+			dotprod = 1.0f;
+		} else if (dotprod < 0.0f) {
+			dotprod = -1.0f;
+		}
+		physicObject.setPositionVelocityX(dotprod * ny * nz * magnitude);
+		physicObject.setPositionVelocityY(dotprod * nx * nz * magnitude);
+		physicObject.setPositionVelocityZ(dotprod * nx * ny * magnitude);
 	}
 
 	/**
 	 * 
-	 * Simulates a slide response after the 'physicObject' enters in collision
-	 * with 'collisionResponse'
+	 * Simulates a slide response after the 'physicObject' enters in collision with
+	 * 'collisionResponse'
 	 * 
 	 * @param physicObject
 	 *            : the physic object
@@ -301,6 +327,6 @@ public class Collision {
 		block.setPosition(6.0f, 0, 0.0f);
 
 		CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(entity, block);
-		Assert.assertEquals(collisionResponse, new CollisionResponse(-1.0f, 0.0f, 0.0f, 5.0f));
+		Assert.assertEquals(collisionResponse, new CollisionResponse(entity, block, -1.0f, 0.0f, 0.0f, 5.0f));
 	}
 }

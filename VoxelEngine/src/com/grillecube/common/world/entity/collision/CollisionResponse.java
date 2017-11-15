@@ -2,6 +2,12 @@ package com.grillecube.common.world.entity.collision;
 
 public class CollisionResponse {
 
+	/** the moving physic object which collided with 'collided' */
+	public final PhysicObject moving;
+
+	/** the physic object with which the collision occured */
+	public final PhysicObject collided;
+
 	/** normal x between the face and the direction */
 	public final float nx;
 
@@ -14,7 +20,9 @@ public class CollisionResponse {
 	/** time until the collision will happens */
 	public final float dt;
 
-	public CollisionResponse(float nx, float ny, float nz, float dt) {
+	public CollisionResponse(PhysicObject moving, PhysicObject collided, float nx, float ny, float nz, float dt) {
+		this.moving = moving;
+		this.collided = collided;
 		this.nx = nx;
 		this.ny = ny;
 		this.nz = nz;

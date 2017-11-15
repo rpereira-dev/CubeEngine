@@ -37,7 +37,7 @@ public class BlockAir extends Block {
 	}
 
 	@Override
-	public boolean isWalkable() {
+	public boolean isCrossable() {
 		return (true);
 	}
 

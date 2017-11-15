@@ -19,12 +19,15 @@ import java.util.Random;
 
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.instances.BlockInstance;
 import com.grillecube.common.world.entity.Entity;
 import com.grillecube.common.world.entity.WorldEntityStorage;
+import com.grillecube.common.world.entity.collision.PhysicObject;
+import com.grillecube.common.world.entity.collision.PhysicObjectBlock;
 import com.grillecube.common.world.generator.WorldGenerator;
 import com.grillecube.common.world.generator.WorldGeneratorEmpty;
 import com.grillecube.common.world.terrain.Terrain;
@@ -110,9 +113,14 @@ public abstract class World implements Taskable {
 	}
 
 	/** delete the world : de-allocate every allocated memory */
-	public void delete() {
+	public final void delete() {
 		this.entities.delete();
 		this.terrains.delete();
+		this.onDelete();
+	}
+
+	protected void onDelete() {
+
 	}
 
 	/**
@@ -253,5 +261,31 @@ public abstract class World implements Taskable {
 	}
 
 	private void onUnloaded() {
+	}
+
+	public final ArrayList<PhysicObject> getCollidingBlocks(PhysicObject physicObject) {
+		ArrayList<PhysicObject> lst = new ArrayList<PhysicObject>();
+
+		int minx = Maths.floor(physicObject.getPositionX() - 1.0f);
+		int maxx = Maths.floor(physicObject.getPositionX() + physicObject.getSizeX());
+		int miny = Maths.floor(physicObject.getPositionY() - 1.0f);
+		int maxy = Maths.floor(physicObject.getPositionY() + physicObject.getSizeY());
+		int minz = Maths.floor(physicObject.getPositionZ() - 1.0f);
+		int maxz = Maths.floor(physicObject.getPositionZ() + physicObject.getSizeZ());
+
+		Vector3i pos = new Vector3i();
+
+		// iterate though each blocks
+		for (pos.x = minx; pos.x < maxx; ++pos.x) {
+			for (pos.z = minz; pos.z < maxz; ++pos.z) {
+				for (pos.y = miny; pos.y < maxy; ++pos.y) {
+					Block block = this.getBlock(pos.x, pos.y, pos.z);
+					if (!block.isCrossable()) {
+						lst.add(new PhysicObjectBlock(block, pos.x, pos.y, pos.z));
+					}
+				}
+			}
+		}
+		return (lst);
 	}
 }

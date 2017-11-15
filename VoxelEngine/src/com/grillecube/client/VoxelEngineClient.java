@@ -130,8 +130,7 @@ public class VoxelEngineClient extends VoxelEngine {
 	}
 
 	/**
-	 * a task to be run on a gl context (will be run on the next main thread
-	 * update)
+	 * a task to be run on a gl context (will be run on the next main thread update)
 	 */
 	public final void addGLTask(GLTask glTask) {
 		this.glTasks.add(glTask);

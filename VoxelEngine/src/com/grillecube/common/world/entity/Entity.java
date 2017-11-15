@@ -16,10 +16,12 @@ package com.grillecube.common.world.entity;
 
 import java.util.ArrayList;
 
+import org.lwjgl.glfw.GLFW;
+
+import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.resources.SoundManager;
 import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
-import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
@@ -184,8 +186,7 @@ public abstract class Entity extends PhysicObject {
 	}
 
 	/**
-	 * update this entity's position, depending on forces and controls applied
-	 * to it
+	 * update this entity's position, depending on forces and controls applied to it
 	 * 
 	 * really basis of the physic engine: the acceleration vector is reset every
 	 * frame and has to be recalculated via 'Entity.addForce(Vector3f force)'
@@ -201,12 +202,6 @@ public abstract class Entity extends PhysicObject {
 			force.updateResultant(this, resultant);
 		}
 
-		// apply controls
-		for (Control<Entity> control : this.controls) {
-			control.run(this, resultant);
-		}
-		this.controls.clear();
-
 		// advance depending on last update
 		float m = this.getMass();
 		float ax = resultant.x * Terrain.METER_TO_BLOCK / m;
@@ -215,32 +210,42 @@ public abstract class Entity extends PhysicObject {
 		this.setPositionAccelerationX(ax);
 		this.setPositionAccelerationY(ay);
 		this.setPositionAccelerationZ(az);
+
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_SPACE)) {
+			this.jump();
+		}
+
+		// apply controls
+		for (Control<Entity> control : this.controls) {
+			control.run(this, resultant);
+		}
+		this.controls.clear();
+
 		Positioneable.velocity(this, dt);
 
-		// simulate ground
-		Entity ground = new Entity() {
-			@Override
-			protected void onUpdate(double dt) {
-			}
-		};
-		ground.setPosition(-16.0f, 160.0f, -16.0f);
-		ground.setSize(2000.0f, 0.0f, 2000.0f);
+		// move the entity
+		// Logger.get().log(Logger.Level.DEBUG, this.getPositionVelocityX(),
+		// this.getPositionVelocityY(),
+		// this.getPositionVelocityZ());
+		// this.teleport(0, 140, 0);
 
-		while (dt > 0.000001f) {
-			// swept
-			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(this, ground);
+		// swept
+		while (dt > 0) {
+			ArrayList<PhysicObject> blocks = this.getWorld().getCollidingBlocks(this);
+			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(this, blocks);
 			// if no collision, move
 			if (collisionResponse == null || collisionResponse.dt > dt) {
 				Positioneable.position(this, dt);
 				break;
 			}
-
 			// if collision, move just before it collides
 			Positioneable.position(this, collisionResponse.dt);
+
+			// dt now contains the remaning time
 			dt -= collisionResponse.dt;
-			
-			//bounce, and continue collisions
-			Collision.deflects(this, collisionResponse, 1.0f);
+
+			// stick right before collision, and continue collisions
+			Collision.stick(this, collisionResponse);
 		}
 	}
 
@@ -276,7 +281,7 @@ public abstract class Entity extends PhysicObject {
 	protected abstract void onUpdate(double dt);
 
 	/** get entity world */
-	public World getWorld() {
+	public final World getWorld() {
 		return (this.world);
 	}
 
@@ -365,8 +370,7 @@ public abstract class Entity extends PhysicObject {
 
 	/**
 	 * 
-	 * move the given PhysicObject by the velocity vector (dx, dy, dz) for a
-	 * time dt
+	 * move the given PhysicObject by the velocity vector (dx, dy, dz) for a time dt
 	 * 
 	 * 
 	 * @param object

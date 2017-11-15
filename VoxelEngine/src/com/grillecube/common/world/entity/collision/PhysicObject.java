@@ -2,6 +2,12 @@ package com.grillecube.common.world.entity.collision;
 
 import com.grillecube.common.maths.Vector3f;
 
+/**
+ * Abstract class for a World object (coordinates should be world-relative)
+ * 
+ * @author Romain
+ *
+ */
 public abstract class PhysicObject implements Positioneable, Rotationable, Sizeable {
 
 	/**

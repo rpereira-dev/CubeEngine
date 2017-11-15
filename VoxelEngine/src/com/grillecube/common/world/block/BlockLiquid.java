@@ -29,7 +29,7 @@ public abstract class BlockLiquid extends Block {
 	}
 
 	@Override
-	public boolean isWalkable() {
+	public boolean isCrossable() {
 		return (true);
 	}
 

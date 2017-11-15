@@ -267,7 +267,7 @@ public class GLH {
 	/** MAIN TESTS */
 
 	/** constants */
-	public static final float f = 1.0f;
+	public static final float f = 0.5f;
 	public static final int DEFAULT_SCREEN_WIDTH = (int) (1280 * f);
 	public static final int DEFAULT_SCREEN_HEIGHT = (int) (720 * f);
 
