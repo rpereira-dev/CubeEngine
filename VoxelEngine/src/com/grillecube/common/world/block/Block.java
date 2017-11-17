@@ -14,8 +14,8 @@
 
 package com.grillecube.common.world.block;
 
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.instances.BlockInstance;
-import com.grillecube.common.world.terrain.Terrain;
 
 public abstract class Block {
 

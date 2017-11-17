@@ -3,9 +3,9 @@ package com.grillecube.client.renderer.camera;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
-import com.grillecube.common.world.terrain.Terrain;
 
 public abstract class CameraProjectiveWorld extends CameraProjective implements RaycastingCallback {
 

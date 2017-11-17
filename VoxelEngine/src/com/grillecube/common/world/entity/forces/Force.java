@@ -14,6 +14,7 @@ public abstract class Force<T extends PhysicObject> {
 	/** gravity */
 	public static final ForceGravity GRAVITY = new ForceGravity();
 	public static final ForceFriction FRICTION = new ForceAirFriction();
+	public static final ForceJump JUMP = new ForceJump();
 
 	public final void updateResultant(T object, Vector3f resultant) {
 		this.onUpdateResultant(object, resultant);

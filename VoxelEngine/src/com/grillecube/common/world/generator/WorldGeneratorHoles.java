@@ -2,9 +2,9 @@ package com.grillecube.common.world.generator;
 
 import java.util.Random;
 
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Blocks;
-import com.grillecube.common.world.terrain.Terrain;
 
 public class WorldGeneratorHoles extends WorldGenerator {
 

@@ -1,6 +1,6 @@
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.world.terrain.Terrain;
+import com.grillecube.common.world.Terrain;
 
 public class BlockPlant extends Block {
 

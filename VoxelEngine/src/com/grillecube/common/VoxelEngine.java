@@ -248,6 +248,9 @@ public abstract class VoxelEngine {
 
 	/** stop the thread executor */
 	private final void stopExecutor() {
+		if (this.executor == null) {
+			return;
+		}
 		Logger.get().log(Logger.Level.DEBUG, "Stopping thread executor...");
 		this.executor.shutdown();
 		try {

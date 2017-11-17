@@ -1,4 +1,4 @@
-package com.grillecube.common.world.terrain;
+package com.grillecube.common.world;
 
 public class Compress {
 

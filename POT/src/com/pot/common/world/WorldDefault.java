@@ -15,7 +15,7 @@
 package com.pot.common.world;
 
 import com.grillecube.common.world.WorldFlat;
-import com.grillecube.common.world.generator.WorldGeneratorFlat;
+import com.grillecube.common.world.generator.WorldGeneratorHoles;
 
 public class WorldDefault extends WorldFlat {
 
@@ -25,7 +25,7 @@ public class WorldDefault extends WorldFlat {
 
 	@Override
 	public void onLoaded() {
-		this.setWorldGenerator(new WorldGeneratorFlat());
+		this.setWorldGenerator(new WorldGeneratorHoles());
 		for (int y = 1; y > 0; y--) {
 			for (int x = -4; x < 4; x++) {
 				for (int z = -4; z < 4; z++) {

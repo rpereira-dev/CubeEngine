@@ -59,21 +59,6 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 
 	@Override
 	public void invokeKeyPress(GLFWWindow glfwWindow, int key, int scancode, int mods) {
-		if (key == GLFW.GLFW_KEY_W) {
-			this.entity.addControl(Control.FORWARD);
-		}
-		if (key == GLFW.GLFW_KEY_S) {
-			this.entity.addControl(Control.BACKWARD);
-		}
-		if (key == GLFW.GLFW_KEY_D) {
-			this.entity.addControl(Control.STRAFE_LEFT);
-		}
-		if (key == GLFW.GLFW_KEY_A) {
-			this.entity.addControl(Control.STRAFE_RIGHT);
-		}
-		if (key == GLFW.GLFW_KEY_SPACE && !this.entity.isJumping()) {
-			this.entity.jump();
-		}
 		if (key == GLFW.GLFW_KEY_R) {
 			Vector3f pos = new Vector3f();
 			pos.set(this.entity.getPositionX(), this.entity.getPositionY(), this.entity.getPositionZ());

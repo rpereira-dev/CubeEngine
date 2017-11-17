@@ -26,9 +26,9 @@ import com.grillecube.common.event.world.EventTerrainSunlightUpdate;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.resources.ResourceManager;
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.Timer;
 import com.grillecube.common.world.WorldFlat;
-import com.grillecube.common.world.terrain.Terrain;
 
 /** a factory class which create terrain renderer lists */
 public class FlatTerrainRendererFactory extends RendererFactory {

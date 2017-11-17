@@ -1,7 +1,7 @@
 package com.grillecube.common.world.generator;
 
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Blocks;
-import com.grillecube.common.world.terrain.Terrain;
 
 public class WorldGeneratorFlat extends WorldGenerator {
 

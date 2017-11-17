@@ -4,17 +4,22 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
+import com.grillecube.common.Logger;
+import com.grillecube.common.world.WorldTests;
 import com.grillecube.common.world.entity.collision.Collision;
 
 public class JUnitTestAll {
 
 	public static void main(String[] args) {
-		Class<?> classes[] = { Collision.class };
+		Logger.get().log(Logger.Level.FINE, "running tests...");
+		Class<?> classes[] = { Collision.class, WorldTests.class };
 		for (Class<?> classToTest : classes) {
+			Logger.get().log(Logger.Level.FINE, "running test for class: " + classToTest.getSimpleName());
 			Result result = JUnitCore.runClasses(classToTest);
 			for (Failure failure : result.getFailures()) {
-				System.out.println(failure.toString());
+				Logger.get().log(Logger.Level.ERROR, failure.toString());
 			}
 		}
+		Logger.get().log(Logger.Level.FINE, "tests done succesfully");
 	}
 }

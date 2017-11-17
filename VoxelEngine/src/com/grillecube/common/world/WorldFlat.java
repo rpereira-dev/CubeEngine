@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.world.terrain.WorldFlatTerrainStorage;
 
 public abstract class WorldFlat extends World {
 

@@ -1,7 +1,7 @@
 package com.grillecube.common.world.block.instances;
 
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Block;
-import com.grillecube.common.world.terrain.Terrain;
 
 /** a class which represent an unique block instance in the world */
 public abstract class BlockInstance {

@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 import com.grillecube.client.opengl.object.GLVertexArray;
 import com.grillecube.client.opengl.object.GLVertexBuffer;
 import com.grillecube.client.renderer.Mesh;
-import com.grillecube.common.world.terrain.Terrain;
+import com.grillecube.common.world.Terrain;
 
 public class TerrainMesh extends Mesh {
 

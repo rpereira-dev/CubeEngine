@@ -21,7 +21,7 @@ import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.common.faces.Face;
-import com.grillecube.common.world.terrain.Terrain;
+import com.grillecube.common.world.Terrain;
 
 /** an object which is used to generate terrain meshes dynamically */
 public class FlatTerrainMesherGreedy extends TerrainMesher {

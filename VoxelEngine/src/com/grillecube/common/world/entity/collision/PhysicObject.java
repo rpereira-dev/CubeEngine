@@ -3,6 +3,7 @@ package com.grillecube.common.world.entity.collision;
 import java.util.ArrayList;
 
 import com.grillecube.common.Logger;
+import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.World;
 
@@ -115,9 +116,18 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 		this.setSizeAccelerationZ(z);
 	}
 
-	/** move this physic object in the given world, handling collisions */
+	/**
+	 * move the given physic object in the given world, moving at velocity (vx,
+	 * vy, vz) for a time of 'dt'
+	 * 
+	 * @param world
+	 * @param physicObject
+	 * @param vx
+	 * @param vy
+	 * @param vz
+	 * @param dt
+	 */
 	public static final void move(World world, PhysicObject physicObject, double dt) {
-
 		// swept
 		float x = physicObject.getPositionX();
 		float y = physicObject.getPositionY();
@@ -139,7 +149,7 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 			minx = x;
 			maxx = x + sx + dx;
 		} else {
-			minx = x + dx;
+			minx = x + dx - sx;
 			maxx = x + sx;
 		}
 
@@ -147,7 +157,7 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 			miny = y;
 			maxy = y + sy + dy;
 		} else {
-			miny = y + dy;
+			miny = y + dy - sy;
 			maxy = y + sy;
 		}
 
@@ -155,12 +165,12 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 			minz = z;
 			maxz = z + sz + dz;
 		} else {
-			minz = z + dz;
+			minz = z + dz - sz;
 			maxz = z + sz;
 		}
 
 		int i = 0;
-		while (dt > 0.0001f) {
+		while (dt > Maths.ESPILON) {
 			ArrayList<PhysicObject> blocks = world.getCollidingPhysicObjects(minx, miny, minz, maxx, maxy, maxz);
 			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(physicObject, blocks);
 			// if no collision, move
@@ -168,6 +178,7 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 				Positioneable.position(physicObject, dt);
 				break;
 			}
+
 			// if collision, move just before it collides
 			Positioneable.position(physicObject, collisionResponse.dt);
 
@@ -175,7 +186,7 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 			dt -= collisionResponse.dt;
 
 			// stick right before collision, and continue collisions
-			Collision.deflects(physicObject, collisionResponse, 0.2f);
+			Collision.deflects(physicObject, collisionResponse, 0.15f);
 
 			if (++i >= 5) {
 				Logger.get().log(Logger.Level.WARNING,
@@ -183,6 +194,5 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 				break;
 			}
 		}
-
 	}
 }

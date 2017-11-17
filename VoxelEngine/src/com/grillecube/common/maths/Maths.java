@@ -10,11 +10,12 @@ package com.grillecube.common.maths;
  */
 public class Maths {
 
-	static float[] SIN_TABLE = new float[180];
-	static float DEG_TO_RAD = 0.01745329251f;
-	static float RAD_TO_DEG = 57.2957795131f;
-	static float PI_2 = 1.57079632679f;
-	static float PI_4 = 0.78539816339f;
+	public static float[] SIN_TABLE = new float[180];
+	public static float DEG_TO_RAD = 0.01745329251f;
+	public static float RAD_TO_DEG = 57.2957795131f;
+	public static float PI_2 = 1.57079632679f;
+	public static float PI_4 = 0.78539816339f;
+	public static final float ESPILON = 0.000000000000000000000000000000000000000000001f;
 
 	static {
 
@@ -95,7 +96,7 @@ public class Maths {
 	}
 
 	public static float abs(float f) {
-		return ((f >= 0) ? f : -f);
+		return (f == 0.0f ? 0.0f : (f > 0.0f) ? f : -f);
 	}
 
 	public static long abs(long l) {

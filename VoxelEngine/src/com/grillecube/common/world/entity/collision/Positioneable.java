@@ -71,9 +71,16 @@ public interface Positioneable {
 	 * @param dt
 	 */
 	public static void position(Positioneable positioneable, double dt) {
-		positioneable.setPositionX((float) (positioneable.getPositionX() + positioneable.getPositionVelocityX() * dt));
-		positioneable.setPositionY((float) (positioneable.getPositionY() + positioneable.getPositionVelocityY() * dt));
-		positioneable.setPositionZ((float) (positioneable.getPositionZ() + positioneable.getPositionVelocityZ() * dt));
+		float vx = positioneable.getPositionVelocityX();
+		float vy = positioneable.getPositionVelocityY();
+		float vz = positioneable.getPositionVelocityZ();
+		position(positioneable, vx, vy, vz, dt);
+	}
+
+	public static void position(Positioneable positioneable, float vx, float vy, float vz, double dt) {
+		positioneable.setPositionX((float) (positioneable.getPositionX() + vx * dt));
+		positioneable.setPositionY((float) (positioneable.getPositionY() + vy * dt));
+		positioneable.setPositionZ((float) (positioneable.getPositionZ() + vz * dt));
 	}
 
 	/** @return true if this positioneable objects is rotating */

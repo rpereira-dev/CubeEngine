@@ -17,12 +17,15 @@ package com.grillecube.common.world;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.junit.Test;
+
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
+import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.block.instances.BlockInstance;
 import com.grillecube.common.world.entity.Entity;
 import com.grillecube.common.world.entity.WorldEntityStorage;
@@ -30,7 +33,8 @@ import com.grillecube.common.world.entity.collision.PhysicObject;
 import com.grillecube.common.world.entity.collision.PhysicObjectBlock;
 import com.grillecube.common.world.generator.WorldGenerator;
 import com.grillecube.common.world.generator.WorldGeneratorEmpty;
-import com.grillecube.common.world.terrain.Terrain;
+
+import junit.framework.Assert;
 
 /**
  * TODO Main world class, may change to a "Planet" class, and a new World class
@@ -270,15 +274,19 @@ public abstract class World implements Taskable {
 	 * @param physicObject
 	 * @return : the physic object list
 	 */
-	public final ArrayList<PhysicObject> getCollidingPhysicObjects(float minx, float miny, float minz, float maxx, float maxy, float maxz) {
+	public final ArrayList<PhysicObject> getCollidingPhysicObjects(float minx, float miny, float minz, float maxx,
+			float maxy, float maxz) {
 		ArrayList<PhysicObject> lst = new ArrayList<PhysicObject>();
 
+//		System.out.println(minx + " : " + miny + " : " + minz + " : " + maxx + " : " + maxy + " : " + maxz);
+
+		
 		int mx = Maths.floor(minx);
-		int Mx = Maths.ceil(maxx + 1.0f);
+		int Mx = Maths.ceil(maxx);
 		int my = Maths.floor(miny);
-		int My = Maths.ceil(maxy + 1.0f);
+		int My = Maths.ceil(maxy);
 		int mz = Maths.floor(minz);
-		int Mz = Maths.ceil(maxz + 1.0f);
+		int Mz = Maths.ceil(maxz);
 
 		// iterate though each blocks
 		for (int x = mx; x < Mx; x++) {

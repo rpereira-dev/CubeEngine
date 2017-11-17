@@ -3,8 +3,8 @@ package com.grillecube.common.world.entity.forces;
 import java.awt.Color;
 
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.entity.Entity;
-import com.grillecube.common.world.terrain.Terrain;
 
 public abstract class ForceFriction extends Force<Entity> {
 

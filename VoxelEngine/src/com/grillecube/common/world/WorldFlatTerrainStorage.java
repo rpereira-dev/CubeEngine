@@ -1,4 +1,4 @@
-package com.grillecube.common.world.terrain;
+package com.grillecube.common.world;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,8 +15,6 @@ import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.world.World;
-import com.grillecube.common.world.WorldTerrainStorage;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.block.instances.BlockInstance;
@@ -275,9 +273,9 @@ public class WorldFlatTerrainStorage extends WorldTerrainStorage {
 		if (terrain == null) {
 			return (Blocks.AIR);
 		}
-		int xx = this.getRelativeCoordinate((int) x, Terrain.DIMX);
-		int yy = this.getRelativeCoordinate((int) y, Terrain.DIMY);
-		int zz = this.getRelativeCoordinate((int) z, Terrain.DIMZ);
+		int xx = this.getRelativeCoordinate((int)x, Terrain.DIMX);
+		int yy = this.getRelativeCoordinate((int)y, Terrain.DIMY);
+		int zz = this.getRelativeCoordinate((int)z, Terrain.DIMZ);
 		return (terrain.getBlockAt(xx, yy, zz));
 	}
 

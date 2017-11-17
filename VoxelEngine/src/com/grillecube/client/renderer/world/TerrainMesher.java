@@ -23,9 +23,9 @@ import com.grillecube.client.renderer.blocks.BlockRenderer;
 import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.Blocks;
-import com.grillecube.common.world.terrain.Terrain;
 
 /** an object which is used to generate terrain meshes dynamically */
 public abstract class TerrainMesher {

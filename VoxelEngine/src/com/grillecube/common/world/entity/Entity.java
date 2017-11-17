@@ -23,21 +23,18 @@ import com.grillecube.client.resources.SoundManager;
 import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.entity.ai.EntityAI;
 import com.grillecube.common.world.entity.ai.EntityAIIdle;
-import com.grillecube.common.world.entity.collision.Collision;
-import com.grillecube.common.world.entity.collision.CollisionResponse;
 import com.grillecube.common.world.entity.collision.PhysicObject;
-import com.grillecube.common.world.entity.collision.PhysicObjectBlock;
 import com.grillecube.common.world.entity.collision.Positioneable;
 import com.grillecube.common.world.entity.collision.Rotationable;
 import com.grillecube.common.world.entity.collision.Sizeable;
 import com.grillecube.common.world.entity.control.Control;
 import com.grillecube.common.world.entity.forces.Force;
-import com.grillecube.common.world.terrain.Terrain;
 
 public abstract class Entity extends PhysicObject {
 
@@ -95,9 +92,6 @@ public abstract class Entity extends PhysicObject {
 		this.world = world;
 
 		this.forces = new ArrayList<Force<Entity>>();
-		this.addForce(Force.GRAVITY);
-		this.addForce(Force.FRICTION);
-
 		this.controls = new ArrayList<Control<Entity>>();
 
 		// look vector
@@ -197,12 +191,29 @@ public abstract class Entity extends PhysicObject {
 	 */
 	private final void updatePosition(double dt) {
 
+		// do the controls
+		this.runControls(dt);
+
+		// simulate forces
+		this.runForces(dt);
+	}
+
+	private final void runForces(double dt) {
+		// simulate forces applied to this object
 		Vector3f resultant = new Vector3f();
 
-		// apply forces
+		// add constant forces
+		this.addForce(Force.GRAVITY);
+		this.addForce(Force.FRICTION);
+
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_SPACE)) {
+			this.jump();
+		}
+
 		for (Force<Entity> force : this.forces) {
 			force.updateResultant(this, resultant);
 		}
+		this.forces.clear();
 
 		// advance depending on last update
 		float m = this.getMass();
@@ -213,44 +224,56 @@ public abstract class Entity extends PhysicObject {
 		this.setPositionAccelerationY(ay);
 		this.setPositionAccelerationZ(az);
 
-		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_SPACE)) {
-			this.jump();
-		}
-
-		// apply controls
-		for (Control<Entity> control : this.controls) {
-			control.run(this, resultant);
-		}
-		this.controls.clear();
-
+		// update velocity of this entity
 		Positioneable.velocity(this, dt);
 
-		// move the entity
-		// Logger.get().log(Logger.Level.DEBUG, this.getPositionVelocityX(),
-		// this.getPositionVelocityY(),
-		// this.getPositionVelocityZ());
-		// this.teleport(4, 69, 4);
-		// this.setPositionVelocityX(0);
-		// this.setPositionVelocityY(0);
-		// this.setPositionVelocityZ(0);
-		// this.setPositionAccelerationY(0);
-
-		if (this.getWorld() == null) {
-			Positioneable.position(this, dt);
-		} else {
+// if this entity is spawned in any worlds, do collision, else ignore
+		// collisions
+//		this.teleport(0, 200, 0);
+		if (this.getWorld() != null) {
 			PhysicObject.move(this.getWorld(), this, dt);
+		} else {
+			Positioneable.position(this, dt);
 		}
+	}
+
+	private final void runControls(double dt) {
+
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_W)) {
+			this.addControl(Control.FORWARD);
+		}
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_S)) {
+			this.addControl(Control.BACKWARD);
+		}
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_D)) {
+			this.addControl(Control.STRAFE_RIGHT);
+		}
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_A)) {
+			this.addControl(Control.STRAFE_LEFT);
+		}
+
+		for (Control<Entity> control : this.controls) {
+			control.run(this, dt);
+		}
+		this.controls.clear();
 	}
 
 	/** make the entity jump */
 	public final void jump() {
-		this.controls.add(Control.JUMP);
+		this.forces.add(Force.JUMP);
 	}
 
 	/** update the value of the block under this entity */
 	private final void updateBlockUnder() {
-		this.blockUnder = (this.getWorld() == null) ? null
-				: this.getWorld().getBlock(this.getPositionX(), this.getPositionY() - 1, this.getPositionZ());
+		World world = this.getWorld();
+		if (world == null) {
+			this.blockUnder = null;
+			return ;
+		}
+		float x = this.getPositionX() + this.getSizeX() * 0.5f;
+		float y = this.getPositionY() - 1.0f;
+		float z = this.getPositionZ() + this.getSizeX() * 0.5f;
+		this.blockUnder = world.getBlock(x, y, z);
 	}
 
 	/** add a force to this entity */

@@ -31,8 +31,8 @@ import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.WorldFlat;
-import com.grillecube.common.world.terrain.Terrain;
 
 public class TerrainRenderer extends Renderer {
 

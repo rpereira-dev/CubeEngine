@@ -1,7 +1,7 @@
 package com.grillecube.common.event.world;
 
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Block;
-import com.grillecube.common.world.terrain.Terrain;
 
 public class EventTerrainSetBlock extends EventTerrain {
 

@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.common.world.terrain;
+package com.grillecube.common.world;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +29,6 @@ import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector2i;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.block.instances.BlockInstance;

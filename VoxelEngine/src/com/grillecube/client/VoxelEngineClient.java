@@ -20,7 +20,6 @@ import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.EventOnLoop;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
-import com.grillecube.common.world.Timer;
 
 public class VoxelEngineClient extends VoxelEngine {
 
@@ -130,7 +129,8 @@ public class VoxelEngineClient extends VoxelEngine {
 	}
 
 	/**
-	 * a task to be run on a gl context (will be run on the next main thread update)
+	 * a task to be run on a gl context (will be run on the next main thread
+	 * update)
 	 */
 	public final void addGLTask(GLTask glTask) {
 		this.glTasks.add(glTask);

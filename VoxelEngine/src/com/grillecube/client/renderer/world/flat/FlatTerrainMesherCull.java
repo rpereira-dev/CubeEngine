@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.common.faces.Face;
-import com.grillecube.common.world.terrain.Terrain;
+import com.grillecube.common.world.Terrain;
 
 /** the simplest terrain mesher (cull colliding faces) */
 public class FlatTerrainMesherCull extends TerrainMesher {

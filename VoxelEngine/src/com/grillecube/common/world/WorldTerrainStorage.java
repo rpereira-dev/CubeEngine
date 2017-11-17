@@ -4,7 +4,6 @@ import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.instances.BlockInstance;
-import com.grillecube.common.world.terrain.Terrain;
 
 public abstract class WorldTerrainStorage extends WorldStorage {
 

@@ -10,8 +10,8 @@ import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Block;
-import com.grillecube.common.world.terrain.Terrain;
 
 public class MarchingCubesTerrainMesher extends TerrainMesher {
 

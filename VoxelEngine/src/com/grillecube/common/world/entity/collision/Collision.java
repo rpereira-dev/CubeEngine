@@ -28,6 +28,11 @@ public class Collision {
 	 */
 	public static final CollisionResponse collisionResponseAABBSwept(PhysicObject b1, PhysicObject b2) {
 
+		// velocity
+		float vx = b1.getPositionVelocityX();
+		float vy = b1.getPositionVelocityY();
+		float vz = b1.getPositionVelocityZ();
+
 		// extract positions
 		float x1 = b1.getPositionX();
 		float y1 = b1.getPositionY();
@@ -36,11 +41,6 @@ public class Collision {
 		float x2 = b2.getPositionX();
 		float y2 = b2.getPositionY();
 		float z2 = b2.getPositionZ();
-
-		// extract velocities
-		float vx = b1.getPositionVelocityX();
-		float vy = b1.getPositionVelocityY();
-		float vz = b1.getPositionVelocityZ();
 
 		// extract size
 		float sx1 = b1.getSizeX();
@@ -87,24 +87,23 @@ public class Collision {
 			xEntry = Float.NEGATIVE_INFINITY;
 			xExit = Float.POSITIVE_INFINITY;
 		} else {
-			xEntry = xInvEntry / vx;
-			xExit = xInvExit / vx;
+			xEntry = xInvEntry == 0.0f ? 0.0f : xInvEntry / vx;
+			xExit = xInvExit == 0.0f ? 0.0f : xInvExit / vx;
 		}
-
 		if (vy == 0.0f) {
 			yEntry = Float.NEGATIVE_INFINITY;
 			yExit = Float.POSITIVE_INFINITY;
 		} else {
-			yEntry = yInvEntry / vy;
-			yExit = yInvExit / vy;
+			yEntry = yInvEntry == 0.0f ? 0.0f : yInvEntry / vy;
+			yExit = yInvExit == 0.0f ? 0.0f : yInvExit / vy;
 		}
 
 		if (vz == 0.0f) {
 			zEntry = Float.NEGATIVE_INFINITY;
 			zExit = Float.POSITIVE_INFINITY;
 		} else {
-			zEntry = zInvEntry / vz;
-			zExit = zInvExit / vz;
+			zEntry = zInvEntry == 0.0f ? 0.0f : zInvEntry / vz;
+			zExit = zInvExit == 0.0f ? 0.0f : zInvExit / vz;
 		}
 
 		// find the earliest/latest times of collision
@@ -112,7 +111,7 @@ public class Collision {
 		float exitTime = Maths.min(xExit, Maths.min(yExit, zExit));
 
 		// if there was no collision
-		if (entryTime > exitTime || (xEntry < 0.0f && yEntry < 0.0f && zEntry < 0.0f)) {
+		if (entryTime > exitTime || entryTime < 0.0f) {
 			return (null);
 		}
 
@@ -120,7 +119,7 @@ public class Collision {
 		// calculate normal of collided surface
 		float nx, ny, nz;
 		if (xEntry > yEntry && xEntry > zEntry) {
-			if (xInvEntry < 0.0f) {
+			if (vx < 0.0f) {
 				nx = 1.0f;
 				ny = 0.0f;
 				nz = 0.0f;
@@ -130,7 +129,7 @@ public class Collision {
 				nz = 0.0f;
 			}
 		} else if (yEntry > xEntry && yEntry > zEntry) {
-			if (yInvEntry < 0.0f) {
+			if (vy < 0.0f) {
 				nx = 0.0f;
 				ny = 1.0f;
 				nz = 0.0f;
@@ -140,7 +139,7 @@ public class Collision {
 				nz = 0.0f;
 			}
 		} else {
-			if (zInvEntry < 0.0f) {
+			if (vz < 0.0f) {
 				nx = 0.0f;
 				ny = 0.0f;
 				nz = 1.0f;
@@ -171,40 +170,13 @@ public class Collision {
 	public static final CollisionResponse collisionResponseAABBSwept(PhysicObject b1, ArrayList<PhysicObject> b2s) {
 		CollisionResponse collisionResponse = null;
 		for (PhysicObject b2 : b2s) {
+			// extract velocities
 			CollisionResponse c = collisionResponseAABBSwept(b1, b2);
 			if (c != null && (collisionResponse == null || c.dt < collisionResponse.dt)) {
 				collisionResponse = c;
 			}
 		}
 		return (collisionResponse);
-	}
-
-	/**
-	 * Simulate the movement and return a proper CollisionResponse
-	 *
-	 * @param positioneable
-	 *            : the physic object
-	 * @param vx
-	 *            : x velocity
-	 * @param vy
-	 *            : y velocity
-	 * @param vz
-	 *            : z velocity
-	 * @param dt
-	 *            : the time length to move
-	 * @return a proper CollisionResponse
-	 */
-	public static CollisionResponse collisionResponse(PhysicObject physicObject, float vx, float vy, float vz,
-			float dt) {
-		float dx = vx * dt;
-		float dy = vy * dt;
-		float dz = vz * dt;
-		// TODO : final collision response, on closest object
-		// for each other objects
-		// get collision response
-		// get closest response
-		// return it
-		return (null);
 	}
 
 	/**
@@ -221,13 +193,13 @@ public class Collision {
 	 *            : amount of velocity to be absorbed by the collision
 	 */
 	public static final void stick(PhysicObject physicObject, CollisionResponse collisionResponse) {
-		if (Maths.abs(collisionResponse.nx) > 0.0f) {
+		if (Maths.abs(collisionResponse.nx) > Maths.ESPILON) {
 			physicObject.setPositionVelocityX(0.0f);
 		}
-		if (Maths.abs(collisionResponse.ny) > 0.0f) {
+		if (Maths.abs(collisionResponse.ny) > Maths.ESPILON) {
 			physicObject.setPositionVelocityY(0.0f);
 		}
-		if (Maths.abs(collisionResponse.nz) > 0.0f) {
+		if (Maths.abs(collisionResponse.nz) > Maths.ESPILON) {
 			physicObject.setPositionVelocityZ(0.0f);
 		}
 	}
@@ -242,20 +214,31 @@ public class Collision {
 	 * @param collisionResponse
 	 *            : the collision response, (returned by
 	 *            {@link #collisionResponseAABBSwept(PhysicObject, PhysicObject)}
+	 * @param vx,
+	 *            vy, vz : velocities on collision
+	 * 
 	 * @param absorption
-	 *            : amount of velocity to be absorbed by the collision
+	 *            : velocity percentage to be absorbed
 	 */
+	public static final void deflects(PhysicObject physicObject, CollisionResponse collisionResponse, float vx,
+			float vy, float vz, float absorption) {
+		if (Maths.abs(collisionResponse.nx) > Maths.ESPILON) {
+			physicObject.setPositionVelocityX(-vx * absorption);
+		}
+		if (Maths.abs(collisionResponse.ny) > Maths.ESPILON) {
+			physicObject.setPositionVelocityY(-vy * absorption);
+		}
+		if (Maths.abs(collisionResponse.nz) > Maths.ESPILON) {
+			physicObject.setPositionVelocityZ(-vz * absorption);
+		}
+	}
+
 	public static final void deflects(PhysicObject physicObject, CollisionResponse collisionResponse,
 			float absorption) {
-		if (Maths.abs(collisionResponse.nx) > 0.00001f) {
-			physicObject.setPositionVelocityX(-physicObject.getPositionVelocityX() * absorption);
-		}
-		if (Maths.abs(collisionResponse.ny) > 0.0001f) {
-			physicObject.setPositionVelocityY(-physicObject.getPositionVelocityY() * absorption);
-		}
-		if (Maths.abs(collisionResponse.nz) > 0.0001f) {
-			physicObject.setPositionVelocityZ(-physicObject.getPositionVelocityZ() * absorption);
-		}
+		float vx = physicObject.getPositionVelocityX();
+		float vy = physicObject.getPositionVelocityY();
+		float vz = physicObject.getPositionVelocityZ();
+		deflects(physicObject, collisionResponse, vx, vy, vz, absorption);
 	}
 
 	/**
@@ -267,13 +250,11 @@ public class Collision {
 	 * @param collisionResponse
 	 *            : the collision response, (returned by
 	 *            {@link #collisionResponseAABBSwept(PhysicObject, PhysicObject)}
-	 * @param absorption
-	 *            : amount of velocity to be absorbed by the collision
+	 * @param dt
+	 *            : remaining time
 	 */
 	public static final void push(PhysicObject physicObject, CollisionResponse collisionResponse,
-			double remainingTime) {
-		//TODO
-	}
+			double dt) {}
 
 	/**
 	 * 
@@ -292,6 +273,94 @@ public class Collision {
 		// TODO
 	}
 
+	// TODO : test 0, 69, 0
+
+	@Test
+	public void collisionFalling() {
+		Entity entity = new Entity() {
+			@Override
+			protected void onUpdate(double dt) {
+			}
+		};
+		entity.setSize(1.0f, 2.0f, 1.0f);
+		entity.setPosition(0.0f, 6.0f, 0.0f);
+		entity.setPositionVelocity(0.0f, -1.0f, 0.0f);
+
+		Entity block = new Entity() {
+			@Override
+			protected void onUpdate(double dt) {
+			}
+		};
+		block.setSize(1.0f, 1.0f, 1.0f);
+		block.setPosition(0.0f, 0.0f, 0.0f);
+
+		CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(entity, block);
+		Assert.assertEquals(collisionResponse, new CollisionResponse(entity, block, 0.0f, 1.0f, 0.0f, 5.0f));
+	}
+
+	@Test
+	public void collisionRounding() {
+
+		float dt = 10.0f;
+
+		Entity entity = new Entity() {
+			@Override
+			protected void onUpdate(double dt) {
+			}
+		};
+		entity.setSize(1.0f, 2.0f, 1.0f);
+		entity.setPosition(0.0f, 6.0f, 0.0f);
+		entity.setPositionVelocity(0.0f, -1.0f, 0.0f);
+
+		Entity block = new Entity() {
+			@Override
+			protected void onUpdate(double dt) {
+			}
+		};
+		block.setSize(1.0f, 1.0f, 1.0f);
+		block.setPosition(0.0f, 0.0f, 0.0f);
+
+		// falling
+		{
+			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(entity, block);
+			Assert.assertEquals(collisionResponse, new CollisionResponse(entity, block, 0.0f, 1.0f, 0.0f, 5.0f));
+			dt -= collisionResponse.dt;
+
+			// move to collision
+			Positioneable.position(entity, collisionResponse.dt);
+			Assert.assertEquals(entity.getPositionX(), 0.0f);
+			Assert.assertEquals(entity.getPositionY(), 1.0f);
+			Assert.assertEquals(entity.getPositionZ(), 0.0f);
+
+			// stick to collision
+			Collision.stick(entity, collisionResponse);
+			Assert.assertEquals(entity.getPositionVelocityX(), 0.0f);
+			Assert.assertEquals(entity.getPositionVelocityY(), 0.0f);
+			Assert.assertEquals(entity.getPositionVelocityZ(), 0.0f);
+		}
+
+		// try falling more
+		{
+			entity.setPosition(0.0f, 1.0f, 0.0f);
+			entity.setPositionVelocity(0.0f, -1.0f, 0.0f);
+			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(entity, block);
+
+			Assert.assertEquals(collisionResponse, new CollisionResponse(entity, block, 0.0f, 1.0f, 0.0f, 0.0f));
+			dt -= collisionResponse.dt;
+
+			// if collision, move just before it collides
+			Positioneable.position(entity, collisionResponse.dt);
+			Assert.assertEquals(entity.getPositionX(), 0.0f);
+			Assert.assertEquals(entity.getPositionY(), 1.0f);
+			Assert.assertEquals(entity.getPositionZ(), 0.0f);
+
+			Collision.stick(entity, collisionResponse);
+			Assert.assertEquals(entity.getPositionVelocityX(), 0.0f);
+			Assert.assertEquals(entity.getPositionVelocityY(), 0.0f);
+			Assert.assertEquals(entity.getPositionVelocityZ(), 0.0f);
+		}
+	}
+
 	@Test
 	public void entityToWallCollision() {
 		Entity entity = new Entity() {
@@ -300,7 +369,7 @@ public class Collision {
 			}
 		};
 		entity.setSize(1.0f, 2.0f, 1.0f);
-		entity.setPosition(0.0f, 00f, 0.0f);
+		entity.setPosition(0.0f, 0.0f, 0.0f);
 		entity.setPositionVelocity(1.0f, 0.0f, 0.0f);
 
 		Entity block = new Entity() {
