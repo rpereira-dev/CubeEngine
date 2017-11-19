@@ -163,7 +163,7 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 				int rgb = (a << 24 | r << 16 | g << 8 | b << 0);
 				int px = (int) (data.getWidth() * event.getGui().getMouseX());
 				int py = (int) (data.getHeight() * event.getGui().getMouseY());
-				if (data.getRGB(px, py) == rgb) {
+				if (px < 0 || py < 0 || px >= data.getWidth() || py >= data.getHeight() || data.getRGB(px, py) == rgb) {
 					return;
 				}
 				data.setRGB(px, py, rgb);

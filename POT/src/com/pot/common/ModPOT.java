@@ -16,7 +16,6 @@ public class ModPOT implements IMod {
 
 	@Override
 	public void initialize(Mod mod) {
-		mod.addResource(new AssetsPack(ModPOT.MOD_ID, "./assets.zip"));
 		mod.addResource(new POTBlocks());
 		mod.addResource(new POTItems());
 		mod.addResource(new POTEntities());

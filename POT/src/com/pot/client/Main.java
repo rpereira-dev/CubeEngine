@@ -5,6 +5,7 @@ import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
 import com.grillecube.client.renderer.gui.components.GuiViewDebug;
 import com.grillecube.client.renderer.gui.components.GuiViewWorld;
 import com.grillecube.common.ModSample;
+import com.grillecube.common.resources.AssetsPack;
 import com.grillecube.common.world.World;
 import com.pot.common.ModPOT;
 import com.pot.common.world.POTWorlds;
@@ -23,6 +24,7 @@ public class Main {
 		// inject resources to be loaded
 		engine.getModLoader().injectMod(ModPOT.class);
 		engine.getModLoader().injectMod(ModSample.class);
+		engine.putAssets(new AssetsPack(ModPOT.MOD_ID, "./assets.zip"));
 
 		// load resources (mods)
 		engine.load();
@@ -55,7 +57,8 @@ public class Main {
 		camera.setWorld(world);
 		camera.setEntity(player);
 
-		//		CameraPerspectiveWorldFree camera = new CameraPerspectiveWorldFree(engine.getGLFWWindow());
+		// CameraPerspectiveWorldFree camera = new
+		// CameraPerspectiveWorldFree(engine.getGLFWWindow());
 
 		engine.getRenderer().getGuiRenderer().addGui(new GuiViewWorld(camera, POTWorlds.DEFAULT));
 		engine.getRenderer().getGuiRenderer().addGui(new GuiViewDebug(camera));

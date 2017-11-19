@@ -29,10 +29,6 @@ import com.grillecube.common.VoxelEngine;
 
 public abstract class ResourceManager {
 
-	/** the resources directory */
-	private File gameDir;
-	private ArrayList<AssetsPack> assets;
-
 	/** World manager */
 	private WorldManager worldManager;
 
@@ -74,12 +70,8 @@ public abstract class ResourceManager {
 
 		Logger.get().log(Logger.Level.FINE, "* Initializing resources manager");
 
-		this.assets = new ArrayList<AssetsPack>();
 		this.managers = new ArrayList<GenericManager<?>>();
 		this.addManagers();
-
-		// prepare path
-		this.prepareEnginePath();
 
 		// create config
 		this.config = new ResourceManager.Config();
@@ -118,28 +110,6 @@ public abstract class ResourceManager {
 		this.managers.add(manager);
 	}
 
-	private void prepareEnginePath() {
-		String OS = (System.getProperty("os.name")).toUpperCase();
-		String gamepath;
-		if (OS.contains("WIN")) {
-			gamepath = System.getenv("AppData");
-		} else {
-			gamepath = System.getProperty("user.home");
-		}
-
-		if (!gamepath.endsWith("/")) {
-			gamepath = gamepath + "/";
-		}
-		this.gameDir = new File(gamepath + "VoxelEngine");
-
-		Logger.get().log(Logger.Level.FINE, "Game directory is: " + this.gameDir.getAbsolutePath());
-		if (!this.gameDir.exists()) {
-			this.gameDir.mkdirs();
-		} else if (!this.gameDir.canWrite()) {
-			this.gameDir.setWritable(true);
-		}
-	}
-
 	/** engine on which this resource manager correspond to */
 	public VoxelEngine getEngine() {
 		return (this.engine);
@@ -157,7 +127,6 @@ public abstract class ResourceManager {
 			Logger.get().log(Logger.Level.FINE, manager.getClass().getSimpleName());
 			manager.deinitialize();
 		}
-		this.assets = null;
 		this.managers = null;
 	}
 
@@ -217,9 +186,9 @@ public abstract class ResourceManager {
 	/** get the resource filepath */
 	public String getResourcePath(String modid, String path) {
 		String assetsdir = "assets" + File.separator;
-		int length = this.gameDir.getAbsolutePath().length() + assetsdir.length() + modid.length() + path.length() + 1;
+		String respath = this.getEngine().getGamedir().getAbsolutePath();
+		int length = respath.length() + assetsdir.length() + modid.length() + path.length() + 1;
 		StringBuilder builder = new StringBuilder(length);
-		String respath = this.gameDir.getAbsolutePath();
 		builder.append(respath);
 		if (!respath.endsWith(File.separator)) {
 			builder.append(File.separator);
@@ -231,21 +200,6 @@ public abstract class ResourceManager {
 		}
 		builder.append(path);
 		return (builder.toString().replace("/", File.separator));
-	}
-
-	/** add an assets pack (zip file) to be added to the game */
-	public AssetsPack putAssets(AssetsPack pack) {
-		for (AssetsPack tmppack : this.assets) {
-			if (tmppack.getModID().equals(pack.getModID())) {
-				Logger.get().log(Logger.Level.ERROR,
-						"Tried to put an assets pack which already exists. Canceling operation. ModID: "
-								+ pack.getModID());
-				return (null);
-			}
-		}
-		this.assets.add(pack);
-		pack.extract();
-		return (pack);
 	}
 
 	// config file constants

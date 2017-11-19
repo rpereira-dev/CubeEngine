@@ -98,6 +98,7 @@ public abstract class Gui {
 	private static final int STATE_REQUESTED_UNFOCUS = (1 << 9);
 	private static final int STATE_SELECTED = (1 << 10);
 	private static final int STATE_HOVERABLE = (1 << 11);
+	private static final int STATE_PARENT_RELATIVE_SIZE = (1 << 12);
 
 	/** the transformation matrix, relative to the parent */
 	private final Matrix4f guiToParentChangeOfBasis;
@@ -175,6 +176,7 @@ public abstract class Gui {
 		this.setSelectable(false);
 		this.setEnabled(true);
 		this.setHoverable(true);
+		this.setSizeRelativeToParent(true);
 		this.requestFocus(false);
 		this.focus(false);
 	}
@@ -330,13 +332,6 @@ public abstract class Gui {
 
 	public final void setBox(float x, float y, float width, float height, float rot, boolean runParameters) {
 
-		if (width == 0.0f) {
-			width = 0.000000000001f;
-		}
-		if (height == 0.0f) {
-			height = 0.000000000001f;
-		}
-
 		// positions
 		this.boxPos.set(x, y);
 		this.boxSize.set(width, height);
@@ -351,7 +346,8 @@ public abstract class Gui {
 		this.guiToParentChangeOfBasis.translate(x, y, 0.0f);
 		this.guiToParentChangeOfBasis.scale(width, height, 1.0f);
 
-		Matrix4f parentTransform = this.parent == null ? Matrix4f.IDENTITY : this.parent.guiToWindowChangeOfBasis;
+		Matrix4f parentTransform = this.parent == null || !this.isSizeRelativeToParent() ? Matrix4f.IDENTITY
+				: this.parent.guiToWindowChangeOfBasis;
 		this.updateTransformationMatrices(parentTransform);
 
 		// aspect ratio
@@ -966,5 +962,26 @@ public abstract class Gui {
 			}
 		}
 		return (topestLayer);
+	}
+
+	/**
+	 * return true if this gui dimension should be interperted relatively to it
+	 * parent
+	 */
+	public final boolean isSizeRelativeToParent() {
+		return (this.hasState(STATE_PARENT_RELATIVE_SIZE));
+	}
+
+	/**
+	 * set to true if you want this gui dimension to be relative to its parent,
+	 * false elseway (true by default)
+	 * 
+	 * @param value
+	 */
+	public final void setSizeRelativeToParent(boolean value) {
+		this.setState(STATE_PARENT_RELATIVE_SIZE, value);
+		Matrix4f parentTransform = this.parent == null || !this.isSizeRelativeToParent() ? Matrix4f.IDENTITY
+				: this.parent.guiToWindowChangeOfBasis;
+		this.updateTransformationMatrices(parentTransform);
 	}
 }

@@ -41,12 +41,27 @@ public class GuiPrompt extends GuiLabel {
 		}
 	};
 
-	private static final String DEFAULT_CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 123456789\n";
+	private static final String DEFAULT_CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n[](){}\"'#&é~+=-*/.,;:?!<>";
 	private static final int CURSOR_MS = 500;
+
+	public static final TextTestFormat FORMAT_FLOAT = new TextTestFormat() {
+		@Override
+		public boolean isTextFormatValid(String text) {
+			try {
+				Float.parseFloat(text);
+				return (true);
+			} catch (Exception e) {
+			}
+			return (false);
+		}
+	};
 
 	/** the text held by the prompt */
 	private String heldText;
 	private float r, g, b, a;
+
+	/** format tests */
+	private TextTestFormat format;
 
 	/** max number of character to be hold */
 	private int maxChars;
@@ -254,7 +269,21 @@ public class GuiPrompt extends GuiLabel {
 		this.setHeldText(text, text != null ? text.length() : 0);
 	}
 
+	/** a test interface to validate or not text modification */
+	public interface TextTestFormat {
+		/**
+		 * @param text
+		 *            : the new string to be set
+		 * @return : true of false weather this string is valid
+		 */
+		public boolean isTextFormatValid(String text);
+	}
+
 	public final void setHeldText(String text, int index) {
+		if (this.format != null && !this.format.isTextFormatValid(text)) {
+			return;
+		}
+
 		if (text == null || text.length() == 0) {
 			this.heldText = null;
 			this.setCursor(0);
@@ -263,6 +292,10 @@ public class GuiPrompt extends GuiLabel {
 			this.setCursor(index);
 		}
 		this.updateVisibleText();
+	}
+
+	public final void setTextTestFormat(TextTestFormat textTestFormat) {
+		this.format = textTestFormat;
 	}
 
 	private final void setHintAsText() {
@@ -291,5 +324,9 @@ public class GuiPrompt extends GuiLabel {
 		} else {
 			this.setHintAsText();
 		}
+	}
+
+	public final void setCharset(String charset) {
+		this.charset = charset;
 	}
 }

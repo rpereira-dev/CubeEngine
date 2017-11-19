@@ -99,18 +99,6 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.posX.setBox(0, 0.60f, 1.0f, 0.05f, 0);
 			this.posY.setBox(0, 0.55f, 1.0f, 0.05f, 0);
 			this.posZ.setBox(0, 0.50f, 1.0f, 0.05f, 0);
-
-			Object[] pos = (Object[]) GuiSliderBar.intRange(-16, 16);
-			this.posX.addValuesArray(pos);
-			this.posY.addValuesArray(pos);
-			this.posZ.addValuesArray(pos);
-			this.posX.setPrefix("Pos. X: ");
-			this.posY.setPrefix("Pos. Y: ");
-			this.posZ.setPrefix("Pos. Z: ");
-
-			this.posX.select((Object) 0);
-			this.posY.select((Object) 0);
-			this.posZ.select((Object) 0);
 		}
 
 		{
@@ -121,29 +109,20 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.rotX.setBox(0, 0.45f, 1.0f, 0.05f, 0);
 			this.rotY.setBox(0, 0.40f, 1.0f, 0.05f, 0);
 			this.rotZ.setBox(0, 0.35f, 1.0f, 0.05f, 0);
-
-			Object[] rot = (Object[]) GuiSliderBar.intRange(-180, 180);
-			this.rotX.addValuesArray(rot);
-			this.rotY.addValuesArray(rot);
-			this.rotZ.addValuesArray(rot);
-			this.rotX.setPrefix("Rot. X: ");
-			this.rotY.setPrefix("Rot. Y: ");
-			this.rotZ.setPrefix("Rot. Z: ");
-
-			this.rotX.select((Object) 0);
-			this.rotY.select((Object) 0);
-			this.rotZ.select((Object) 0);
 		}
 
 		GuiListener<GuiSliderBarEventValueChanged<GuiSliderBar>> listener = new GuiListener<GuiSliderBarEventValueChanged<GuiSliderBar>>() {
 			@Override
 			public void invoke(GuiSliderBarEventValueChanged<GuiSliderBar> event) {
 				Matrix4f localBindTransform = new Matrix4f();
-				localBindTransform.rotateXYZ((float) ((Integer) rotX.getSelectedValue() / 180.0f * Math.PI),
-						(float) ((Integer) rotY.getSelectedValue() / 180.0f * Math.PI),
-						(float) ((Integer) rotZ.getSelectedValue() / 180.0f * Math.PI));
-				localBindTransform.translate(-(Integer) posX.getSelectedValue(), -(Integer) posY.getSelectedValue(),
-						-(Integer) posZ.getSelectedValue());
+				float rx = 0;
+				float ry = 0;
+				float rz = 0; // TODO
+				localBindTransform.rotateXYZ(rx, ry, rz);
+				float x = 0;
+				float y = 0;
+				float z = 0;
+				localBindTransform.translate(-x, -y, -z);
 				getSelectedBone().setLocalBindTransform(localBindTransform);
 				getSelectedBone().calcInverseBindTransform();
 			}

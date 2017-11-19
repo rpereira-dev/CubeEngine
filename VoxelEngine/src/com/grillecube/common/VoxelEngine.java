@@ -1,5 +1,6 @@
 package com.grillecube.common;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,6 +19,7 @@ import com.grillecube.common.event.EventPostLoop;
 import com.grillecube.common.event.EventPreLoop;
 import com.grillecube.common.mod.ModLoader;
 import com.grillecube.common.network.INetwork;
+import com.grillecube.common.resources.AssetsPack;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.Timer;
 import com.grillecube.common.world.World;
@@ -50,6 +52,10 @@ public abstract class VoxelEngine {
 
 	/** executor service */
 	private ExecutorService executor;
+
+	/** the resources directory */
+	private File gameDir;
+	private ArrayList<AssetsPack> assets;
 
 	/** side of the running engine */
 	protected Side side;
@@ -99,6 +105,10 @@ public abstract class VoxelEngine {
 		this.timer = new Timer();
 		this.rng = new Random();
 
+		// assets
+		this.loadGamedir();
+		this.assets = new ArrayList<AssetsPack>();
+
 		this.resources = this.instanciateResourceManager();
 		this.resources.initialize();
 
@@ -118,6 +128,28 @@ public abstract class VoxelEngine {
 		this.onInitialized();
 
 		Logger.get().log(Level.FINE, "Common Engine initialized!");
+	}
+
+	private void loadGamedir() {
+		String OS = (System.getProperty("os.name")).toUpperCase();
+		String gamepath;
+		if (OS.contains("WIN")) {
+			gamepath = System.getenv("AppData");
+		} else {
+			gamepath = System.getProperty("user.home");
+		}
+
+		if (!gamepath.endsWith("/")) {
+			gamepath = gamepath + "/";
+		}
+		this.gameDir = new File(gamepath + "VoxelEngine");
+
+		Logger.get().log(Logger.Level.FINE, "Game directory is: " + this.gameDir.getAbsolutePath());
+		if (!this.gameDir.exists()) {
+			this.gameDir.mkdirs();
+		} else if (!this.gameDir.canWrite()) {
+			this.gameDir.setWritable(true);
+		}
 	}
 
 	protected abstract void onInitialized();
@@ -353,4 +385,23 @@ public abstract class VoxelEngine {
 		return (this.getResourceManager().getWorldManager().getWorld(worldID));
 	}
 
+	/** return the game main directory */
+	public final File getGamedir() {
+		return (this.gameDir);
+	}
+
+	/** add an assets pack (zip file) to be added to the game */
+	public AssetsPack putAssets(AssetsPack pack) {
+		for (AssetsPack tmppack : this.assets) {
+			if (tmppack.getModID().equals(pack.getModID())) {
+				Logger.get().log(Logger.Level.ERROR,
+						"Tried to put an assets pack which already exists. Canceling operation. ModID: "
+								+ pack.getModID());
+				return (null);
+			}
+		}
+		this.assets.add(pack);
+		pack.extract();
+		return (pack);
+	}
 }

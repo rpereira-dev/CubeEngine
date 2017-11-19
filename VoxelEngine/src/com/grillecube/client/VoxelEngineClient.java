@@ -18,6 +18,7 @@ import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.event.EventGetTasks;
 import com.grillecube.common.event.EventListener;
 import com.grillecube.common.event.EventOnLoop;
+import com.grillecube.common.resources.AssetsPack;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
 
@@ -39,6 +40,10 @@ public class VoxelEngineClient extends VoxelEngine {
 	/** initialize libraries + window */
 	@Override
 	protected final void onInitialized() {
+
+		// load assets pack
+		String assets = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "../assets.zip";
+		super.putAssets(new AssetsPack("VoxelEngine", assets));
 
 		// init opengl
 		GLH.glhInit();

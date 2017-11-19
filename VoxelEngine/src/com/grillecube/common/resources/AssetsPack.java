@@ -10,10 +10,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import com.grillecube.common.Logger;
-import com.grillecube.common.mod.IModResource;
-import com.grillecube.common.mod.Mod;
 
-public class AssetsPack implements IModResource {
+public class AssetsPack {
 
 	/** the zip file */
 	private String pack;
@@ -36,15 +34,6 @@ public class AssetsPack implements IModResource {
 	@Override
 	public String toString() {
 		return (this.modid + " ; " + this.pack);
-	}
-
-	@Override
-	public void load(Mod mod, ResourceManager manager) {
-		this.extract();
-	}
-
-	@Override
-	public void unload(Mod mod, ResourceManager manager) {
 	}
 
 	/** extract the whole assets pack */
