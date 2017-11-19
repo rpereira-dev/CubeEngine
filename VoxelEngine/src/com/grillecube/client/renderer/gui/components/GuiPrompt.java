@@ -8,6 +8,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventGainFocus;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventLooseFocus;
 import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
 import com.grillecube.client.renderer.gui.font.FontFile;
 import com.grillecube.common.maths.Vector4f;
 
@@ -47,6 +48,9 @@ public class GuiPrompt extends GuiLabel {
 	public static final TextTestFormat FORMAT_FLOAT = new TextTestFormat() {
 		@Override
 		public boolean isTextFormatValid(String text) {
+			if (text == null || text.length() == 0) {
+				return (true);
+			}
 			try {
 				Float.parseFloat(text);
 				return (true);
@@ -283,7 +287,6 @@ public class GuiPrompt extends GuiLabel {
 		if (this.format != null && !this.format.isTextFormatValid(text)) {
 			return;
 		}
-
 		if (text == null || text.length() == 0) {
 			this.heldText = null;
 			this.setCursor(0);
@@ -292,6 +295,7 @@ public class GuiPrompt extends GuiLabel {
 			this.setCursor(index);
 		}
 		this.updateVisibleText();
+		super.stackEvent(new GuiPromptEventHeldTextChanged<GuiPrompt>(this));
 	}
 
 	public final void setTextTestFormat(TextTestFormat textTestFormat) {
@@ -328,5 +332,24 @@ public class GuiPrompt extends GuiLabel {
 
 	public final void setCharset(String charset) {
 		this.charset = charset;
+	}
+
+	/** get the value as a float, throw exception if parsed error failed */
+	public final float asFloat() throws Exception {
+		return (Float.parseFloat(this.getHeldText()));
+	}
+
+	/** get the value as a float, throw exception if parsed error failed */
+	public final float asFloat(float defaultValue) {
+		try {
+			return (Float.parseFloat(this.getHeldText()));
+		} catch (Exception e) {
+		}
+		return (defaultValue);
+	}
+
+	/** get the value as a string, throw exception if parsed error failed */
+	public final String asString() {
+		return (this.getHeldText());
 	}
 }

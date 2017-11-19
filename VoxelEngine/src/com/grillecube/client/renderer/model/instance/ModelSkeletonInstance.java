@@ -51,25 +51,25 @@ public class ModelSkeletonInstance {
 	 * This method applies the current pose to a given bone, and all of its
 	 * descendants. It does this by getting the desired local-transform for the
 	 * current bone, before applying it to the bone. Before applying the
-	 * transformations it needs to be converted from local-space to model-space (so
-	 * that they are relative to the model's origin, rather than relative to the
-	 * parent bone). This can be done by multiplying the local-transform of the bone
-	 * with the model-space transform of the parent bone.
+	 * transformations it needs to be converted from local-space to model-space
+	 * (so that they are relative to the model's origin, rather than relative to
+	 * the parent bone). This can be done by multiplying the local-transform of
+	 * the bone with the model-space transform of the parent bone.
 	 * 
 	 * The same thing is then done to all the child bones.
 	 * 
 	 * Finally the inverse of the bone's bind transform is multiplied with the
 	 * model-space transform of the bone. This basically "subtracts" the bone's
 	 * original bind (no animation applied) transform from the desired pose
-	 * transform. The result of this is then the transform required to move the bone
-	 * from its original model-space transform to it's desired model-space posed
-	 * transform. This is the transform that needs to be loaded up to the vertex
-	 * shader and used to transform the vertices into the current pose.
+	 * transform. The result of this is then the transform required to move the
+	 * bone from its original model-space transform to it's desired model-space
+	 * posed transform. This is the transform that needs to be loaded up to the
+	 * vertex shader and used to transform the vertices into the current pose.
 	 * 
 	 * @param currentPose
-	 *            - a map of the local-space transforms for all the bones for the
-	 *            desired pose. The map is indexed by the name of the bone which the
-	 *            transform corresponds to.
+	 *            - a map of the local-space transforms for all the bones for
+	 *            the desired pose. The map is indexed by the name of the bone
+	 *            which the transform corresponds to.
 	 * @param bone
 	 *            - the current bone which the pose should be applied to.
 	 * @param parentTransform
@@ -77,6 +77,9 @@ public class ModelSkeletonInstance {
 	 *            pose.
 	 */
 	private void applyPoseToBones(HashMap<String, Matrix4f> currentPose, Bone bone, Matrix4f parentTransform) {
+		if (bone == null) {
+			return;
+		}
 		Matrix4f currentLocalTransform = currentPose.get(bone.getName());
 		if (currentLocalTransform == null) {
 			currentLocalTransform = Matrix4f.IDENTITY;
@@ -98,16 +101,17 @@ public class ModelSkeletonInstance {
 	}
 
 	/**
-	 * Calculates all the local-space bone transforms for the desired current pose
-	 * by interpolating between the transforms at the previous and next keyframes.
+	 * Calculates all the local-space bone transforms for the desired current
+	 * pose by interpolating between the transforms at the previous and next
+	 * keyframes.
 	 * 
 	 * @param prev
 	 *            - the previous keyframe in the animation.
 	 * @param next
 	 *            - the next keyframe in the animation.
-	 * @return The local-space transforms for all the bones for the desired current
-	 *         pose. They are returned in a map, indexed by the name of the bone to
-	 *         which they should be applied.
+	 * @return The local-space transforms for all the bones for the desired
+	 *         current pose. They are returned in a map, indexed by the name of
+	 *         the bone to which they should be applied.
 	 */
 	private HashMap<String, Matrix4f> interpolateFrames(AnimationInstance animInstance, KeyFrame prev, KeyFrame next) {
 
@@ -132,14 +136,14 @@ public class ModelSkeletonInstance {
 	}
 
 	/**
-	 * Gets an array of the all important model-space transforms of all the bones
-	 * (with the current animation pose applied) in the entity. The bones are
-	 * ordered in the array based on their bone index. The position of each bone's
-	 * transform in the array is equal to the bone's index.
+	 * Gets an array of the all important model-space transforms of all the
+	 * bones (with the current animation pose applied) in the entity. The bones
+	 * are ordered in the array based on their bone index. The position of each
+	 * bone's transform in the array is equal to the bone's index.
 	 * 
 	 * This adds the current model-space transform of a bone (and all of its
-	 * descendants) into an array of transforms. The bone's transform is added into
-	 * the array at the position equal to the bone's index.
+	 * descendants) into an array of transforms. The bone's transform is added
+	 * into the array at the position equal to the bone's index.
 	 * 
 	 * @return The array of model-space transforms of the bones in the current
 	 *         animation pose.

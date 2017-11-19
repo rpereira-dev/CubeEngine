@@ -91,10 +91,12 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 			// update gui states (stack events)
 			float x = mouse.x;
 			float y = mouse.y;
-			gui.setMouse(x, y);
-
+			
 			// mouse moving relatively to the gui
-			gui.stackEvent(new GuiEventMouseMove<Gui>(gui));
+			if (x != gui.getPrevMouseX() && y != gui.getPrevMouseY()) {
+				gui.setMouse(x, y);
+				gui.stackEvent(new GuiEventMouseMove<Gui>(gui));
+			}
 
 			// if gui is hovered,
 			if (!topestHoveredFound && gui.isHoverable() && (x >= 0.0f && x < 1.0f && y >= 0.0f && y <= 1.0f)) {

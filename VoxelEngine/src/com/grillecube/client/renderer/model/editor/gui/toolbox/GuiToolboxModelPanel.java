@@ -12,8 +12,10 @@ public abstract class GuiToolboxModelPanel extends GuiView {
 		this.setHoverable(false);
 	}
 
+	/** refresh the panel */
 	public abstract void refresh();
 
+	/** get panel title */
 	public abstract String getTitle();
 
 	public final EditableModel getModel() {

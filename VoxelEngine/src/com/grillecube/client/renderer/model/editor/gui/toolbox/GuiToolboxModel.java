@@ -53,9 +53,9 @@ public class GuiToolboxModel extends GuiView {
 		});
 
 		this.title = new GuiLabel();
-		this.title.setBox(1 / 3.0f, 0.75f, 2 / 3.0f, 0.05f, 0);
+		this.title.setBox(1 / 3.0f, 0.75f, 1 / 3.0f, 0.05f, 0);
 		this.title.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
-		// this.title.addTextParameter(center);
+		this.title.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.addChild(this.title);
 
 		this.next = new GuiButton();

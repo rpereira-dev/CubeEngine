@@ -3,12 +3,14 @@ package com.grillecube.client.renderer.model.editor.gui.toolbox;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
-import com.grillecube.client.renderer.gui.components.GuiSliderBar;
+import com.grillecube.client.renderer.gui.components.GuiPrompt;
+import com.grillecube.client.renderer.gui.components.GuiSpinner;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
+import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
+import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
 import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
@@ -69,6 +71,16 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 
 			this.bones.setHint("Bones...");
 			this.bones.setBox(1 / 3.0f, 0.70f, 1 / 3.0f, 0.05f, 0);
+			this.bones.addListener(new GuiListener<GuiSpinnerEventPick<GuiSpinner>>() {
+				@Override
+				public void invoke(GuiSpinnerEventPick<GuiSpinner> event) {
+					onBonePicked();
+				}
+			});
+			for (Bone bone : this.getModelSkeleton().getBones()) {
+				this.bones.add(bone, bone.getName());
+			}
+			this.bones.pick(0);
 
 			this.removeBone.setText("Remove");
 			this.removeBone.setBox(2 * 1 / 3.0f, 0.70f, 1 / 3.0f, 0.05f, 0.0f);
@@ -111,28 +123,29 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.rotZ.setBox(0, 0.35f, 1.0f, 0.05f, 0);
 		}
 
-		GuiListener<GuiSliderBarEventValueChanged<GuiSliderBar>> listener = new GuiListener<GuiSliderBarEventValueChanged<GuiSliderBar>>() {
+		GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>> listener = new GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>>() {
 			@Override
-			public void invoke(GuiSliderBarEventValueChanged<GuiSliderBar> event) {
+			public void invoke(GuiPromptEventHeldTextChanged<GuiPrompt> event) {
 				Matrix4f localBindTransform = new Matrix4f();
-				float rx = 0;
-				float ry = 0;
-				float rz = 0; // TODO
+				float rx = rotX.getPrompt().asFloat(0.0f);
+				float ry = rotY.getPrompt().asFloat(0.0f);
+				float rz = rotZ.getPrompt().asFloat(0.0f);
 				localBindTransform.rotateXYZ(rx, ry, rz);
-				float x = 0;
-				float y = 0;
-				float z = 0;
+				float x = posX.getPrompt().asFloat(0.0f);
+				float y = posY.getPrompt().asFloat(0.0f);
+				float z = posZ.getPrompt().asFloat(0.0f);
+				System.out.println(x + " : " + y + " : " + z);
 				localBindTransform.translate(-x, -y, -z);
 				getSelectedBone().setLocalBindTransform(localBindTransform);
 				getSelectedBone().calcInverseBindTransform();
 			}
 		};
-		this.posX.addListener(listener);
-		this.posY.addListener(listener);
-		this.posZ.addListener(listener);
-		this.rotX.addListener(listener);
-		this.rotY.addListener(listener);
-		this.rotZ.addListener(listener);
+		this.posX.getPrompt().addListener(listener);
+		this.posY.getPrompt().addListener(listener);
+		this.posZ.getPrompt().addListener(listener);
+		this.rotX.getPrompt().addListener(listener);
+		this.rotY.getPrompt().addListener(listener);
+		this.rotZ.getPrompt().addListener(listener);
 	}
 
 	@Override
@@ -141,6 +154,7 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 		for (Bone bone : this.getModelSkeleton().getBones()) {
 			this.bones.add(bone, bone.getName());
 		}
+		this.bones.pick(0);
 
 		if (this.bones.count() == 0) {
 			this.boneTransformLabel.setVisible(false);
@@ -150,9 +164,11 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.rotX.setVisible(false);
 			this.rotY.setVisible(false);
 			this.rotZ.setVisible(false);
-		} else {
-			this.bones.pick(0);
 		}
+	}
+
+	private final void onBonePicked() {
+
 	}
 
 	public final ModelSkeleton getModelSkeleton() {
@@ -167,5 +183,4 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 	public String getTitle() {
 		return ("Skeleton");
 	}
-
 }
