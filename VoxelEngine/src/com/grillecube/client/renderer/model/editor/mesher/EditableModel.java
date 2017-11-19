@@ -21,8 +21,6 @@ public class EditableModel extends Model {
 
 	/** blocks data */
 	private ModelBlockData[][][] blocksData;
-	/** the plans of the models (to be uv-mapped on a 2d texture) */
-	private ArrayList<ModelPlane> modelPlans;
 
 	/** minimum coordinates */
 	private int minx;
@@ -45,7 +43,6 @@ public class EditableModel extends Model {
 
 	public EditableModel(ModelInitializer modelInitializer) {
 		super(modelInitializer);
-		this.modelPlans = new ArrayList<ModelPlane>();
 		this.blockSizeUnit = 1.0f;
 		this.blocksData = null;
 		this.origin = new Vector3i(0, 0, 0);
@@ -243,9 +240,5 @@ public class EditableModel extends Model {
 
 	public final int getSizeZ() {
 		return (this.maxz - this.minz + 1);
-	}
-
-	public final ArrayList<ModelPlane> getModelPlans() {
-		return (this.modelPlans);
 	}
 }

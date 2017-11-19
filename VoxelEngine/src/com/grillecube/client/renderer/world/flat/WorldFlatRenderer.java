@@ -15,7 +15,7 @@ public class WorldFlatRenderer extends WorldRenderer<WorldFlat> {
 		this.skyFactory = new SkyRendererFactory(mainRenderer);
 		this.terrainFactory = new FlatTerrainRendererFactory(mainRenderer);
 		super.addFactory(this.skyFactory, 0);
-		super.addFactory(this.terrainFactory, 1);
+		super.addFactory(this.terrainFactory);
 	}
 
 	@Override

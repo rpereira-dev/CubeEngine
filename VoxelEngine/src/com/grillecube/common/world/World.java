@@ -139,6 +139,15 @@ public abstract class World implements Taskable {
 		return (this.entities);
 	}
 
+	/**
+	 * set the block durabiltiy at the given world relative position
+	 * 
+	 * @see {@link Terrain.setDurability(byte, int)}
+	 */
+	public final void setBlockDurability(byte durability, float x, float y, float z) {
+		this.terrains.setBlockDurability(durability, x, y, z);
+	}
+
 	/** get the block at the given world relative position */
 	public Block getBlock(float x, float y, float z) {
 		return (this.terrains.getBlock(x, y, z));
@@ -278,9 +287,6 @@ public abstract class World implements Taskable {
 			float maxy, float maxz) {
 		ArrayList<PhysicObject> lst = new ArrayList<PhysicObject>();
 
-//		System.out.println(minx + " : " + miny + " : " + minz + " : " + maxx + " : " + maxy + " : " + maxz);
-
-		
 		int mx = Maths.floor(minx);
 		int Mx = Maths.ceil(maxx);
 		int my = Maths.floor(miny);

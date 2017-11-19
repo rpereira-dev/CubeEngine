@@ -118,12 +118,15 @@ public class BlockRendererPlant extends BlockRenderer {
 			brightness = 0.0f;
 		}
 
+		//durability
+		byte durability = terrain.getDurability(x, y, z);
+		
 		// light color
 		int color = 0xFFFFFFFF;// ColorInt.get(255, 255, 255, 255);
 		float nx = face.getNormal().x;
 		float ny = face.getNormal().y;
 		float nz = face.getNormal().z;
-		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, uvx, uvy, color, brightness, ao));
+		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, uvx, uvy, color, brightness, ao, durability));
 	}
 
 	@Override

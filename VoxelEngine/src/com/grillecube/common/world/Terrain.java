@@ -22,6 +22,7 @@ import java.util.Stack;
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.common.event.Event;
 import com.grillecube.common.event.world.EventTerrainBlocklightUpdate;
+import com.grillecube.common.event.world.EventTerrainDurabilityChanged;
 import com.grillecube.common.event.world.EventTerrainSetBlock;
 import com.grillecube.common.event.world.EventTerrainSunlightUpdate;
 import com.grillecube.common.faces.Face;
@@ -35,14 +36,12 @@ import com.grillecube.common.world.block.instances.BlockInstance;
 
 public class Terrain {
 	/** terrain states */
-	public static final int STATE_BLOCK_COMPRESSED = 1 << 0;
-	public static final int STATE_LIGHT_COMPRESSED = 1 << 1;
-	public static final int STATE_FACE_VISIBILTY_UP_TO_DATE = 1 << 2;
+	public static final int STATE_FACE_VISIBILTY_UP_TO_DATE = 1 << 0;
 
 	/** terrain dimensions */
 	// block size unit
 	public static final float BLOCK_SIZE = 1.0f;
-	public static final float METER_TO_BLOCK = 4.0f / 1.0f; // 4 blocks = 1 
+	public static final float METER_TO_BLOCK = 4.0f / 1.0f; // 4 blocks = 1
 
 	// (and use 1 as implicit value to
 	// optimize calculations)
@@ -69,6 +68,10 @@ public class Terrain {
 	public static float DEMI_DIMY_SIZE = DIMY_SIZE / 2.0f;
 	public static float DEMI_DIMZ_SIZE = DIMZ_SIZE / 2.0f;
 
+	/** max durability of a block */
+	public static final byte MIN_DURABILITY = 0;
+	public static final byte MAX_DURABILITY = 7;
+
 	/** terrain location */
 	private final Vector2i index2;
 	private final Vector3i index3;
@@ -87,18 +90,17 @@ public class Terrain {
 	/** number of blocks opaque or transparent */
 	private int blockCount;
 
-	/** blocks */
+	/** block lights (4 bits : sun , 4 bits: block) */
 	protected byte[] lights; // light values for every blocks
+
+	/** blocks durability */
+	protected byte[] durability;
 
 	/** world in which this terrain depends */
 	private World world;
 
+	/** terrain states */
 	private int state;
-
-	/** if this terrain is fully passive, then compress it */
-	private static final short TICK_TO_COMPRESS = 60 * 10;
-	private short blockTickCounter;
-	private short lightTickCounter;
 
 	/** the lights lists */
 	private Stack<LightNodeAdd> lightBlockAddQueue;
@@ -122,10 +124,9 @@ public class Terrain {
 		this.blocks = null;
 		this.blockInstances = null;
 		this.lights = null;
+		this.durability = null;
 		this.blockCount = 0;
 		this.facesVisibility = new boolean[6][6];
-		this.blockTickCounter = 0;
-		this.lightTickCounter = 0;
 		this.lightBlockAddQueue = null;
 		this.lightBlockRemovalQueue = null;
 		for (Face a : Face.faces) {
@@ -134,8 +135,6 @@ public class Terrain {
 			}
 		}
 		this.setState(STATE_FACE_VISIBILTY_UP_TO_DATE);
-		this.unsetState(STATE_LIGHT_COMPRESSED);
-		this.unsetState(STATE_BLOCK_COMPRESSED);
 	}
 
 	/******
@@ -148,52 +147,7 @@ public class Terrain {
 		this.updateBlockInstances();
 		this.updateSunLight();
 		this.updateBlockLights();
-		// this.updateBlocks();
-		this.compressMemory();
-	}
-
-	// public int gainBlock = 0;
-	// public int gainLight = 0;
-
-	/** compress memory if not requested for TICK_TO_COMPRESS ticks */
-	private void compressMemory() {
-		if (this.blocks != null && !this.hasState(STATE_BLOCK_COMPRESSED)) {
-			if (this.blockTickCounter >= TICK_TO_COMPRESS) {
-				// gainBlock = this.blocks.length;
-				this.blocks = Compress.compressShortArray(this.blocks);
-				// gainBlock -= this.blocks.length;
-				this.setState(STATE_BLOCK_COMPRESSED);
-			} else {
-				++this.blockTickCounter;
-			}
-		}
-
-		if (this.lights != null && !this.hasState(STATE_LIGHT_COMPRESSED)) {
-			if (this.lightTickCounter >= TICK_TO_COMPRESS) {
-				// gainLight = this.lights.length;
-				this.lights = Compress.compressByteArray(this.lights);
-				this.setState(STATE_LIGHT_COMPRESSED);
-				// gainLight -= this.lights.length;
-			} else {
-				++this.lightTickCounter;
-			}
-		}
-	}
-
-	private void ensureBlockDecompressed() {
-		if (this.hasState(STATE_BLOCK_COMPRESSED)) {
-			this.unsetState(STATE_BLOCK_COMPRESSED);
-			this.blocks = Compress.decompressShortArray(this.blocks, Terrain.MAX_BLOCK_INDEX);
-			this.blockTickCounter = 0;
-		}
-	}
-
-	private void ensureLightDecompressed() {
-		if (this.hasState(STATE_LIGHT_COMPRESSED)) {
-			this.unsetState(STATE_LIGHT_COMPRESSED);
-			this.lights = Compress.decompressByteArray(this.lights, Terrain.MAX_BLOCK_INDEX);
-			this.lightTickCounter = 0;
-		}
+//		this.updateBlocks();
 	}
 
 	/** terrain face visibility update */
@@ -221,7 +175,7 @@ public class Terrain {
 	}
 
 	/** tick once a random block of this terrain */
-	private void updateBlocks() {
+	private final void updateBlocks() {
 
 		if (this.blocks == null) {
 			return;
@@ -347,7 +301,6 @@ public class Terrain {
 		if (this.blocks == null) {
 			return (Blocks.AIR);
 		}
-		this.ensureBlockDecompressed();
 		Block block = Blocks.getBlockByID(this.blocks[index]);
 		return (block != null ? block : Blocks.AIR);
 
@@ -406,8 +359,6 @@ public class Terrain {
 			// else, initialize it, fill it with air
 			this.blocks = new short[Terrain.MAX_BLOCK_INDEX];
 			Arrays.fill(this.blocks, (byte) Blocks.AIR_ID);
-		} else {
-			this.ensureBlockDecompressed();
 		}
 
 		// get the previous block in this location
@@ -561,7 +512,6 @@ public class Terrain {
 		if (this.lights == null) {
 			return (0);
 		}
-		this.ensureLightDecompressed();
 		return (byte) ((this.lights[index] >> 4) & 0xF);
 	}
 
@@ -572,7 +522,6 @@ public class Terrain {
 			this.lights = new byte[Terrain.MAX_BLOCK_INDEX];
 			Arrays.fill(this.lights, (byte) 0);
 		}
-		this.ensureLightDecompressed();
 		this.lights[index] = (byte) ((this.lights[index] & 0xF) | (value << 4));
 	}
 
@@ -855,7 +804,6 @@ public class Terrain {
 		if (this.lights == null) {
 			return (0);
 		}
-		this.ensureLightDecompressed();
 		return ((byte) (this.lights[index] & 0xF));
 	}
 
@@ -866,7 +814,6 @@ public class Terrain {
 			this.lights = new byte[Terrain.MAX_BLOCK_INDEX];
 			Arrays.fill(this.lights, (byte) 0);
 		}
-		this.ensureLightDecompressed();
 		this.lights[index] = (byte) ((this.lights[index] & 0xF0) | val);
 	}
 
@@ -1458,5 +1405,88 @@ public class Terrain {
 	 */
 	public final int getBlockCount() {
 		return (this.blockCount);
+	}
+
+	/**
+	 * set the durability of a block
+	 * 
+	 * @param index
+	 *            : block index
+	 * @param durability
+	 *            : durability value (in range of ([{@link #MIN_DURABILITY} ,
+	 *            {@link #MAX_DURABILITY} ])
+	 */
+	public final void setDurabilityAt(int index, byte durability) {
+		if (this.durability == null) {
+			if (this.blocks == null) {
+				return;
+			}
+			this.durability = new byte[Terrain.MAX_BLOCK_INDEX];
+		}
+		byte old = this.durability[index];
+		this.durability[index] = durability < Terrain.MIN_DURABILITY ? Terrain.MIN_DURABILITY
+				: durability > Terrain.MAX_DURABILITY ? Terrain.MAX_DURABILITY : durability;
+		this.invokeEvent(new EventTerrainDurabilityChanged(this, old, index));
+	}
+
+	public final void setDurabilityAt(int x, int y, int z, byte durability) {
+		this.setDurabilityAt(this.getIndex(x, y, z), durability);
+	}
+
+	public final void setDurability(int x, int y, int z, byte durability) {
+		this.setDurability(new int[] { x, y, z }, durability);
+	}
+
+	public final void setDurability(int[] xyz, byte durability) {
+		Terrain terrain = this.getRelativeTerrain(xyz);
+		if (terrain == null) {
+			return;
+		}
+		terrain.setDurabilityAt(xyz[0], xyz[1], xyz[2], durability);
+	}
+
+	/** decrease the durabiltiy of a block */
+	public final void decreaseDurability(int index) {
+		if (this.durability == null) {
+			return;
+		}
+		this.setDurabilityAt(index, (byte) (this.durability[index] + 1));
+	}
+
+	/** increase the durabiltiy of a block */
+	public final void increaseDurability(int index) {
+		if (this.durability == null) {
+			return;
+		}
+		this.setDurabilityAt(index, (byte) (this.durability[index] - 1));
+	}
+
+	/**
+	 * get the durability of the block at given address
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public final byte getDurabilityAt(int index) {
+		if (this.durability == null) {
+			return (Terrain.MIN_DURABILITY);
+		}
+		return (this.durability[index]);
+	}
+
+	public final byte getDurabilityAt(int x, int y, int z) {
+		return (this.getDurabilityAt(this.getIndex(x, y, z)));
+	}
+
+	public final byte getDurability(int xyz[]) {
+		Terrain terrain = this.getRelativeTerrain(xyz);
+		if (terrain == null) {
+			return (Terrain.MIN_DURABILITY);
+		}
+		return (terrain.getDurabilityAt(xyz[0], xyz[1], xyz[2]));
+	}
+
+	public final byte getDurability(int x, int y, int z) {
+		return (this.getDurability(new int[] { x, y, z }));
 	}
 }

@@ -25,8 +25,10 @@ import com.grillecube.common.world.Terrain;
 
 public class TerrainMesh extends Mesh {
 
-	// (x, y, z, nx, ny, nz, atlasx, atlasy, uvx, uvy, color, brightness)
-	public static final int BYTES_PER_VERTEX = 12 * 4;
+	// TODO : optimize memory here
+	// (x, y, z, nx, ny, nz, atlasx, atlasy, uvx, uvy, color, brightness,
+	// durability)
+	public static final int BYTES_PER_VERTEX = 13 * 4;
 
 	/** the terrain */
 	private final Terrain terrain;
@@ -47,7 +49,7 @@ public class TerrainMesh extends Mesh {
 
 	/** enable of disable culling for this terrain */
 	public final void cull(boolean cull) { // TODO : enable culling on meshes
-											// that are full of standard cubes
+											// that are full of opaque cubes
 		this.cull = cull;
 	}
 
@@ -79,12 +81,14 @@ public class TerrainMesh extends Mesh {
 		vao.setAttribute(2, 4, GL11.GL_FLOAT, false, BYTES_PER_VERTEX, (3 + 3) * 4); // tx
 		vao.setAttributei(3, 1, GL11.GL_INT, BYTES_PER_VERTEX, (3 + 3 + 4) * 4); // color
 		vao.setAttribute(4, 1, GL11.GL_FLOAT, false, BYTES_PER_VERTEX, (3 + 3 + 4 + 1) * 4); // brightness
+		vao.setAttributei(5, 1, GL11.GL_INT, BYTES_PER_VERTEX, (3 + 3 + 4 + 1 + 1) * 4); // durability
 
 		vao.enableAttribute(0);
 		vao.enableAttribute(1);
 		vao.enableAttribute(2);
 		vao.enableAttribute(3);
 		vao.enableAttribute(4);
+		vao.enableAttribute(5);
 	}
 
 	public void setVertices(ByteBuffer buffer) {

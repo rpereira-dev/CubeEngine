@@ -151,6 +151,9 @@ public class BlockRendererCube extends BlockRenderer {
 		// the sun light
 		float sunLight = super.getSunLight(terrain, x, y, z, face.getID(), faceVertexID);
 
+		// durability
+		byte durability = terrain.getDurability(x, y, z);
+
 		// final brightness
 		float brightness = 0.1f + sunLight + blockLight - ao;
 		if (brightness < 0.0f) {
@@ -162,7 +165,8 @@ public class BlockRendererCube extends BlockRenderer {
 		float nx = face.getNormal().x;
 		float ny = face.getNormal().y;
 		float nz = face.getNormal().z;
-		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, uvx, uvy, color, brightness, ao));
+		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, uvx, uvy, color, brightness, ao,
+				durability));
 	}
 
 	@Override

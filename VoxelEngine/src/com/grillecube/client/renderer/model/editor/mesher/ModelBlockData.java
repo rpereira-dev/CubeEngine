@@ -6,7 +6,7 @@ import com.grillecube.common.faces.Face;
 public class ModelBlockData {
 
 	/** the plan linked to this block */
-	private final int[] boneIds;
+	private final String[] bones;
 	private final float[] weights;
 	private final int x, y, z;
 	private final ModelPlane[] planes;
@@ -15,30 +15,30 @@ public class ModelBlockData {
 		this.x = bx;
 		this.y = by;
 		this.z = bz;
-		this.boneIds = new int[] { 0, 0, 0 };
+		this.bones = new String[] { "", "", "" };
 		this.weights = new float[] { 1, 0, 0 };
 		this.planes = new ModelPlane[Face.faces.length];
 	}
 
-	public final int getBoneID(int i) {
-		return (this.boneIds[i]);
+	public final String getBone(int i) {
+		return (this.bones[i]);
 	}
 
 	public final float getBoneWeight(int i) {
 		return (this.weights[i]);
 	}
 
-	public final float getBoneWeightByBoneID(int boneID) {
-		for (int i = 0; i < this.boneIds.length; i++) {
-			if (this.boneIds[i] == boneID) {
+	public final float getBoneWeight(String bone) {
+		for (int i = 0; i < this.bones.length; i++) {
+			if (this.bones.equals(bone)) {
 				return (this.weights[i]);
 			}
 		}
 		return (0);
 	}
 
-	public final void setBoneWeight(int i, int boneID, float weight) {
-		this.boneIds[i] = boneID;
+	public final void setBone(int i, String bone, float weight) {
+		this.bones[i] = bone;
 		this.weights[i] = weight;
 	}
 
@@ -58,11 +58,11 @@ public class ModelBlockData {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("BlockData{");
-		sb.append(this.boneIds[0]);
+		sb.append(this.bones[0]);
 		sb.append(",");
-		sb.append(this.boneIds[1]);
+		sb.append(this.bones[1]);
 		sb.append(",");
-		sb.append(this.boneIds[2]);
+		sb.append(this.bones[2]);
 		sb.append(",");
 		sb.append(this.weights[0]);
 		sb.append(",");

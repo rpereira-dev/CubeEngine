@@ -205,7 +205,7 @@ public abstract class Entity extends PhysicObject {
 		// add constant forces
 		this.addForce(Force.GRAVITY);
 		this.addForce(Force.FRICTION);
-
+		// this.setPositionVelocityY(0);
 		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_SPACE)) {
 			this.jump();
 		}
@@ -217,6 +217,7 @@ public abstract class Entity extends PhysicObject {
 
 		// advance depending on last update
 		float m = this.getMass();
+		// this.teleport(0, 200, 0);
 		float ax = resultant.x * Terrain.METER_TO_BLOCK / m;
 		float ay = resultant.y * Terrain.METER_TO_BLOCK / m;
 		float az = resultant.z * Terrain.METER_TO_BLOCK / m;
@@ -227,9 +228,9 @@ public abstract class Entity extends PhysicObject {
 		// update velocity of this entity
 		Positioneable.velocity(this, dt);
 
-// if this entity is spawned in any worlds, do collision, else ignore
+		// if this entity is spawned in any worlds, do collision, else ignore
 		// collisions
-//		this.teleport(0, 200, 0);
+		// this.teleport(0, 200, 0);
 		if (this.getWorld() != null) {
 			PhysicObject.move(this.getWorld(), this, dt);
 		} else {
@@ -268,7 +269,7 @@ public abstract class Entity extends PhysicObject {
 		World world = this.getWorld();
 		if (world == null) {
 			this.blockUnder = null;
-			return ;
+			return;
 		}
 		float x = this.getPositionX() + this.getSizeX() * 0.5f;
 		float y = this.getPositionY() - 1.0f;

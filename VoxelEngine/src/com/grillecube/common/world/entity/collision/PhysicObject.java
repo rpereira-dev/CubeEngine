@@ -3,8 +3,10 @@ package com.grillecube.common.world.entity.collision;
 import java.util.ArrayList;
 
 import com.grillecube.common.Logger;
+import com.grillecube.common.Logger.Level;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 
 /**
@@ -169,6 +171,7 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 			maxz = z + sz;
 		}
 
+//		Logger.get().log(Level.DEBUG, minx, miny, minz, maxx, maxy, maxz);
 		int i = 0;
 		while (dt > Maths.ESPILON) {
 			ArrayList<PhysicObject> blocks = world.getCollidingPhysicObjects(minx, miny, minz, maxx, maxy, maxz);

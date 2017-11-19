@@ -18,6 +18,13 @@ public abstract class WorldTerrainStorage extends WorldStorage {
 		return (this.getIndex(pos.x, pos.y, pos.z, dst));
 	}
 
+	/**
+	 * set the block durabiltiy at the given world relative position
+	 * 
+	 * @see {@link Terrain.setDurability(byte, int)}
+	 */
+	public abstract void setBlockDurability(byte durability, float x, float y, float z);
+
 	/** world position */
 	public final Block getBlock(Vector3f pos) {
 		return (this.getBlock(pos.x, pos.y, pos.z));

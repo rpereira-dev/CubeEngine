@@ -64,7 +64,7 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 			pos.set(this.entity.getPositionX(), this.entity.getPositionY(), this.entity.getPositionZ());
 			pos.add(this.entity.getViewVector());
 			pos.add(this.entity.getViewVector());
-			super.setBlock(Blocks.LIQUID_WATER, pos);
+			super.setBlock(Blocks.LIGHT, pos);
 		}
 	}
 

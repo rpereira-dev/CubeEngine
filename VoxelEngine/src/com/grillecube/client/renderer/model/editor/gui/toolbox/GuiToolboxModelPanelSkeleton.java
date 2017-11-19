@@ -11,7 +11,7 @@ import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
 import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.client.renderer.model.animation.Bone;
-import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
+import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.common.maths.Matrix4f;
 
@@ -23,13 +23,13 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 
 	private final GuiLabel boneTransformLabel;
 
-	private final GuiSliderBarEditor posX;
-	private final GuiSliderBarEditor posY;
-	private final GuiSliderBarEditor posZ;
+	private final GuiPromptEditor posX;
+	private final GuiPromptEditor posY;
+	private final GuiPromptEditor posZ;
 
-	private final GuiSliderBarEditor rotX;
-	private final GuiSliderBarEditor rotY;
-	private final GuiSliderBarEditor rotZ;
+	private final GuiPromptEditor rotX;
+	private final GuiPromptEditor rotY;
+	private final GuiPromptEditor rotZ;
 
 	public GuiToolboxModelPanelSkeleton() {
 		super();
@@ -39,13 +39,13 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 
 		this.boneTransformLabel = new GuiLabel();
 
-		this.posX = new GuiSliderBarEditor();
-		this.posY = new GuiSliderBarEditor();
-		this.posZ = new GuiSliderBarEditor();
+		this.posX = new GuiPromptEditor("X", "pos. x");
+		this.posY = new GuiPromptEditor("Y", "pos. y");
+		this.posZ = new GuiPromptEditor("Z", "pos. z");
 
-		this.rotX = new GuiSliderBarEditor();
-		this.rotY = new GuiSliderBarEditor();
-		this.rotZ = new GuiSliderBarEditor();
+		this.rotX = new GuiPromptEditor("X", "rot. x");
+		this.rotY = new GuiPromptEditor("Y", "rot. y");
+		this.rotZ = new GuiPromptEditor("Z", "rot. z");
 	}
 
 	public final void onInitialized(GuiRenderer guiRenderer) {

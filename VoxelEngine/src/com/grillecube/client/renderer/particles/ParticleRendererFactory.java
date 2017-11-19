@@ -32,7 +32,7 @@ public class ParticleRendererFactory extends RendererFactory {
 	@Override
 	public void update(double dt) {
 
-		this.ambientParticle();
+//		this.ambientParticle();
 
 		CameraProjective camera = this.getCamera();
 

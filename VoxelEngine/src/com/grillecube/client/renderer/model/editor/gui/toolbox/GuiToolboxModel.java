@@ -79,6 +79,7 @@ public class GuiToolboxModel extends GuiView {
 		this.panels.add(new GuiToolboxModelPanelBuild());
 		this.panels.add(new GuiToolboxModelPanelSkin());
 		this.panels.add(new GuiToolboxModelPanelSkeleton());
+		this.panels.add(new GuiToolboxModelPanelAnimation());
 
 		for (GuiToolboxModelPanel panel : this.panels) {
 			panel.setVisible(false);

@@ -30,9 +30,9 @@ public class WorldGeneratorHoles extends WorldGenerator {
 			for (int y = 0; y < Terrain.DIMY; y++) {
 				for (int z = 0; z < Terrain.DIMZ; z++) {
 					double d = World.NOISE_OCTAVE.noise(
-							(terrain.getWorldPos().x + x * Terrain.BLOCK_SIZE) / (64.0f * Terrain.BLOCK_SIZE),
-							(terrain.getWorldPos().y + y * Terrain.BLOCK_SIZE) / (32.0f * Terrain.BLOCK_SIZE),
-							(terrain.getWorldPos().z + z * Terrain.BLOCK_SIZE) / (64.0f * Terrain.BLOCK_SIZE));
+							(terrain.getWorldPos().x + x * Terrain.BLOCK_SIZE) / (128.0f * Terrain.BLOCK_SIZE),
+							(terrain.getWorldPos().y + y * Terrain.BLOCK_SIZE) / (64.0f * Terrain.BLOCK_SIZE),
+							(terrain.getWorldPos().z + z * Terrain.BLOCK_SIZE) / (128.0f * Terrain.BLOCK_SIZE));
 					if (d < 0.2f) {
 						terrain.setBlockAt(Blocks.STONE, x, y, z);
 					} else {
@@ -50,8 +50,14 @@ public class WorldGeneratorHoles extends WorldGenerator {
 				if (y < 0) {
 					continue;
 				}
-				// terrain.setBlock(Blocks.PLANTS[rng.nextInt(Blocks.PLANTS.length)],
-				// x, y + 1, z);
+				
+				double d = World.NOISE_OCTAVE.noise(
+						(terrain.getWorldPos().x + x * Terrain.BLOCK_SIZE) / (16.0f * Terrain.BLOCK_SIZE),
+						(terrain.getWorldPos().z + z * Terrain.BLOCK_SIZE) / (16.0f * Terrain.BLOCK_SIZE));
+				
+				if (d < -0.6) {
+					terrain.setBlock(Blocks.PLANTS[rng.nextInt(Blocks.PLANTS.length)], x, y + 1, z);
+				}
 				terrain.setBlock(Blocks.GRASS, x, y, z);
 
 			}

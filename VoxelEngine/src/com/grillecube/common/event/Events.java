@@ -2,6 +2,7 @@ package com.grillecube.common.event;
 
 import com.grillecube.common.event.world.EventTerrainBlocklightUpdate;
 import com.grillecube.common.event.world.EventTerrainDespawn;
+import com.grillecube.common.event.world.EventTerrainDurabilityChanged;
 import com.grillecube.common.event.world.EventTerrainSetBlock;
 import com.grillecube.common.event.world.EventTerrainSpawn;
 import com.grillecube.common.event.world.EventTerrainSunlightUpdate;
@@ -29,6 +30,7 @@ public class Events implements IModResource {
 		eventManager.registerEvent(EventTerrainSpawn.class);
 		eventManager.registerEvent(EventTerrainDespawn.class);
 		eventManager.registerEvent(EventTerrainSetBlock.class);
+		eventManager.registerEvent(EventTerrainDurabilityChanged.class);
 		eventManager.registerEvent(EventTerrainBlocklightUpdate.class);
 		eventManager.registerEvent(EventTerrainSunlightUpdate.class);
 

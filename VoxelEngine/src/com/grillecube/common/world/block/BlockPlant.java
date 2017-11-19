@@ -19,6 +19,11 @@ public class BlockPlant extends Block {
 	}
 
 	@Override
+	public boolean isCrossable() {
+		return (true);
+	}
+
+	@Override
 	public boolean isOpaque() {
 		return (true);
 	}

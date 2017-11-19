@@ -361,9 +361,9 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 				float offx = offset * BlockRenderer.EDGES_DIRECTIONS[edgeID].x;
 				float offy = offset * BlockRenderer.EDGES_DIRECTIONS[edgeID].y;
 				float offz = offset * BlockRenderer.EDGES_DIRECTIONS[edgeID].z;
-				float posx = x + (BlockRenderer.VERTICES[v0].x + offx) * this.lod.x;
-				float posy = y + (BlockRenderer.VERTICES[v0].y + offy) * this.lod.y;
-				float posz = z + (BlockRenderer.VERTICES[v0].z + offz) * this.lod.z;
+				float posx = x + (BlockRenderer.VERTICES[v0].x + offx) * this.lod.x + Terrain.BLOCK_DEMI_SIZE;
+				float posy = y + (BlockRenderer.VERTICES[v0].y + offy) * this.lod.y + Terrain.BLOCK_DEMI_SIZE;
+				float posz = z + (BlockRenderer.VERTICES[v0].z + offz) * this.lod.z + Terrain.BLOCK_DEMI_SIZE;
 
 				// uv will be calculate later on depending on which triangle
 				// configuration we are on
@@ -405,8 +405,11 @@ public class MarchingCubesTerrainMesher extends TerrainMesher {
 				float b = Maths.clamp(sl + bl, 0.10f, 1.2f);
 //				float b = 0.6f;
 
+				//durability
+				byte durability = terrain.getDurability(x, y, z);
+				
 				// build vertex
-				edgeVertices[edgeID] = new TerrainMeshVertex(posx, posy, posz, 0, 1, 0, 0, 0, 0, 0, 0xffffffff, b, 0.0f);
+				edgeVertices[edgeID] = new TerrainMeshVertex(posx, posy, posz, 0, 1, 0, 0, 0, 0, 0, 0xffffffff, b, 0.0f,  durability);
 			}
 		}
 		// draw the found triangle (5 max per cube)

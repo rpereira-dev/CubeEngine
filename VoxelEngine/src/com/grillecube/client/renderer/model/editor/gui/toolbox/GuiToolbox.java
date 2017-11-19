@@ -15,7 +15,7 @@ import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
-import com.grillecube.client.renderer.model.json.JSONModelInitializer;
+import com.grillecube.client.renderer.model.json.JSONEditableModelInitializer;
 import com.grillecube.common.Logger;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.world.entity.Entity;
@@ -120,15 +120,19 @@ public class GuiToolbox extends Gui {
 
 		Entity entity = new Entity() {
 			@Override
+			public void update(double dt) {
+			}
+
+			@Override
 			protected void onUpdate(double dt) {
 			}
 		};
-		entity.setPosition(0.0f, 0.0f, 0.0f);
 
+		((GuiModelEditor) this.getParent()).getModelView().getWorld().spawnEntity(entity);
 		// String path = GuiRenderer.dialogSelectFolder("Import an existing
 		// model", R.getResPath("models/"));
 		String path = R.getResPath("models/bipedJSON");
-		EditableModel editableModel = new EditableModel(new JSONModelInitializer(path));
+		EditableModel editableModel = new EditableModel(new JSONEditableModelInitializer(path));
 		try {
 			editableModel.initialize();
 			editableModel.requestMeshUpdate();

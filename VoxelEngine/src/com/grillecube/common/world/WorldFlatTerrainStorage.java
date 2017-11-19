@@ -268,15 +268,28 @@ public class WorldFlatTerrainStorage extends WorldTerrainStorage {
 	}
 
 	/** get the block at the given world relative position */
+	@Override
 	public Block getBlock(float x, float y, float z) {
 		Terrain terrain = this.get(x, y, z);
 		if (terrain == null) {
 			return (Blocks.AIR);
 		}
-		int xx = this.getRelativeCoordinate((int)x, Terrain.DIMX);
-		int yy = this.getRelativeCoordinate((int)y, Terrain.DIMY);
-		int zz = this.getRelativeCoordinate((int)z, Terrain.DIMZ);
+		int xx = this.getRelativeCoordinate((int) x, Terrain.DIMX);
+		int yy = this.getRelativeCoordinate((int) y, Terrain.DIMY);
+		int zz = this.getRelativeCoordinate((int) z, Terrain.DIMZ);
 		return (terrain.getBlockAt(xx, yy, zz));
+	}
+
+	@Override
+	public void setBlockDurability(byte durability, float x, float y, float z) {
+		Terrain terrain = this.get(x, y, z);
+		if (terrain == null) {
+			return;
+		}
+		int xx = this.getRelativeCoordinate((int) x, Terrain.DIMX);
+		int yy = this.getRelativeCoordinate((int) y, Terrain.DIMY);
+		int zz = this.getRelativeCoordinate((int) z, Terrain.DIMZ);
+		terrain.setDurability(xx, yy, zz, durability);
 	}
 
 	/** get the block light at the given world relative position */
