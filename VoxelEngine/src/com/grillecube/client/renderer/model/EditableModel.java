@@ -1,9 +1,10 @@
-package com.grillecube.client.renderer.model.editor.mesher;
+package com.grillecube.client.renderer.model;
 
 import java.util.ArrayList;
 
-import com.grillecube.client.renderer.model.Model;
-import com.grillecube.client.renderer.model.ModelInitializer;
+import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
+import com.grillecube.client.renderer.model.editor.mesher.ModelMesher;
+import com.grillecube.client.renderer.model.editor.mesher.ModelMesherCull;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
 

@@ -20,6 +20,7 @@ import java.util.Random;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
+import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.ModelMeshVertex;
 import com.grillecube.common.Logger;

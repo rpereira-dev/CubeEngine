@@ -16,6 +16,7 @@ import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.maths.Vector3f;
 
 public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 
@@ -50,6 +51,7 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 		this.rotZ = new GuiPromptEditor("Z", "rot. z");
 	}
 
+	@Override
 	public final void onInitialized(GuiRenderer guiRenderer) {
 		{
 			this.addChild(this.addBone);
@@ -121,6 +123,18 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.rotX.setBox(0, 0.45f, 1.0f, 0.05f, 0);
 			this.rotY.setBox(0, 0.40f, 1.0f, 0.05f, 0);
 			this.rotZ.setBox(0, 0.35f, 1.0f, 0.05f, 0);
+		}
+
+		Bone bone = this.getSelectedBone();
+		if (bone != null) {
+			this.posX.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().x));
+			this.posY.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().y));
+			this.posZ.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().z));
+
+			Vector3f rot = bone.getLocalRotation();
+			this.rotX.getPrompt().setHeldText(String.valueOf(rot.x));
+			this.rotY.getPrompt().setHeldText(String.valueOf(rot.y));
+			this.rotZ.getPrompt().setHeldText(String.valueOf(rot.z));
 		}
 
 		GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>> listener = new GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>>() {

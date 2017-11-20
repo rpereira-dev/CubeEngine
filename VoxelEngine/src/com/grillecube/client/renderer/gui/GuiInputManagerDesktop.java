@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.grillecube.client.opengl.window.event.GLFWEventChar;
 import com.grillecube.client.opengl.window.event.GLFWEventKeyPress;
+import com.grillecube.client.opengl.window.event.GLFWEventMouseScroll;
 import com.grillecube.client.opengl.window.event.GLFWListener;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.event.GuiEventChar;
@@ -15,6 +16,9 @@ import com.grillecube.client.renderer.gui.event.GuiEventMouseHover;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseLeftRelease;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseMove;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseRightPress;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseRightRelease;
+import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiEventUnpress;
 import com.grillecube.common.maths.Matrix4f;
@@ -26,6 +30,7 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 	/** the window on which input are catched */
 	private GLFWListener<GLFWEventKeyPress> keyPressListener;
 	private GLFWListener<GLFWEventChar> charListener;
+	private GLFWListener<GLFWEventMouseScroll> scrollListener;
 
 	/** add listeners to the window */
 	@Override
@@ -51,8 +56,19 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 			}
 		};
 
+		this.scrollListener = new GLFWListener<GLFWEventMouseScroll>() {
+			@Override
+			public void invoke(GLFWEventMouseScroll event) {
+				Gui g = getFocusedGui();
+				if (getFocusedGui() != null) {
+					g.stackEvent(new GuiEventMouseScroll<Gui>(g, event.getScrollX(), event.getScrollY()));
+				}
+			}
+		};
+
 		super.getGLFWWindow().addListener(this.keyPressListener);
 		super.getGLFWWindow().addListener(this.charListener);
+		super.getGLFWWindow().addListener(this.scrollListener);
 	}
 
 	/** remove listeners from the window */
@@ -60,6 +76,7 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 	public final void onDeinitialized() {
 		super.getGLFWWindow().removeListener(this.keyPressListener);
 		super.getGLFWWindow().removeListener(this.charListener);
+		super.getGLFWWindow().removeListener(this.scrollListener);
 	}
 
 	/** update the given guis, which should be sorted by their layers */
@@ -91,7 +108,7 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 			// update gui states (stack events)
 			float x = mouse.x;
 			float y = mouse.y;
-			
+
 			// mouse moving relatively to the gui
 			if (x != gui.getPrevMouseX() && y != gui.getPrevMouseY()) {
 				gui.setMouse(x, y);
@@ -107,7 +124,8 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 					gui.setHovered(true);
 					gui.stackEvent(new GuiEventMouseEnter<Gui>(gui));
 				}
-				// if mouse wasnt pressed, and now is pressed, and the gui is
+				// if mouse wasnt left pressed, and now is pressed, and the gui
+				// is
 				// hovered
 				if (!gui.isLeftPressed() && leftPressed) {
 					gui.setPressed(true);
@@ -121,6 +139,17 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 					gui.stackEvent(new GuiEventUnpress<Gui>(gui));
 					gui.stackEvent(new GuiEventClick<Gui>(gui));
 					gui.stackEvent(new GuiEventMouseLeftRelease<Gui>(gui));
+				}
+
+				// if mouse wasnt right pressed, and now is pressed, and the gui
+				// is
+				// hovered
+				if (!gui.isRightPressed() && rightPressed) {
+					gui.setRightPressed(true);
+					gui.stackEvent(new GuiEventMouseRightPress<Gui>(gui));
+				} else if (gui.isRightPressed() && !rightPressed) {
+					gui.setRightPressed(false);
+					gui.stackEvent(new GuiEventMouseRightRelease<Gui>(gui));
 				}
 			} else {
 				if (gui.isHovered()) {

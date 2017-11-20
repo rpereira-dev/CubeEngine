@@ -106,7 +106,7 @@ public class GuiRenderer extends Renderer {
 
 	/** load every fonts */
 	private final void loadFonts() {
-		DEFAULT_FONT = this.getFont("Calibri");
+		DEFAULT_FONT = this.getFont("Consolas");
 		// DEFAULT_FONT = this.getFont("Pokemon");
 	}
 

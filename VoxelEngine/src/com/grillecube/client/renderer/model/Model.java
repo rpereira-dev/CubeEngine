@@ -129,6 +129,11 @@ public class Model {
 		return (this.animations.get(id));
 	}
 
+	/** returnt he list of animations */
+	public final ArrayList<ModelSkeletonAnimation> getAnimations() {
+		return (this.animations);
+	}
+
 	/** clone this model so it has it own mesh (destructible then) */
 	public final Model clone() {
 		Model model = new Model();

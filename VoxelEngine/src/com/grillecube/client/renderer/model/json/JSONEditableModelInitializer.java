@@ -7,8 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.Model;
-import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.common.Logger;
 import com.grillecube.common.utils.JSONHelper;

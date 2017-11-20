@@ -11,7 +11,7 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.world.entity.Entity;
 

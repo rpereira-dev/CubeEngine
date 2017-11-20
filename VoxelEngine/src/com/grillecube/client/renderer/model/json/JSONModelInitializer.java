@@ -84,16 +84,21 @@ public class JSONModelInitializer implements ModelInitializer {
 			for (int i = 0; i < jsonBones.length(); i++) {
 				JSONObject jsonBone = jsonBones.getJSONObject(i);
 				String boneName = jsonBone.getString("name");
+				float x = 0.0f, y = 0.0f, z = 0.0f, rx = 0.0f, ry = 0.0f, rz = 0.0f, rw = 1.0f;
+				if (jsonBone.has("localBindTransform")) {
+					
+					JSONObject jsonBindTransform = jsonBone.getJSONObject("localBindTransform");
+					
+					JSONObject jsonBindTransformTranslation = jsonBindTransform.getJSONObject("translation");
+					x = (float) jsonBindTransformTranslation.getDouble("x");
+					y = (float) jsonBindTransformTranslation.getDouble("y");
+					z = (float) jsonBindTransformTranslation.getDouble("z");
 
-				Matrix4f boneBindTransform = new Matrix4f();
-				if (jsonBone.has("bindTransform")) {
-					JSONObject jsonBindTransform = jsonBone.getJSONObject("bindTransform");
 					JSONObject jsonBindTransformRotation = jsonBindTransform.getJSONObject("rotation");
-					float x = (float) jsonBindTransformRotation.getDouble("x");
-					float y = (float) jsonBindTransformRotation.getDouble("y");
-					float z = (float) jsonBindTransformRotation.getDouble("z");
-					float w = (float) jsonBindTransformRotation.getDouble("w");
-					Matrix4f.mul(boneBindTransform, Quaternion.toRotationMatrix(x, y, z, w), boneBindTransform);
+					rx = (float) jsonBindTransformRotation.getDouble("x");
+					ry = (float) jsonBindTransformRotation.getDouble("y");
+					rz = (float) jsonBindTransformRotation.getDouble("z");
+					rw = (float) jsonBindTransformRotation.getDouble("w");
 				}
 
 				String boneParentName = jsonBone.has("parentName") ? jsonBone.getString("parentName") : null;
@@ -101,7 +106,7 @@ public class JSONModelInitializer implements ModelInitializer {
 				// add the bone
 				Bone bone = new Bone(modelSkeleton, boneName);
 				bone.setParent(boneParentName);
-				bone.setLocalBindTransform(boneBindTransform);
+				bone.setLocalBindTransform(x, y, z, rx, ry, rz, rw);
 				modelSkeleton.addBone(bone);
 
 				// set children

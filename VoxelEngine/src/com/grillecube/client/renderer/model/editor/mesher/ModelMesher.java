@@ -21,6 +21,7 @@ import java.util.Stack;
 
 import org.lwjgl.BufferUtils;
 
+import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.ModelMesh;
 import com.grillecube.client.renderer.model.editor.ModelMeshVertex;
 import com.grillecube.common.Logger;

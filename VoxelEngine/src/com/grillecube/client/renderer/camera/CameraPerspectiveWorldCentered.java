@@ -6,19 +6,19 @@ import com.grillecube.common.maths.Vector3f;
 /** a camera which follow the given entity, 3rd perso view */
 public class CameraPerspectiveWorldCentered extends CameraPerspectiveWorld {
 	
-	private Vector3f _center;
+	private Vector3f center;
 
 	/** distance from the entity */
-	private float _distance_from_center;
+	private float distanceFromCenter;
 
 	/** angle around the entity */
-	private float _angle_around_center;
+	private float angleAroundCenter;
 
 	public CameraPerspectiveWorldCentered(GLFWWindow window) {
 		super(window);
-		this._center = new Vector3f();
-		this._distance_from_center = 16;
-		this._angle_around_center = 0;
+		this.center = new Vector3f();
+		this.distanceFromCenter = 16;
+		this.angleAroundCenter = 0;
 		this.increasePitch(15);
 	}
 
@@ -29,49 +29,49 @@ public class CameraPerspectiveWorldCentered extends CameraPerspectiveWorld {
 	}
 	
 	public double getAngleAroundCenter() {
-		return (this._angle_around_center);
+		return (this.angleAroundCenter);
 	}
 	
 	public void setAngleAroundCenter(float angle) {
-		this._angle_around_center = angle;
+		this.angleAroundCenter = angle;
 	}
 	
 	public void increaseAngleAroundCenter(float inc) {
-		this._angle_around_center += inc;
+		this.angleAroundCenter += inc;
 	}
 
 	public void increaseDistanceFromCenter(float inc) {
-		this._distance_from_center += inc;
+		this.distanceFromCenter += inc;
 	}
 	
 	public void setCenter(Vector3f center) {
-		this._center.set(center);
+		this.center.set(center);
 	}
 	
 	public void setCenter(float x, float y, float z) {
-		this._center.set(x, y, z);
+		this.center.set(x, y, z);
 	}
 
 	public float getDistanceFromCenter() {
-		return (this._distance_from_center);
+		return (this.distanceFromCenter);
 	}
 	
 	public void setDistanceFromCenter(float distance) {
-		this._distance_from_center = distance;
+		this.distanceFromCenter = distance;
 	}
 
 	public Vector3f getCenter() {
-		return (this._center);
+		return (this.center);
 	}
 
 	private Vector3f vecbuffer = new Vector3f();
 
 	private void calculateCameraPosition() {
-		Vector3f center = vecbuffer.set(this._center);
+		Vector3f center = vecbuffer.set(this.center);
 
-		double horizontal = (this._distance_from_center * Math.cos(Math.toRadians(this.getPitch())));
-		double vertical = (this._distance_from_center * Math.sin(Math.toRadians(this.getPitch())));
-		double angle = this._angle_around_center;
+		double horizontal = (this.distanceFromCenter * Math.cos(Math.toRadians(this.getPitch())));
+		double vertical = (this.distanceFromCenter * Math.sin(Math.toRadians(this.getPitch())));
+		double angle = this.angleAroundCenter;
 		float offx = (float) (horizontal * Math.sin(Math.toRadians(angle)));
 		float offz = (float) (horizontal * Math.cos(Math.toRadians(angle)));
 
@@ -80,6 +80,6 @@ public class CameraPerspectiveWorldCentered extends CameraPerspectiveWorld {
 		float z = center.z - offz;
 
 		super.setPosition(x, y, z);
-		super.setYaw((float) (180 - (this._angle_around_center)));
+		super.setYaw((float) (180 - (this.angleAroundCenter)));
 	}
 }

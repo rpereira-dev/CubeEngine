@@ -11,9 +11,9 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
+import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
-import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.model.json.JSONEditableModelInitializer;
 import com.grillecube.common.Logger;

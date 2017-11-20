@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.maths.Quaternion;
+import com.grillecube.common.maths.Vector3f;
 
 public class Bone {
 
@@ -25,6 +27,8 @@ public class Bone {
 	/** bind matrices */
 	private final Matrix4f localBindTransform;
 	private final Matrix4f inverseBindTransform;
+	private final Vector3f translate;
+	private final Vector3f rotate;
 
 	/**
 	 * @param ModelSkeleton
@@ -38,6 +42,8 @@ public class Bone {
 		this.parentName = null;
 		this.localBindTransform = new Matrix4f();
 		this.inverseBindTransform = new Matrix4f();
+		this.translate = new Vector3f();
+		this.rotate = new Vector3f(0.0f, 0.0f, 0.0f);
 	}
 
 	/** get the joint name */
@@ -47,8 +53,9 @@ public class Bone {
 
 	/**
 	 * Adds a child joint to this joint. Used during the creation of the joint
-	 * hierarchy. Bones can have multiple children, which is why they are stored in
-	 * a list (e.g. a "hand" joint may have multiple "finger" children joints).
+	 * hierarchy. Bones can have multiple children, which is why they are stored
+	 * in a list (e.g. a "hand" joint may have multiple "finger" children
+	 * joints).
 	 * 
 	 * @param child
 	 *            - the new child joint of this joint.
@@ -87,11 +94,11 @@ public class Bone {
 	}
 
 	/**
-	 * This returns the inverted model-space bind transform. The bind transform is
-	 * the original model-space transform of the joint (when no animation is
-	 * applied). This returns the inverse of that, which is used to calculate the
-	 * animated transform matrix which gets used to transform vertices in the
-	 * shader.
+	 * This returns the inverted model-space bind transform. The bind transform
+	 * is the original model-space transform of the joint (when no animation is
+	 * applied). This returns the inverse of that, which is used to calculate
+	 * the animated transform matrix which gets used to transform vertices in
+	 * the shader.
 	 * 
 	 * @return The inverse of the joint's bind transform (in model-space).
 	 */
@@ -99,16 +106,39 @@ public class Bone {
 		return (this.inverseBindTransform);
 	}
 
-	public void setLocalBindTransform(Matrix4f setLocalBindTransform) {
+	public final void setLocalBindTransform(Matrix4f setLocalBindTransform) {
 		this.localBindTransform.set(setLocalBindTransform);
+	}
+
+	public final void setLocalBindTransform(float x, float y, float z, float rx, float ry, float rz, float rw) {
+		this.translate.set(x, y, z);
+		Quaternion.toEulerAngle(this.rotate, rx, ry, rz, rw);
+
+		this.localBindTransform.setIdentity();
+		this.localBindTransform.translate(x, y, z);
+		this.localBindTransform.rotateXYZ(this.rotate);
+		this.localBindTransform.translate(this.translate);
+	}
+
+	public final Vector3f getLocalRotation() {
+		return (this.rotate);
+	}
+
+	public final Vector3f getLocalTranslation() {
+		return (this.translate);
+	}
+
+	public final Matrix4f getLocalBindTransform() {
+		return (this.localBindTransform);
 	}
 
 	/**
 	 * 
 	 * @see #Bone{@link #calcInverseBindTransform()}
 	 * 
-	 *      It then recursively calls the method for all of the children joints, so
-	 *      that they too calculate and store their inverse bind-pose transform.
+	 *      It then recursively calls the method for all of the children joints,
+	 *      so that they too calculate and store their inverse bind-pose
+	 *      transform.
 	 * 
 	 * @param parentBindTransform
 	 *            - the model-space bind transform of the parent joint.
@@ -124,20 +154,22 @@ public class Bone {
 	}
 
 	/**
-	 * This is called during set-up, after the joints hierarchy has been created.
-	 * This calculates the model-space bind transform of this joint like so: </br>
+	 * This is called during set-up, after the joints hierarchy has been
+	 * created. This calculates the model-space bind transform of this joint
+	 * like so: </br>
 	 * </br>
 	 * {@code bindTransform = parentBindTransform * localBindTransform}</br>
 	 * </br>
 	 * where "bindTransform" is the model-space bind transform of this joint,
-	 * "parentBindTransform" is the model-space bind transform of the parent joint,
-	 * and "localBindTransform" is the bone-space bind transform of this joint. It
-	 * then calculates and stores the inverse of this model-space bind transform,
-	 * for use when calculating the final animation transform each frame.
+	 * "parentBindTransform" is the model-space bind transform of the parent
+	 * joint, and "localBindTransform" is the bone-space bind transform of this
+	 * joint. It then calculates and stores the inverse of this model-space bind
+	 * transform, for use when calculating the final animation transform each
+	 * frame.
 	 * 
 	 * This method should be called to calculate only one specific bone
-	 * bindTransform (basically, when this bone referential changes, but the rest of
-	 * the bones in the skeleton remain un-changed)
+	 * bindTransform (basically, when this bone referential changes, but the
+	 * rest of the bones in the skeleton remain un-changed)
 	 * 
 	 * To calculate very bind transform matrices more efficiently, call
 	 * {@link #calcInverseBindTransform(Matrix4f.IDENTITY)} on the root bone.
