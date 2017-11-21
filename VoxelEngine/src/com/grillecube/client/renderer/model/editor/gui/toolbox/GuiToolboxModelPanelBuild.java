@@ -19,11 +19,16 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		super();
 		this.tools = new GuiSpinnerEditor();
 		this.tools.setHint("Tools...");
+		this.tools.add("Place");
+		this.tools.add("Remove");
+		this.tools.add("Extrude");
+		this.tools.add("Paint");
+		this.tools.add("Fill surface");
 		this.tools.setBox(0, 0.70f, 1.0f, 0.05f, 0);
 		this.addChild(this.tools);
 
 		// // block size unit slider bar
-		this.modelBlockSizeUnit = new GuiPromptEditor("Size-unit:", "1.0");
+		this.modelBlockSizeUnit = new GuiPromptEditor("Size-unit:", "block size");
 		this.modelBlockSizeUnit.setBox(0, 0.65f, 1.0f, 0.05f, 0);
 		this.modelBlockSizeUnit.getPrompt().addListener(new GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>>() {
 			@Override
@@ -36,6 +41,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 
 	@Override
 	public void refresh() {
+		this.modelBlockSizeUnit.getPrompt().setHeldText(String.valueOf(this.getModel().getBlockSizeUnit()));
 	}
 
 	private final void onBlockSizeUnitChanged() {

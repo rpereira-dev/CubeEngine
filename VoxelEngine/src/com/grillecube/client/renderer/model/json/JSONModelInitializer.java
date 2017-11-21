@@ -156,6 +156,8 @@ public class JSONModelInitializer implements ModelInitializer {
 				float w1 = (float) vertices.getDouble(i++);
 				float w2 = (float) vertices.getDouble(i++);
 				float w3 = (float) vertices.getDouble(i++);
+				
+				float ao = (float) vertices.getDouble(i++);
 
 				verticesBuffer.putFloat(x);
 				verticesBuffer.putFloat(y);
@@ -175,6 +177,8 @@ public class JSONModelInitializer implements ModelInitializer {
 				verticesBuffer.putFloat(w1);
 				verticesBuffer.putFloat(w2);
 				verticesBuffer.putFloat(w3);
+				
+				verticesBuffer.putFloat(ao);
 			}
 
 			verticesBuffer.flip();

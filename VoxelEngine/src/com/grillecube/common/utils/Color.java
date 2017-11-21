@@ -294,7 +294,7 @@ public class Color {
 	 * @see #getRGB
 	 */
 	public int getRed() {
-		return (getRGB() >> 16) & 0xFF;
+		return (getARGB() >> 16) & 0xFF;
 	}
 
 	/**
@@ -304,7 +304,7 @@ public class Color {
 	 * @see #getRGB
 	 */
 	public int getGreen() {
-		return (getRGB() >> 8) & 0xFF;
+		return (getARGB() >> 8) & 0xFF;
 	}
 
 	/**
@@ -314,7 +314,7 @@ public class Color {
 	 * @see #getRGB
 	 */
 	public int getBlue() {
-		return (getRGB() >> 0) & 0xFF;
+		return (getARGB() >> 0) & 0xFF;
 	}
 	
 	public final float getR() {
@@ -340,7 +340,7 @@ public class Color {
 	 * @see #getRGB
 	 */
 	public int getAlpha() {
-		return (getRGB() >> 24) & 0xff;
+		return (getARGB() >> 24) & 0xff;
 	}
 
 	/**
@@ -356,7 +356,7 @@ public class Color {
 	 * @see #getBlue
 	 * @since JDK1.0
 	 */
-	public int getRGB() {
+	public int getARGB() {
 		return argb;
 	}
 

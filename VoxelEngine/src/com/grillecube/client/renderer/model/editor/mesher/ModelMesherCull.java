@@ -16,21 +16,25 @@ package com.grillecube.client.renderer.model.editor.mesher;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.HashMap;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
 import com.grillecube.client.renderer.model.EditableModel;
+import com.grillecube.client.renderer.model.ModelMeshVertex;
 import com.grillecube.client.renderer.model.ModelSkin;
-import com.grillecube.client.renderer.model.editor.ModelMeshVertex;
+import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
+import com.grillecube.common.maths.Vector3i;
+import com.grillecube.common.utils.Color;
+import com.grillecube.common.world.World;
 
 public class ModelMesherCull extends ModelMesher {
 
 	/** generate the model planes, skins, and mesh */
 	public final void doGenerate(EditableModel editableModel, Stack<ModelMeshVertex> vertices, Stack<Short> indices,
-			ArrayList<BufferedImage> skinsData) {
+			HashMap<ModelSkin, BufferedImage> skinsData) {
 		long t = System.currentTimeMillis();
 
 		// GENERATE MODEL PLANS LIST
@@ -44,7 +48,7 @@ public class ModelMesherCull extends ModelMesher {
 
 	/** generate the model mesh */
 	private final void generateMeshAndSkin(EditableModel editableModel, ArrayList<ModelPlane> planes,
-			Stack<ModelMeshVertex> vertices, Stack<Short> indices, ArrayList<BufferedImage> skinsData) {
+			Stack<ModelMeshVertex> vertices, Stack<Short> indices, HashMap<ModelSkin, BufferedImage> skinsData) {
 
 		// calculate texture width/height
 		int txWidth = 0;
@@ -58,23 +62,10 @@ public class ModelMesherCull extends ModelMesher {
 		}
 
 		// generate skins
-		Random rng = new Random();
 		for (ModelSkin skin : editableModel.getSkins()) {
-			int px = skin.getPixelsPerLine();
-			BufferedImage img = new BufferedImage(txWidth * px, txHeight * px, BufferedImage.TYPE_INT_ARGB);
-			for (ModelPlane plane : planes) {
-				int rgba = rng.nextInt(Integer.MAX_VALUE) | 0xFF000000;
-				int beginx = plane.getU() * px;
-				int beginy = plane.getV() * px;
-				int endx = beginx + plane.getTextureWidth() * px;
-				int endy = beginy + plane.getTextureHeight() * px;
-				for (int x = beginx; x < endx; x++) {
-					for (int y = beginy; y < endy; y++) {
-						img.setRGB(x, y, rgba);
-					}
-				}
-			}
-			skinsData.add(img);
+			int pxl = skin.getPixelsPerLine();
+			BufferedImage img = new BufferedImage(txWidth * pxl, txHeight * pxl, BufferedImage.TYPE_INT_ARGB);
+			skinsData.put(skin, img);
 		}
 
 		// get raw blocks
@@ -85,15 +76,6 @@ public class ModelMesherCull extends ModelMesher {
 			Face planeFace = plane.getFace();
 			for (int d1 = 0; d1 < plane.getTextureWidth(); d1++) {
 				for (int d2 = 0; d2 < plane.getTextureHeight(); d2++) {
-
-					// add indices (quad)
-					int i = vertices.size();
-					indices.add((short) i);
-					indices.add((short) (i + 1));
-					indices.add((short) (i + 2));
-					indices.add((short) i);
-					indices.add((short) (i + 2));
-					indices.add((short) (i + 3));
 
 					// add vertices
 					int x = plane.getXMin();
@@ -123,11 +105,57 @@ public class ModelMesherCull extends ModelMesher {
 						vy = (plane.getV() + d2 + 1) * uh;
 					}
 
+					// the block data
 					ModelBlockData data = datas[x][y][z];
-					vertices.push(this.generateVertex(editableModel, planeFace, ux, uy, data, 0));
-					vertices.push(this.generateVertex(editableModel, planeFace, vx, uy, data, 1));
-					vertices.push(this.generateVertex(editableModel, planeFace, vx, vy, data, 2));
-					vertices.push(this.generateVertex(editableModel, planeFace, ux, vy, data, 3));
+
+					// add vertices
+
+					// add indices (quad)
+					int i = vertices.size();
+					
+					ModelMeshVertex v0 = this.generateVertex(editableModel, planeFace, ux, uy, data, 0);
+					ModelMeshVertex v1 = this.generateVertex(editableModel, planeFace, vx, uy, data, 1);
+					ModelMeshVertex v2 = this.generateVertex(editableModel, planeFace, vx, vy, data, 2);
+					ModelMeshVertex v3 = this.generateVertex(editableModel, planeFace, ux, vy, data, 3);
+					vertices.push(v0);
+					vertices.push(v1);
+					vertices.push(v2);
+					vertices.push(v3);
+					
+					if (v0.ao + v2.ao < v1.ao + v3.ao) {
+						indices.add((short) i);
+						indices.add((short) (i + 1));
+						indices.add((short) (i + 2));
+						indices.add((short) i);
+						indices.add((short) (i + 2));
+						indices.add((short) (i + 3));
+					} else {
+						indices.add((short) (i + 1));
+						indices.add((short) (i + 2));
+						indices.add((short) (i + 3));
+						indices.add((short) (i + 1));
+						indices.add((short) (i + 3));
+						indices.add((short) i);
+					}
+						
+					// skins
+					for (ModelSkin skin : editableModel.getSkins()) {
+						BufferedImage img = skinsData.get(skin);
+						int pxl = skin.getPixelsPerLine();
+						Color color = data.getColor(skin);
+						int r = (int) (color.getRed() * planeFace.getFaceFactor());
+						int g = (int) (color.getRed() * planeFace.getFaceFactor());
+						int b = (int) (color.getRed() * planeFace.getFaceFactor());
+						int beginx = plane.getU() * pxl;
+						int beginy = plane.getV() * pxl;
+						int endx = beginx + plane.getTextureWidth() * pxl;
+						int endy = beginy + plane.getTextureHeight() * pxl;
+						for (int px = beginx; px < endx; px++) {
+							for (int py = beginy; py < endy; py++) {
+								img.setRGB(px, py, 0xFF000000 | (r << 16) | (g << 8) | b);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -172,7 +200,6 @@ public class ModelMesherCull extends ModelMesher {
 						boolean isFaceVisible = (nx < 0 || ny < 0 || nz < 0 || nx >= sx || ny >= sy || nz >= sz)
 								|| blockDatas[nx][ny][nz] == null;
 						if (!isFaceVisible) {
-							blockData.setPlane(null, face);
 							continue;
 						}
 
@@ -255,7 +282,6 @@ public class ModelMesherCull extends ModelMesher {
 							this.setVisited(visited, faceID, x, y, z, 1, height, depth);
 						}
 						modelPlanes.add(modelPlane);
-						blockData.setPlane(modelPlane, face);
 					}
 				}
 			}
@@ -279,6 +305,10 @@ public class ModelMesherCull extends ModelMesher {
 			ModelBlockData modelBlockData, int vertexID) {
 
 		ModelMeshVertex vertex = new ModelMeshVertex();
+
+		// ambiant occlusion
+		float ao = 1.0f - getAmbiantOcclusion(editableModel, modelBlockData.getX(), modelBlockData.getY(),
+				modelBlockData.getZ(), BlockRenderer.getNeighboors(face.getID(), vertexID));
 
 		float sizeUnit = editableModel.getBlockSizeUnit();
 		int x = modelBlockData.getX();
@@ -304,6 +334,28 @@ public class ModelMesherCull extends ModelMesher {
 		vertex.w2 = 0;// modelBlockData.getBoneWeight(1);
 		vertex.w3 = 0;// modelBlockData.getBoneWeight(2);
 
+		vertex.ao = ao;
+
 		return (vertex);
+	}
+
+	private static final float AO_UNIT = 0.16f;
+
+	public static final float getAmbiantOcclusion(EditableModel model, int x, int y, int z, Vector3i... neighboors) {
+		ModelBlockData side1 = model.getBlockData(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
+		ModelBlockData side2 = model.getBlockData(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
+		ModelBlockData corner = model.getBlockData(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
+
+		boolean s1 = side1 != null;
+		boolean s2 = side2 != null;
+		boolean c = corner != null;
+		if (s1 && s2) {
+			return (3.0f * AO_UNIT);
+		}
+
+		if (s1 || s2) {
+			return (c ? 2.0f * AO_UNIT : AO_UNIT);
+		}
+		return (c ? AO_UNIT : 0.0f);
 	}
 }

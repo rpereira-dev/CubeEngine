@@ -1,6 +1,9 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
-import com.grillecube.common.faces.Face;
+import java.util.HashMap;
+
+import com.grillecube.client.renderer.model.ModelSkin;
+import com.grillecube.common.utils.Color;
 
 /** hold the data of a single block of the model */
 public class ModelBlockData {
@@ -9,7 +12,7 @@ public class ModelBlockData {
 	private final String[] bones;
 	private final float[] weights;
 	private final int x, y, z;
-	private final ModelPlane[] planes;
+	private final HashMap<ModelSkin, Color> colors;
 
 	public ModelBlockData(int bx, int by, int bz) {
 		this.x = bx;
@@ -17,7 +20,15 @@ public class ModelBlockData {
 		this.z = bz;
 		this.bones = new String[] { "", "", "" };
 		this.weights = new float[] { 1, 0, 0 };
-		this.planes = new ModelPlane[Face.faces.length];
+		this.colors = new HashMap<ModelSkin, Color>();
+	}
+
+	public final Color getColor(ModelSkin modelSkin) {
+		return (this.colors.containsKey(modelSkin) ? this.colors.get(modelSkin) : Color.GRAY);
+	}
+
+	public final void setColor(ModelSkin modelSkin, Color color) {
+		this.colors.put(modelSkin, color);
 	}
 
 	public final String getBone(int i) {
@@ -71,19 +82,5 @@ public class ModelBlockData {
 		sb.append(this.weights[2]);
 		sb.append("}");
 		return (sb.toString());
-	}
-
-	public final void resetPlanes() {
-		for (Face face : Face.faces) {
-			this.planes[face.getID()] = null;
-		}
-	}
-
-	public final void setPlane(ModelPlane modelPlane, Face face) {
-		this.planes[face.getID()] = modelPlane;
-	}
-
-	public final ModelPlane getPlane(Face face) {
-		return (this.planes[face.getID()]);
 	}
 }

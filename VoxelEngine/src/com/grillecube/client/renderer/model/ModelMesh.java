@@ -13,7 +13,7 @@ import com.grillecube.client.renderer.Mesh;
 public class ModelMesh extends Mesh {
 
 	/** bytes per vertex */
-	public static final int BYTES_PER_VERTEX = (3 + 2 + 3 + 3 + 3) * 4;
+	public static final int BYTES_PER_VERTEX = (3 + 2 + 3 + 3 + 3 + 1) * 4;
 
 	private GLVertexBuffer indicesVBO;
 
@@ -50,12 +50,14 @@ public class ModelMesh extends Mesh {
 		vao.setAttribute(2, 3, GL11.GL_FLOAT, false, BYTES_PER_VERTEX, (3 + 2) * 4); // normals
 		vao.setAttributei(3, 3, GL11.GL_INT, BYTES_PER_VERTEX, (3 + 3 + 2) * 4); // jointIDs
 		vao.setAttribute(4, 3, GL11.GL_FLOAT, false, BYTES_PER_VERTEX, (3 + 3 + 3 + 2) * 4); // jointWeights
+		vao.setAttribute(5, 1, GL11.GL_FLOAT, false, BYTES_PER_VERTEX, (3 + 3 + 3 + 2 + 3) * 4); // ao
 
 		vao.enableAttribute(0);
 		vao.enableAttribute(1);
 		vao.enableAttribute(2);
 		vao.enableAttribute(3);
 		vao.enableAttribute(4);
+		vao.enableAttribute(5);
 	}
 
 	/** set mesh data */

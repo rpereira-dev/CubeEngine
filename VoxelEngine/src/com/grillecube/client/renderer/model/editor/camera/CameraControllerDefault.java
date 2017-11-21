@@ -34,7 +34,7 @@ public class CameraControllerDefault extends CameraController {
 		this.hovered = new Vector3i();
 		this.firstBlock = new Vector3i();
 		this.secondBlock = new Vector3i();
-		this.selection = new CameraControllerSelection(this, this.firstBlock, this.secondBlock);
+		this.selection = new CameraControllerSelectionBlocks(this, this.firstBlock, this.secondBlock);
 		this.box = super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this.selection,
 				this.selection);
 		this.ySelected = 0;
@@ -66,31 +66,6 @@ public class CameraControllerDefault extends CameraController {
 
 	@Override
 	public void onMouseMove() {
-
-		// rotate
-		if (this.guiModelView.isRightPressed()) {
-			float pitch = (float) ((this.guiModelView.getPrevMouseY() - this.guiModelView.getMouseY()) * 64.0f);
-			this.getCamera().increasePitch(pitch);
-
-			float angle = (float) ((this.guiModelView.getMouseX() - this.guiModelView.getPrevMouseX()) * 128.0f);
-			this.getCamera().increaseAngleAroundCenter(-angle);
-
-			this.hovered.set(0, 0, 0);
-		} else {
-			this.updateHoveredBlock();
-		}
-
-		float u = this.getBlockSizeUnit();
-		float x = 0;
-		float y = 0;
-		float z = 0;
-		this.getCamera().setCenter((x + 0.5f) * u, (y + 0.5f) * u, (z + 0.5f) * u);
-
-		// blocks
-		if (!this.guiModelView.isLeftPressed()) {
-			this.firstBlock.set(this.hovered);
-		}
-		this.secondBlock.set(this.hovered.x, this.hovered.y + this.ySelected, this.hovered.z);
 	}
 
 	@Override
@@ -102,7 +77,6 @@ public class CameraControllerDefault extends CameraController {
 		float y = 0;
 		float z = 0;
 		this.getCamera().setCenter((x + 0.5f) * u, (y + 0.5f) * u, (z + 0.5f) * u);
-
 		camera.setDistanceFromCenter((float) Vector3f.distance(camera.getCenter(), camera.getPosition()));
 	}
 
@@ -173,6 +147,42 @@ public class CameraControllerDefault extends CameraController {
 
 	@Override
 	public void onUpdate() {
+		this.updateCameraRotation();
+		this.updateSelection();
+	}
+
+	private final void updateSelection() {
+		if (!this.guiModelView.isLeftPressed()) {
+			this.firstBlock.set(this.hovered);
+		}
+		this.secondBlock.set(this.hovered.x, this.hovered.y + this.ySelected, this.hovered.z);
+
 		super.guiModelView.getWorldRenderer().getLineRendererFactory().setBox(this.selection, this.selection, this.box);
+	}
+
+	private final void updateCameraRotation() {
+		// rotate
+		if (this.guiModelView.isRightPressed()) {
+			float pitch = (float) ((this.guiModelView.getPrevMouseY() - this.guiModelView.getMouseY()) * 64.0f);
+			this.getCamera().increasePitch(pitch);
+
+			float angle = (float) ((this.guiModelView.getPrevMouseX() - this.guiModelView.getMouseX()) * 128.0f);
+			this.getCamera().increaseAngleAroundCenter(angle);
+
+			this.hovered.set(0, 0, 0);
+		} else {
+			this.updateHoveredBlock();
+		}
+
+		float u = this.getBlockSizeUnit();
+		float x = 0;
+		float y = 0;
+		float z = 0;
+		this.getCamera().setCenter((x + 0.5f) * u, (y + 0.5f) * u, (z + 0.5f) * u);
+	}
+
+	@Override
+	public String getName() {
+		return ("Build");
 	}
 }

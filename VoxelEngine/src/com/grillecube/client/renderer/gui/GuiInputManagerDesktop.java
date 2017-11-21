@@ -110,12 +110,12 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 			float y = mouse.y;
 
 			// mouse moving relatively to the gui
-			if (x != gui.getPrevMouseX() && y != gui.getPrevMouseY()) {
+			if (x != gui.getPrevMouseX() || y != gui.getPrevMouseY()) {
 				gui.setMouse(x, y);
 				gui.stackEvent(new GuiEventMouseMove<Gui>(gui));
 			}
 
-			// if gui is hovered,
+			// if topest hovered gui is hovered,
 			if (!topestHoveredFound && gui.isHoverable() && (x >= 0.0f && x < 1.0f && y >= 0.0f && y <= 1.0f)) {
 				topestHoveredFound = true;
 				gui.stackEvent(new GuiEventMouseHover<Gui>(gui));
@@ -137,8 +137,8 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 				} else if (gui.isLeftPressed() && !leftPressed) {
 					gui.setPressed(false);
 					gui.stackEvent(new GuiEventUnpress<Gui>(gui));
-					gui.stackEvent(new GuiEventClick<Gui>(gui));
 					gui.stackEvent(new GuiEventMouseLeftRelease<Gui>(gui));
+					gui.stackEvent(new GuiEventClick<Gui>(gui));
 				}
 
 				// if mouse wasnt right pressed, and now is pressed, and the gui
@@ -160,6 +160,12 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 				if (gui.isLeftPressed() && !leftPressed) {
 					gui.setPressed(false);
 					gui.stackEvent(new GuiEventUnpress<Gui>(gui));
+					gui.stackEvent(new GuiEventMouseLeftRelease<Gui>(gui));
+				}
+
+				if (gui.isRightPressed() && !rightPressed) {
+					gui.setRightPressed(false);
+					gui.stackEvent(new GuiEventMouseRightRelease<Gui>(gui));
 				}
 			}
 			gui.unstackEvents();

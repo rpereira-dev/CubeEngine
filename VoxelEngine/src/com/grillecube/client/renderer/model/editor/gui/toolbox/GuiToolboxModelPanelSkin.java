@@ -23,14 +23,12 @@ import com.grillecube.common.maths.Vector4f;
 
 public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 
-	/** the model block size unit slider bar */
-	private final GuiSliderBarEditor pixelPerLine;
-
 	private final GuiButton addSkin;
 	private final GuiSpinnerEditor skins;
 	private final GuiButton removeSkin;
 
-	private final GuiSpinnerEditor tools;
+	/** the model block size unit slider bar */
+	private final GuiSliderBarEditor pixelPerLine;
 
 	private final GuiButton addColor;
 	private final GuiSpinnerColor colors;
@@ -45,17 +43,15 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 	public GuiToolboxModelPanelSkin() {
 		super();
 
-		this.pixelPerLine = new GuiSliderBarEditor();
-
 		this.addSkin = new GuiButton();
 		this.skins = new GuiSpinnerEditor();
 		this.removeSkin = new GuiButton();
 
+		this.pixelPerLine = new GuiSliderBarEditor();
+
 		this.addColor = new GuiButton();
 		this.colors = new GuiSpinnerColor();
 		this.removeColor = new GuiButton();
-
-		this.tools = new GuiSpinnerEditor();
 
 		this.skinPreview = new GuiTexture();
 		this.skinName = new GuiPrompt();
@@ -64,8 +60,29 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 	@Override
 	public void onInitialized(GuiRenderer guiRenderer) {
 
+		// skins
+		this.addSkin.setText("Add");
+		this.addSkin.setBox(0.0f, 0.70f, 1 / 3.0f, 0.05f, 0.0f);
+		this.addSkin.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
+		this.addSkin.addTextParameter(new GuiTextParameterTextCenterBox());
+		this.addChild(this.addSkin);
+
+		this.skins.setHint("Skins...");
+		this.skins.setBox(1 / 3.0f, 0.70f, 1 / 3.0f, 0.05f, 0);
+		for (ModelSkin skin : this.getModel().getSkins()) {
+			this.skins.add(skin, skin.getName());
+		}
+		this.skins.pick(0);
+		this.addChild(this.skins);
+
+		this.removeSkin.setText("Remove");
+		this.removeSkin.setBox(2 * 1 / 3.0f, 0.70f, 1 / 3.0f, 0.05f, 0.0f);
+		this.removeSkin.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
+		this.removeSkin.addTextParameter(new GuiTextParameterTextCenterBox());
+		this.addChild(this.removeSkin);
+
 		// number of pixels per face
-		this.pixelPerLine.setBox(0, 0.70f, 1.0f, 0.05f, 0);
+		this.pixelPerLine.setBox(0, 0.65f, 1.0f, 0.05f, 0);
 		this.pixelPerLine.addValuesArray(GuiSliderBar.intRange(1, 64));
 		this.pixelPerLine.setPrefix("Pixel per face line: ");
 		this.pixelPerLine.select((Object) ModelSkin.DEFAULT_PIXELS_PER_LINE);
@@ -76,27 +93,6 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 			}
 		});
 		this.addChild(this.pixelPerLine);
-
-		// skins
-		this.addSkin.setText("Add");
-		this.addSkin.setBox(0.0f, 0.65f, 1 / 3.0f, 0.05f, 0.0f);
-		this.addSkin.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
-		this.addSkin.addTextParameter(new GuiTextParameterTextCenterBox());
-		this.addChild(this.addSkin);
-
-		this.skins.setHint("Skins...");
-		this.skins.setBox(1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0);
-		for (ModelSkin skin : this.getModel().getSkins()) {
-			this.skins.add(skin, skin.getName());
-		}
-		this.skins.pick(0);
-		this.addChild(this.skins);
-
-		this.removeSkin.setText("Remove");
-		this.removeSkin.setBox(2 * 1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0.0f);
-		this.removeSkin.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
-		this.removeSkin.addTextParameter(new GuiTextParameterTextCenterBox());
-		this.addChild(this.removeSkin);
 
 		// colors
 		this.addColor.setText("Add");
@@ -139,13 +135,6 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 			}
 		});
 		this.addChild(this.removeColor);
-
-		// tools
-		this.tools.setHint("Tools...");
-		this.tools.setBox(0, 0.55f, 1, 0.05f, 0);
-		this.tools.add("Paint");
-		this.tools.add("Fill surface");
-		this.addChild(this.tools);
 
 		// skin preview
 		this.skinPreview.addListener(new GuiListener<GuiEventMouseHover<GuiTexture>>() {

@@ -16,14 +16,15 @@ package com.grillecube.client.renderer.model.editor.mesher;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 
 import org.lwjgl.BufferUtils;
 
 import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.ModelMesh;
-import com.grillecube.client.renderer.model.editor.ModelMeshVertex;
+import com.grillecube.client.renderer.model.ModelMeshVertex;
+import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.common.Logger;
 
 /** an object which is used to generate model meshes dynamically */
@@ -38,7 +39,7 @@ public abstract class ModelMesher {
 		// prepare the mesh vertex stack
 		Stack<ModelMeshVertex> vertexStack = new Stack<ModelMeshVertex>();
 		Stack<Short> indicesStack = new Stack<Short>();
-		ArrayList<BufferedImage> skinsData = new ArrayList<BufferedImage>();
+		HashMap<ModelSkin, BufferedImage> skinsData = new HashMap<ModelSkin, BufferedImage>();
 
 		// do the generation
 		this.doGenerate(editableModel, vertexStack, indicesStack, skinsData);
@@ -46,20 +47,7 @@ public abstract class ModelMesher {
 		// stack to buffer
 		ByteBuffer vertices = BufferUtils.createByteBuffer(vertexStack.size() * ModelMesh.BYTES_PER_VERTEX);
 		for (ModelMeshVertex vertex : vertexStack) {
-			vertices.putFloat(vertex.x);
-			vertices.putFloat(vertex.y);
-			vertices.putFloat(vertex.z);
-			vertices.putFloat(vertex.uvx);
-			vertices.putFloat(vertex.uvy);
-			vertices.putFloat(vertex.nx);
-			vertices.putFloat(vertex.ny);
-			vertices.putFloat(vertex.nz);
-			vertices.putInt(vertex.b1);
-			vertices.putInt(vertex.b2);
-			vertices.putInt(vertex.b3);
-			vertices.putFloat(vertex.w1);
-			vertices.putFloat(vertex.w2);
-			vertices.putFloat(vertex.w3);
+			vertex.store(vertices);
 		}
 		vertices.flip();
 
@@ -73,15 +61,17 @@ public abstract class ModelMesher {
 		// set model data
 		editableModel.getMesh().setVertices(vertices);
 		editableModel.getMesh().setIndices(indices);
-		if (skinsData.size() != editableModel.getSkins().size()) {
-			Logger.get().log(Logger.Level.WARNING, "ModelMesher didn't generate every ModelSkins BufferedImage: "
-					+ skinsData.size() + "/" + editableModel.getSkins().size());
-		}
-		for (int i = 0; i < skinsData.size(); i++) {
-			editableModel.getSkin(i).getGLTexture().setData(skinsData.get(i));
+		for (ModelSkin modelSkin : editableModel.getSkins()) {
+			BufferedImage skin = skinsData.get(modelSkin);
+			if (skin == null) {
+				Logger.get().log(Logger.Level.WARNING, "ModelMesher didn't generate every ModelSkins BufferedImage: "
+						+ skinsData.size() + "/" + editableModel.getSkins().size());
+
+			}
+			modelSkin.getGLTexture().setData(skin);
 		}
 	}
 
 	protected abstract void doGenerate(EditableModel editableModel, Stack<ModelMeshVertex> vertices,
-			Stack<Short> indices, ArrayList<BufferedImage> skinsData);
+			Stack<Short> indices, HashMap<ModelSkin, BufferedImage> skinsData);
 }

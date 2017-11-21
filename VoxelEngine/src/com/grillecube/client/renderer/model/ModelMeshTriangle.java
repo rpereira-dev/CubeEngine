@@ -1,4 +1,4 @@
-package com.grillecube.client.renderer.model.editor;
+package com.grillecube.client.renderer.model;
 
 import com.grillecube.client.renderer.MeshTriangle;
 

@@ -25,6 +25,8 @@ public abstract class CameraController {
 		this.guiModelView = guiModelView;
 	}
 
+	public abstract String getName();
+
 	public final void update() {
 		this.onUpdate();
 	}

@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.renderer.model.editor;
+package com.grillecube.client.renderer.model;
 
 import java.nio.ByteBuffer;
 
@@ -39,6 +39,8 @@ public class ModelMeshVertex extends MeshVertex {
 	public float w2;
 	public float w3;
 
+	public float ao;
+
 	@Override
 	public void store(ByteBuffer buffer) {
 		buffer.putFloat(this.x);
@@ -55,6 +57,7 @@ public class ModelMeshVertex extends MeshVertex {
 		buffer.putFloat(this.w1);
 		buffer.putFloat(this.w2);
 		buffer.putFloat(this.w3);
+		buffer.putFloat(this.ao);
 	}
 
 	@Override
@@ -74,6 +77,7 @@ public class ModelMeshVertex extends MeshVertex {
 		m.w1 = this.w1;
 		m.w2 = this.w2;
 		m.w3 = this.w3;
+		m.ao = this.ao;
 		return (m);
 	}
 }

@@ -1,45 +1,27 @@
 package com.grillecube.client.renderer.model.editor.camera;
 
-import com.grillecube.common.maths.Maths;
-import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.entity.collision.Positioneable;
 import com.grillecube.common.world.entity.collision.Sizeable;
 
-public class CameraControllerSelection implements Positioneable, Sizeable {
+public abstract class CameraControllerSelection implements Positioneable, Sizeable {
 
-	private final CameraController cameraController;
-	private final Vector3i firstBlock;
-	private final Vector3i secondBlock;
+	protected final CameraController cameraController;
 
-	public CameraControllerSelection(CameraController cameraController, Vector3i firstBlock, Vector3i secondBlock) {
+	public CameraControllerSelection(CameraController cameraController) {
 		this.cameraController = cameraController;
-		this.firstBlock = firstBlock;
-		this.secondBlock = secondBlock;
 	}
 
-	public final int getX() {
-		return (Maths.min(this.firstBlock.x, this.secondBlock.x));
-	}
+	public abstract int getX();
 
-	public final int getY() {
-		return (Maths.min(this.firstBlock.y, this.secondBlock.y));
-	}
+	public abstract int getY();
 
-	public final int getZ() {
-		return (Maths.min(this.firstBlock.z, this.secondBlock.z));
-	}
+	public abstract int getZ();
 
-	public final int getWidth() {
-		return (Maths.abs(this.firstBlock.x - this.secondBlock.x) + 1);
-	}
+	public abstract int getWidth();
 
-	public final int getHeight() {
-		return (Maths.abs(this.firstBlock.y - this.secondBlock.y) + 1);
-	}
+	public abstract int getHeight();
 
-	public final int getDepth() {
-		return (Maths.abs(this.firstBlock.z - this.secondBlock.z) + 1);
-	}
+	public abstract int getDepth();
 
 	@Override
 	public float getPositionX() {
@@ -202,5 +184,4 @@ public class CameraControllerSelection implements Positioneable, Sizeable {
 	@Override
 	public void setSizeAccelerationZ(float az) {
 	}
-
 }
