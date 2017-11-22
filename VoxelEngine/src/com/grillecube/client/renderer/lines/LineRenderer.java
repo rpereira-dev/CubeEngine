@@ -110,7 +110,7 @@ public class LineRenderer extends Renderer {
 		this.program.useStart();
 		{
 			this.program.loadGlobalUniforms(camera);
-			GL11.glLineWidth(4.0f);
+			GL11.glLineWidth(3.0f);
 			this.vao.bind();
 			this.vao.draw(GL11.GL_LINES, 0, this.vbo.getByteCount() / BYTES_PER_LINES);
 		}

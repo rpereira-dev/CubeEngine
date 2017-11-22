@@ -3,6 +3,7 @@ package com.grillecube.client.renderer.model.editor.mesher;
 import java.util.HashMap;
 
 import com.grillecube.client.renderer.model.ModelSkin;
+import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.utils.Color;
 
 /** hold the data of a single block of the model */
@@ -11,13 +12,11 @@ public class ModelBlockData {
 	/** the plan linked to this block */
 	private final String[] bones;
 	private final float[] weights;
-	private final int x, y, z;
 	private final HashMap<ModelSkin, Color> colors;
+	private final Vector3i pos;
 
-	public ModelBlockData(int bx, int by, int bz) {
-		this.x = bx;
-		this.y = by;
-		this.z = bz;
+	public ModelBlockData(int x, int y, int z) {
+		this.pos = new Vector3i(x, y, z);
 		this.bones = new String[] { "", "", "" };
 		this.weights = new float[] { 1, 0, 0 };
 		this.colors = new HashMap<ModelSkin, Color>();
@@ -54,15 +53,19 @@ public class ModelBlockData {
 	}
 
 	public final int getX() {
-		return (this.x);
+		return (this.pos.x);
 	}
 
 	public final int getY() {
-		return (this.y);
+		return (this.pos.y);
 	}
 
 	public final int getZ() {
-		return (this.z);
+		return (this.pos.z);
+	}
+
+	public final Vector3i getPos() {
+		return (this.pos);
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package com.grillecube.client.renderer.model.editor.gui;
 
 import com.grillecube.client.renderer.gui.components.Gui;
-import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolbox;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 
 public class GuiModelEditor extends Gui {

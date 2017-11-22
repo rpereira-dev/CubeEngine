@@ -103,6 +103,9 @@ public abstract class Mesh {
 	}
 
 	public void bind() {
+		if (!this.isInitialized()) {
+			this.initialize();
+		}
 		this.vao.bind();
 	}
 
@@ -121,7 +124,7 @@ public abstract class Mesh {
 
 	/** draw with index buffer */
 	public final void drawElements(int indexCount, int indiceType) {
-		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, indiceType, 0);
+		GLH.glhDrawElements(GL11.GL_TRIANGLES, indexCount, indiceType, 0);
 	}
 
 	public final void drawInstanced(int primcount) {

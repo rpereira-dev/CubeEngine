@@ -8,10 +8,9 @@ import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
-import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
-import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Matrix4f;
@@ -22,10 +21,10 @@ import com.grillecube.common.world.entity.Entity;
 
 public class CameraControllerDefault extends CameraController {
 
-	private final CameraControllerSelection selection;
 	protected final Vector3i hovered;
 	private final Vector3i firstBlock;
 	private final Vector3i secondBlock;
+	private Vector3i face;
 	private int ySelected;
 	private int box;
 
@@ -34,9 +33,9 @@ public class CameraControllerDefault extends CameraController {
 		this.hovered = new Vector3i();
 		this.firstBlock = new Vector3i();
 		this.secondBlock = new Vector3i();
-		this.selection = new CameraControllerSelectionBlocks(this, this.firstBlock, this.secondBlock);
-		this.box = super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this.selection,
-				this.selection);
+		super.setSelection(new SelectionBlocks(this));
+		this.box = super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(super.getSelection(),
+				super.getSelection());
 		this.ySelected = 0;
 	}
 
@@ -47,18 +46,7 @@ public class CameraControllerDefault extends CameraController {
 			if (event.getKey() == GLFW.GLFW_KEY_E) {
 				EditableModel model = (EditableModel) modelInstance.getModel();
 				if (model != null) {
-					int x0 = this.selection.getX();
-					int y0 = this.selection.getY();
-					int z0 = this.selection.getZ();
-					for (int dx = 0; dx < this.selection.getWidth(); dx++) {
-						for (int dy = 0; dy < this.selection.getHeight(); dy++) {
-							for (int dz = 0; dz < this.selection.getDepth(); dz++) {
-								model.setBlockData(new ModelBlockData(x0 + dx, y0 + dy, z0 + dz));
-							}
-						}
-					}
-					model.requestMeshUpdate();
-					requestPanelsRefresh();
+					super.actionDo();
 				}
 			}
 		}
@@ -115,16 +103,19 @@ public class CameraControllerDefault extends CameraController {
 		Vector3f ray = new Vector3f();
 		CameraPicker.ray(ray, camera, this.guiModelView.getMouseX(), this.guiModelView.getMouseY());
 
+		Vector3i pos = new Vector3i();
 		Raycasting.raycast(origin.x, origin.y, origin.z, ray.x, ray.y, ray.z, 256.0f, 256.0f, 256.0f,
 				new RaycastingCallback() {
 					@Override
-					public boolean onRaycastCoordinates(int x, int y, int z, Vector3i face) {
+					public boolean onRaycastCoordinates(int x, int y, int z, Vector3i theFace) {
 						// System.out.println(x + " : " + y + " : " + z);
-						if (y < model.getMinY() || model.getBlockData(x, y, z) != null) {
-							int bx = x + face.x;
-							int by = y + face.y;
-							int bz = z + face.z;
+						if (y < 0 || model.getBlockData(pos.set(x, y, z)) != null) {
+							// TODO clean this
+							int bx = x + (getAction() == ActionPlace.class ? theFace.x : 0);
+							int by = y + (getAction() == ActionPlace.class ? theFace.y : 0);
+							int bz = z + (getAction() == ActionPlace.class ? theFace.z : 0);
 							hovered.set(bx, by, bz);
+							face = theFace;
 							return (true);
 						}
 						return (false);
@@ -157,7 +148,8 @@ public class CameraControllerDefault extends CameraController {
 		}
 		this.secondBlock.set(this.hovered.x, this.hovered.y + this.ySelected, this.hovered.z);
 
-		super.guiModelView.getWorldRenderer().getLineRendererFactory().setBox(this.selection, this.selection, this.box);
+		super.guiModelView.getWorldRenderer().getLineRendererFactory().setBox(super.getSelection(),
+				super.getSelection(), this.box);
 	}
 
 	private final void updateCameraRotation() {
@@ -184,5 +176,17 @@ public class CameraControllerDefault extends CameraController {
 	@Override
 	public String getName() {
 		return ("Build");
+	}
+
+	public Vector3i getFirstBlock() {
+		return (this.firstBlock);
+	}
+
+	public Vector3i getSecondBlock() {
+		return (this.secondBlock);
+	}
+
+	public Vector3i getFace() {
+		return (this.face);
 	}
 }

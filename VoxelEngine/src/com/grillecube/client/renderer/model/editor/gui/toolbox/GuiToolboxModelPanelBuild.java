@@ -4,6 +4,10 @@ import com.grillecube.client.renderer.gui.components.GuiPrompt;
 import com.grillecube.client.renderer.gui.components.GuiSpinner;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
+import com.grillecube.client.renderer.model.editor.camera.Action;
+import com.grillecube.client.renderer.model.editor.camera.ActionExtrude;
+import com.grillecube.client.renderer.model.editor.camera.ActionPlace;
+import com.grillecube.client.renderer.model.editor.camera.ActionRemove;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 
@@ -19,11 +23,11 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		super();
 		this.tools = new GuiSpinnerEditor();
 		this.tools.setHint("Tools...");
-		this.tools.add("Place");
-		this.tools.add("Remove");
-		this.tools.add("Extrude");
-		this.tools.add("Paint");
-		this.tools.add("Fill surface");
+		this.tools.add(ActionPlace.class, "Place");
+		this.tools.add(ActionRemove.class, "Remove");
+		this.tools.add(ActionExtrude.class, "Extrude");
+		// this.tools.add("Fill surface");
+		this.tools.pick(0);
 		this.tools.setBox(0, 0.70f, 1.0f, 0.05f, 0);
 		this.addChild(this.tools);
 
@@ -37,6 +41,11 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 			}
 		});
 		this.addChild(this.modelBlockSizeUnit);
+	}
+
+	@SuppressWarnings("unchecked")
+	public final Class<? extends Action> getPickedAction() {
+		return (Class<? extends Action>) (this.tools.getPickedObject());
 	}
 
 	@Override

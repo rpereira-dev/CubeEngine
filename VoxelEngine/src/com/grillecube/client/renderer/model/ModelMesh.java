@@ -34,7 +34,7 @@ public class ModelMesh extends Mesh {
 
 	private int getIndexCount() {
 		// short
-		return (this.indicesVBO.getByteCount() / 2);
+		return (this.indicesVBO == null ? 0 : this.indicesVBO.getByteCount() / 2);
 	}
 
 	public ByteBuffer getIndices() {
@@ -67,6 +67,9 @@ public class ModelMesh extends Mesh {
 	}
 
 	public void setIndices(ByteBuffer indicesBuffer) {
+		if (!this.isInitialized()) {
+			return;
+		}
 		this.indicesVBO.bind(GL15.GL_ELEMENT_ARRAY_BUFFER);
 		this.indicesVBO.bufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL15.GL_STATIC_DRAW);
 	}
@@ -78,6 +81,9 @@ public class ModelMesh extends Mesh {
 	}
 
 	public void drawElements() {
+		if (this.getIndexCount() == 0) {
+			return;
+		}
 		super.drawElements(this.getIndexCount(), GL11.GL_UNSIGNED_SHORT);
 	}
 }

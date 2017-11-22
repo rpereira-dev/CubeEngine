@@ -255,6 +255,12 @@ public class GLH {
 		_context.increaseVerticesDrawn(vertex_count);
 	}
 
+	public static void glhDrawElements(int glTriangles, int indexCount, int indiceType, long indices) {
+		GL11.glDrawElements(glTriangles, indexCount, indiceType, indices);
+		_context.incrementDrawCalls();
+		_context.increaseVerticesDrawn(indexCount / 3);
+	}
+
 	public static void glhDrawArraysInstanced(int mode, int first, int count, int primcount) {
 		GL31.glDrawArraysInstanced(mode, first, count, primcount);
 		_context.incrementDrawCalls();

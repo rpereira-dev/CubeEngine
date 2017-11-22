@@ -11,7 +11,8 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.model.EditableModel;
+import com.grillecube.client.renderer.model.editor.camera.Action;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.world.entity.Entity;
 
@@ -25,6 +26,11 @@ public class GuiToolboxModel extends GuiView {
 	private final GuiButton next;
 
 	private final ArrayList<GuiToolboxModelPanel> panels;
+
+	private GuiToolboxModelPanelBuild buildPanel;
+	private GuiToolboxModelPanelSkin skinPanel;
+	private GuiToolboxModelPanelSkeleton skeletonPanel;
+	private GuiToolboxModelPanelAnimation animationPanel;
 
 	private int selected;
 
@@ -76,10 +82,15 @@ public class GuiToolboxModel extends GuiView {
 		this.addChild(this.next);
 
 		this.panels = new ArrayList<GuiToolboxModelPanel>();
-		this.panels.add(new GuiToolboxModelPanelBuild());
-		this.panels.add(new GuiToolboxModelPanelSkin());
-		this.panels.add(new GuiToolboxModelPanelSkeleton());
-		this.panels.add(new GuiToolboxModelPanelAnimation());
+		this.buildPanel = new GuiToolboxModelPanelBuild();
+		this.skinPanel = new GuiToolboxModelPanelSkin();
+		this.skeletonPanel = new GuiToolboxModelPanelSkeleton();
+		this.animationPanel = new GuiToolboxModelPanelAnimation();
+
+		this.panels.add(this.buildPanel);
+		this.panels.add(this.skinPanel);
+		this.panels.add(this.skeletonPanel);
+		this.panels.add(this.animationPanel);
 
 		for (GuiToolboxModelPanel panel : this.panels) {
 			panel.setVisible(false);
@@ -121,5 +132,9 @@ public class GuiToolboxModel extends GuiView {
 
 	public final Entity getEntity() {
 		return (this.modelInstance.getEntity());
+	}
+
+	public Class<? extends Action> getPickedAction() {
+		return (this.buildPanel.getPickedAction());
 	}
 }

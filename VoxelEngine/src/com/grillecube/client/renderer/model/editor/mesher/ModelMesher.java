@@ -21,7 +21,6 @@ import java.util.Stack;
 
 import org.lwjgl.BufferUtils;
 
-import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.ModelMesh;
 import com.grillecube.client.renderer.model.ModelMeshVertex;
 import com.grillecube.client.renderer.model.ModelSkin;
@@ -35,6 +34,16 @@ public abstract class ModelMesher {
 	}
 
 	public final void generate(EditableModel editableModel) {
+
+		// if empty model
+		if (editableModel.getBlockDataCount() == 0) {
+			editableModel.getMesh().setVertices(null);
+			editableModel.getMesh().setIndices(null);
+			for (ModelSkin modelSkin : editableModel.getSkins()) {
+				modelSkin.getGLTexture().setData(null);
+			}
+			return;
+		}
 
 		// prepare the mesh vertex stack
 		Stack<ModelMeshVertex> vertexStack = new Stack<ModelMeshVertex>();
@@ -68,6 +77,7 @@ public abstract class ModelMesher {
 						+ skinsData.size() + "/" + editableModel.getSkins().size());
 
 			}
+			// may cause error if buffered image has a too high resolution
 			modelSkin.getGLTexture().setData(skin);
 		}
 	}

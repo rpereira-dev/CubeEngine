@@ -20,15 +20,12 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import com.grillecube.client.renderer.blocks.BlockRenderer;
-import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.ModelMeshVertex;
 import com.grillecube.client.renderer.model.ModelSkin;
-import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.utils.Color;
-import com.grillecube.common.world.World;
 
 public class ModelMesherCull extends ModelMesher {
 
@@ -69,7 +66,8 @@ public class ModelMesherCull extends ModelMesher {
 		}
 
 		// get raw blocks
-		ModelBlockData[][][] datas = editableModel.getRawBlockDatas();
+		HashMap<Vector3i, ModelBlockData> datas = editableModel.getRawBlockDatas();
+		Vector3i pos = new Vector3i();
 		float uw = 1.0f / (float) txWidth;
 		float uh = 1.0f / (float) txHeight;
 		for (ModelPlane plane : planes) {
@@ -106,13 +104,13 @@ public class ModelMesherCull extends ModelMesher {
 					}
 
 					// the block data
-					ModelBlockData data = datas[x][y][z];
+					ModelBlockData data = datas.get(pos.set(x, y, z));
 
 					// add vertices
 
 					// add indices (quad)
 					int i = vertices.size();
-					
+
 					ModelMeshVertex v0 = this.generateVertex(editableModel, planeFace, ux, uy, data, 0);
 					ModelMeshVertex v1 = this.generateVertex(editableModel, planeFace, vx, uy, data, 1);
 					ModelMeshVertex v2 = this.generateVertex(editableModel, planeFace, vx, vy, data, 2);
@@ -121,7 +119,7 @@ public class ModelMesherCull extends ModelMesher {
 					vertices.push(v1);
 					vertices.push(v2);
 					vertices.push(v3);
-					
+
 					if (v0.ao + v2.ao < v1.ao + v3.ao) {
 						indices.add((short) i);
 						indices.add((short) (i + 1));
@@ -137,7 +135,7 @@ public class ModelMesherCull extends ModelMesher {
 						indices.add((short) (i + 3));
 						indices.add((short) i);
 					}
-						
+
 					// skins
 					for (ModelSkin skin : editableModel.getSkins()) {
 						BufferedImage img = skinsData.get(skin);
@@ -163,142 +161,122 @@ public class ModelMesherCull extends ModelMesher {
 
 	/** generate model planes */
 	private final ArrayList<ModelPlane> generateModelPlans(EditableModel editableModel) {
-		ModelBlockData[][][] blockDatas = editableModel.getRawBlockDatas();
-		int sx = editableModel.getSizeX();
-		int sy = editableModel.getSizeY();
-		int sz = editableModel.getSizeZ();
-
 		// extract plans
 		ArrayList<ModelPlane> modelPlanes = new ArrayList<ModelPlane>();
-		boolean[][][][] visited = new boolean[Face.faces.length][sx][sy][sz];
+		HashMap<Vector3i, ModelBlockData> blockDatas = editableModel.getRawBlockDatas();
+		Vector3i tmp = new Vector3i(); // vector3i buffer
 
 		// for each face
 		for (Face face : Face.faces) {
+			int faceID = face.getID();
+			HashMap<Vector3i, Boolean> visited = new HashMap<Vector3i, Boolean>();
+			for (ModelBlockData blockData : blockDatas.values()) {
 
-			for (int z = 0; z < sz; z++) {
-				for (int y = 0; y < sy; y++) {
-					for (int x = 0; x < sx; x++) {
-						ModelBlockData blockData = blockDatas[x][y][z];
-						if (blockData == null) {
-							continue;
-						}
+				// if already visited, continue
+				if (visited.get(blockData.getPos()) != null) {
+					continue;
+				}
 
-						int faceID = face.getID();
+				// else, set visited and find the plan
+				visited.put(blockData.getPos(), true);
 
-						// if already visited, continue
-						if (visited[faceID][x][y][z]) {
-							continue;
-						}
-						// else, set visited and find the plan
-						visited[faceID][x][y][z] = true;
+				int x = blockData.getPos().x;
+				int y = blockData.getPos().y;
+				int z = blockData.getPos().z;
 
-						// get the neighbor block, to ensure that this face is
-						// actually visible
-						int nx = x + face.getVector().x;
-						int ny = y + face.getVector().y;
-						int nz = z + face.getVector().z;
-						boolean isFaceVisible = (nx < 0 || ny < 0 || nz < 0 || nx >= sx || ny >= sy || nz >= sz)
-								|| blockDatas[nx][ny][nz] == null;
-						if (!isFaceVisible) {
-							continue;
-						}
+				// get the neighbor block, to ensure that this face is
+				// actually visible
+				int nx = x + face.getVector().x;
+				int ny = y + face.getVector().y;
+				int nz = z + face.getVector().z;
 
-						ModelPlane modelPlane = null;
+				// if neighbor face is visible
+				if (blockDatas.get(tmp.set(nx, ny, nz)) != null) {
+					continue;
+				}
 
-						// then this face is visible, generate plans
-						// TOP OR BOT FACE
-						if (faceID == Face.TOP || faceID == Face.BOT) {
-							int width = 1;
-							int depth = 1;
+				ModelPlane modelPlane = null;
 
-							// generate the rectangle width
-							while (x + width < sx && !visited[faceID][x + width][y][z]
-									&& blockDatas[x + width][y][z] != null) {
-								++width;
-							}
+				// then this face is visible, generate plans
+				// TOP OR BOT FACE
+				if (faceID == Face.TOP || faceID == Face.BOT) {
+					int width = 1;
+					int depth = 1;
 
-							// generate the rectangle depth
-							depth_test: while (z + depth < sz) {
-								for (int dx = 0; dx < width; dx++) {
-									if (visited[faceID][x + dx][y][z + depth]
-											|| blockDatas[x + dx][y][z + depth] == null) {
-										break depth_test;
-									}
-								}
-								++depth;
-							}
-							modelPlane = new ModelPlane(face, x, y, z, width, depth);
-							this.setVisited(visited, faceID, x, y, z, width, 1, depth);
-							x += width - 1;
-						}
-						// RIGHT OR LEFT FACE
-						else if (faceID == Face.RIGHT || faceID == Face.LEFT) {
-							int width = 1;
-							int height = 1;
-
-							// generate the rectangle width
-							while (x + width < sx && !visited[faceID][x + width][y][z]
-									&& blockDatas[x + width][y][z] != null) {
-								++width;
-							}
-
-							// generate the rectangle depth
-							height_test: while (y + height < sy) {
-								for (int dx = 0; dx < width; dx++) {
-									if (visited[faceID][x + dx][y + height][z]
-											|| blockDatas[x + dx][y + height][z] == null) {
-										break height_test;
-									}
-								}
-								++height;
-							}
-							modelPlane = new ModelPlane(face, x, y, z, width, height);
-							this.setVisited(visited, faceID, x, y, z, width, height, 1);
-							x += width - 1;
-						}
-						// ELSE : FRONT OR BACK
-						else {
-
-							int depth = 1;
-							int height = 1;
-
-							// generate the rectangle width
-							while (z + depth < sz && !visited[faceID][x][y][z + depth]
-									&& blockDatas[x][y][z + depth] != null) {
-								++depth;
-							}
-
-							// generate the rectangle depth
-							height_test: while (y + height < sy) {
-								for (int dz = 0; dz < depth; dz++) {
-									if (visited[faceID][x][y + height][z + dz]
-											|| blockDatas[x][y + height][z + dz] == null) {
-										break height_test;
-									}
-								}
-								++height;
-							}
-							modelPlane = new ModelPlane(face, x, y, z, height, depth);
-							this.setVisited(visited, faceID, x, y, z, 1, height, depth);
-						}
-						modelPlanes.add(modelPlane);
+					// generate the rectangle width
+					while (x + width < editableModel.getMaxx() && visited.get(tmp.set(x + width, y, z)) != null
+							&& blockDatas.get(tmp.set(x + width, y, z)) != null) {
+						++width;
 					}
+
+					// generate the rectangle depth
+					depth_test: while (z + depth < editableModel.getMaxz()) {
+						for (int dx = 0; dx < width; dx++) {
+							if (visited.get(tmp.set(x + dx, y, z + depth)) != null
+									|| blockDatas.get(tmp.set(x + dx, y, z + depth)) == null) {
+								break depth_test;
+							}
+							visited.put(tmp.set(x + dx, y, z + depth), true);
+						}
+						++depth;
+					}
+					modelPlane = new ModelPlane(face, x, y, z, width, depth);
+					x += width - 1;
 				}
+				// RIGHT OR LEFT FACE
+				else if (faceID == Face.RIGHT || faceID == Face.LEFT) {
+					int width = 1;
+					int height = 1;
+
+					// generate the rectangle width
+					while (x + width < editableModel.getMaxx() && visited.get(tmp.set(x + width, y, z)) != null
+							&& blockDatas.get(tmp.set(x + width, y, z)) != null) {
+						++width;
+					}
+
+					// generate the rectangle depth
+					height_test: while (y + height < editableModel.getMaxy()) {
+						for (int dx = 0; dx < width; dx++) {
+							if (visited.get(tmp.set(x + dx, y + height, z)) != null
+									|| blockDatas.get(tmp.set(x + dx, y + height, z)) == null) {
+								break height_test;
+							}
+							visited.put(tmp.set(x + dx, y + height, z), true);
+						}
+						++height;
+					}
+					modelPlane = new ModelPlane(face, x, y, z, width, height);
+					x += width - 1;
+				}
+				// ELSE : FRONT OR BACK
+				else {
+
+					int depth = 1;
+					int height = 1;
+
+					// generate the rectangle width
+					while (z + depth < editableModel.getMaxz() && visited.get(tmp.set(x, y, z + depth)) != null
+							&& blockDatas.get(tmp.set(x, y, z + depth)) != null) {
+						++depth;
+					}
+
+					// generate the rectangle depth
+					height_test: while (y + height < editableModel.getMaxy()) {
+						for (int dz = 0; dz < depth; dz++) {
+							if (visited.get(tmp.set(x, y + height, z + dz)) != null
+									|| blockDatas.get(tmp.set(x, y + height, z + dz)) == null) {
+								break height_test;
+							}
+							visited.put(tmp.set(x, y + height, z + dz), true);
+						}
+						++height;
+					}
+					modelPlane = new ModelPlane(face, x, y, z, height, depth);
+				}
+				modelPlanes.add(modelPlane);
 			}
 		}
-
 		return (modelPlanes);
-	}
-
-	private void setVisited(boolean[][][][] visited, int faceID, int x, int y, int z, int width, int height,
-			int depth) {
-		for (int dx = 0; dx < width; dx++) {
-			for (int dy = 0; dy < height; dy++) {
-				for (int dz = 0; dz < depth; dz++) {
-					visited[faceID][x + dx][y + dy][z + dz] = true;
-				}
-			}
-		}
 	}
 
 	private final ModelMeshVertex generateVertex(EditableModel editableModel, Face face, float uvx, float uvy,

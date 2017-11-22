@@ -1,14 +1,19 @@
 package com.grillecube.client.renderer.model.editor.camera;
 
+import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.entity.collision.Positioneable;
 import com.grillecube.common.world.entity.collision.Sizeable;
 
-public abstract class CameraControllerSelection implements Positioneable, Sizeable {
+public abstract class Selection implements Positioneable, Sizeable {
 
 	protected final CameraController cameraController;
 
-	public CameraControllerSelection(CameraController cameraController) {
+	public Selection(CameraController cameraController) {
 		this.cameraController = cameraController;
+	}
+
+	public void update() {
+
 	}
 
 	public abstract int getX();
@@ -22,6 +27,8 @@ public abstract class CameraControllerSelection implements Positioneable, Sizeab
 	public abstract int getHeight();
 
 	public abstract int getDepth();
+
+	public abstract Vector3i getFace();
 
 	@Override
 	public float getPositionX() {

@@ -88,5 +88,24 @@ public interface Face {
 		return (Face.get(Face.LEFT));
 	}
 
+	public static Face fromVec(Vector3i vec) {
+		if (vec.x > 0 && vec.x > vec.y && vec.x > vec.z) {
+			return (Face.get(Face.BACK));
+		}
+		if (vec.x < 0 && vec.x < vec.y && vec.x < vec.z) {
+			return (Face.get(Face.FRONT));
+		}
+		if (vec.y > 0 && vec.y > vec.x && vec.y > vec.z) {
+			return (Face.get(Face.TOP));
+		}
+		if (vec.y < 0 && vec.y < vec.x && vec.y < vec.z) {
+			return (Face.get(Face.BOT));
+		}
+		if (vec.z > 0 && vec.z > vec.x && vec.z > vec.y) {
+			return (Face.get(Face.RIGHT));
+		}
+		return (Face.get(Face.LEFT));
+	}
+
 	public Vector3i getAllowedTranslation();
 }

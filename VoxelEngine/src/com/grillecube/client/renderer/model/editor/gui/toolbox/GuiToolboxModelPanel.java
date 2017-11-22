@@ -1,7 +1,7 @@
 package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
 import com.grillecube.client.renderer.gui.components.GuiView;
-import com.grillecube.client.renderer.model.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 
 /** a view which handles model creation */

@@ -1,14 +1,13 @@
 package com.grillecube.client.renderer.model.json;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.grillecube.client.renderer.model.EditableModel;
 import com.grillecube.client.renderer.model.Model;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.common.Logger;
 import com.grillecube.common.utils.JSONHelper;
@@ -39,9 +38,6 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 		model.setBlockSizeUnit((float) (blocks.getDouble("sizeUnit")));
 		JSONArray blocksData = blocks.getJSONArray("blocks");
 
-		ArrayList<ModelBlockData> blockDatas = new ArrayList<ModelBlockData>();
-		int minx = 0, miny = 0, minz = 0;
-		int maxx = 0, maxy = 0, maxz = 0;
 		for (int i = 0; i < blocksData.length();) {
 			int x = blocksData.getInt(i++);
 			int y = blocksData.getInt(i++);
@@ -57,29 +53,7 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 			blockData.setBone(0, b1, w1);
 			blockData.setBone(1, b2, w2);
 			blockData.setBone(2, b3, w3);
-			blockDatas.add(blockData);
-			if (x < minx) {
-				minx = x;
-			} else if (x > maxx) {
-				maxx = x;
-			}
-
-			if (y < miny) {
-				miny = y;
-			} else if (y > maxy) {
-				maxy = y;
-			}
-
-			if (z < minz) {
-				minz = z;
-			} else if (z > maxz) {
-				maxz = z;
-			}
-
-		}
-		model.allocate(minx, miny, minz, maxx, maxy, maxz);
-		for (ModelBlockData blockData : blockDatas) {
-			model.setBlockDataUncheck(blockData);
+			model.setBlockData(blockData);
 		}
 	}
 }
