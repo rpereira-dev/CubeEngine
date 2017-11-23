@@ -17,8 +17,8 @@ import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.ModelEditorMod;
-import com.grillecube.client.renderer.model.editor.camera.CameraController;
-import com.grillecube.client.renderer.model.editor.camera.CameraControllerDefault;
+import com.grillecube.client.renderer.model.editor.camera.CameraTool;
+import com.grillecube.client.renderer.model.editor.camera.CameraToolPlace;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolbox;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
@@ -32,7 +32,7 @@ public class GuiModelView extends Gui {
 
 	private ArrayList<ModelInstance> modelInstances;
 	private GuiViewWorld guiViewWorld;
-	private CameraController cameraController;
+	private CameraTool cameraController;
 
 	public GuiModelView() {
 		super();
@@ -49,7 +49,7 @@ public class GuiModelView extends Gui {
 		this.guiViewWorld.set(camera, worldID);
 		this.guiViewWorld.initialize(renderer);
 
-		this.cameraController = new CameraControllerDefault(this);
+		this.cameraController = new CameraToolPlace(this);
 
 		this.addChild(this.guiViewWorld);
 		this.addChild(new GuiViewDebug(camera));

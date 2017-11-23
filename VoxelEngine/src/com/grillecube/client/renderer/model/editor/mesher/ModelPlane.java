@@ -97,5 +97,4 @@ public final class ModelPlane {
 		this.u = u;
 		this.v = v;
 	}
-
 }

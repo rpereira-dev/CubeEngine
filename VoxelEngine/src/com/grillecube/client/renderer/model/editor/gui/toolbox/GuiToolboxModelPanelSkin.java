@@ -6,17 +6,14 @@ import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiPrompt;
-import com.grillecube.client.renderer.gui.components.GuiSliderBar;
 import com.grillecube.client.renderer.gui.components.GuiTexture;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseHover;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
 import com.grillecube.client.renderer.gui.event.GuiTextureEventTextureChanged;
 import com.grillecube.client.renderer.model.ModelSkin;
-import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerColor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.common.maths.Vector4f;
@@ -26,9 +23,6 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 	private final GuiButton addSkin;
 	private final GuiSpinnerEditor skins;
 	private final GuiButton removeSkin;
-
-	/** the model block size unit slider bar */
-	private final GuiSliderBarEditor pixelPerLine;
 
 	private final GuiButton addColor;
 	private final GuiSpinnerColor colors;
@@ -46,8 +40,6 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.addSkin = new GuiButton();
 		this.skins = new GuiSpinnerEditor();
 		this.removeSkin = new GuiButton();
-
-		this.pixelPerLine = new GuiSliderBarEditor();
 
 		this.addColor = new GuiButton();
 		this.colors = new GuiSpinnerColor();
@@ -81,22 +73,9 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.removeSkin.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.addChild(this.removeSkin);
 
-		// number of pixels per face
-		this.pixelPerLine.setBox(0, 0.65f, 1.0f, 0.05f, 0);
-		this.pixelPerLine.addValuesArray(GuiSliderBar.intRange(1, 64));
-		this.pixelPerLine.setPrefix("Pixel per face line: ");
-		this.pixelPerLine.select((Object) ModelSkin.DEFAULT_PIXELS_PER_LINE);
-		this.pixelPerLine.addListener(new GuiListener<GuiSliderBarEventValueChanged<GuiSliderBarEditor>>() {
-			@Override
-			public void invoke(GuiSliderBarEventValueChanged<GuiSliderBarEditor> event) {
-				onPixelPerFaceChanged();
-			}
-		});
-		this.addChild(this.pixelPerLine);
-
 		// colors
 		this.addColor.setText("Add");
-		this.addColor.setBox(0.0f, 0.60f, 1 / 3.0f, 0.05f, 0.0f);
+		this.addColor.setBox(0.0f, 0.65f, 1 / 3.0f, 0.05f, 0.0f);
 		this.addColor.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.addColor.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.addColor.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -114,7 +93,7 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.addChild(this.addColor);
 
 		this.colors.setHint("Colors...");
-		this.colors.setBox(1 / 3.0f, 0.60f, 1 / 3.0f, 0.05f, 0);
+		this.colors.setBox(1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0);
 		this.colors.add(Gui.COLOR_BLUE);
 		this.colors.add(Gui.COLOR_RED);
 		this.colors.add(new Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
@@ -122,7 +101,7 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.addChild(this.colors);
 
 		this.removeColor.setText("Remove");
-		this.removeColor.setBox(2 * 1 / 3.0f, 0.60f, 1 / 3.0f, 0.05f, 0.0f);
+		this.removeColor.setBox(2 * 1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0.0f);
 		this.removeColor.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.removeColor.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.removeColor.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -182,10 +161,6 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 
 	public final ModelSkin getSelectedSkin() {
 		return ((ModelSkin) this.skins.getPickedObject());
-	}
-
-	private final void onPixelPerFaceChanged() {
-		this.getSelectedSkin().setPixelsPerLine((int) this.pixelPerLine.getSelectedValue());
 	}
 
 	@Override

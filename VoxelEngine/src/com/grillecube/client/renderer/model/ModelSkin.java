@@ -23,8 +23,6 @@ import com.grillecube.client.opengl.object.ImageUtils;
 
 public class ModelSkin {
 
-	public static final int DEFAULT_PIXELS_PER_LINE = 2;
-
 	/** the skin name */
 	private String name;
 
@@ -33,8 +31,6 @@ public class ModelSkin {
 
 	/** the gl texture object */
 	private GLTexture glTexture;
-
-	private int pixelPerLine;
 
 	public ModelSkin() {
 		this(null);
@@ -48,7 +44,6 @@ public class ModelSkin {
 		this.name = name;
 		this.filepath = filepath;
 		this.glTexture = GLH.glhGenTexture();
-		this.pixelPerLine = DEFAULT_PIXELS_PER_LINE;
 		this.load();
 	}
 
@@ -79,21 +74,5 @@ public class ModelSkin {
 
 	public final void load() {
 		this.glTexture.setData(ImageUtils.readImage(this.getFilepath()));
-	}
-
-	public final void setPixelsPerLine(int pixelPerLine) {
-		if (this.getGLTexture() != null) {
-			BufferedImage prevImg = this.getGLTexture().getData();
-			float ratio = pixelPerLine / (float) this.pixelPerLine;
-			int width = (int) (prevImg.getWidth() * ratio);
-			int height = (int) (prevImg.getHeight() * ratio);
-			Image img = prevImg.getScaledInstance(width, height, BufferedImage.SCALE_SMOOTH);
-			this.getGLTexture().setData(img, width, height);
-		}
-		this.pixelPerLine = pixelPerLine;
-	}
-
-	public final int getPixelsPerLine() {
-		return (this.pixelPerLine);
 	}
 }

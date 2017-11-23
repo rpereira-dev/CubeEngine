@@ -6,9 +6,9 @@ import com.grillecube.common.world.entity.collision.Sizeable;
 
 public abstract class Selection implements Positioneable, Sizeable {
 
-	protected final CameraController cameraController;
+	protected final CameraTool cameraController;
 
-	public Selection(CameraController cameraController) {
+	public Selection(CameraTool cameraController) {
 		this.cameraController = cameraController;
 	}
 

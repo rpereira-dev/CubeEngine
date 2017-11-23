@@ -11,7 +11,6 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
-import com.grillecube.client.renderer.model.editor.camera.Action;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
@@ -204,10 +203,5 @@ public class GuiToolbox extends Gui {
 			return;
 		}
 		modelPanels.refresh();
-	}
-
-	public Class<? extends Action> getPickedAction() {
-		return (this.modelList.getPickedObject() == null ? null
-				: ((GuiToolboxModel) (this.modelList.getPickedObject())).getPickedAction());
 	}
 }

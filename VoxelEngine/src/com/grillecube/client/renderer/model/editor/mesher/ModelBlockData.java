@@ -3,6 +3,7 @@ package com.grillecube.client.renderer.model.editor.mesher;
 import java.util.HashMap;
 
 import com.grillecube.client.renderer.model.ModelSkin;
+import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.utils.Color;
 
@@ -12,22 +13,27 @@ public class ModelBlockData {
 	/** the plan linked to this block */
 	private final String[] bones;
 	private final float[] weights;
-	private final HashMap<ModelSkin, Color> colors;
+	private final HashMap<ModelSkin, Color[]> colors;
 	private final Vector3i pos;
 
 	public ModelBlockData(int x, int y, int z) {
 		this.pos = new Vector3i(x, y, z);
 		this.bones = new String[] { "", "", "" };
 		this.weights = new float[] { 1, 0, 0 };
-		this.colors = new HashMap<ModelSkin, Color>();
+		this.colors = new HashMap<ModelSkin, Color[]>();
 	}
 
-	public final Color getColor(ModelSkin modelSkin) {
-		return (this.colors.containsKey(modelSkin) ? this.colors.get(modelSkin) : Color.GRAY);
+	public final Color getColor(ModelSkin modelSkin, Face face) {
+		return (this.colors.containsKey(modelSkin) ? this.colors.get(modelSkin)[face.getID()] : Color.GRAY);
 	}
 
-	public final void setColor(ModelSkin modelSkin, Color color) {
-		this.colors.put(modelSkin, color);
+	public final void setColor(ModelSkin modelSkin, Color color, Face face) {
+		Color[] colors = this.colors.get(modelSkin);
+		if (colors == null) {
+			colors = new Color[Face.values().length];
+			this.colors.put(modelSkin, colors);
+		}
+		colors[face.getID()] = color;
 	}
 
 	public final String getBone(int i) {

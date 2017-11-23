@@ -8,21 +8,21 @@ public class SelectionBlocks extends Selection {
 	private int x1, x2, y1, y2, z1, z2;
 	private Vector3i face;
 
-	public SelectionBlocks(CameraController cameraController) {
+	public SelectionBlocks(CameraTool cameraController) {
 		super(cameraController);
 	}
 
 	@Override
 	public void update() {
-		Vector3i first = ((CameraControllerDefault) super.cameraController).getFirstBlock();
-		Vector3i second = ((CameraControllerDefault) super.cameraController).getSecondBlock();
+		Vector3i first = ((CameraToolPlace) super.cameraController).getFirstBlock();
+		Vector3i second = ((CameraToolPlace) super.cameraController).getSecondBlock();
 		this.x1 = first.x;
 		this.y1 = first.y;
 		this.z1 = first.z;
 		this.x2 = second.x;
 		this.y2 = second.y;
 		this.z2 = second.z;
-		this.face = ((CameraControllerDefault) super.cameraController).getFace();
+		this.face = ((CameraToolPlace) super.cameraController).getFace();
 	}
 
 	public final int getX() {
