@@ -1,11 +1,11 @@
 package com.grillecube.client.renderer.gui.components;
 
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 public class GuiPopUp extends GuiView {
 
-	private static final Vector4f BG_COLOR = new Vector4f(0.0f, 0.0f, 0.0f, 0.5f);
-	private static final Vector4f FG_COLOR = new Vector4f(0.9f, 0.9f, 0.9f, 0.9f);
+	private static final Color BG_COLOR = new Color(0.0f, 0.0f, 0.0f, 0.5f);
+	private static final Color FG_COLOR = new Color(0.9f, 0.9f, 0.9f, 0.9f);
 
 	private final GuiColoredQuad bg;
 	private final GuiColoredQuad fg;

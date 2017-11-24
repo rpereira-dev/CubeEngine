@@ -34,7 +34,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventRemoveChild;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector2f;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 /**
  * 
@@ -78,12 +78,12 @@ public abstract class Gui {
 	};
 
 	/** default colors */
-	public static final Vector4f COLOR_WHITE = new Vector4f(0.9f, 0.9f, 0.9f, 1.0f);
-	public static final Vector4f COLOR_BLACK = new Vector4f(0.1f, 0.1f, 0.1f, 1.0f);
-	public static final Vector4f COLOR_BLUE = new Vector4f(65 / 255.0f, 105 / 255.0f, 225 / 255.0f, 1.0f);
-	public static final Vector4f COLOR_LIGHT_BLUE = Vector4f.scale(null, COLOR_BLUE, 1.5f);
-	public static final Vector4f COLOR_RED = new Vector4f(176 / 255.0f, 23 / 255.0f, 31 / 255.0f, 1.0f);
-	public static final Vector4f COLOR_DARK_MAGENTA = new Vector4f(139 / 255.0f, 0 / 255.0f, 139 / 255.0f, 1.0f);
+	public static final Color COLOR_WHITE = new Color(0.9f, 0.9f, 0.9f, 1.0f);
+	public static final Color COLOR_BLACK = new Color(0.1f, 0.1f, 0.1f, 1.0f);
+	public static final Color COLOR_BLUE = new Color(65 / 255.0f, 105 / 255.0f, 225 / 255.0f, 1.0f);
+	public static final Color COLOR_LIGHT_BLUE = Color.scale(null, COLOR_BLUE, 1.5f);
+	public static final Color COLOR_RED = new Color(176 / 255.0f, 23 / 255.0f, 31 / 255.0f, 1.0f);
+	public static final Color COLOR_DARK_MAGENTA = new Color(139 / 255.0f, 0 / 255.0f, 139 / 255.0f, 1.0f);
 
 	/** mouse states (using bitwise operations) */
 	public static final int STATE_INITIALIZED = (1 << 0);
@@ -146,7 +146,7 @@ public abstract class Gui {
 
 	/** border */
 	private float borderWidth;
-	private Vector4f borderColor;
+	private Color borderColor;
 
 	/** the mouse coordinates relatively to the gui basis */
 	private float mouseX;

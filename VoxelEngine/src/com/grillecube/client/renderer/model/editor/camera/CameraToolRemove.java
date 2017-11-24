@@ -8,7 +8,6 @@ import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
-import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
@@ -28,14 +27,12 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 	private final Vector3i secondBlock;
 	private Vector3i face;
 	private int ySelected;
-	private int box;
 
 	public CameraToolRemove(GuiModelView guiModelView) {
 		super(guiModelView);
 		this.hovered = new Vector3i();
 		this.firstBlock = new Vector3i();
 		this.secondBlock = new Vector3i();
-		this.box = super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this, this);
 		this.ySelected = 0;
 	}
 
@@ -112,20 +109,24 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 		Vector3f ray = new Vector3f();
 		CameraPicker.ray(ray, camera, this.guiModelView.getMouseX(), this.guiModelView.getMouseY());
 
-		Vector3i pos = new Vector3i();
-		Raycasting.raycast(origin.x, origin.y, origin.z, ray.x, ray.y, ray.z, 256.0f, 256.0f, 256.0f,
-				new RaycastingCallback() {
-					@Override
-					public boolean onRaycastCoordinates(int x, int y, int z, Vector3i theFace) {
-						// System.out.println(x + " : " + y + " : " + z);
-						if (y < 0 || model.getBlockData(pos.set(x, y, z)) != null) {
-							hovered.set(x, y, z);
-							face = theFace;
-							return (true);
+		if (model.getBlockDataCount() > 0) {
+			Vector3i pos = new Vector3i();
+			Raycasting.raycast(origin.x, origin.y, origin.z, ray.x, ray.y, ray.z, 256.0f, 256.0f, 256.0f,
+					new RaycastingCallback() {
+						@Override
+						public boolean onRaycastCoordinates(int x, int y, int z, Vector3i theFace) {
+							// System.out.println(x + " : " + y + " : " + z);
+							if (y <= model.getMiny() || model.getBlockData(pos.set(x, y, z)) != null) {
+								hovered.set(x, y, z);
+								face = theFace;
+								return (true);
+							}
+							return (false);
 						}
-						return (false);
-					}
-				});
+					});
+		} else {
+			hovered.set(0, 0, 0);
+		}
 
 	}
 
@@ -152,7 +153,7 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 			this.firstBlock.set(this.hovered);
 		}
 		this.secondBlock.set(this.hovered.x, this.hovered.y + this.ySelected, this.hovered.z);
-		super.guiModelView.getWorldRenderer().getLineRendererFactory().setBox(this, this, this.box);
+		super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this, this);
 	}
 
 	private final void updateCameraRotation() {

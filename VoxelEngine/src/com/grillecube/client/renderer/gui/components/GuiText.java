@@ -22,7 +22,7 @@ import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.font.FontModel;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 public class GuiText extends Gui {
 
@@ -56,8 +56,8 @@ public class GuiText extends Gui {
 	protected void onTextChanged(String str) {
 	}
 
-	public final void setFontColor(Vector4f color) {
-		this.setFontColor(color.x, color.y, color.z, color.w);
+	public final void setFontColor(Color color) {
+		this.setFontColor(color.getR(), color.getG(), color.getB(), color.getA());
 	}
 
 	/** set the font color */

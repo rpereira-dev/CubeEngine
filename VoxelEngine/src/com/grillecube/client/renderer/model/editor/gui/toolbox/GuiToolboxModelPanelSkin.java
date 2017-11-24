@@ -16,7 +16,7 @@ import com.grillecube.client.renderer.gui.event.GuiTextureEventTextureChanged;
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerColor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 
@@ -81,7 +81,7 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.addColor.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
-				Vector4f color = GuiRenderer.dialogPickColor();
+				Color color = GuiRenderer.dialogPickColor();
 				if (color == null) {
 					return;
 				}
@@ -96,7 +96,7 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.colors.setBox(1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0);
 		this.colors.add(Gui.COLOR_BLUE);
 		this.colors.add(Gui.COLOR_RED);
-		this.colors.add(new Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+		this.colors.add(Gui.COLOR_WHITE);
 		this.colors.pick(0);
 		this.addChild(this.colors);
 
@@ -123,18 +123,15 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 					return;
 				}
 				BufferedImage data = skinPreview.getGLTexture().getData();
-				Vector4f color = getSelectedColor();
-				int r = (int) (color.x * 255.0f);
-				int g = (int) (color.y * 255.0f);
-				int b = (int) (color.z * 255.0f);
-				int a = (int) (color.w * 255.0f);
-				int rgb = (a << 24 | r << 16 | g << 8 | b << 0);
+				Color color = getSelectedColor();
 				int px = (int) (data.getWidth() * event.getGui().getMouseX());
 				int py = (int) (data.getHeight() * event.getGui().getMouseY());
-				if (px < 0 || py < 0 || px >= data.getWidth() || py >= data.getHeight() || data.getRGB(px, py) == rgb) {
+				int argb = color.getARGB();
+				if (px < 0 || py < 0 || px >= data.getWidth() || py >= data.getHeight()
+						|| data.getRGB(px, py) == argb) {
 					return;
 				}
-				data.setRGB(px, py, rgb);
+				data.setRGB(px, py, argb);
 				skinPreview.getGLTexture().setData(data);
 			}
 		});
@@ -200,8 +197,8 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		return ("Skinning");
 	}
 
-	public final Vector4f getSelectedColor() {
-		return ((Vector4f) (this.colors.getPickedObject()));
+	public final Color getSelectedColor() {
+		return ((Color) (this.colors.getPickedObject()));
 	}
 
 }

@@ -11,6 +11,7 @@ import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
 import com.grillecube.client.renderer.gui.font.FontFile;
 import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 public class GuiPrompt extends GuiLabel {
 
@@ -230,8 +231,8 @@ public class GuiPrompt extends GuiLabel {
 		this.updateVisibleText();
 	}
 
-	public final void setHeldTextColor(Vector4f color) {
-		this.setHeldTextColor(color.x, color.y, color.z, color.w);
+	public final void setHeldTextColor(Color color) {
+		this.setHeldTextColor(color.getR(), color.getG(), color.getB(), color.getA());
 	}
 
 	/** set text color of the held text */

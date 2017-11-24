@@ -4,20 +4,20 @@ import com.grillecube.client.renderer.gui.animations.GuiAnimation;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAlignLeft;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterYBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 public class GuiButton extends GuiLabel {
 
-	private static final Vector4f HOVERED_COLOR = new Vector4f(0.6f, 0.6f, 1.0f, 1.0f);
-	private static final Vector4f OUT_COLOR = new Vector4f(0.87f, 0.87f, 0.87f, 1.0f);
-	private static final Vector4f PRESSED_COLOR = new Vector4f(0.5f, 0.5f, 0.9f, 1.0f);
-	private static final Vector4f DISABLED_COLOR = new Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+	private static final Color HOVERED_COLOR = new Color(0.6f, 0.6f, 1.0f, 1.0f);
+	private static final Color OUT_COLOR = new Color(0.87f, 0.87f, 0.87f, 1.0f);
+	private static final Color PRESSED_COLOR = new Color(0.5f, 0.5f, 0.9f, 1.0f);
+	private static final Color DISABLED_COLOR = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 
 	private final GuiColoredQuad bg;
-	private final Vector4f hoveredColor;
-	private final Vector4f outColor;
-	private final Vector4f pressedColor;
-	private final Vector4f disabledColor;
+	private final Color hoveredColor;
+	private final Color outColor;
+	private final Color pressedColor;
+	private final Color disabledColor;
 	private float transition;
 
 	public GuiButton() {
@@ -31,10 +31,10 @@ public class GuiButton extends GuiLabel {
 		this.addListener(ON_UNPRESS_FOCUS_LISTENER);
 
 		this.transition = transition;
-		this.hoveredColor = new Vector4f();
-		this.outColor = new Vector4f();
-		this.pressedColor = new Vector4f();
-		this.disabledColor = new Vector4f();
+		this.hoveredColor = new Color(0);
+		this.outColor = new Color(0);
+		this.pressedColor = new Color(0);
+		this.disabledColor = new Color(0);
 
 		this.bg = new GuiColoredQuad();
 		this.addChild(0, this.bg);
@@ -63,7 +63,7 @@ public class GuiButton extends GuiLabel {
 
 			@Override
 			public boolean run(GuiButton guiButton) {
-				Vector4f color;
+				Color color;
 				if (!guiButton.isEnabled()) {
 					color = guiButton.getDisabledColor();
 				} else if (guiButton.isPressed() || guiButton.isSelected()) {
@@ -77,7 +77,7 @@ public class GuiButton extends GuiLabel {
 							this.transition = guiButton.getTransition();
 						}
 						float ratio = (float) (this.transition / guiButton.getTransition());
-						color = Vector4f.mix(guiButton.getOutColor(), guiButton.getHoveredColor(), ratio, null);
+						color = Color.mix(guiButton.getOutColor(), guiButton.getHoveredColor(), ratio, null);
 					}
 				} else {
 					if (guiButton.getTransition() <= 0) {
@@ -88,7 +88,7 @@ public class GuiButton extends GuiLabel {
 							this.transition = 0.0d;
 						}
 						float ratio = (float) (this.transition / guiButton.getTransition());
-						color = Vector4f.mix(guiButton.getOutColor(), guiButton.getHoveredColor(), ratio, null);
+						color = Color.mix(guiButton.getOutColor(), guiButton.getHoveredColor(), ratio, null);
 					}
 				}
 				guiButton.setBGColor(color);
@@ -108,55 +108,55 @@ public class GuiButton extends GuiLabel {
 		return (this.transition);
 	}
 
-	public final void setBGColor(Vector4f color) {
+	public final void setBGColor(Color color) {
 		this.bg.setColor(color);
 	}
 
-	public final void setHoveredColor(Vector4f color) {
-		this.setHoveredColor(color.x, color.y, color.z, color.w);
+	public final void setHoveredColor(Color color) {
+		this.hoveredColor.set(color.getARGB());
 	}
 
 	public final void setHoveredColor(float r, float g, float b, float a) {
 		this.hoveredColor.set(r, g, b, a);
 	}
 
-	public final void setOutColor(Vector4f color) {
-		this.setOutColor(color.x, color.y, color.z, color.w);
+	public final void setOutColor(Color color) {
+		this.setOutColor(color.getR(), color.getG(), color.getB(), color.getA());
 	}
 
 	public final void setOutColor(float r, float g, float b, float a) {
 		this.outColor.set(r, g, b, a);
 	}
 
-	public final void setPressedColor(Vector4f color) {
-		this.setPressedColor(color.x, color.y, color.z, color.w);
+	public final void setPressedColor(Color color) {
+		this.setPressedColor(color.getR(), color.getG(), color.getB(), color.getA());
 	}
 
 	public final void setPressedColor(float r, float g, float b, float a) {
 		this.pressedColor.set(r, g, b, a);
 	}
 
-	public final void setDisabledColor(Vector4f color) {
-		this.setDisabledColor(color.x, color.y, color.z, color.w);
+	public final void setDisabledColor(Color color) {
+		this.setDisabledColor(color.getR(), color.getG(), color.getB(), color.getA());
 	}
 
 	public final void setDisabledColor(float r, float g, float b, float a) {
 		this.disabledColor.set(r, g, b, a);
 	}
 
-	public final Vector4f getHoveredColor() {
+	public final Color getHoveredColor() {
 		return (this.hoveredColor);
 	}
 
-	public final Vector4f getOutColor() {
+	public final Color getOutColor() {
 		return (this.outColor);
 	}
 
-	public final Vector4f getPressedColor() {
+	public final Color getPressedColor() {
 		return (this.pressedColor);
 	}
 
-	public final Vector4f getDisabledColor() {
+	public final Color getDisabledColor() {
 		return (this.disabledColor);
 	}
 

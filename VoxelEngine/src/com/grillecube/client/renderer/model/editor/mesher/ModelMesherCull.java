@@ -25,6 +25,7 @@ import com.grillecube.client.renderer.model.ModelMeshVertex;
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
+import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.utils.Color;
 
@@ -78,7 +79,7 @@ public class ModelMesherCull extends ModelMesher {
 
 		Random rng = new Random();
 		for (ModelPlane plane : planes) {
-			int c = rng.nextInt(Integer.MAX_VALUE) | 0xFF000000;
+			int planeColor = rng.nextInt(Integer.MAX_VALUE) | 0xFF000000;
 			Face planeFace = plane.getFace();
 			for (int d1 = 0; d1 < plane.getTextureWidth(); d1++) {
 				for (int d2 = 0; d2 < plane.getTextureHeight(); d2++) {
@@ -148,18 +149,20 @@ public class ModelMesherCull extends ModelMesher {
 					for (ModelSkin skin : editableModel.getSkins()) {
 						BufferedImage img = skinsData.get(skin);
 						Color color = data.getColor(skin, planeFace);
-						int r = (int) (color.getRed() * planeFace.getFaceFactor());
-						int g = (int) (color.getGreen() * planeFace.getFaceFactor());
-						int b = (int) (color.getBlue() * planeFace.getFaceFactor());
-						int beginx = plane.getU();
-						int beginy = plane.getV();
-						int endx = beginx + plane.getTextureWidth();
-						int endy = beginy + plane.getTextureHeight();
-						for (int px = beginx; px < endx; px++) {
-							for (int py = beginy; py < endy; py++) {
-								img.setRGB(px, py, c);
-							}
+						int r, g, b, a;
+						int c;
+						if (color != null) {
+							r = Maths.clamp((int) (color.getRed() * planeFace.getFaceFactor()), 0, 255);
+							g = Maths.clamp((int) (color.getGreen() * planeFace.getFaceFactor()), 0, 255);
+							b = Maths.clamp((int) (color.getBlue() * planeFace.getFaceFactor()), 0, 255);
+							a = color.getAlpha();
+							c = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+						} else {
+							c = planeColor;
 						}
+						int px = plane.getU() + d1;
+						int py = plane.getV() + d2;
+						img.setRGB(px, py, c);
 					}
 				}
 			}

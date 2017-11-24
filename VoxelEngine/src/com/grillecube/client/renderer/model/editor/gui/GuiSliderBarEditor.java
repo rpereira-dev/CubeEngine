@@ -9,6 +9,7 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSliderBarEventValueChanged;
 import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 public class GuiSliderBarEditor extends GuiSliderBar {
 
@@ -19,11 +20,11 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 		}
 	};
 
-	private static final Vector4f FILL_COLOR = new Vector4f(0.6f, 0.6f, 1.0f, 1.0f);
-	private static final Vector4f BG_COLOR = new Vector4f(0.87f, 0.87f, 0.87f, 1.0f);
+	private static final Color FILL_COLOR = new Color(0.6f, 0.6f, 1.0f, 1.0f);
+	private static final Color BG_COLOR = new Color(0.87f, 0.87f, 0.87f, 1.0f);
 
-	private static final Vector4f FILL_DISABLED_COLOR = Vector4f.scale(null, FILL_COLOR, 0.5f);
-	private static final Vector4f BG_DISABLED_COLOR = Vector4f.scale(null, BG_COLOR, 0.5f);
+	private static final Color FILL_DISABLED_COLOR = Color.scale(null, FILL_COLOR, 0.5f);
+	private static final Color BG_DISABLED_COLOR = Color.scale(null, BG_COLOR, 0.5f);
 
 	private GuiColoredQuad total;
 	private GuiColoredQuad selected;

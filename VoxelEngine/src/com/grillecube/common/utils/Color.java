@@ -27,6 +27,8 @@ package com.grillecube.common.utils;
 
 import java.awt.image.ColorModel;
 
+import com.grillecube.common.maths.Maths;
+
 /**
  * color utilities, some functions are taken from java.awt
  * 
@@ -198,15 +200,23 @@ public class Color {
 	private int argb;
 
 	public Color(int argb) {
+		this.set(argb);
+	}
+
+	public final void set(int argb) {
 		this.argb = argb;
 	}
 
+	public final void set(int r, int g, int b, int a) {
+		this.set(((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0));
+	}
+
 	public Color(int r, int g, int b) {
-		this(r, g, b, 255);
+		this.set(r, g, b, 255);
 	}
 
 	public Color(int r, int g, int b, int a) {
-		this(((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0));
+		this.set(r, g, b, a);
 	}
 
 	/**
@@ -284,7 +294,12 @@ public class Color {
 	 * @see #getRGB
 	 */
 	public Color(float r, float g, float b, float a) {
-		this((int) (r * 255 + 0.5), (int) (g * 255 + 0.5), (int) (b * 255 + 0.5), (int) (a * 255 + 0.5));
+		this.set(r, g, b, a);
+		;
+	}
+
+	public void set(float r, float g, float b, float a) {
+		this.set((int) (r * 255 + 0.5), (int) (g * 255 + 0.5), (int) (b * 255 + 0.5), (int) (a * 255 + 0.5));
 	}
 
 	/**
@@ -316,19 +331,19 @@ public class Color {
 	public int getBlue() {
 		return (getARGB() >> 0) & 0xFF;
 	}
-	
+
 	public final float getR() {
 		return (this.getRed() / 255.0f);
 	}
-	
+
 	public final float getG() {
 		return (this.getGreen() / 255.0f);
 	}
-	
+
 	public final float getB() {
 		return (this.getBlue() / 255.0f);
 	}
-	
+
 	public final float getA() {
 		return (this.getAlpha() / 255.0f);
 	}
@@ -563,5 +578,26 @@ public class Color {
 		Integer intval = Integer.getInteger(nm);
 		int i = (intval != null) ? intval.intValue() : v;
 		return new Color((i >> 16) & 0xFF, (i >> 8) & 0xFF, (i >> 0) & 0xFF);
+	}
+
+	public static Color scale(Color dst, Color color, float f) {
+		if (dst == null) {
+			dst = new Color(0);
+		}
+		dst.set((color.argb & 0xFF000000) | ((int) ((color.argb & 0x00FF0000) * f))
+				| ((int) ((color.argb & 0x0000FF00) * f)) | ((int) ((color.argb & 0x000000FF) * f)));
+		return (dst);
+	}
+
+	public static final Color mix(Color left, Color right, float ratio, Color dst) {
+		if (dst == null) {
+			dst = new Color(0);
+		}
+		int r = Maths.min(255, (int) (left.getRed() * (1 - ratio) + right.getRed() * ratio));
+		int g = Maths.min(255, (int) (left.getGreen() * (1 - ratio) + right.getGreen() * ratio));
+		int b = Maths.min(255, (int) (left.getBlue() * (1 - ratio) + right.getBlue() * ratio));
+		int a = Maths.min(255, (int) (left.getAlpha() * (1 - ratio) + right.getAlpha() * ratio));
+		dst.set(r, g, b, a);
+		return (dst);
 	}
 }

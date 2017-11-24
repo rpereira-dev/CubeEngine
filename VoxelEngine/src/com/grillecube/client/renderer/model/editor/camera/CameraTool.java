@@ -3,7 +3,6 @@ package com.grillecube.client.renderer.model.editor.camera;
 
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
-import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
@@ -20,6 +19,7 @@ public abstract class CameraTool {
 	public abstract String getName();
 
 	public final void update() {
+		this.guiModelView.getWorldRenderer().getLineRendererFactory().removeAllLines();
 		this.onUpdate();
 	}
 

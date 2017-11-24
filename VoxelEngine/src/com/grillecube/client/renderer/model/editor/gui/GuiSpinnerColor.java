@@ -8,7 +8,7 @@ import com.grillecube.client.renderer.gui.components.GuiSpinner;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 public class GuiSpinnerColor extends GuiSpinner {
 
@@ -29,7 +29,7 @@ public class GuiSpinnerColor extends GuiSpinner {
 		}
 	};
 
-	private static final Vector4f HINT_COLOR = new Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+	private static final Color HINT_COLOR = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 
 	private final GuiButton title;
 	private final ArrayList<GuiButton> guiColors;
@@ -78,12 +78,12 @@ public class GuiSpinnerColor extends GuiSpinner {
 		for (int i = 0; i < this.guiColors.size(); i++) {
 			GuiButton guiButton = this.guiColors.get(i);
 			guiButton.setAttribute(ATTR_BUTTON_INDEX, i);
-			Vector4f color = (Vector4f) super.getObject(i);
+			Color color = (Color) super.getObject(i);
 			if (color != null) {
 				guiButton.setOutColor(color);
-				guiButton.setHoveredColor(Vector4f.mix(Gui.COLOR_WHITE, color, 0.5f, null));
-				guiButton.setPressedColor(Vector4f.mix(Gui.COLOR_LIGHT_BLUE, color, 0.5f, null));
-				guiButton.setDisabledColor(Vector4f.mix(Gui.COLOR_BLACK, color, 0.5f, null));
+				guiButton.setHoveredColor(Color.mix(Gui.COLOR_WHITE, color, 0.5f, null));
+				guiButton.setPressedColor(Color.mix(Gui.COLOR_LIGHT_BLUE, color, 0.5f, null));
+				guiButton.setDisabledColor(Color.mix(Gui.COLOR_BLACK, color, 0.5f, null));
 			}
 			guiButton.setVisible(this.isExpanded());
 			guiButton.setBox(0.2f, -i - 1, 0.8f, 1, 0);

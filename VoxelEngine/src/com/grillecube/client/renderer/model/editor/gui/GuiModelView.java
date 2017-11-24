@@ -2,7 +2,6 @@ package com.grillecube.client.renderer.model.editor.gui;
 
 import java.util.ArrayList;
 
-import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiViewDebug;
@@ -15,15 +14,15 @@ import com.grillecube.client.renderer.gui.event.GuiEventMouseRightPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseRightRelease;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.model.editor.ModelEditorCamera;
+import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.ModelEditorMod;
-import com.grillecube.client.renderer.model.editor.camera.CameraTool;
-import com.grillecube.client.renderer.model.editor.camera.CameraToolPlace;
+import com.grillecube.client.renderer.model.editor.camera.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolbox;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldFlat;
 
@@ -32,7 +31,7 @@ public class GuiModelView extends Gui {
 
 	private ArrayList<ModelInstance> modelInstances;
 	private GuiViewWorld guiViewWorld;
-	private CameraTool cameraController;
+	private ModelEditorCamera camera;
 
 	public GuiModelView() {
 		super();
@@ -42,14 +41,13 @@ public class GuiModelView extends Gui {
 	@Override
 	protected void onInitialized(GuiRenderer renderer) {
 		int worldID = ModelEditorMod.WORLD_ID;
-		CameraProjective camera = new ModelEditorCamera(renderer.getMainRenderer().getGLFWWindow());
 
+		this.camera = new ModelEditorCamera(renderer.getMainRenderer().getGLFWWindow());
 		this.guiViewWorld = new GuiViewWorld();
 		this.guiViewWorld.setHoverable(false);
-		this.guiViewWorld.set(camera, worldID);
+		this.guiViewWorld.set(this.camera, worldID);
 		this.guiViewWorld.initialize(renderer);
-
-		this.cameraController = new CameraToolPlace(this);
+		this.camera.loadTools(this);
 
 		this.addChild(this.guiViewWorld);
 		this.addChild(new GuiViewDebug(camera));
@@ -58,47 +56,47 @@ public class GuiModelView extends Gui {
 		this.addListener(new GuiListener<GuiEventKeyPress<GuiModelView>>() {
 			@Override
 			public void invoke(GuiEventKeyPress<GuiModelView> event) {
-				cameraController.onKeyPress(event);
+				camera.onKeyPress(event);
 			}
 		});
 		this.addListener(new GuiListener<GuiEventMouseLeftPress<GuiModelView>>() {
 			@Override
 			public void invoke(GuiEventMouseLeftPress<GuiModelView> event) {
-				cameraController.onLeftPressed();
+				camera.onLeftPressed();
 			}
 		});
 
 		this.addListener(new GuiListener<GuiEventMouseLeftRelease<GuiModelView>>() {
 			@Override
 			public void invoke(GuiEventMouseLeftRelease<GuiModelView> event) {
-				cameraController.onLeftReleased();
+				camera.onLeftReleased();
 			}
 		});
 		this.addListener(new GuiListener<GuiEventMouseRightPress<GuiModelView>>() {
 			@Override
 			public void invoke(GuiEventMouseRightPress<GuiModelView> event) {
-				cameraController.onRightPressed();
+				camera.onRightPressed();
 			}
 		});
 
 		this.addListener(new GuiListener<GuiEventMouseRightRelease<GuiModelView>>() {
 			@Override
 			public void invoke(GuiEventMouseRightRelease<GuiModelView> event) {
-				cameraController.onRightReleased();
+				camera.onRightReleased();
 			}
 		});
 
 		this.addListener(new GuiListener<GuiEventMouseMove<GuiModelView>>() {
 			@Override
 			public void invoke(GuiEventMouseMove<GuiModelView> event) {
-				cameraController.onMouseMove();
+				camera.onMouseMove();
 			}
 		});
 
 		this.addListener(new GuiListener<GuiEventMouseScroll<GuiModelView>>() {
 			@Override
 			public void invoke(GuiEventMouseScroll<GuiModelView> event) {
-				cameraController.onMouseScroll(event);
+				camera.onMouseScroll(event);
 			}
 		});
 	}
@@ -107,10 +105,15 @@ public class GuiModelView extends Gui {
 	public void onUpdate() {
 		super.onUpdate();
 		this.updateModelInstances();
-		this.cameraController.update();
-		if (this.cameraController.requestedPanelRefresh()) {
+		this.camera.setTool(this.getSelectedTool());
+		this.camera.update();
+		if (this.camera.requestedPanelRefresh()) {
 			this.getToolbox().refresh();
 		}
+	}
+
+	private final int getSelectedTool() {
+		return (((GuiModelEditor) this.getParent()).getToolbox().getSelectedTool());
 	}
 
 	private final void updateModelInstances() {
@@ -128,8 +131,16 @@ public class GuiModelView extends Gui {
 		return (((GuiModelEditor) this.getParent()).getSelectedModelInstance());
 	}
 
+	public final ModelSkin getSelectedSkin() {
+		return (((GuiModelEditor) this.getParent()).getSelectedSkin());
+	}
+
 	public final EditableModel getSelectedModel() {
 		return (((GuiModelEditor) this.getParent()).getSelectedModel());
+	}
+
+	public final Color getSelectedColor() {
+		return (((GuiModelEditor) this.getParent()).getSelectedColor());
 	}
 
 	public final GuiViewWorld getGuiViewWorld() {

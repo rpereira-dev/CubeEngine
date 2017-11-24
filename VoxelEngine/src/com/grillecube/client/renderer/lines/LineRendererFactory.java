@@ -123,4 +123,8 @@ public class LineRendererFactory extends RendererFactory {
 		this.getMainRenderer().getLineRenderer().render(this);
 	}
 
+	public final void removeAllLines() {
+		this.renderingList.clear();
+	}
+
 }

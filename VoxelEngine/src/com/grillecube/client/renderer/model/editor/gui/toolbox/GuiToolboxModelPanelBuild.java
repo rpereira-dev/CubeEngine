@@ -19,10 +19,11 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		super();
 		this.tools = new GuiSpinnerEditor();
 		this.tools.setHint("Tools...");
-		// this.tools.add(ActionPlace.class, "Place");
-		// this.tools.add(ActionRemove.class, "Remove");
-		// this.tools.add(ActionExtrude.class, "Extrude");
-		// this.tools.add("Fill surface");
+		this.tools.add(0, "Place");
+		this.tools.add(1, "Paint");
+		this.tools.add(2, "Fill");
+		this.tools.add(3, "Remove");
+		this.tools.add(4, "Extrude");
 		this.tools.pick(0);
 		this.tools.setBox(0, 0.70f, 1.0f, 0.05f, 0);
 		this.addChild(this.tools);
@@ -60,5 +61,9 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 	@Override
 	public String getTitle() {
 		return ("Build");
+	}
+
+	public final int getSelectedTool() {
+		return ((Integer) this.tools.getPickedObject());
 	}
 }

@@ -16,7 +16,7 @@ package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.parameters.GuiParameter;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 /**
  * A GuiLabel.
@@ -65,7 +65,7 @@ public class GuiLabel extends Gui {
 		this.guiText.setFontSize(sx, sy);
 	}
 
-	public void setFontColor(Vector4f color) {
+	public void setFontColor(Color color) {
 		this.guiText.setFontColor(color);
 	}
 

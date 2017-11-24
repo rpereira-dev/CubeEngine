@@ -13,6 +13,7 @@ import com.grillecube.client.renderer.lines.Line;
 import com.grillecube.client.renderer.lines.LineRendererFactory;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
@@ -25,7 +26,7 @@ import com.grillecube.common.world.entity.Entity;
 import com.grillecube.common.world.entity.collision.Positioneable;
 import com.grillecube.common.world.entity.collision.Sizeable;
 
-public class CameraToolExtrude extends CameraTool implements Positioneable, Sizeable {
+public class CameraToolPaint extends CameraTool implements Positioneable, Sizeable {
 
 	protected final Vector3i hovered;
 	private final Vector3i firstBlock;
@@ -34,7 +35,7 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 	private Vector3f[] quad;
 	private Line[] lines;
 
-	public CameraToolExtrude(GuiModelView guiModelView) {
+	public CameraToolPaint(GuiModelView guiModelView) {
 		super(guiModelView);
 		this.hovered = new Vector3i();
 		this.firstBlock = new Vector3i();
@@ -51,94 +52,28 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
 		if (modelInstance != null) {
 			if (event.getKey() == GLFW.GLFW_KEY_E) {
-				this.extrudeBlocks((EditableModel) modelInstance.getModel());
-			}
-		}
-	}
+				EditableModel model = (EditableModel) modelInstance.getModel();
+				if (model != null) {
+					int x0 = getX();
+					int y0 = getY();
+					int z0 = getZ();
 
-	private void extrudeBlocks(EditableModel model) {
-
-		boolean updated = false;
-
-		int stepx = -face.getVector().x;
-		int stepy = -face.getVector().y;
-		int stepz = -face.getVector().z;
-
-		int x1 = 0;
-		if (stepx < 0) {
-			x1 = model.getMinx() - 1;
-		} else if (stepx > 0) {
-			x1 = model.getMaxx() + 1;
-		}
-
-		int y1 = 0;
-		if (stepy < 0) {
-			y1 = model.getMiny() - 1;
-		} else if (stepy > 0) {
-			y1 = model.getMaxy() + 1;
-		}
-
-		int z1 = 0;
-		if (stepz < 0) {
-			z1 = model.getMinz() - 1;
-		} else if (stepz > 0) {
-			z1 = model.getMaxz() + 1;
-		}
-
-		Vector3i pos = new Vector3i();
-
-		if (stepx != 0) {
-			for (int dy = 0; dy < this.getHeight(); dy++) {
-				for (int dz = 0; dz < this.getDepth(); dz++) {
-					int x0 = this.getX();
-					int y0 = this.getY() + dy;
-					int z0 = this.getZ() + dz;
-					int x;
-					for (x = x0; x != x1; x += stepx) {
-						if (model.unsetBlockData(pos.set(x, y0, z0))) {
-							updated = true;
+					Vector3i pos = new Vector3i();
+					for (int dx = 0; dx < getWidth(); dx++) {
+						for (int dy = 0; dy < getHeight(); dy++) {
+							for (int dz = 0; dz < getDepth(); dz++) {
+								ModelBlockData blockData = model.getBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz));
+								if (blockData != null) {
+									blockData.setColor(this.guiModelView.getSelectedSkin(),
+											this.guiModelView.getSelectedColor(), this.face);
+								}
+							}
 						}
 					}
+					model.generateMesh();
 				}
 			}
 		}
-
-		if (stepy != 0) {
-			for (int dx = 0; dx < this.getWidth(); dx++) {
-				for (int dz = 0; dz < this.getDepth(); dz++) {
-					int x0 = this.getX() + dx;
-					int y0 = this.getY();
-					int z0 = this.getZ() + dz;
-					int y;
-					for (y = y0; y != y1; y += stepy) {
-						if (model.unsetBlockData(pos.set(x0, y, z0))) {
-							updated = true;
-						}
-					}
-				}
-			}
-		}
-
-		if (stepz != 0) {
-			for (int dx = 0; dx < this.getWidth(); dx++) {
-				for (int dy = 0; dy < this.getHeight(); dy++) {
-					int x0 = this.getX() + dx;
-					int y0 = this.getY() + dy;
-					int z0 = this.getZ();
-					int z;
-					for (z = z0; z != z1; z += stepz) {
-						if (model.unsetBlockData(pos.set(x0, y0, z))) {
-							updated = true;
-						}
-					}
-				}
-			}
-		}
-
-		if (updated) {
-			model.generateMesh();
-		}
-
 	}
 
 	@Override

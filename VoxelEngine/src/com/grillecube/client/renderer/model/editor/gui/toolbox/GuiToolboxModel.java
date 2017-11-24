@@ -11,8 +11,10 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
+import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.entity.Entity;
 
 /** a view which handles model creation */
@@ -131,5 +133,17 @@ public class GuiToolboxModel extends GuiView {
 
 	public final Entity getEntity() {
 		return (this.modelInstance.getEntity());
+	}
+
+	public final int getSelectedTool() {
+		return (this.buildPanel.getSelectedTool());
+	}
+
+	public final ModelSkin getSelectedSkin() {
+		return (this.skinPanel.getSelectedSkin());
+	}
+
+	public final Color getSelectedColor() {
+		return (this.skinPanel.getSelectedColor());
 	}
 }

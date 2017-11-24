@@ -2,35 +2,31 @@ package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.common.maths.Matrix4f;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 public class GuiColoredQuad extends Gui {
 
 	/** background texture */
-	private float r;
-	private float g;
-	private float b;
-	private float a;
+	private final Color color;
 
 	public GuiColoredQuad() {
 		super();
+		this.color = new Color(0);
 	}
 
-	public final void setColor(Vector4f rgba) {
-		this.setColor(rgba.x, rgba.y, rgba.z, rgba.w);
+	public final void setColor(Color color) {
+		this.color.set(color.getARGB());
 	}
 
 	public final void setColor(float r, float g, float b, float a) {
-		this.r = r;
-		this.g = g;
-		this.b = b;
-		this.a = a;
+		this.color.set(r, g, b, a);
 	}
 
 	@Override
 	protected void onRender(GuiRenderer guiRenderer) {
 		Matrix4f matrix = super.getGuiToGLChangeOfBasis();
-		guiRenderer.renderColoredQuad(this.r, this.g, this.b, this.a, this.getTransparency(), matrix);
+		guiRenderer.renderColoredQuad(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA(),
+				this.getTransparency(), matrix);
 	}
 
 	@Override

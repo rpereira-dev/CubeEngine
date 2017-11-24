@@ -7,7 +7,7 @@ import com.grillecube.client.renderer.gui.components.GuiSpinner;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 
 public class GuiSpinnerEditor extends GuiSpinner {
 
@@ -28,8 +28,8 @@ public class GuiSpinnerEditor extends GuiSpinner {
 		}
 	};
 
-	private static final Vector4f TX_COLOR = new Vector4f(0, 0, 0, 1.0f);
-	private static final Vector4f HINT_COLOR = new Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+	private static final Color TX_COLOR = new Color(0, 0, 0, 1.0f);
+	private static final Color HINT_COLOR = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 
 	private final GuiButton title;
 	private final ArrayList<GuiButton> guiButtons;

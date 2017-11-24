@@ -11,6 +11,7 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
+import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
@@ -18,6 +19,7 @@ import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.model.json.JSONEditableModelInitializer;
 import com.grillecube.common.Logger;
 import com.grillecube.common.resources.R;
+import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.entity.Entity;
 
 public class GuiToolbox extends Gui {
@@ -195,6 +197,21 @@ public class GuiToolbox extends Gui {
 			return (null);
 		}
 		return ((EditableModel) (modelInstance.getModel()));
+	}
+
+	public final Color getSelectedColor() {
+		return (this.modelList == null || this.modelList.getPickedObject() == null ? Color.BLACK
+				: ((GuiToolboxModel) (this.modelList.getPickedObject())).getSelectedColor());
+	}
+
+	public final int getSelectedTool() {
+		return (this.modelList == null || this.modelList.getPickedObject() == null ? 0
+				: ((GuiToolboxModel) (this.modelList.getPickedObject())).getSelectedTool());
+	}
+
+	public final ModelSkin getSelectedSkin() {
+		return (this.modelList == null || this.modelList.getPickedObject() == null ? null
+				: ((GuiToolboxModel) (this.modelList.getPickedObject())).getSelectedSkin());
 	}
 
 	public final void refresh() {
