@@ -214,6 +214,10 @@ public class GuiToolbox extends Gui {
 				: ((GuiToolboxModel) (this.modelList.getPickedObject())).getSelectedSkin());
 	}
 
+	public GuiToolboxModel getSelectedModelPanels() {
+		return (this.modelList != null ? (GuiToolboxModel) this.modelList.getPickedObject() : null);
+	}
+
 	public final void refresh() {
 		GuiToolboxModel modelPanels = (GuiToolboxModel) this.modelList.getPickedObject();
 		if (modelPanels == null) {

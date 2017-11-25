@@ -41,13 +41,12 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
 		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
 		if (modelInstance != null) {
-			if (event.getKey() == GLFW.GLFW_KEY_E) {
+			if (event.getKey() == GLFW.GLFW_KEY_Z) {
 				EditableModel model = (EditableModel) modelInstance.getModel();
 				if (model != null) {
 					int x0 = getX();
 					int y0 = getY();
 					int z0 = getZ();
-
 					for (int dx = 0; dx < getWidth(); dx++) {
 						for (int dy = 0; dy < getHeight(); dy++) {
 							for (int dz = 0; dz < getDepth(); dz++) {
@@ -56,13 +55,23 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 						}
 					}
 					model.generateMesh();
+					this.guiModelView.getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
 				}
+			} else if (event.getKey() == GLFW.GLFW_KEY_W) {
+				this.incYSelection(1);
+			} else if (event.getKey() == GLFW.GLFW_KEY_S) {
+				this.incYSelection(-1);
 			}
 		}
 	}
 
 	@Override
 	public void onMouseMove() {
+	}
+
+	@Override
+	public void onLeftPressed() {
+		this.ySelected = 0;
 	}
 
 	@Override
@@ -139,12 +148,16 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 	public void onMouseScroll(GuiEventMouseScroll<GuiModelView> event) {
 		if (super.guiModelView.isLeftPressed()) {
 			int dy = -Maths.sign(event.getScrollY());
-			this.ySelected += dy;
-			this.secondBlock.y += dy;
+			this.incYSelection(dy);
 		} else {
 			float speed = this.getCamera().getDistanceFromCenter() * 0.14f;
 			this.getCamera().increaseDistanceFromCenter((float) (-event.getScrollY() * speed));
 		}
+	}
+
+	private void incYSelection(int dy) {
+		this.ySelected += dy;
+		this.secondBlock.y += dy;
 	}
 
 	@Override
@@ -184,7 +197,7 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 
 	@Override
 	public String getName() {
-		return ("Build");
+		return ("Place");
 	}
 
 	public Vector3i getFirstBlock() {

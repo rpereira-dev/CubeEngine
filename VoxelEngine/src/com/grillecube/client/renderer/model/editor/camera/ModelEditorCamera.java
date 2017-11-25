@@ -1,16 +1,18 @@
 package com.grillecube.client.renderer.model.editor.camera;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
+import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolboxModel;
 
 public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 
 	private CameraTool[] tools;
 	private int toolID;
-	protected boolean requestPanelsRefresh;
 
 	public ModelEditorCamera(GLFWWindow window) {
 		super(window);
@@ -34,16 +36,8 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 		this.tools[this.toolID].update();
 	}
 
-	public final void requestPanelsRefresh(boolean v) {
-		this.requestPanelsRefresh = v;
-	}
-
 	public void setTool(int toolID) {
 		this.toolID = toolID;
-	}
-
-	public boolean requestedPanelRefresh() {
-		return (this.requestPanelsRefresh);
 	}
 
 	public void onRightReleased() {
@@ -86,12 +80,28 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 		if (this.tools[this.toolID] != null) {
 			this.tools[this.toolID].onKeyPress(event);
 		}
+
+		GuiToolboxModel model = event.getGui().getToolbox().getSelectedModelPanels();
+		if (model != null) {
+			if (event.getKey() == GLFW.GLFW_KEY_E) {
+				model.getGuiToolboxModelPanelBuild().selectNextTool();
+			} else if (event.getKey() == GLFW.GLFW_KEY_Q) {
+				model.getGuiToolboxModelPanelBuild().selectPreviousTool();
+			} else if (event.getKey() == GLFW.GLFW_KEY_D) {
+				model.selectNextPanel();
+			} else if (event.getKey() == GLFW.GLFW_KEY_A) {
+				model.selectPreviousPanel();
+			}
+		}
 	}
 
 	public final void loadTools(GuiModelView guiModelView) {
-
 		this.tools = new CameraTool[] { new CameraToolPlace(guiModelView), new CameraToolPaint(guiModelView),
-				new CameraToolFill(guiModelView), new CameraToolRemove(guiModelView),
-				new CameraToolExtrude(guiModelView) };
+				new CameraToolRemove(guiModelView), new CameraToolExtrude(guiModelView),
+				new CameraToolRigging(guiModelView) };
+	}
+
+	public CameraTool getTool() {
+		return (this.tools != null ? this.tools[this.toolID] : null);
 	}
 }

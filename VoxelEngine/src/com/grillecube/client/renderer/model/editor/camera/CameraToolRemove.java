@@ -16,6 +16,7 @@ import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.entity.Entity;
 import com.grillecube.common.world.entity.collision.Positioneable;
 import com.grillecube.common.world.entity.collision.Sizeable;
@@ -40,22 +41,40 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
 		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
 		if (modelInstance != null) {
-			EditableModel model = (EditableModel) modelInstance.getModel();
-			if (event.getKey() == GLFW.GLFW_KEY_E) {
-				int x0 = getX();
-				int y0 = getY();
-				int z0 = getZ();
-				Vector3i pos = new Vector3i();
-				for (int dx = 0; dx < getWidth(); dx++) {
-					for (int dy = 0; dy < getHeight(); dy++) {
-						for (int dz = 0; dz < getDepth(); dz++) {
-							model.unsetBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz));
+
+			if (event.getKey() == GLFW.GLFW_KEY_Z) {
+				EditableModel model = (EditableModel) modelInstance.getModel();
+				if (model != null) {
+					int x0 = getX();
+					int y0 = getY();
+					int z0 = getZ();
+					Vector3i pos = new Vector3i();
+					boolean generate = false;
+					for (int dx = 0; dx < getWidth(); dx++) {
+						for (int dy = 0; dy < getHeight(); dy++) {
+							for (int dz = 0; dz < getDepth(); dz++) {
+								if (model.unsetBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz))) {
+									generate = true;
+								}
+							}
 						}
 					}
+					if (generate) {
+						model.generateMesh();
+						this.guiModelView.getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
+					}
 				}
-				model.generateMesh();
+			} else if (event.getKey() == GLFW.GLFW_KEY_W) {
+				this.incYSelection(1);
+			} else if (event.getKey() == GLFW.GLFW_KEY_S) {
+				this.incYSelection(-1);
 			}
 		}
+	}
+
+	private void incYSelection(int dy) {
+		this.ySelected += dy;
+		this.secondBlock.y += dy;
 	}
 
 	@Override
@@ -78,6 +97,11 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 	public void onRightReleased() {
 		this.getCamera().getWindow().setCursor(true);
 		this.getCamera().getWindow().setCursorCenter();
+	}
+
+	@Override
+	public void onLeftPressed() {
+		this.ySelected = 0;
 	}
 
 	@Override
@@ -134,8 +158,7 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 	public void onMouseScroll(GuiEventMouseScroll<GuiModelView> event) {
 		if (super.guiModelView.isLeftPressed()) {
 			int dy = -Maths.sign(event.getScrollY());
-			this.ySelected += dy;
-			this.secondBlock.y += dy;
+			this.incYSelection(dy);
 		} else {
 			float speed = this.getCamera().getDistanceFromCenter() * 0.14f;
 			this.getCamera().increaseDistanceFromCenter((float) (-event.getScrollY() * speed));
@@ -153,7 +176,7 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 			this.firstBlock.set(this.hovered);
 		}
 		this.secondBlock.set(this.hovered.x, this.hovered.y + this.ySelected, this.hovered.z);
-		super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this, this);
+		super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this, this, Color.RED);
 	}
 
 	private final void updateCameraRotation() {
@@ -179,7 +202,7 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 
 	@Override
 	public String getName() {
-		return ("Build");
+		return ("Remove");
 	}
 
 	public Vector3i getFirstBlock() {

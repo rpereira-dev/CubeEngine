@@ -146,4 +146,32 @@ public class GuiToolboxModel extends GuiView {
 	public final Color getSelectedColor() {
 		return (this.skinPanel.getSelectedColor());
 	}
+
+	public final GuiToolboxModelPanelBuild getGuiToolboxModelPanelBuild() {
+		return (this.buildPanel);
+	}
+
+	public final GuiToolboxModelPanelSkin getGuiToolboxModelPanelSkin() {
+		return (this.skinPanel);
+	}
+
+	public final GuiToolboxModelPanelSkeleton getGuiToolboxModelPanelSkeleton() {
+		return (this.skeletonPanel);
+	}
+
+	public final GuiToolboxModelPanelAnimation getGuiToolboxModelPanelAnimation() {
+		return (this.animationPanel);
+	}
+
+	public final void selectNextPanel() {
+		this.select((this.selected + 1) % this.panels.size());
+	}
+
+	public final void selectPreviousPanel() {
+		int index = this.selected - 1;
+		if (index < 0) {
+			index = this.panels.size() - 1;
+		}
+		this.select(index);
+	}
 }

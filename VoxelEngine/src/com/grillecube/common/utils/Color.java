@@ -203,6 +203,14 @@ public class Color {
 		this.set(argb);
 	}
 
+	public Color(Color color) {
+		this(color.argb);
+	}
+
+	public final void set(Color color) {
+		this.set(color.argb);
+	}
+
 	public final void set(int argb) {
 		this.argb = argb;
 	}
@@ -295,7 +303,6 @@ public class Color {
 	 */
 	public Color(float r, float g, float b, float a) {
 		this.set(r, g, b, a);
-		;
 	}
 
 	public void set(float r, float g, float b, float a) {

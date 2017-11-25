@@ -51,7 +51,7 @@ public class CameraToolPaint extends CameraTool implements Positioneable, Sizeab
 	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
 		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
 		if (modelInstance != null) {
-			if (event.getKey() == GLFW.GLFW_KEY_E) {
+			if (event.getKey() == GLFW.GLFW_KEY_Z) {
 				EditableModel model = (EditableModel) modelInstance.getModel();
 				if (model != null) {
 					int x0 = getX();
@@ -59,6 +59,7 @@ public class CameraToolPaint extends CameraTool implements Positioneable, Sizeab
 					int z0 = getZ();
 
 					Vector3i pos = new Vector3i();
+					boolean generate = false;
 					for (int dx = 0; dx < getWidth(); dx++) {
 						for (int dy = 0; dy < getHeight(); dy++) {
 							for (int dz = 0; dz < getDepth(); dz++) {
@@ -66,11 +67,14 @@ public class CameraToolPaint extends CameraTool implements Positioneable, Sizeab
 								if (blockData != null) {
 									blockData.setColor(this.guiModelView.getSelectedSkin(),
 											this.guiModelView.getSelectedColor(), this.face);
+									generate = true;
 								}
 							}
 						}
 					}
-					model.generateMesh();
+					if (generate) {
+						model.generateMesh();
+					}
 				}
 			}
 		}
@@ -206,7 +210,7 @@ public class CameraToolPaint extends CameraTool implements Positioneable, Sizeab
 
 	@Override
 	public String getName() {
-		return ("Build");
+		return ("Paint");
 	}
 
 	public Vector3i getFirstBlock() {

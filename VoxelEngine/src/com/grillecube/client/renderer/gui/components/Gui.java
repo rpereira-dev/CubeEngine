@@ -46,7 +46,9 @@ import com.grillecube.common.utils.Color;
  * and a scaling. These value are relative to the Gui parent referential (or to
  * the screen referential if it has no parent)
  * 
- * 
+ * WARNING: When a Gui is created, it is automatically allocated when needed,
+ * but it is not de-allocated automatically! if you no longer need a Gui, you
+ * should call: {@link #deinitialize()}
  *
  * @author Romain
  *
@@ -442,6 +444,15 @@ public abstract class Gui {
 			for (Gui gui : this.children) {
 				gui.deinitialize(renderer);
 			}
+		}
+
+		if (this.parent != null) {
+			this.parent.addTask(new GuiTask() {
+				@Override
+				public void run() {
+					parent.removeChild(Gui.this);
+				}
+			});
 		}
 	}
 

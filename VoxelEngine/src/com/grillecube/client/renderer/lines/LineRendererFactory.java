@@ -60,9 +60,8 @@ public class LineRendererFactory extends RendererFactory {
 		corners[7] = new Vector3f(0, 1, 1);
 	}
 
-	public final int setBox(Positioneable position, Sizeable sizeable, int index) {
+	public final int setBox(Positioneable position, Sizeable sizeable, int index, Color color) {
 
-		Color color = Color.BLUE;
 		Vector3f boxorigin = new Vector3f(position.getPositionX(), position.getPositionY(), position.getPositionZ());
 		Vector3f boxsize = new Vector3f(sizeable.getSizeX(), sizeable.getSizeY(), sizeable.getSizeZ());
 		Line[] lines = new Line[12];
@@ -100,7 +99,11 @@ public class LineRendererFactory extends RendererFactory {
 	}
 
 	public final int addBox(Positioneable positionable, Sizeable sizeable) {
-		return (this.setBox(positionable, sizeable, this.renderingList.size()));
+		return (this.addBox(positionable, sizeable, Color.BLUE));
+	}
+
+	public final int addBox(Positioneable positionable, Sizeable sizeable, Color color) {
+		return (this.setBox(positionable, sizeable, this.renderingList.size(), color));
 	}
 
 	private Line getBoxLine(Color color, Vector3f boxorigin, Vector3f boxsize, int cornera, int cornerb) {

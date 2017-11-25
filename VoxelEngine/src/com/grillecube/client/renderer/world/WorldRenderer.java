@@ -39,6 +39,7 @@ import com.grillecube.client.renderer.particles.ParticleRendererFactory;
 import com.grillecube.common.Logger;
 import com.grillecube.common.event.EventListener;
 import com.grillecube.common.resources.EventManager;
+import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.entity.Entity;
 
@@ -179,7 +180,7 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 			if (!BB.containsKey(e)) {
 				BB.put(e, this.lineFactory.addBox(e, e));
 			} else {
-				this.lineFactory.setBox(e, e, BB.get(e));
+				this.lineFactory.setBox(e, e, BB.get(e), Color.BLUE);
 			}
 		}
 	}

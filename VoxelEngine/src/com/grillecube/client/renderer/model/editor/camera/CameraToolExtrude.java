@@ -40,17 +40,17 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 		this.firstBlock = new Vector3i();
 		this.secondBlock = new Vector3i();
 		this.quad = new Vector3f[] { new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f() };
-		this.lines = new Line[] { new Line(this.quad[0], Color.BLUE, this.quad[1], Color.BLUE),
-				new Line(this.quad[1], Color.BLUE, this.quad[2], Color.BLUE),
-				new Line(this.quad[2], Color.BLUE, this.quad[3], Color.BLUE),
-				new Line(this.quad[3], Color.BLUE, this.quad[0], Color.BLUE) };
+		this.lines = new Line[] { new Line(this.quad[0], Color.YELLOW, this.quad[1], Color.YELLOW),
+				new Line(this.quad[1], Color.YELLOW, this.quad[2], Color.YELLOW),
+				new Line(this.quad[2], Color.YELLOW, this.quad[3], Color.YELLOW),
+				new Line(this.quad[3], Color.YELLOW, this.quad[0], Color.YELLOW) };
 	}
 
 	@Override
 	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
 		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
 		if (modelInstance != null) {
-			if (event.getKey() == GLFW.GLFW_KEY_E) {
+			if (event.getKey() == GLFW.GLFW_KEY_Z) {
 				this.extrudeBlocks((EditableModel) modelInstance.getModel());
 			}
 		}
@@ -137,6 +137,7 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 
 		if (updated) {
 			model.generateMesh();
+			this.guiModelView.getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
 		}
 
 	}
@@ -271,7 +272,7 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 
 	@Override
 	public String getName() {
-		return ("Build");
+		return ("Extrude");
 	}
 
 	public Vector3i getFirstBlock() {

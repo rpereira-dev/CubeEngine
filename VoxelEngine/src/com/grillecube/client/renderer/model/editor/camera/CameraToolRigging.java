@@ -9,33 +9,32 @@ import com.grillecube.client.renderer.camera.RaycastingCallback;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
+import com.grillecube.client.renderer.model.editor.gui.GuiWindowRigging;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
-import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.entity.Entity;
 import com.grillecube.common.world.entity.collision.Positioneable;
 import com.grillecube.common.world.entity.collision.Sizeable;
 
-public class CameraToolFill extends CameraTool implements Positioneable, Sizeable {
+public class CameraToolRigging extends CameraTool implements Positioneable, Sizeable {
 
 	protected final Vector3i hovered;
 	private final Vector3i firstBlock;
 	private final Vector3i secondBlock;
 	private Vector3i face;
 	private int ySelected;
-	private int box;
 
-	public CameraToolFill(GuiModelView guiModelView) {
+	public CameraToolRigging(GuiModelView guiModelView) {
 		super(guiModelView);
 		this.hovered = new Vector3i();
 		this.firstBlock = new Vector3i();
 		this.secondBlock = new Vector3i();
-		this.box = super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this, this);
 		this.ySelected = 0;
 	}
 
@@ -43,24 +42,27 @@ public class CameraToolFill extends CameraTool implements Positioneable, Sizeabl
 	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
 		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
 		if (modelInstance != null) {
-			if (event.getKey() == GLFW.GLFW_KEY_E) {
+
+			if (event.getKey() == GLFW.GLFW_KEY_Z) {
 				EditableModel model = (EditableModel) modelInstance.getModel();
 				if (model != null) {
-					int x0 = getX();
-					int y0 = getY();
-					int z0 = getZ();
-
-					for (int dx = 0; dx < getWidth(); dx++) {
-						for (int dy = 0; dy < getHeight(); dy++) {
-							for (int dz = 0; dz < getDepth(); dz++) {
-								model.setBlockData(new ModelBlockData(x0 + dx, y0 + dy, z0 + dz));
-							}
-						}
-					}
-					model.generateMesh();
+					this.inputRiggingOnSelection(model);
 				}
+			} else if (event.getKey() == GLFW.GLFW_KEY_W) {
+				this.incYSelection(1);
+			} else if (event.getKey() == GLFW.GLFW_KEY_S) {
+				this.incYSelection(-1);
 			}
 		}
+	}
+
+	private void inputRiggingOnSelection(EditableModel model) {
+		this.guiModelView.addChild(new GuiWindowRigging(this));
+	}
+
+	private void incYSelection(int dy) {
+		this.ySelected += dy;
+		this.secondBlock.y += dy;
 	}
 
 	@Override
@@ -83,6 +85,11 @@ public class CameraToolFill extends CameraTool implements Positioneable, Sizeabl
 	public void onRightReleased() {
 		this.getCamera().getWindow().setCursor(true);
 		this.getCamera().getWindow().setCursorCenter();
+	}
+
+	@Override
+	public void onLeftPressed() {
+		this.ySelected = 0;
 	}
 
 	@Override
@@ -114,23 +121,24 @@ public class CameraToolFill extends CameraTool implements Positioneable, Sizeabl
 		Vector3f ray = new Vector3f();
 		CameraPicker.ray(ray, camera, this.guiModelView.getMouseX(), this.guiModelView.getMouseY());
 
-		Vector3i pos = new Vector3i();
-		Raycasting.raycast(origin.x, origin.y, origin.z, ray.x, ray.y, ray.z, 256.0f, 256.0f, 256.0f,
-				new RaycastingCallback() {
-					@Override
-					public boolean onRaycastCoordinates(int x, int y, int z, Vector3i theFace) {
-						// System.out.println(x + " : " + y + " : " + z);
-						if (y < 0 || model.getBlockData(pos.set(x, y, z)) != null) {
-							int bx = x + theFace.x;
-							int by = y + theFace.y;
-							int bz = z + theFace.z;
-							hovered.set(bx, by, bz);
-							face = theFace;
-							return (true);
+		if (model.getBlockDataCount() > 0) {
+			Vector3i pos = new Vector3i();
+			Raycasting.raycast(origin.x, origin.y, origin.z, ray.x, ray.y, ray.z, 256.0f, 256.0f, 256.0f,
+					new RaycastingCallback() {
+						@Override
+						public boolean onRaycastCoordinates(int x, int y, int z, Vector3i theFace) {
+							// System.out.println(x + " : " + y + " : " + z);
+							if (y <= model.getMiny() || model.getBlockData(pos.set(x, y, z)) != null) {
+								hovered.set(x, y, z);
+								face = theFace;
+								return (true);
+							}
+							return (false);
 						}
-						return (false);
-					}
-				});
+					});
+		} else {
+			hovered.set(0, 0, 0);
+		}
 
 	}
 
@@ -138,8 +146,7 @@ public class CameraToolFill extends CameraTool implements Positioneable, Sizeabl
 	public void onMouseScroll(GuiEventMouseScroll<GuiModelView> event) {
 		if (super.guiModelView.isLeftPressed()) {
 			int dy = -Maths.sign(event.getScrollY());
-			this.ySelected += dy;
-			this.secondBlock.y += dy;
+			this.incYSelection(dy);
 		} else {
 			float speed = this.getCamera().getDistanceFromCenter() * 0.14f;
 			this.getCamera().increaseDistanceFromCenter((float) (-event.getScrollY() * speed));
@@ -157,7 +164,7 @@ public class CameraToolFill extends CameraTool implements Positioneable, Sizeabl
 			this.firstBlock.set(this.hovered);
 		}
 		this.secondBlock.set(this.hovered.x, this.hovered.y + this.ySelected, this.hovered.z);
-		super.guiModelView.getWorldRenderer().getLineRendererFactory().setBox(this, this, this.box);
+		super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this, this, Color.RED);
 	}
 
 	private final void updateCameraRotation() {
@@ -183,7 +190,7 @@ public class CameraToolFill extends CameraTool implements Positioneable, Sizeabl
 
 	@Override
 	public String getName() {
-		return ("Build");
+		return ("Remove");
 	}
 
 	public Vector3i getFirstBlock() {

@@ -23,6 +23,7 @@ import java.util.Stack;
 import com.grillecube.client.renderer.blocks.BlockRenderer;
 import com.grillecube.client.renderer.model.ModelMeshVertex;
 import com.grillecube.client.renderer.model.ModelSkin;
+import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
@@ -48,7 +49,7 @@ public class ModelMesherCull extends ModelMesher {
 	/** generate the model mesh */
 	private final void generateMeshAndSkin(EditableModel editableModel, ArrayList<ModelPlane> planes,
 			Stack<ModelMeshVertex> vertices, Stack<Short> indices, HashMap<ModelSkin, BufferedImage> skinsData) {
-
+		boolean[] ba = new boolean[] { false, false, false, false, false, false };
 		ModelSkinPacker.fit(planes);
 		int txWidth = 0, txHeight = 0;
 
@@ -81,6 +82,7 @@ public class ModelMesherCull extends ModelMesher {
 		for (ModelPlane plane : planes) {
 			int planeColor = rng.nextInt(Integer.MAX_VALUE) | 0xFF000000;
 			Face planeFace = plane.getFace();
+
 			for (int d1 = 0; d1 < plane.getTextureWidth(); d1++) {
 				for (int d2 = 0; d2 < plane.getTextureHeight(); d2++) {
 
@@ -124,6 +126,7 @@ public class ModelMesherCull extends ModelMesher {
 					ModelMeshVertex v1 = this.generateVertex(editableModel, planeFace, vx, uy, data, 1);
 					ModelMeshVertex v2 = this.generateVertex(editableModel, planeFace, vx, vy, data, 2);
 					ModelMeshVertex v3 = this.generateVertex(editableModel, planeFace, ux, vy, data, 3);
+
 					vertices.push(v0);
 					vertices.push(v1);
 					vertices.push(v2);
@@ -330,17 +333,26 @@ public class ModelMesherCull extends ModelMesher {
 		vertex.ny = face.getNormal().getY();
 		vertex.nz = face.getNormal().getZ();
 
-		vertex.b1 = 0;// modelBlockData.getBoneID(0);
-		vertex.b2 = 0;// modelBlockData.getBoneID(1);
-		vertex.b3 = 0;// modelBlockData.getBoneID(2);
+		vertex.b1 = this.getBoneID(editableModel, modelBlockData, 0);
+		vertex.b2 = this.getBoneID(editableModel, modelBlockData, 1);
+		vertex.b3 = this.getBoneID(editableModel, modelBlockData, 2);
 
-		vertex.w1 = 1;// modelBlockData.getBoneWeight(0);
-		vertex.w2 = 0;// modelBlockData.getBoneWeight(1);
-		vertex.w3 = 0;// modelBlockData.getBoneWeight(2);
+		vertex.w1 = modelBlockData.getBoneWeight(0);
+		vertex.w2 = modelBlockData.getBoneWeight(1);
+		vertex.w3 = modelBlockData.getBoneWeight(2);
 
 		vertex.ao = ao;
 
 		return (vertex);
+	}
+
+	private int getBoneID(EditableModel editableModel, ModelBlockData modelBlockData, int i) {
+		String boneName = modelBlockData.getBone(0);
+		if (boneName == null) {
+			return (0);
+		}
+		Bone bone = editableModel.getSkeleton().getBone(boneName);
+		return (bone == null ? 0 : bone.getID());
 	}
 
 	private static final float AO_UNIT = 0.16f;

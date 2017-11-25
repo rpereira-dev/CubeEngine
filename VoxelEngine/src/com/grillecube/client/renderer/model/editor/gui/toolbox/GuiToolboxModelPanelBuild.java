@@ -21,9 +21,9 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.tools.setHint("Tools...");
 		this.tools.add(0, "Place");
 		this.tools.add(1, "Paint");
-		this.tools.add(2, "Fill");
-		this.tools.add(3, "Remove");
-		this.tools.add(4, "Extrude");
+		this.tools.add(2, "Remove");
+		this.tools.add(3, "Extrude");
+		this.tools.add(4, "Rigging");
 		this.tools.pick(0);
 		this.tools.setBox(0, 0.70f, 1.0f, 0.05f, 0);
 		this.addChild(this.tools);
@@ -65,5 +65,19 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 
 	public final int getSelectedTool() {
 		return ((Integer) this.tools.getPickedObject());
+	}
+
+	public final int selectNextTool() {
+		this.tools.pick((this.tools.getPickedIndex() + 1) % this.tools.count());
+		return (this.tools.getPickedIndex());
+	}
+
+	public final int selectPreviousTool() {
+		int index = this.tools.getPickedIndex() - 1;
+		if (index < 0) {
+			index = this.tools.count() - 1;
+		}
+		this.tools.pick(index);
+		return (index);
 	}
 }

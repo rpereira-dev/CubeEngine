@@ -157,9 +157,9 @@ public class GLFWWindow implements GLObject {
 		this.addListener(new GLFWListener<GLFWEventKeyPress>() {
 			@Override
 			public void invoke(GLFWEventKeyPress event) {
-				if (event.getKey() == GLFW.GLFW_KEY_ESCAPE) {
-					close();
-				}
+				// if (event.getKey() == GLFW.GLFW_KEY_ESCAPE) {
+				// close();
+				// }
 				if (event.getKey() == GLFW.GLFW_KEY_N) {
 					setCursor(!isCursorEnabled());
 				}

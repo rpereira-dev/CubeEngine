@@ -107,9 +107,6 @@ public class GuiModelView extends Gui {
 		this.updateModelInstances();
 		this.camera.setTool(this.getSelectedTool());
 		this.camera.update();
-		if (this.camera.requestedPanelRefresh()) {
-			this.getToolbox().refresh();
-		}
 	}
 
 	private final int getSelectedTool() {
