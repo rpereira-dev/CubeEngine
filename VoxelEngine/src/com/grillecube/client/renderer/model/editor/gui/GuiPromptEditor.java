@@ -15,10 +15,10 @@ public class GuiPromptEditor extends Gui {
 		super();
 
 		this.info = new GuiLabel();
-		this.info.setBox(0.0f, 0.0f, 0.25f, 1.0f, 0.0f);
+		this.info.setBox(0.0f, 0.0f, 0.35f, 1.0f, 0.0f);
 		this.info.setHoverable(false);
 		this.info.setFontColor(0, 0, 0, 1.0f);
-		this.info.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
+		this.info.addTextParameter(new GuiTextParameterTextFillBox(0.95f));
 		this.info.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.info.setText(textInfo);
 		this.addChild(this.info);

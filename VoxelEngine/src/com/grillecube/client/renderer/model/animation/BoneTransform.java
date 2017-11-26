@@ -113,4 +113,11 @@ public class BoneTransform {
 		return new Vector3f(x, y, z);
 	}
 
+	public final Vector3f getTranslation() {
+		return (this.position);
+	}
+
+	public final Quaternion getRotation() {
+		return (this.rotation);
+	}
 }

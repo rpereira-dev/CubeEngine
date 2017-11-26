@@ -248,4 +248,20 @@ public class Quaternion {
 		this.normalize();
 	}
 
+	public final float getX() {
+		return (this.x);
+	}
+
+	public final float getY() {
+		return (this.y);
+	}
+
+	public final float getZ() {
+		return (this.z);
+	}
+
+	public final float getW() {
+		return (this.w);
+	}
+
 }

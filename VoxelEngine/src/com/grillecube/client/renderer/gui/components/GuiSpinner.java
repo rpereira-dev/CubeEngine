@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer.gui.components;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
@@ -45,7 +46,7 @@ public abstract class GuiSpinner extends Gui {
 
 	/** add a value to the spinner */
 	public final void add(Object value) {
-		this.add(value, value.toString());
+		this.add(value, String.valueOf(value));
 	}
 
 	/** add a value, and the given string name id to be shown */
