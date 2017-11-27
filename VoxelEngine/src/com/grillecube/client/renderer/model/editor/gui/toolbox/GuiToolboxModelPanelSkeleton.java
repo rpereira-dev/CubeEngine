@@ -16,6 +16,7 @@ import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.maths.Quaternion;
 import com.grillecube.common.maths.Vector3f;
 
 public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
@@ -131,7 +132,7 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.posY.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().y));
 			this.posZ.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().z));
 
-			Vector3f rot = bone.getLocalRotation();
+			Vector3f rot = Quaternion.toEulerAngle(bone.getLocalRotation());
 			this.rotX.getPrompt().setHeldText(String.valueOf(rot.x));
 			this.rotY.getPrompt().setHeldText(String.valueOf(rot.y));
 			this.rotZ.getPrompt().setHeldText(String.valueOf(rot.z));
@@ -145,11 +146,14 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 				float ry = rotY.getPrompt().asFloat(0.0f);
 				float rz = rotZ.getPrompt().asFloat(0.0f);
 				localBindTransform.rotateXYZ(rx, ry, rz);
+				Quaternion q = Quaternion.toQuaternion(rx, ry, rz);
+				getSelectedBone().getLocalRotation().set(q);
+
 				float x = posX.getPrompt().asFloat(0.0f);
 				float y = posY.getPrompt().asFloat(0.0f);
 				float z = posZ.getPrompt().asFloat(0.0f);
-				System.out.println(x + " : " + y + " : " + z);
 				localBindTransform.translate(-x, -y, -z);
+				getSelectedBone().getLocalTranslation().set(x, y, z);
 				getSelectedBone().setLocalBindTransform(localBindTransform);
 				getSelectedBone().calcInverseBindTransform();
 			}

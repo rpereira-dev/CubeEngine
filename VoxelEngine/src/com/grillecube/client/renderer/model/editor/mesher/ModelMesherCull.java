@@ -49,7 +49,6 @@ public class ModelMesherCull extends ModelMesher {
 	/** generate the model mesh */
 	private final void generateMeshAndSkin(EditableModel editableModel, ArrayList<ModelPlane> planes,
 			Stack<ModelMeshVertex> vertices, Stack<Short> indices, HashMap<ModelSkin, BufferedImage> skinsData) {
-		boolean[] ba = new boolean[] { false, false, false, false, false, false };
 		ModelSkinPacker.fit(planes);
 		int txWidth = 0, txHeight = 0;
 

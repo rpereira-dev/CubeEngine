@@ -28,7 +28,7 @@ public class Bone {
 	private final Matrix4f localBindTransform;
 	private final Matrix4f inverseBindTransform;
 	private final Vector3f translate;
-	private final Vector3f rotate;
+	private final Quaternion rotate;
 
 	/**
 	 * @param ModelSkeleton
@@ -43,7 +43,7 @@ public class Bone {
 		this.localBindTransform = new Matrix4f();
 		this.inverseBindTransform = new Matrix4f();
 		this.translate = new Vector3f();
-		this.rotate = new Vector3f(0.0f, 0.0f, 0.0f);
+		this.rotate = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	/** get the joint name */
@@ -69,8 +69,13 @@ public class Bone {
 	}
 
 	/** return true if this joint has a children */
-	public boolean hasChildren() {
+	public final boolean hasChildren() {
 		return (this.childrenNames != null && this.childrenNames.size() > 0);
+	}
+
+	/** return true if this joint has a parent */
+	public final boolean hasParent() {
+		return (this.parentName != null);
 	}
 
 	/** remove a child of this joint */
@@ -112,15 +117,16 @@ public class Bone {
 
 	public final void setLocalBindTransform(float x, float y, float z, float rx, float ry, float rz, float rw) {
 		this.translate.set(x, y, z);
-		Quaternion.toEulerAngle(this.rotate, rx, ry, rz, rw);
+		this.rotate.set(rx, ry, rz, rw);
+		Vector3f rot = Quaternion.toEulerAngle(rx, ry, rz, rw);
 
 		this.localBindTransform.setIdentity();
 		this.localBindTransform.translate(x, y, z);
-		this.localBindTransform.rotateXYZ(this.rotate);
+		this.localBindTransform.rotateXYZ(rot);
 		this.localBindTransform.translate(this.translate);
 	}
 
-	public final Vector3f getLocalRotation() {
+	public final Quaternion getLocalRotation() {
 		return (this.rotate);
 	}
 

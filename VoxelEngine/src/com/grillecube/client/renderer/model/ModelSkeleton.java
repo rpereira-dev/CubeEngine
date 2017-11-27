@@ -60,6 +60,17 @@ public class ModelSkeleton {
 		return (this.bonesMap.get(boneName));
 	}
 
+	/** get a bone by it id */
+	public final Bone getBone(int boneID) {
+		return (boneID < 0 || boneID >= this.bonesList.size() ? null : this.bonesList.get(boneID));
+	}
+
+	/** get a bone by it id */
+	public final String getBoneName(int boneID) {
+		Bone bone = this.getBone(boneID);
+		return (bone == null ? null : bone.getName());
+	}
+
 	/** remove a bone */
 	public final void removeBone(Bone bone) {
 		this.bonesMap.remove(bone.getName());

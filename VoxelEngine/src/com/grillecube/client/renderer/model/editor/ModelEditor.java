@@ -4,6 +4,9 @@ import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolbox;
+import com.grillecube.client.renderer.model.json.JSONModelExporter;
+import com.grillecube.common.Logger;
+import com.grillecube.common.resources.R;
 
 public class ModelEditor {
 
@@ -40,7 +43,15 @@ public class ModelEditor {
 		try {
 			engine.loop();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			Logger.get().log(Logger.Level.ERROR, "That's unfortunate... VoxelEngine crashed.", e.getLocalizedMessage());
+			String path = R.getResPath("models/tmp/" + System.currentTimeMillis());
+			try {
+				Logger.get().log(Logger.Level.ERROR, "Trying to save model...", path);
+				JSONModelExporter.export(guiModelEditor.getSelectedModel(), path);
+			} catch (Exception exception) {
+				Logger.get().log(Logger.Level.ERROR, "Couldn't save model... sorry bro",
+						exception.getLocalizedMessage());
+			}
 		}
 		engine.deinitialize();
 	}

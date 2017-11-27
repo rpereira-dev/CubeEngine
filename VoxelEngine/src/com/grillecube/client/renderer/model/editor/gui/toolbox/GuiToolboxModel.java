@@ -38,6 +38,8 @@ public class GuiToolboxModel extends GuiView {
 	public GuiToolboxModel(ModelInstance modelInstance) {
 		super();
 
+		this.setHoverable(false);
+
 		this.modelInstance = modelInstance;
 
 		GuiParameter<GuiText> center = new GuiTextParameterTextCenterBox();

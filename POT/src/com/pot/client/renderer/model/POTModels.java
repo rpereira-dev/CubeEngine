@@ -18,7 +18,7 @@ public class POTModels implements IModResource {
 
 	@Override
 	public void load(Mod mod, ResourceManager manager) {
-		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/physicTest/"), EntityBipedTest.class);
+		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/physicTest2/"), EntityBipedTest.class);
 		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/animTest/"), EntityTest.class);
 	}
 

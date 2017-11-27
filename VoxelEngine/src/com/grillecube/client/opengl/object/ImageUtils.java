@@ -62,8 +62,11 @@ public class ImageUtils {
 	 * @param atlas
 	 */
 	public static void exportPNGImage(String filepath, BufferedImage image) {
+		exportPNGImage(new File(filepath), image);
+	}
+
+	public static void exportPNGImage(File file, BufferedImage image) {
 		try {
-			File file = new File(filepath);
 			if (!file.exists()) {
 				file.mkdirs();
 				file.createNewFile();

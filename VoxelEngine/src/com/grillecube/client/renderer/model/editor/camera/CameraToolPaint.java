@@ -171,14 +171,14 @@ public class CameraToolPaint extends CameraTool implements Positioneable, Sizeab
 		Vector3i o1 = BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][1]];
 		Vector3i o2 = BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][2]];
 		Vector3i o3 = BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][3]];
-		this.quad[0].set(this.getX() + this.getWidth() * o0.x, this.getY() + this.getHeight() * o0.y,
-				this.getZ() + this.getDepth() * o0.z);
-		this.quad[1].set(this.getX() + this.getWidth() * o1.x, this.getY() + this.getHeight() * o1.y,
-				this.getZ() + this.getDepth() * o1.z);
-		this.quad[2].set(this.getX() + this.getWidth() * o2.x, this.getY() + this.getHeight() * o2.y,
-				this.getZ() + this.getDepth() * o2.z);
-		this.quad[3].set(this.getX() + this.getWidth() * o3.x, this.getY() + this.getHeight() * o3.y,
-				this.getZ() + this.getDepth() * o3.z);
+		this.quad[0].set(this.getPositionX() + this.getSizeX() * o0.x, this.getPositionY() + this.getSizeY() * o0.y,
+				this.getPositionZ() + this.getSizeZ() * o0.z);
+		this.quad[1].set(this.getPositionX() + this.getSizeX() * o1.x, this.getPositionY() + this.getSizeY() * o1.y,
+				this.getPositionZ() + this.getSizeZ() * o1.z);
+		this.quad[2].set(this.getPositionX() + this.getSizeX() * o2.x, this.getPositionY() + this.getSizeY() * o2.y,
+				this.getPositionZ() + this.getSizeZ() * o2.z);
+		this.quad[3].set(this.getPositionX() + this.getSizeX() * o3.x, this.getPositionY() + this.getSizeY() * o3.y,
+				this.getPositionZ() + this.getSizeZ() * o3.z);
 
 		LineRendererFactory factory = super.guiModelView.getWorldRenderer().getLineRendererFactory();
 		for (Line line : this.lines) {

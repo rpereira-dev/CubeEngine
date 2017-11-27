@@ -9,14 +9,12 @@ import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.client.renderer.world.flat.WorldFlatRenderer;
-import com.grillecube.common.world.WorldFlat;
 
 public class GuiViewWorld extends GuiView {
 
 	private GuiTexture txWorld;
-	private WorldRenderer<WorldFlat> worldRenderer;
+	private WorldFlatRenderer worldRenderer;
 	private CameraProjective camera;
 	private int worldID;
 
@@ -84,7 +82,7 @@ public class GuiViewWorld extends GuiView {
 		this.worldRenderer.getCamera().setAspect(aspect);
 	}
 
-	public final WorldRenderer<WorldFlat> getWorldRenderer() {
+	public final WorldFlatRenderer getWorldRenderer() {
 		return (this.worldRenderer);
 	}
 }

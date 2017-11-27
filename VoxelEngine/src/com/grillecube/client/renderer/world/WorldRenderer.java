@@ -64,11 +64,7 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 	private int height;
 
 	private final LineRendererFactory lineFactory;
-	private final ModelRendererFactory modelFactory;
 	private final ParticleRendererFactory particleFactory;
-
-	private EventListener<EventModelInstanceAdded> modelInstanceAddCallback;
-	private EventListener<EventModelInstanceRemoved> modelInstanceRemoveCallback;
 
 	private final EventPreWorldRender preRenderEvent;
 
@@ -78,11 +74,9 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		super(mainRenderer);
 
 		this.lineFactory = new LineRendererFactory(mainRenderer);
-		this.modelFactory = new ModelRendererFactory(mainRenderer);
 		this.particleFactory = new ParticleRendererFactory(mainRenderer);
 
 		super.addFactory(this.lineFactory);
-		super.addFactory(this.modelFactory);
 		super.addFactory(this.particleFactory);
 
 		this.preRenderEvent = new EventPreWorldRender(this);
@@ -115,29 +109,6 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		GLH.glhCheckError("post worldrenderer fbo creation");
 
 		this.setPostProcessingProgram(null);
-
-		// callback to add every model instances to the renderer, if they are in
-		// the correct world
-		EventManager eventManager = this.getMainRenderer().getResourceManager().getEventManager();
-		this.modelInstanceAddCallback = new EventListener<EventModelInstanceAdded>() {
-			@Override
-			public void invoke(EventModelInstanceAdded event) {
-				if (event.getModelInstance().getEntity().getWorld() == world) {
-					modelFactory.addModelInstance(event.getModelInstance());
-				}
-			}
-		};
-		this.modelInstanceRemoveCallback = new EventListener<EventModelInstanceRemoved>() {
-			@Override
-			public void invoke(EventModelInstanceRemoved event) {
-				if (event.getModelInstance().getEntity().getWorld() == world) {
-					modelFactory.removeModelInstance(event.getModelInstance());
-				}
-			}
-		};
-
-		eventManager.addListener(this.modelInstanceAddCallback);
-		eventManager.addListener(this.modelInstanceRemoveCallback);
 	}
 
 	@Override
@@ -152,10 +123,6 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		this.fbo = null;
 		this.fboTexture = null;
 		this.fboDepthBuffer = null;
-
-		EventManager eventManager = this.getMainRenderer().getResourceManager().getEventManager();
-		eventManager.removeListener(this.modelInstanceAddCallback);
-		eventManager.removeListener(this.modelInstanceRemoveCallback);
 	}
 
 	// TODO : take size as parameter
@@ -248,8 +215,6 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 
 	public final void setWorld(T world) {
 		this.world = world;
-		this.modelFactory.clear();
-		this.modelFactory.loadWorldModelInstance(world);
 		this.onWorldSet();
 	}
 
@@ -264,7 +229,6 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 
 	public final void setCamera(CameraProjective camera) {
 		this.camera = camera;
-		this.modelFactory.setCamera(camera);
 		this.lineFactory.setCamera(camera);
 		this.particleFactory.setCamera(camera);
 		this.onCameraSet();
@@ -285,10 +249,6 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 
 	public final LineRendererFactory getLineRendererFactory() {
 		return (this.lineFactory);
-	}
-
-	public final ModelRendererFactory getModelRendererFactory() {
-		return (this.modelFactory);
 	}
 
 	public final ParticleRendererFactory getParticleRendererFactory() {

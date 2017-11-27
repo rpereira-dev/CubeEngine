@@ -1,5 +1,7 @@
 package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
+import java.io.IOException;
+
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiColoredQuad;
@@ -17,6 +19,7 @@ import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.model.json.JSONEditableModelInitializer;
+import com.grillecube.client.renderer.model.json.JSONModelExporter;
 import com.grillecube.common.Logger;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.utils.Color;
@@ -115,7 +118,13 @@ public class GuiToolbox extends Gui {
 	}
 
 	private final void saveCurrentModel() {
-		// TODO
+		try {
+			String path = R.getResPath("models/" + System.currentTimeMillis());
+			JSONModelExporter.export(this.getSelectedModel(), path);
+			Logger.get().log(Logger.Level.FINE, "model saved properly at", path);
+		} catch (Exception e) {
+			Logger.get().log(Logger.Level.ERROR, "error when exporting model", e.getMessage());
+		}
 	}
 
 	private final void createNewModel() {

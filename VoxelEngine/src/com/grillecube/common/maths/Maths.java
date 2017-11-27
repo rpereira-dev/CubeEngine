@@ -1,5 +1,8 @@
 package com.grillecube.common.maths;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 /**
  * 
  * @author Romain
@@ -188,4 +191,23 @@ public class Maths {
 	public static float mod(float s, int modulus) {
 		return (s % modulus + modulus) % modulus;
 	}
+
+	public Maths() {
+
+	}
+
+	@Test
+	public final void processTests() {
+		float e = 0.000000000000001f;
+		Assert.assertEquals(0.0f, Maths.approximatate(0.123456789f, 1.0f), e);
+		Assert.assertEquals(0.1f, Maths.approximatate(0.123456789f, 10.0f), e);
+		Assert.assertEquals(0.12f, Maths.approximatate(0.123456789f, 100.0f), e);
+		Assert.assertEquals(0.123f, Maths.approximatate(0.123456789f, 1000.0f), e);
+		
+		Assert.assertEquals(4.25f, Maths.floor(4.26f, 0.25f), e);
+		Assert.assertEquals(4.25f, Maths.floor(4.49f, 0.25f), e);
+		Assert.assertEquals(4.50f, Maths.floor(4.50f, 0.25f), e);
+
+	}
+
 }
