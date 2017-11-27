@@ -100,11 +100,18 @@ public class GuiWindowRigging extends GuiWindow {
 				}
 			}
 		});
+
 		this.cancel = new GuiButton();
 		this.cancel.setText("Decline");
 		this.cancel.setBox(0.55f, 0.15f, w, h, 0.0f);
 		this.cancel.addTextParameter(txtSize);
 		this.cancel.addTextParameter(txtCenter);
+		this.cancel.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
+			@Override
+			public void invoke(GuiEventPress<GuiButton> event) {
+				close();
+			}
+		});
 		this.addChild(this.cancel);
 	}
 }

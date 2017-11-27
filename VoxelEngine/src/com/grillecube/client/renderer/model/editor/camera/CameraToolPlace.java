@@ -27,14 +27,14 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 	private final Vector3i firstBlock;
 	private final Vector3i secondBlock;
 	private Vector3i face;
-	private int ySelected;
+	private int expansion;
 
 	public CameraToolPlace(GuiModelView guiModelView) {
 		super(guiModelView);
 		this.hovered = new Vector3i();
 		this.firstBlock = new Vector3i();
 		this.secondBlock = new Vector3i();
-		this.ySelected = 0;
+		this.expansion = 0;
 	}
 
 	@Override
@@ -58,9 +58,9 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 					this.guiModelView.getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
 				}
 			} else if (event.getKey() == GLFW.GLFW_KEY_W) {
-				this.incYSelection(1);
+				this.expand(1);
 			} else if (event.getKey() == GLFW.GLFW_KEY_S) {
-				this.incYSelection(-1);
+				this.expand(-1);
 			}
 		}
 	}
@@ -71,7 +71,7 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 
 	@Override
 	public void onLeftPressed() {
-		this.ySelected = 0;
+		this.expansion = 0;
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 
 	@Override
 	public void onLeftReleased() {
-		this.ySelected = 0;
+		this.expansion = 0;
 	}
 
 	private final void updateHoveredBlock() {
@@ -147,17 +147,28 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 	@Override
 	public void onMouseScroll(GuiEventMouseScroll<GuiModelView> event) {
 		if (super.guiModelView.isLeftPressed()) {
-			int dy = -Maths.sign(event.getScrollY());
-			this.incYSelection(dy);
+			int d = -Maths.sign(event.getScrollY());
+			this.expand(d);
 		} else {
 			float speed = this.getCamera().getDistanceFromCenter() * 0.14f;
 			this.getCamera().increaseDistanceFromCenter((float) (-event.getScrollY() * speed));
 		}
 	}
 
-	private void incYSelection(int dy) {
-		this.ySelected += dy;
-		this.secondBlock.y += dy;
+	private void expand(int d) {
+		this.expansion += d;
+		this.updateSecondBlock();
+	}
+
+	private final void updateSecondBlock() {
+		if (this.face == null) {
+			this.secondBlock.set(this.hovered);
+			return;
+		}
+		int x = this.hovered.x + this.expansion * this.face.x;
+		int y = this.hovered.y + this.expansion * this.face.y;
+		int z = this.hovered.z + this.expansion * this.face.z;
+		this.secondBlock.set(x, y, z);
 	}
 
 	@Override
@@ -170,7 +181,7 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 		if (!this.guiModelView.isLeftPressed()) {
 			this.firstBlock.set(this.hovered);
 		}
-		this.secondBlock.set(this.hovered.x, this.hovered.y + this.ySelected, this.hovered.z);
+		this.updateSecondBlock();
 		super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this, this);
 	}
 

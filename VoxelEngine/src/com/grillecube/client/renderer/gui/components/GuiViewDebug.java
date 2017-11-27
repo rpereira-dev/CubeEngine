@@ -15,6 +15,7 @@
 package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.opengl.GLH;
+import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
