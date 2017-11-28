@@ -17,6 +17,7 @@ package com.grillecube.client.renderer;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
+import com.grillecube.common.world.Timer;
 
 public abstract class Renderer implements Taskable {
 
@@ -44,7 +45,7 @@ public abstract class Renderer implements Taskable {
 	public void render() {
 	}
 
-	public float getTimer() {
-		return (float) (this.getMainRenderer().getEngine().getTimer().getTime());
+	public final Timer getTimer() {
+		return (this.getMainRenderer().getEngine().getTimer());
 	}
 }

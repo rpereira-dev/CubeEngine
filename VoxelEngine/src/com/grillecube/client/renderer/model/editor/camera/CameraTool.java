@@ -1,7 +1,6 @@
 
 package com.grillecube.client.renderer.model.editor.camera;
 
-import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
@@ -10,7 +9,6 @@ import com.grillecube.client.renderer.model.instance.ModelInstance;
 public abstract class CameraTool {
 
 	protected final GuiModelView guiModelView;
-	protected boolean requestPanelsRefresh;
 
 	public CameraTool(GuiModelView guiModelView) {
 		this.guiModelView = guiModelView;
@@ -26,7 +24,14 @@ public abstract class CameraTool {
 	protected void onUpdate() {
 	}
 
-	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
+	/**
+	 * do the action of the tool
+	 * 
+	 * @param modelInstance
+	 * @return : true if the model has been modified (the model mesh will be re-generated)
+	 */
+	public boolean action(ModelInstance modelInstance) {
+		return (false);
 	}
 
 	public void onLeftPressed() {
@@ -61,14 +66,6 @@ public abstract class CameraTool {
 
 	public final EditableModel getModel() {
 		return (this.guiModelView.getSelectedModel());
-	}
-
-	public final void requestPanelsRefresh() {
-		this.requestPanelsRefresh = true;
-	}
-
-	public final boolean requestedPanelRefresh() {
-		return (this.requestPanelsRefresh);
 	}
 
 	public final ModelEditorCamera getCamera() {

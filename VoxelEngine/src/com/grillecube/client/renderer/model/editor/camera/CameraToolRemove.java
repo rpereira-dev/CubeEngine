@@ -1,12 +1,9 @@
 
 package com.grillecube.client.renderer.model.editor.camera;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.grillecube.client.renderer.camera.CameraPicker;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
-import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
@@ -38,38 +35,24 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 	}
 
 	@Override
-	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
-		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
-		if (modelInstance != null) {
+	public boolean action(ModelInstance modelInstance) {
 
-			if (event.getKey() == GLFW.GLFW_KEY_Z) {
-				EditableModel model = (EditableModel) modelInstance.getModel();
-				if (model != null) {
-					int x0 = getX();
-					int y0 = getY();
-					int z0 = getZ();
-					Vector3i pos = new Vector3i();
-					boolean generate = false;
-					for (int dx = 0; dx < getWidth(); dx++) {
-						for (int dy = 0; dy < getHeight(); dy++) {
-							for (int dz = 0; dz < getDepth(); dz++) {
-								if (model.unsetBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz))) {
-									generate = true;
-								}
-							}
-						}
-					}
-					if (generate) {
-						model.generateMesh();
-						this.guiModelView.getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
+		EditableModel model = (EditableModel) modelInstance.getModel();
+		int x0 = getX();
+		int y0 = getY();
+		int z0 = getZ();
+		Vector3i pos = new Vector3i();
+		boolean generate = false;
+		for (int dx = 0; dx < getWidth(); dx++) {
+			for (int dy = 0; dy < getHeight(); dy++) {
+				for (int dz = 0; dz < getDepth(); dz++) {
+					if (model.unsetBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz))) {
+						generate = true;
 					}
 				}
-			} else if (event.getKey() == GLFW.GLFW_KEY_W) {
-				this.expand(1);
-			} else if (event.getKey() == GLFW.GLFW_KEY_S) {
-				this.expand(-1);
 			}
 		}
+		return (generate);
 	}
 
 	@Override

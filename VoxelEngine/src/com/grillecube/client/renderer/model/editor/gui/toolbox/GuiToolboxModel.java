@@ -54,8 +54,9 @@ public class GuiToolboxModel extends GuiView {
 			public void invoke(GuiEventClick<GuiButton> event) {
 				event.getGui().addTask(new GuiTask() {
 					@Override
-					public void run() {
+					public final boolean run() {
 						select(selected == 0 ? panels.size() - 1 : selected - 1);
+						return (true);
 					}
 				});
 			}
@@ -76,8 +77,9 @@ public class GuiToolboxModel extends GuiView {
 			public void invoke(GuiEventClick<GuiButton> event) {
 				event.getGui().addTask(new GuiTask() {
 					@Override
-					public void run() {
+					public final boolean run() {
 						select((selected + 1) % panels.size());
+						return (true);
 					}
 				});
 			}

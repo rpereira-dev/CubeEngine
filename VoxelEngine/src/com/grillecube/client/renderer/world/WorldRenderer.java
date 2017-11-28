@@ -189,7 +189,7 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 			this.getFBOTexture().bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
 
 			this.postProcessingProgram.useStart();
-			this.postProcessingProgram.loadUniforms(super.getTimer());
+			this.postProcessingProgram.loadUniforms((float) super.getTimer().getTime());
 			this.getMainRenderer().getDefaultVAO().bind();
 			GLH.glhDrawArrays(GL11.GL_POINTS, 0, 1);
 			this.postProcessingProgram.useStop();

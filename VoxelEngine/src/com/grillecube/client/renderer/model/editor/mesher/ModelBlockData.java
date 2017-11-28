@@ -1,6 +1,7 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.common.faces.Face;
@@ -21,6 +22,18 @@ public class ModelBlockData {
 		this.bones = new String[] { "", "", "" };
 		this.weights = new float[] { 1, 0, 0 };
 		this.colors = new HashMap<ModelSkin, Color[]>();
+	}
+
+	public final ModelBlockData clone() {
+		ModelBlockData copy = new ModelBlockData(this.pos.x, this.pos.y, this.pos.z);
+		for (int i = 0; i < bones.length; i++) {
+			copy.bones[i] = this.bones[i];
+			copy.weights[i] = this.weights[i];
+		}
+		for (Entry<ModelSkin, Color[]> entry : this.colors.entrySet()) {
+			copy.colors.put(entry.getKey(), entry.getValue().clone());
+		}
+		return (copy);
 	}
 
 	public final Color getColor(ModelSkin modelSkin, Face face) {
@@ -68,6 +81,18 @@ public class ModelBlockData {
 
 	public final int getZ() {
 		return (this.pos.z);
+	}
+
+	public final void setX(int x) {
+		this.pos.x = x;
+	}
+
+	public final void setY(int y) {
+		this.pos.y = y;
+	}
+
+	public final void setZ(int z) {
+		this.pos.z = z;
 	}
 
 	public final Vector3i getPos() {

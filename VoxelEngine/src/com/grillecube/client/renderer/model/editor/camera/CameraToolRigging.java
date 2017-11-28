@@ -1,12 +1,9 @@
 
 package com.grillecube.client.renderer.model.editor.camera;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.grillecube.client.renderer.camera.CameraPicker;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
-import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.gui.GuiWindowRigging;
@@ -39,25 +36,9 @@ public class CameraToolRigging extends CameraTool implements Positioneable, Size
 	}
 
 	@Override
-	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
-		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
-		if (modelInstance != null) {
-
-			if (event.getKey() == GLFW.GLFW_KEY_Z) {
-				EditableModel model = (EditableModel) modelInstance.getModel();
-				if (model != null) {
-					this.inputRiggingOnSelection(model);
-				}
-			} else if (event.getKey() == GLFW.GLFW_KEY_W) {
-				this.expand(1);
-			} else if (event.getKey() == GLFW.GLFW_KEY_S) {
-				this.expand(-1);
-			}
-		}
-	}
-
-	private void inputRiggingOnSelection(EditableModel model) {
+	public boolean action(ModelInstance modelInstance) {
 		this.guiModelView.addChild(new GuiWindowRigging(this));
+		return (false);
 	}
 
 	private void expand(int d) {

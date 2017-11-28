@@ -2,6 +2,7 @@ package com.grillecube.client.renderer.camera;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
@@ -26,6 +27,24 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 		float y = this.getEntity().getPositionY() + this.getEntity().getSizeY() * 0.5f;
 		float z = this.getEntity().getPositionZ() + this.getEntity().getSizeZ() * 0.5f;
 		super.setCenter(x, y, z);
+
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_SPACE)) {
+			this.getEntity().jump();
+		}
+
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_W)) {
+			this.getEntity().addControl(Control.FORWARD);
+		}
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_S)) {
+			this.getEntity().addControl(Control.BACKWARD);
+		}
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_D)) {
+			this.getEntity().addControl(Control.STRAFE_RIGHT);
+		}
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_A)) {
+			this.getEntity().addControl(Control.STRAFE_LEFT);
+		}
+
 	}
 
 	public void setEntity(Entity entity) {

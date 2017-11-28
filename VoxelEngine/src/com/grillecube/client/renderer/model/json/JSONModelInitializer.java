@@ -86,9 +86,9 @@ public class JSONModelInitializer implements ModelInitializer {
 				String boneName = jsonBone.getString("name");
 				float x = 0.0f, y = 0.0f, z = 0.0f, rx = 0.0f, ry = 0.0f, rz = 0.0f, rw = 1.0f;
 				if (jsonBone.has("localBindTransform")) {
-					
+
 					JSONObject jsonBindTransform = jsonBone.getJSONObject("localBindTransform");
-					
+
 					JSONObject jsonBindTransformTranslation = jsonBindTransform.getJSONObject("translation");
 					x = (float) jsonBindTransformTranslation.getDouble("x");
 					y = (float) jsonBindTransformTranslation.getDouble("y");
@@ -156,7 +156,7 @@ public class JSONModelInitializer implements ModelInitializer {
 				float w1 = (float) vertices.getDouble(i++);
 				float w2 = (float) vertices.getDouble(i++);
 				float w3 = (float) vertices.getDouble(i++);
-				
+
 				float ao = (float) vertices.getDouble(i++);
 
 				verticesBuffer.putFloat(x);
@@ -177,7 +177,7 @@ public class JSONModelInitializer implements ModelInitializer {
 				verticesBuffer.putFloat(w1);
 				verticesBuffer.putFloat(w2);
 				verticesBuffer.putFloat(w3);
-				
+
 				verticesBuffer.putFloat(ao);
 			}
 
@@ -279,6 +279,10 @@ public class JSONModelInitializer implements ModelInitializer {
 	@Override
 	public String toString() {
 		return (this.getClass().getSimpleName() + " : " + this.dirpath);
+	}
+
+	public String getDirpath() {
+		return (this.dirpath);
 	}
 
 }

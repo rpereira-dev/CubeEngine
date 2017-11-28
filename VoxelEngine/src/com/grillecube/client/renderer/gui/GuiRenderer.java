@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
@@ -28,7 +29,10 @@ import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.gui.components.Gui;
+import com.grillecube.client.renderer.gui.components.Gui.GuiTask;
+import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiView;
+import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.font.Font;
 import com.grillecube.client.renderer.gui.font.FontModel;
 import com.grillecube.common.Logger;
@@ -193,6 +197,10 @@ public class GuiRenderer extends Renderer {
 		this.addGuisToRenderingList(this.mainGui);
 		this.renderingList.sort(Gui.LAYER_COMPARATOR);
 		this.guiInputManager.update(this.renderingList);
+
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_K)) {
+			this.toast("hello world");
+		}
 	}
 
 	/** add a view to render */
@@ -206,32 +214,64 @@ public class GuiRenderer extends Renderer {
 	}
 
 	/** toast a message on the screen */
-	public void toast(String text, Font font, float r, float g, float b, float a, int time) {
-		// TODO
+	public void toast(Gui parent, String text, Font font, float r, float g, float b, float a, double time) {
+		GuiLabel guiLabel = new GuiLabel();
+		guiLabel.setBox(0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+		guiLabel.addTextParameter(new GuiTextParameterTextCenterBox());
+		guiLabel.setText(text);
+		guiLabel.setFontColor(r, g, b, a);
+		guiLabel.setFontSize(1.0f, 1.0f);
+		guiLabel.addTask(new GuiTask() {
+			double dt = 0.0f;
+
+			@Override
+			public boolean run() {
+				this.dt += getTimer().getDt();
+				if (this.dt >= time) {
+					guiLabel.pop();
+					return (true);
+				}
+				return (false);
+			}
+		});
+		parent.addChild(guiLabel);
+		guiLabel.setLayer(guiLabel.getTopestLayer() + 1);
 	}
 
 	public void toast(String str, float r, float g, float b, float a) {
-		this.toast(str, r, g, b, a, 30);
+		this.toast(str, r, g, b, a, 0.5);
 	}
 
 	public void toast(String str) {
-		this.toast(str, 0, 1, 0, 1, 30);
+		this.toast(str, 0, 1, 0, 1, 0.5);
 	}
 
-	public void toast(String str, int time) {
-		this.toast(str, 0, 1, 0, 1, time);
+	public void toast(Gui parent, String str, double time) {
+		this.toast(parent, str, time);
+	}
+
+	public void toast(String str, double time) {
+		this.toast(this.mainGui, str, 0, 1, 0, 1, time);
 	}
 
 	public void toast(String str, boolean good) {
+		this.toast(this.mainGui, str, good);
+	}
+
+	public void toast(Gui parent, String str, boolean good) {
 		if (good) {
-			this.toast(str, 0, 1, 0, 1, 90);
+			this.toast(parent, str, 0, 1, 0, 1, 0.5);
 		} else {
-			this.toast(str, 1, 0, 0, 1, 90);
+			this.toast(parent, str, 1, 0, 0, 1, 0.5);
 		}
 	}
 
-	public void toast(String str, float r, float g, float b, float a, int time) {
-		this.toast(str, GuiRenderer.DEFAULT_FONT, r, g, b, a, time);
+	public void toast(String str, float r, float g, float b, float a, double time) {
+		this.toast(this.mainGui, str, r, g, b, a, time);
+	}
+
+	public void toast(Gui parent, String str, float r, float g, float b, float a, double time) {
+		this.toast(parent, str, GuiRenderer.DEFAULT_FONT, r, g, b, a, time);
 	}
 
 	/** a callback when the window is resized */
@@ -247,7 +287,7 @@ public class GuiRenderer extends Renderer {
 	 *            : dialog title
 	 * @param defaultPath
 	 *            : dialog default path
-	 * @return
+	 * @return : the absolute path to the selected folder
 	 */
 	public static final String dialogSelectFolder(String title, String defaultPath) {
 		return (TinyFileDialogs.tinyfd_selectFolderDialog(title, defaultPath));

@@ -1,13 +1,10 @@
 
 package com.grillecube.client.renderer.model.editor.camera;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.grillecube.client.renderer.blocks.BlockRenderer;
 import com.grillecube.client.renderer.camera.CameraPicker;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
-import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.lines.Line;
 import com.grillecube.client.renderer.lines.LineRendererFactory;
@@ -48,36 +45,27 @@ public class CameraToolPaint extends CameraTool implements Positioneable, Sizeab
 	}
 
 	@Override
-	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
-		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
-		if (modelInstance != null) {
-			if (event.getKey() == GLFW.GLFW_KEY_Z) {
-				EditableModel model = (EditableModel) modelInstance.getModel();
-				if (model != null) {
-					int x0 = getX();
-					int y0 = getY();
-					int z0 = getZ();
+	public boolean action(ModelInstance modelInstance) {
+		EditableModel model = (EditableModel) modelInstance.getModel();
+		int x0 = getX();
+		int y0 = getY();
+		int z0 = getZ();
 
-					Vector3i pos = new Vector3i();
-					boolean generate = false;
-					for (int dx = 0; dx < getWidth(); dx++) {
-						for (int dy = 0; dy < getHeight(); dy++) {
-							for (int dz = 0; dz < getDepth(); dz++) {
-								ModelBlockData blockData = model.getBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz));
-								if (blockData != null) {
-									blockData.setColor(this.guiModelView.getSelectedSkin(),
-											this.guiModelView.getSelectedColor(), this.face);
-									generate = true;
-								}
-							}
-						}
-					}
-					if (generate) {
-						model.generateMesh();
+		Vector3i pos = new Vector3i();
+		boolean generate = false;
+		for (int dx = 0; dx < getWidth(); dx++) {
+			for (int dy = 0; dy < getHeight(); dy++) {
+				for (int dz = 0; dz < getDepth(); dz++) {
+					ModelBlockData blockData = model.getBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz));
+					if (blockData != null) {
+						blockData.setColor(this.guiModelView.getSelectedSkin(), this.guiModelView.getSelectedColor(),
+								this.face);
+						generate = true;
 					}
 				}
 			}
 		}
+		return (generate);
 	}
 
 	@Override

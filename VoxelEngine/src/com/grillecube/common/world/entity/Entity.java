@@ -16,9 +16,6 @@ package com.grillecube.common.world.entity;
 
 import java.util.ArrayList;
 
-import org.lwjgl.glfw.GLFW;
-
-import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.resources.SoundManager;
 import com.grillecube.client.sound.ALH;
 import com.grillecube.client.sound.ALSound;
@@ -103,6 +100,11 @@ public abstract class Entity extends PhysicObject {
 		// entity definition
 		this.speed = DEFAULT_SPEED;
 		this.mass = DEFAULT_MASS;
+
+		// size
+		this.sx = width;
+		this.sy = height;
+		this.sz = depth;
 
 		// aies
 		this.ais = new ArrayList<EntityAI>();
@@ -205,10 +207,6 @@ public abstract class Entity extends PhysicObject {
 		// add constant forces
 		this.addForce(Force.GRAVITY);
 		this.addForce(Force.FRICTION);
-		// this.setPositionVelocityY(0);
-		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_SPACE)) {
-			this.jump();
-		}
 
 		for (Force<Entity> force : this.forces) {
 			force.updateResultant(this, resultant);
@@ -239,20 +237,6 @@ public abstract class Entity extends PhysicObject {
 	}
 
 	private final void runControls(double dt) {
-
-		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_W)) {
-			this.addControl(Control.FORWARD);
-		}
-		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_S)) {
-			this.addControl(Control.BACKWARD);
-		}
-		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_D)) {
-			this.addControl(Control.STRAFE_RIGHT);
-		}
-		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_A)) {
-			this.addControl(Control.STRAFE_LEFT);
-		}
-
 		for (Control<Entity> control : this.controls) {
 			control.run(this, dt);
 		}
@@ -705,5 +689,4 @@ public abstract class Entity extends PhysicObject {
 	public void setSizeAccelerationZ(float az) {
 		this.szAcceleration = az;
 	}
-
 }

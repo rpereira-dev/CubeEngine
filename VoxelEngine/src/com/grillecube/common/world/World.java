@@ -17,15 +17,12 @@ package com.grillecube.common.world;
 import java.util.ArrayList;
 import java.util.Random;
 
-import org.junit.Test;
-
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
-import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.block.instances.BlockInstance;
 import com.grillecube.common.world.entity.Entity;
 import com.grillecube.common.world.entity.WorldEntityStorage;
@@ -33,8 +30,6 @@ import com.grillecube.common.world.entity.collision.PhysicObject;
 import com.grillecube.common.world.entity.collision.PhysicObjectBlock;
 import com.grillecube.common.world.generator.WorldGenerator;
 import com.grillecube.common.world.generator.WorldGeneratorEmpty;
-
-import junit.framework.Assert;
 
 /**
  * TODO Main world class, may change to a "Planet" class, and a new World class
@@ -283,8 +278,8 @@ public abstract class World implements Taskable {
 	 * @param physicObject
 	 * @return : the physic object list
 	 */
-	public final ArrayList<PhysicObject> getCollidingPhysicObjects(float minx, float miny, float minz, float maxx,
-			float maxy, float maxz) {
+	public final ArrayList<PhysicObject> getCollidingPhysicObjects(PhysicObject exclude, float minx, float miny,
+			float minz, float maxx, float maxy, float maxz) {
 		ArrayList<PhysicObject> lst = new ArrayList<PhysicObject>();
 
 		int mx = Maths.floor(minx);
@@ -302,36 +297,6 @@ public abstract class World implements Taskable {
 					if (!block.isCrossable()) {
 						lst.add(new PhysicObjectBlock(block, x, y, z));
 					}
-				}
-			}
-		}
-		return (lst);
-	}
-
-	/**
-	 * get the blocks colliding with the PhysicObject
-	 * 
-	 * @param physicObject
-	 * @return : the block list
-	 */
-	public final ArrayList<Block> getCollidingBlocks(PhysicObject physicObject) {
-		ArrayList<Block> lst = new ArrayList<Block>();
-
-		int minx = Maths.floor(physicObject.getPositionX());
-		int maxx = Maths.floor(physicObject.getPositionX() + physicObject.getSizeX());
-		int miny = Maths.floor(physicObject.getPositionY());
-		int maxy = Maths.floor(physicObject.getPositionY() + physicObject.getSizeY());
-		int minz = Maths.floor(physicObject.getPositionZ());
-		int maxz = Maths.floor(physicObject.getPositionZ() + physicObject.getSizeZ());
-
-		Vector3i pos = new Vector3i();
-
-		// iterate though each blocks
-		for (pos.x = minx; pos.x < maxx; ++pos.x) {
-			for (pos.z = minz; pos.z < maxz; ++pos.z) {
-				for (pos.y = miny; pos.y < maxy; ++pos.y) {
-					Block block = this.getBlock(pos.x, pos.y, pos.z);
-					lst.add(block);
 				}
 			}
 		}

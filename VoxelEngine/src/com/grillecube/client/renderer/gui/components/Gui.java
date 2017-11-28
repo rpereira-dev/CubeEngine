@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.gui.GuiRenderer;
@@ -32,6 +33,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventMouseMove;
 import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiEventRemoveChild;
 import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector2f;
 import com.grillecube.common.utils.Color;
@@ -433,30 +435,44 @@ public abstract class Gui {
 
 	/** deinitialize the gui */
 	public final void deinitialize(GuiRenderer renderer) {
+
+		// remove from parent
+		if (this.parent != null) {
+			this.parent.removeChild(Gui.this);
+		}
+
+		// deinitialize this gui
 		if (!this.hasState(STATE_INITIALIZED)) {
 			return;
 		}
-
 		this.unsetState(STATE_INITIALIZED);
 		this.onDeinitialized(renderer);
 
+		// repeat on each child
 		if (this.children != null) {
-			for (Gui gui : this.children) {
-				gui.deinitialize(renderer);
-			}
-		}
-
-		if (this.parent != null) {
-			this.parent.addTask(new GuiTask() {
-				@Override
-				public void run() {
-					parent.removeChild(Gui.this);
+			for (Gui child : this.children) {
+				if (!child.hasState(STATE_INITIALIZED)) {
+					continue;
 				}
-			});
+
+				child.unsetState(STATE_INITIALIZED);
+				child.onDeinitialized(renderer);
+			}
 		}
 	}
 
+	/**
+	 * remove this gui from it parent, and delete it from the heap. Repeated for
+	 * each child of this gui
+	 */
 	public final void deinitialize() {
+		this.deinitialize(null);
+	}
+
+	/**
+	 * @see #deinitialize()
+	 */
+	public final void pop() {
 		this.deinitialize(null);
 	}
 
@@ -507,11 +523,13 @@ public abstract class Gui {
 			return;
 		}
 		if (this.tasks.size() > 0) {
-			for (int i = 0; i < this.tasks.size(); i++) {
-				this.tasks.get(i).run();
+			Iterator<GuiTask> tasks = this.tasks.iterator();
+			while (tasks.hasNext()) {
+				GuiTask task = tasks.next();
+				if (task.run()) {
+					tasks.remove();
+				}
 			}
-			this.tasks.clear();
-			this.tasks.trimToSize();
 		}
 
 		this.updateAnimations();
@@ -523,7 +541,8 @@ public abstract class Gui {
 
 	/** a task to be run at the end of the gui update */
 	public interface GuiTask {
-		public void run();
+		/** return true if this task should be popped */
+		public boolean run();
 	}
 
 	/** add a task to be run at the end of the gui update */
@@ -768,6 +787,9 @@ public abstract class Gui {
 	}
 
 	public final void addChild(int position, Gui gui) {
+		if (gui.parent != null) {
+			Logger.get().log(Logger.Level.WARNING, gui, "already have a parent...");
+		}
 		gui.parent = this;
 		if (this.children == null) {
 			this.children = new ArrayList<Gui>();
@@ -877,6 +899,10 @@ public abstract class Gui {
 	public final void setLayer(int layer) {
 		if (this.layer == layer) {
 			return;
+		}
+		if (this.parent == null) {
+			Logger.get().log(Logger.Level.WARNING,
+					"Tried to set a Gui layer before it parent was set. This layer will be reset once this Gui will be added to it parent.");
 		}
 		int inc = layer - this.layer;
 		this.layer = layer;

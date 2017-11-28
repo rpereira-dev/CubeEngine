@@ -1,7 +1,6 @@
 package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
-import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.utils.Color;
 
 public class GuiWindow extends Gui {
@@ -33,8 +32,9 @@ public class GuiWindow extends Gui {
 	protected void close() {
 		super.addTask(new GuiTask() {
 			@Override
-			public void run() {
-				deinitialize();
+			public final boolean run() {
+				pop();
+				return (true);
 			}
 		});
 	}

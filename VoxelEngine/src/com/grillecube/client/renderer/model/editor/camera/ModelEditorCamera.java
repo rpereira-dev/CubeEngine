@@ -1,18 +1,30 @@
 package com.grillecube.client.renderer.model.editor.camera;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
 import org.lwjgl.glfw.GLFW;
 
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
+import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolboxModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
+import com.grillecube.client.renderer.model.instance.ModelInstance;
+import com.grillecube.common.maths.Vector3i;
 
 public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 
 	private CameraTool[] tools;
 	private int toolID;
+
+	/** maximum number of step that can be canceled */
+	private static final int HISTORIC_MAX_DEPTH = 16;
+	private LinkedList<HashMap<Vector3i, ModelBlockData>> oldBlocksData;
 
 	public ModelEditorCamera(GLFWWindow window) {
 		super(window);
@@ -28,6 +40,7 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 		super.setRenderDistance(Float.MAX_VALUE);
 		super.setDistanceFromCenter(16);
 		super.setAngleAroundCenter(-45);
+		this.oldBlocksData = new LinkedList<HashMap<Vector3i, ModelBlockData>>();
 	}
 
 	@Override
@@ -77,20 +90,49 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 	}
 
 	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
+		ModelInstance modelInstance = event.getGui().getSelectedModelInstance();
+		if (modelInstance == null) {
+			return ;
+		}
+		EditableModel model = ((EditableModel) modelInstance.getModel());
+
 		if (this.tools[this.toolID] != null) {
-			this.tools[this.toolID].onKeyPress(event);
+			if (modelInstance != null && event.getKey() == GLFW.GLFW_KEY_Z) {
+				// do a deep copy of the current model block data
+				HashMap<Vector3i, ModelBlockData> data = model.getCopyRawBlockDatas();
+				if (this.tools[this.toolID].action(modelInstance)) {
+					// generate mesh, save
+					while (this.oldBlocksData.size() >= HISTORIC_MAX_DEPTH) {
+						this.oldBlocksData.remove(0);
+					}
+					this.oldBlocksData.add(data);
+					model.generate();
+					event.getGui().getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
+				}
+			}
 		}
 
-		GuiToolboxModel model = event.getGui().getToolbox().getSelectedModelPanels();
-		if (model != null) {
+		GuiToolboxModel modelPanel = event.getGui().getToolbox().getSelectedModelPanels();
+		if (modelPanel != null) {
 			if (event.getKey() == GLFW.GLFW_KEY_E) {
-				model.getGuiToolboxModelPanelBuild().selectNextTool();
+				modelPanel.getGuiToolboxModelPanelBuild().selectNextTool();
 			} else if (event.getKey() == GLFW.GLFW_KEY_Q) {
-				model.getGuiToolboxModelPanelBuild().selectPreviousTool();
+				modelPanel.getGuiToolboxModelPanelBuild().selectPreviousTool();
 			} else if (event.getKey() == GLFW.GLFW_KEY_D) {
-				model.selectNextPanel();
+				modelPanel.selectNextPanel();
 			} else if (event.getKey() == GLFW.GLFW_KEY_A) {
-				model.selectPreviousPanel();
+				modelPanel.selectPreviousPanel();
+			} else if (event.getKey() == GLFW.GLFW_KEY_W
+					&& event.getGLFWWindow().isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)) {
+				if (this.oldBlocksData.size() > 0) {
+					HashMap<Vector3i, ModelBlockData> data = this.oldBlocksData.remove(this.oldBlocksData.size() - 1);
+					model.setRawBlockDatas(data);
+					model.generate();
+					event.getGui().getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
+				} else {
+					GuiRenderer guiRenderer = event.getGui().getWorldRenderer().getMainRenderer().getGuiRenderer();
+					guiRenderer.toast(event.getGui(), "Nothing to be canceled", false);
+				}
 			}
 		}
 	}

@@ -1,12 +1,9 @@
 
 package com.grillecube.client.renderer.model.editor.camera;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.grillecube.client.renderer.camera.CameraPicker;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
-import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
@@ -38,31 +35,19 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 	}
 
 	@Override
-	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
-		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
-		if (modelInstance != null) {
-			if (event.getKey() == GLFW.GLFW_KEY_Z) {
-				EditableModel model = (EditableModel) modelInstance.getModel();
-				if (model != null) {
-					int x0 = getX();
-					int y0 = getY();
-					int z0 = getZ();
-					for (int dx = 0; dx < getWidth(); dx++) {
-						for (int dy = 0; dy < getHeight(); dy++) {
-							for (int dz = 0; dz < getDepth(); dz++) {
-								model.setBlockData(new ModelBlockData(x0 + dx, y0 + dy, z0 + dz));
-							}
-						}
-					}
-					model.generateMesh();
-					this.guiModelView.getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
+	public boolean action(ModelInstance modelInstance) {
+		EditableModel model = (EditableModel) modelInstance.getModel();
+		int x0 = getX();
+		int y0 = getY();
+		int z0 = getZ();
+		for (int dx = 0; dx < getWidth(); dx++) {
+			for (int dy = 0; dy < getHeight(); dy++) {
+				for (int dz = 0; dz < getDepth(); dz++) {
+					model.setBlockData(new ModelBlockData(x0 + dx, y0 + dy, z0 + dz));
 				}
-			} else if (event.getKey() == GLFW.GLFW_KEY_W) {
-				this.expand(1);
-			} else if (event.getKey() == GLFW.GLFW_KEY_S) {
-				this.expand(-1);
 			}
 		}
+		return (true);
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.entity.Entity;
 import com.pot.common.ModPOT;
 import com.pot.common.world.entity.EntityBipedTest;
+import com.pot.common.world.entity.EntityPlant;
 import com.pot.common.world.entity.EntityTest;
 
 public class POTModels implements IModResource {
@@ -20,6 +21,7 @@ public class POTModels implements IModResource {
 	public void load(Mod mod, ResourceManager manager) {
 		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/physicTest2/"), EntityBipedTest.class);
 		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/animTest/"), EntityTest.class);
+		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/plant/"), EntityPlant.class);
 	}
 
 	@Override

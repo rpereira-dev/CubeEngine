@@ -1,7 +1,6 @@
 package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
-import java.io.IOException;
-
+import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiColoredQuad;
@@ -20,6 +19,7 @@ import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.model.json.JSONEditableModelInitializer;
 import com.grillecube.client.renderer.model.json.JSONModelExporter;
+import com.grillecube.client.renderer.model.json.JSONModelInitializer;
 import com.grillecube.common.Logger;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.utils.Color;
@@ -119,8 +119,17 @@ public class GuiToolbox extends Gui {
 
 	private final void saveCurrentModel() {
 		try {
-			String path = R.getResPath("models/" + System.currentTimeMillis());
-			JSONModelExporter.export(this.getSelectedModel(), path);
+			EditableModel model = this.getSelectedModel();
+			String defaultPath;
+			if (model.getInitializer() instanceof JSONModelInitializer) {
+				defaultPath = ((JSONModelInitializer) model.getInitializer()).getDirpath();
+			} else {
+				defaultPath = R.getResPath("models/");
+			}
+			String path = GuiRenderer.dialogSelectFolder("Save model", defaultPath);
+			if (path != null) {
+				JSONModelExporter.export(model, path);
+			}
 			Logger.get().log(Logger.Level.FINE, "model saved properly at", path);
 		} catch (Exception e) {
 			Logger.get().log(Logger.Level.ERROR, "error when exporting model", e.getMessage());
@@ -128,7 +137,18 @@ public class GuiToolbox extends Gui {
 	}
 
 	private final void createNewModel() {
+		this.importModel(R.getResPath("models/defaultJSON"));
+	}
 
+	private final void importModel() {
+		String path = GuiRenderer.dialogSelectFolder("EditableModel path", R.getResPath("models/"));
+		if (path == null) {
+			return;
+		}
+		this.importModel(path);
+	}
+
+	private final void importModel(String absolutePath) {
 		Entity entity = new Entity() {
 			@Override
 			public void update(double dt) {
@@ -140,15 +160,12 @@ public class GuiToolbox extends Gui {
 		};
 
 		((GuiModelEditor) this.getParent()).getModelView().getWorld().spawnEntity(entity);
-		// String path = GuiRenderer.dialogSelectFolder("Import an existing
-		// model", R.getResPath("models/"));
-		String path = R.getResPath("models/bipedJSON");
-		EditableModel editableModel = new EditableModel(new JSONEditableModelInitializer(path));
+		EditableModel editableModel = new EditableModel(new JSONEditableModelInitializer(absolutePath));
 		try {
 			editableModel.initialize();
 			editableModel.requestMeshUpdate();
 		} catch (Exception e) {
-			Logger.get().log(Logger.Level.ERROR, "Error when parsing model", path);
+			Logger.get().log(Logger.Level.ERROR, "Error when parsing model", absolutePath);
 			e.printStackTrace(Logger.get().getPrintStream());
 			editableModel.deinitialize();
 			return;
@@ -156,6 +173,7 @@ public class GuiToolbox extends Gui {
 
 		ModelInstance modelInstance = new ModelInstance(editableModel, entity);
 		this.addModelInstance(modelInstance);
+
 	}
 
 	private final void addModelInstance(ModelInstance modelInstance) {
@@ -164,21 +182,18 @@ public class GuiToolbox extends Gui {
 		this.modelList.add(guiToolboxModel, modelInstance.getModel().getName());
 		this.addTask(new GuiTask() {
 			@Override
-			public void run() {
+			public final boolean run() {
 				modelList.pick(modelList.count() - 1);
+				return (true);
 			}
 		});
 		((GuiModelEditor) this.getParent()).onModelInstanceAdded(modelInstance);
 	}
 
-	private final void importModel() {
-		// TODO
-	}
-
 	private final void onPickedModelChanged(GuiToolboxModel prevPanel, GuiToolboxModel newPanel) {
 		this.addTask(new GuiTask() {
 			@Override
-			public void run() {
+			public final boolean run() {
 				if (prevPanel != null) {
 					removeChild(prevPanel);
 				}
@@ -186,6 +201,7 @@ public class GuiToolbox extends Gui {
 				if (newPanel != null) {
 					addChild(newPanel);
 				}
+				return (true);
 			}
 		});
 

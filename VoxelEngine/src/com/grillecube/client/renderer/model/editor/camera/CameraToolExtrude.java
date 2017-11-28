@@ -47,17 +47,9 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 	}
 
 	@Override
-	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
-		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
-		if (modelInstance != null) {
-			if (event.getKey() == GLFW.GLFW_KEY_Z) {
-				this.extrudeBlocks((EditableModel) modelInstance.getModel());
-			}
-		}
-	}
+	public boolean action(ModelInstance modelInstance) {
 
-	private void extrudeBlocks(EditableModel model) {
-
+		EditableModel model = (EditableModel) modelInstance.getModel();
 		boolean updated = false;
 
 		int stepx = -face.getVector().x;
@@ -135,11 +127,7 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 			}
 		}
 
-		if (updated) {
-			model.generateMesh();
-			this.guiModelView.getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
-		}
-
+		return (updated);
 	}
 
 	@Override

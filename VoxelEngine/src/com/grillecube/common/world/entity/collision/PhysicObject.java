@@ -174,8 +174,8 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 //		Logger.get().log(Level.DEBUG, minx, miny, minz, maxx, maxy, maxz);
 		int i = 0;
 		while (dt > Maths.ESPILON) {
-			ArrayList<PhysicObject> blocks = world.getCollidingPhysicObjects(minx, miny, minz, maxx, maxy, maxz);
-			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(physicObject, blocks);
+			ArrayList<PhysicObject> objects = world.getCollidingPhysicObjects(physicObject, minx, miny, minz, maxx, maxy, maxz);
+			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(physicObject, objects);
 			// if no collision, move
 			if (collisionResponse == null || collisionResponse.dt > dt) {
 				Positioneable.position(physicObject, dt);

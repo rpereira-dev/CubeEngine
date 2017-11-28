@@ -170,6 +170,10 @@ public class Collision {
 	public static final CollisionResponse collisionResponseAABBSwept(PhysicObject b1, ArrayList<PhysicObject> b2s) {
 		CollisionResponse collisionResponse = null;
 		for (PhysicObject b2 : b2s) {
+			if (b1 == b2) {
+				continue;
+			}
+
 			// extract velocities
 			CollisionResponse c = collisionResponseAABBSwept(b1, b2);
 			if (c != null && (collisionResponse == null || c.dt < collisionResponse.dt)) {
@@ -253,8 +257,8 @@ public class Collision {
 	 * @param dt
 	 *            : remaining time
 	 */
-	public static final void push(PhysicObject physicObject, CollisionResponse collisionResponse,
-			double dt) {}
+	public static final void push(PhysicObject physicObject, CollisionResponse collisionResponse, double dt) {
+	}
 
 	/**
 	 * 

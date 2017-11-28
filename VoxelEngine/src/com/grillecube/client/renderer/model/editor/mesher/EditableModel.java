@@ -1,5 +1,6 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.grillecube.client.renderer.model.Model;
@@ -47,7 +48,7 @@ public class EditableModel extends Model {
 		this.origin = new Vector3i(0, 0, 0);
 		this.modelMesher = new ModelMesherCull();
 		this.meshUpToDate = true;
-		this.resetMinMax();
+		this.updateMinMax();
 	}
 
 	/** @see ModelBuildingData#origin */
@@ -97,12 +98,22 @@ public class EditableModel extends Model {
 		return (this.getBlockData(new Vector3i(x, y, z)));
 	}
 
-	/** */
+	/** return raw blocks data */
 	public final HashMap<Vector3i, ModelBlockData> getRawBlockDatas() {
 		return (this.blocksData);
 	}
 
-	private final void resetMinMax() {
+	/** return a new deep copy of raw blocks data */
+	public final HashMap<Vector3i, ModelBlockData> getCopyRawBlockDatas() {
+		HashMap<Vector3i, ModelBlockData> data = new HashMap<Vector3i, ModelBlockData>();
+		for (ModelBlockData blockData : this.getRawBlockDatas().values()) {
+			blockData = blockData.clone();
+			data.put(blockData.getPos(), blockData);
+		}
+		return (data);
+	}
+
+	private final void updateMinMax() {
 		this.minx = Integer.MAX_VALUE;
 		this.miny = Integer.MAX_VALUE;
 		this.minz = Integer.MAX_VALUE;
@@ -140,7 +151,7 @@ public class EditableModel extends Model {
 	/** */
 	public final void setRawBlockDatas(HashMap<Vector3i, ModelBlockData> blocksData) {
 		this.blocksData = blocksData;
-		this.resetMinMax();
+		this.updateMinMax();
 	}
 
 	/**
@@ -182,7 +193,7 @@ public class EditableModel extends Model {
 		}
 		if (data.getX() == this.minx || data.getX() == this.maxx || data.getY() == this.miny || data.getY() == this.maxy
 				|| data.getZ() == this.minz || data.getZ() == this.maxz) {
-			this.resetMinMax();
+			this.updateMinMax();
 		}
 		return (true);
 	}
@@ -197,39 +208,111 @@ public class EditableModel extends Model {
 	@Override
 	protected void onBound() {
 		if (!this.meshUpToDate) {
-			this.generateMesh();
+			this.generate();
 		}
 	}
 
-	public final void generateMesh() {
+	/** generate the model (mesh + skin) */
+	public final void generate() {
 		this.modelMesher.generate(this);
 		this.meshUpToDate = true;
 	}
 
+	/** rotate blocks by 90 degrees around x axis */
+	public final void rotateX() {
+		HashMap<Vector3i, ModelBlockData> oldBlockDatas = this.blocksData;
+		this.blocksData = new HashMap<Vector3i, ModelBlockData>();
+		this.updateMinMax();
+
+		for (ModelBlockData blockData : oldBlockDatas.values()) {
+			int y = blockData.getZ();
+			int z = -blockData.getY();
+			blockData.setY(y);
+			blockData.setZ(z);
+			this.setBlockData(blockData);
+		}
+	}
+
+	/** rotate blocks by 90 degrees around y axis */
+	public final void rotateY() {
+		HashMap<Vector3i, ModelBlockData> oldBlockDatas = this.blocksData;
+		this.blocksData = new HashMap<Vector3i, ModelBlockData>();
+		this.updateMinMax();
+
+		for (ModelBlockData blockData : oldBlockDatas.values()) {
+			int x = blockData.getZ();
+			int z = -blockData.getX();
+			blockData.setX(x);
+			blockData.setZ(z);
+			this.setBlockData(blockData);
+		}
+	}
+
+	/** rotate blocks by 90 degrees around z axis */
+	public final void rotateZ() {
+		HashMap<Vector3i, ModelBlockData> oldBlockDatas = this.blocksData;
+		this.blocksData = new HashMap<Vector3i, ModelBlockData>();
+		this.updateMinMax();
+
+		for (ModelBlockData blockData : oldBlockDatas.values()) {
+			int x = blockData.getY();
+			int y = -blockData.getX();
+			blockData.setX(x);
+			blockData.setY(y);
+			this.setBlockData(blockData);
+		}
+	}
+
+	/** translate the whole model blocks */
+	public final void translate(int dx, int dy, int dz) {
+		HashMap<Vector3i, ModelBlockData> oldBlockDatas = this.blocksData;
+		this.blocksData = new HashMap<Vector3i, ModelBlockData>();
+		this.updateMinMax();
+
+		for (ModelBlockData blockData : oldBlockDatas.values()) {
+			int x = blockData.getX() + dx;
+			int y = blockData.getY() + dy;
+			int z = blockData.getZ() + dz;
+			blockData.setX(x);
+			blockData.setY(y);
+			blockData.setZ(z);
+			this.setBlockData(blockData);
+		}
+	}
+
+	/** min x block coordinates */
 	public final int getMinx() {
 		return (this.minx);
 	}
 
+	/** min y block coordinates */
 	public final int getMiny() {
 		return (this.miny);
 	}
 
+	/** min z block coordinates */
 	public final int getMinz() {
 		return (this.minz);
 	}
 
+	/** max x block coordinates */
 	public final int getMaxx() {
 		return (this.maxx);
 	}
 
+	/** max y block coordinates */
 	public final int getMaxy() {
 		return (this.maxy);
 	}
 
+	/** max z block coordinates */
 	public final int getMaxz() {
 		return (this.maxz);
 	}
 
+	/**
+	 * @return : return number of set blocks
+	 */
 	public int getBlockDataCount() {
 		return (this.blocksData.size());
 	}
