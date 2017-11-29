@@ -1,8 +1,6 @@
 package com.grillecube.client.renderer.model.json;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
@@ -21,6 +19,7 @@ import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.common.maths.Maths;
+import com.grillecube.common.utils.JSONHelper;
 
 public class JSONModelExporter {
 
@@ -228,9 +227,6 @@ public class JSONModelExporter {
 	private static final void writeJSON(JSONObject obj, String dirpath, String... more) throws IOException {
 		Path info = Paths.get(dirpath, more);
 		File file = info.toFile();
-		file.getParentFile().mkdirs();
-		BufferedWriter output = new BufferedWriter(new FileWriter(file));
-		output.write(obj.toString(4));
-		output.close();
+		JSONHelper.writeJSONObjectToFile(file, obj);
 	}
 }

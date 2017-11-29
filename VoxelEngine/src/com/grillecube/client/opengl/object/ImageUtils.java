@@ -38,9 +38,7 @@ public class ImageUtils {
 	/** return a byte array which contains texture pixels in RGBA format */
 	public static byte[] getImagePixels(BufferedImage img) {
 		byte[] pixels = new byte[img.getWidth() * img.getHeight() * 4];
-		;
 		int[] buffer = new int[img.getWidth() * img.getHeight()];
-		;
 
 		img.getRGB(0, 0, img.getWidth(), img.getHeight(), buffer, 0, img.getWidth());
 

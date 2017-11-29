@@ -1,5 +1,7 @@
 package com.grillecube.common.resources;
 
+import com.grillecube.common.VoxelEngine;
+
 /** a simple wrapper class which make ResourceManager expression shorten */
 public class R {
 
@@ -9,7 +11,7 @@ public class R {
 
 	/** get the resource path for a standart resource */
 	public static String getResPath(String filepath) {
-		return (ResourceManager.instance().getResourcePath("VoxelEngine", filepath));
+		return (ResourceManager.instance().getResourcePath(VoxelEngine.MOD_ID, filepath));
 	}
 
 	/** return the string value of the given word */

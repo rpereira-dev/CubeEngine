@@ -76,6 +76,7 @@ public class JSONHelper {
 
 	public static void writeJSONObjectToFile(File file, JSONObject json) {
 		try {
+			file.getParentFile().mkdirs();
 			FileWriter writer = new FileWriter(file);
 			writer.write(json.toString());
 			writer.flush();
@@ -154,10 +155,10 @@ public class JSONHelper {
 	 */
 	public static String readFile(File file) throws IOException {
 		if (!file.exists()) {
-			throw new IOException("Couldnt read model file. (It doesnt exists: " + file.getPath() + ")");
+			throw new IOException("Couldnt read file. (It doesnt exists: " + file.getPath() + ")");
 		}
 		if (file.isDirectory()) {
-			throw new IOException("Couldnt read model file. (It is a directory!!! " + file.getPath() + ")");
+			throw new IOException("Couldnt read file. (It is a directory!!! " + file.getPath() + ")");
 		}
 		if (!file.canRead() && !file.setReadable(true)) {
 			throw new IOException("Couldnt read model file. (Missing read permissions: " + file.getPath() + ")");

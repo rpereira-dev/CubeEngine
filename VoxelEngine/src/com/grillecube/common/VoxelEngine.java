@@ -2,7 +2,9 @@ package com.grillecube.common;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,6 +22,7 @@ import com.grillecube.common.event.EventPreLoop;
 import com.grillecube.common.mod.ModLoader;
 import com.grillecube.common.network.INetwork;
 import com.grillecube.common.resources.AssetsPack;
+import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
 import com.grillecube.common.world.Timer;
 import com.grillecube.common.world.World;
@@ -28,6 +31,7 @@ public abstract class VoxelEngine {
 
 	/** version */
 	public static final String VERSION = "0.0.1";
+	public static final String MOD_ID = "VoxelEngine";
 
 	/** singleton */
 	private static VoxelEngine VOXEL_ENGINE_INSTANCE;
@@ -87,6 +91,11 @@ public abstract class VoxelEngine {
 	/** loaded worlds */
 	private ArrayList<World> loadedWorlds;
 
+	/**
+	 * config hashmap, key: filepath, value: config file
+	 */
+	private HashMap<String, Config> config;
+
 	public VoxelEngine(Side side) {
 
 		Logger.get().log(Level.FINE, "Starting common Engine!");
@@ -112,6 +121,10 @@ public abstract class VoxelEngine {
 		this.resources = this.instanciateResourceManager();
 		this.resources.initialize();
 
+		// config
+		this.config = new HashMap<String, Config>();
+		this.loadConfig(MOD_ID, R.getResPath("config.json"));
+
 		this.modLoader = new ModLoader();
 		this.tasks = new ArrayList<VoxelEngine.Callable<Taskable>>(256);
 
@@ -123,6 +136,7 @@ public abstract class VoxelEngine {
 		this.eventOnLoop = new EventOnLoop(this);
 		this.eventPostLoop = new EventPostLoop(this);
 
+		// worlds
 		this.loadedWorlds = new ArrayList<World>();
 
 		this.onInitialized();
@@ -130,7 +144,8 @@ public abstract class VoxelEngine {
 		Logger.get().log(Level.FINE, "Common Engine initialized!");
 	}
 
-	private void loadGamedir() {
+	/** load game directory */
+	private final void loadGamedir() {
 		String OS = (System.getProperty("os.name")).toUpperCase();
 		String gamepath;
 		if (OS.contains("WIN")) {
@@ -152,10 +167,34 @@ public abstract class VoxelEngine {
 		}
 	}
 
+	/** load config */
+	private final Config loadConfig(String id, String filepath) {
+		if (this.config.containsKey(id)) {
+			return (this.config.get(id));
+		}
+		Config cfg = new Config(filepath);
+		this.config.put(id, cfg);
+		Logger.get().log(Logger.Level.FINE, "Loading config", filepath);
+		cfg.load();
+		return (cfg);
+	}
+
+	/** get a config */
+	public final Config getConfig(String filepath) {
+		return (this.config.get(filepath));
+	}
+
+	/** get every configs */
+	public final HashMap<String, Config> getConfigs() {
+		return (this.config);
+	}
+
 	protected abstract void onInitialized();
 
 	/** deallocate the engine properly */
 	public final void deinitialize() {
+
+		Logger.get().log(Level.FINE, "Deinitializing engine...");
 
 		this.stopRunning();
 
@@ -164,7 +203,12 @@ public abstract class VoxelEngine {
 			return;
 		}
 
-		Logger.get().log(Level.FINE, "Deinitializing engine...");
+		Logger.get().log(Level.FINE, "Saving configs");
+		for (Entry<String, Config> entry : this.config.entrySet()) {
+			Config cfg = entry.getValue();
+			Logger.get().log(Level.FINE, "\t\t", entry.getKey(), cfg.getFilepath());
+			cfg.save();
+		}
 
 		this.stopExecutor();
 		this.resources.deinitialize();
