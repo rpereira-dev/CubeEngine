@@ -19,6 +19,7 @@ import com.grillecube.client.renderer.model.editor.ModelEditorMod;
 import com.grillecube.client.renderer.model.editor.camera.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolbox;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.common.VoxelEngine;
@@ -138,6 +139,10 @@ public class GuiModelView extends Gui {
 
 	public final Color getSelectedColor() {
 		return (((GuiModelEditor) this.getParent()).getSelectedColor());
+	}
+
+	public final EditableModelLayer getSelectedModelLayer() {
+		return (((GuiModelEditor) this.getParent()).getSelectedModelLayer());
 	}
 
 	public final GuiViewWorld getGuiViewWorld() {

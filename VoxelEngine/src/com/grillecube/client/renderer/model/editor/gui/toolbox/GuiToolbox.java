@@ -16,6 +16,7 @@ import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.model.json.JSONEditableModelInitializer;
 import com.grillecube.client.renderer.model.json.JSONModelExporter;
@@ -163,7 +164,8 @@ public class GuiToolbox extends Gui {
 		EditableModel editableModel = new EditableModel(new JSONEditableModelInitializer(absolutePath));
 		try {
 			editableModel.initialize();
-			editableModel.requestMeshUpdate();
+			editableModel.regenerateLayers();
+			editableModel.mergeLayers();
 		} catch (Exception e) {
 			Logger.get().log(Logger.Level.ERROR, "Error when parsing model", absolutePath);
 			e.printStackTrace(Logger.get().getPrintStream());
@@ -224,30 +226,47 @@ public class GuiToolbox extends Gui {
 		return ((EditableModel) (modelInstance.getModel()));
 	}
 
+	public final GuiToolboxModel getModelToolbox() {
+		return (this.modelList == null ? (GuiToolboxModel) this.modelList.getPickedObject() : null);
+	}
+
+	public final EditableModelLayer getSelectedModelLayer() {
+		GuiToolboxModel guiToolboxModel = this.getModelToolbox();
+		if (guiToolboxModel == null) {
+			return (null);
+		}
+		return (guiToolboxModel.getSelectedModelLayer());
+	}
+
 	public final Color getSelectedColor() {
-		return (this.modelList == null || this.modelList.getPickedObject() == null ? Color.BLACK
-				: ((GuiToolboxModel) (this.modelList.getPickedObject())).getSelectedColor());
+		GuiToolboxModel guiToolboxModel = this.getModelToolbox();
+		if (guiToolboxModel == null) {
+			return (null);
+		}
+		return (guiToolboxModel.getSelectedColor());
 	}
 
 	public final int getSelectedTool() {
-		return (this.modelList == null || this.modelList.getPickedObject() == null ? 0
-				: ((GuiToolboxModel) (this.modelList.getPickedObject())).getSelectedTool());
+		GuiToolboxModel guiToolboxModel = this.getModelToolbox();
+		if (guiToolboxModel == null) {
+			return (0);
+		}
+		return (guiToolboxModel.getSelectedTool());
 	}
 
 	public final ModelSkin getSelectedSkin() {
-		return (this.modelList == null || this.modelList.getPickedObject() == null ? null
-				: ((GuiToolboxModel) (this.modelList.getPickedObject())).getSelectedSkin());
-	}
-
-	public GuiToolboxModel getSelectedModelPanels() {
-		return (this.modelList != null ? (GuiToolboxModel) this.modelList.getPickedObject() : null);
+		GuiToolboxModel guiToolboxModel = this.getModelToolbox();
+		if (guiToolboxModel == null) {
+			return (null);
+		}
+		return (guiToolboxModel.getSelectedSkin());
 	}
 
 	public final void refresh() {
-		GuiToolboxModel modelPanels = (GuiToolboxModel) this.modelList.getPickedObject();
-		if (modelPanels == null) {
+		GuiToolboxModel guiToolboxModel = this.getModelToolbox();
+		if (guiToolboxModel == null) {
 			return;
 		}
-		modelPanels.refresh();
+		guiToolboxModel.refresh();
 	}
 }

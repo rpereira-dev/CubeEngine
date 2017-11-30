@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.sound;
+package com.grillecube.client.openal;
 
 import java.io.DataInputStream;
 import java.io.EOFException;

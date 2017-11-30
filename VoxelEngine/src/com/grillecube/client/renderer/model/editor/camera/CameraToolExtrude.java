@@ -1,18 +1,15 @@
 
 package com.grillecube.client.renderer.model.editor.camera;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.grillecube.client.renderer.blocks.BlockRenderer;
 import com.grillecube.client.renderer.camera.CameraPicker;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
-import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.lines.Line;
 import com.grillecube.client.renderer.lines.LineRendererFactory;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
-import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
@@ -47,9 +44,8 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 	}
 
 	@Override
-	public boolean action(ModelInstance modelInstance) {
+	public boolean action(ModelInstance modelInstance, EditableModelLayer modelLayer) {
 
-		EditableModel model = (EditableModel) modelInstance.getModel();
 		boolean updated = false;
 
 		int stepx = -face.getVector().x;
@@ -58,23 +54,23 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 
 		int x1 = 0;
 		if (stepx < 0) {
-			x1 = model.getMinx() - 1;
+			x1 = modelLayer.getMinx() - 1;
 		} else if (stepx > 0) {
-			x1 = model.getMaxx() + 1;
+			x1 = modelLayer.getMaxx() + 1;
 		}
 
 		int y1 = 0;
 		if (stepy < 0) {
-			y1 = model.getMiny() - 1;
+			y1 = modelLayer.getMiny() - 1;
 		} else if (stepy > 0) {
-			y1 = model.getMaxy() + 1;
+			y1 = modelLayer.getMaxy() + 1;
 		}
 
 		int z1 = 0;
 		if (stepz < 0) {
-			z1 = model.getMinz() - 1;
+			z1 = modelLayer.getMinz() - 1;
 		} else if (stepz > 0) {
-			z1 = model.getMaxz() + 1;
+			z1 = modelLayer.getMaxz() + 1;
 		}
 
 		Vector3i pos = new Vector3i();
@@ -87,7 +83,7 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 					int z0 = this.getZ() + dz;
 					int x;
 					for (x = x0; x != x1; x += stepx) {
-						if (model.unsetBlockData(pos.set(x, y0, z0))) {
+						if (modelLayer.unsetBlockData(pos.set(x, y0, z0))) {
 							updated = true;
 						}
 					}
@@ -103,7 +99,7 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 					int z0 = this.getZ() + dz;
 					int y;
 					for (y = y0; y != y1; y += stepy) {
-						if (model.unsetBlockData(pos.set(x0, y, z0))) {
+						if (modelLayer.unsetBlockData(pos.set(x0, y, z0))) {
 							updated = true;
 						}
 					}
@@ -119,7 +115,7 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 					int z0 = this.getZ();
 					int z;
 					for (z = z0; z != z1; z += stepz) {
-						if (model.unsetBlockData(pos.set(x0, y0, z))) {
+						if (modelLayer.unsetBlockData(pos.set(x0, y0, z))) {
 							updated = true;
 						}
 					}
@@ -159,14 +155,14 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 	private final void updateHoveredBlock() {
 
 		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
+		EditableModelLayer modelLayer = this.guiModelView.getSelectedModelLayer();
 
 		// extract objects
-		if (modelInstance == null) {
+		if (modelInstance == null || modelLayer == null) {
 			return;
 		}
-		EditableModel model = (EditableModel) modelInstance.getModel();
 		Entity entity = modelInstance.getEntity();
-		float s = model.getBlockSizeUnit();
+		float s = modelLayer.getBlockSizeUnit();
 		ModelEditorCamera camera = (ModelEditorCamera) this.getCamera();
 
 		// origin relatively to the model
@@ -185,8 +181,7 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 				new RaycastingCallback() {
 					@Override
 					public boolean onRaycastCoordinates(int x, int y, int z, Vector3i theFace) {
-						// System.out.println(x + " : " + y + " : " + z);
-						if (y < 0 || model.getBlockData(pos.set(x, y, z)) != null) {
+						if (y < 0 || modelLayer.getBlockData(pos.set(x, y, z)) != null) {
 							hovered.set(x, y, z);
 							face = Face.fromVec(theFace);
 							return (true);

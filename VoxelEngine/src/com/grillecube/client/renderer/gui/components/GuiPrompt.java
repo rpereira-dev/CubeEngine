@@ -43,7 +43,7 @@ public class GuiPrompt extends GuiLabel {
 		}
 	};
 
-	private static final String DEFAULT_CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n[](){}\"'#&é~+=-*/.,;:?!<>";
+	private static final String DEFAULT_CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n[](){}\"'#&é~+=-*/.,;:?!<> ";
 	private static final int CURSOR_MS = 500;
 
 	public static final TextTestFormat FORMAT_FLOAT = new TextTestFormat() {

@@ -26,21 +26,20 @@ public class ModelSkeletonInstance {
 
 	/** update this skeleton instance */
 	public void update(ArrayList<AnimationInstance> animationInstances) {
-
-		if (animationInstances == null || animationInstances.size() == 0) {
-			return;
+		// only handle the first animation for now
+		HashMap<String, Matrix4f> currentPose = new HashMap<String, Matrix4f>();
+		if (animationInstances != null && animationInstances.size() > 0) {
+			AnimationInstance animationInstance = animationInstances.get(0);
+			KeyFrame[] frames = animationInstance.getFrames();
+			if (frames != null) {
+				KeyFrame prev = frames[0];
+				KeyFrame next = frames[1];
+				this.interpolateFrames(currentPose, animationInstance, prev, next);
+			}
 		}
 
-		// only handle the first animation for now
-		AnimationInstance animationInstance = animationInstances.get(0);
-		KeyFrame[] frames = animationInstance.getFrames();
-		if (frames != null) {
-			KeyFrame prev = frames[0];
-			KeyFrame next = frames[1];
-			HashMap<String, Matrix4f> currentPose = this.interpolateFrames(animationInstance, prev, next);
-			for (Bone bone : this.getSkeleton().getRootBones()) {
-				this.applyPoseToBones(currentPose, bone, Matrix4f.IDENTITY);
-			}
+		for (Bone bone : this.getSkeleton().getRootBones()) {
+			this.applyPoseToBones(currentPose, bone, Matrix4f.IDENTITY);
 		}
 	}
 
@@ -113,11 +112,10 @@ public class ModelSkeletonInstance {
 	 *         current pose. They are returned in a map, indexed by the name of
 	 *         the bone to which they should be applied.
 	 */
-	private HashMap<String, Matrix4f> interpolateFrames(AnimationInstance animInstance, KeyFrame prev, KeyFrame next) {
+	private final void interpolateFrames(HashMap<String, Matrix4f> currentPose, AnimationInstance animInstance,
+			KeyFrame prev, KeyFrame next) {
 
 		float progression = (animInstance.getTime() - prev.getTime()) / (float) (next.getTime() - prev.getTime());
-
-		HashMap<String, Matrix4f> currentPose = new HashMap<String, Matrix4f>();
 
 		HashMap<String, BoneTransform> prevTransforms = prev.getBoneKeyFrames();
 		HashMap<String, BoneTransform> nextTransforms = next.getBoneKeyFrames();
@@ -131,8 +129,6 @@ public class ModelSkeletonInstance {
 
 			currentPose.put(entry.getKey(), localTransform);
 		}
-
-		return (currentPose);
 	}
 
 	/**
@@ -152,7 +148,8 @@ public class ModelSkeletonInstance {
 		Matrix4f[] boneMatrices = new Matrix4f[this.getSkeleton().getBoneCount()];
 		for (Bone bone : this.getSkeleton().getBones()) {
 			int id = bone.getID();
-			boneMatrices[id] = this.bonesInstances.get(bone).getTransformation();
+			BoneInstance boneTransform = this.bonesInstances.get(bone);
+			boneMatrices[id] = boneTransform == null ? Matrix4f.IDENTITY : boneTransform.getTransformation();
 		}
 		return (boneMatrices);
 	}

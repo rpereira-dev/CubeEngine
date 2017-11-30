@@ -1,7 +1,6 @@
 package com.grillecube.client.renderer.model.editor.camera;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.Stack;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -13,9 +12,8 @@ import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolboxModel;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
-import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
-import com.grillecube.common.maths.Vector3i;
 
 public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 
@@ -24,7 +22,7 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 
 	/** maximum number of step that can be canceled */
 	private static final int HISTORIC_MAX_DEPTH = 16;
-	private LinkedList<HashMap<Vector3i, ModelBlockData>> oldBlocksData;
+	private Stack<ModelEditorState> oldStates;
 
 	public ModelEditorCamera(GLFWWindow window) {
 		super(window);
@@ -40,8 +38,12 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 		super.setRenderDistance(Float.MAX_VALUE);
 		super.setDistanceFromCenter(16);
 		super.setAngleAroundCenter(-45);
-		this.oldBlocksData = new LinkedList<HashMap<Vector3i, ModelBlockData>>();
+		this.oldStates = new Stack<ModelEditorState>();
 	}
+
+	private interface ModelEditorState {
+		public void restoreState();
+	};
 
 	@Override
 	public void update() {
@@ -89,30 +91,53 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 		}
 	}
 
+	protected final void stackState(ModelEditorState state) {
+		this.oldStates.push(state);
+	}
+
+	protected final void unstackState() {
+		if (this.oldStates.size() == 0) {
+			return;
+		}
+		ModelEditorState state = this.oldStates.pop();
+		state.restoreState();
+	}
+
 	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
 		ModelInstance modelInstance = event.getGui().getSelectedModelInstance();
-		if (modelInstance == null) {
-			return ;
+		EditableModelLayer modelLayer = event.getGui().getSelectedModelLayer();
+
+		if (modelInstance == null || modelLayer == null) {
+			return;
 		}
 		EditableModel model = ((EditableModel) modelInstance.getModel());
 
 		if (this.tools[this.toolID] != null) {
-			if (modelInstance != null && event.getKey() == GLFW.GLFW_KEY_Z) {
+			if (event.getKey() == GLFW.GLFW_KEY_Z) {
 				// do a deep copy of the current model block data
-				HashMap<Vector3i, ModelBlockData> data = model.getCopyRawBlockDatas();
-				if (this.tools[this.toolID].action(modelInstance)) {
-					// generate mesh, save
-					while (this.oldBlocksData.size() >= HISTORIC_MAX_DEPTH) {
-						this.oldBlocksData.remove(0);
+
+				final EditableModelLayer layerCopy = modelLayer.clone();
+
+				ModelEditorState state = new ModelEditorState() {
+					@Override
+					public void restoreState() {
+						model.setLayer(layerCopy);
+						model.mergeLayers();
 					}
-					this.oldBlocksData.add(data);
-					model.generate();
-					event.getGui().getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
+				};
+
+				if (this.tools[this.toolID].action(modelInstance, modelLayer)) {
+					// generate mesh, save
+					while (this.oldStates.size() >= HISTORIC_MAX_DEPTH) {
+						this.oldStates.pop();
+					}
+					this.stackState(state);
+					modelLayer.requestLayerUpdate();
 				}
 			}
 		}
 
-		GuiToolboxModel modelPanel = event.getGui().getToolbox().getSelectedModelPanels();
+		GuiToolboxModel modelPanel = event.getGui().getToolbox().getModelToolbox();
 		if (modelPanel != null) {
 			if (event.getKey() == GLFW.GLFW_KEY_E) {
 				modelPanel.getGuiToolboxModelPanelBuild().selectNextTool();
@@ -124,11 +149,9 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 				modelPanel.selectPreviousPanel();
 			} else if (event.getKey() == GLFW.GLFW_KEY_W
 					&& event.getGLFWWindow().isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)) {
-				if (this.oldBlocksData.size() > 0) {
-					HashMap<Vector3i, ModelBlockData> data = this.oldBlocksData.remove(this.oldBlocksData.size() - 1);
-					model.setRawBlockDatas(data);
-					model.generate();
-					event.getGui().getToolbox().getSelectedModelPanels().getGuiToolboxModelPanelSkin().refresh();
+				if (this.oldStates.size() > 0) {
+					ModelEditorState state = this.oldStates.pop();
+					state.restoreState();
 				} else {
 					GuiRenderer guiRenderer = event.getGui().getWorldRenderer().getMainRenderer().getGuiRenderer();
 					guiRenderer.toast(event.getGui(), "Nothing to be canceled", false);

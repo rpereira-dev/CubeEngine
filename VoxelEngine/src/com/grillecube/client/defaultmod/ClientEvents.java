@@ -7,10 +7,17 @@ import com.grillecube.client.event.renderer.EventPreRender;
 import com.grillecube.client.event.renderer.EventPreWorldRender;
 import com.grillecube.client.event.renderer.model.EventModelInstanceAdded;
 import com.grillecube.client.event.renderer.model.EventModelInstanceRemoved;
+import com.grillecube.client.openal.ALH;
+import com.grillecube.client.openal.ALSound;
+import com.grillecube.client.resources.ResourceManagerClient;
+import com.grillecube.common.event.EventListener;
+import com.grillecube.common.event.world.entity.EventEntityPlaySound;
+import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.mod.IModResource;
 import com.grillecube.common.mod.Mod;
 import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.resources.ResourceManager;
+import com.grillecube.common.world.entity.Entity;
 
 public class ClientEvents implements IModResource {
 
@@ -28,6 +35,23 @@ public class ClientEvents implements IModResource {
 		eventManager.registerEvent(EventModelInstanceAdded.class);
 		eventManager.registerEvent(EventModelInstanceRemoved.class);
 
+		// TODO keep this here?
+		eventManager.addListener(new EventListener<EventEntityPlaySound>() {
+			@Override
+			public void invoke(EventEntityPlaySound event) {
+				Entity e = event.getEntity();
+				float x = e.getPositionX();
+				float y = e.getPositionY();
+				float z = e.getPositionZ();
+				float vx = e.getPositionVelocityX();
+				float vy = e.getPositionVelocityY();
+				float vz = e.getPositionVelocityZ();
+				Vector3f pos = new Vector3f(x, y, z);
+				Vector3f vel = new Vector3f(vx, vy, vz);
+				ALSound sound = ALH.alhLoadSound(event.getSound());
+				((ResourceManagerClient) manager).getSoundManager().playSoundAt(sound, pos, vel);
+			}
+		});
 	}
 
 	@Override

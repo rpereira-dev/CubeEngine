@@ -6,7 +6,7 @@ import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
-import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Matrix4f;
@@ -35,9 +35,8 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 	}
 
 	@Override
-	public boolean action(ModelInstance modelInstance) {
+	public boolean action(ModelInstance modelInstance, EditableModelLayer editableModelLayer) {
 
-		EditableModel model = (EditableModel) modelInstance.getModel();
 		int x0 = getX();
 		int y0 = getY();
 		int z0 = getZ();
@@ -46,7 +45,7 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 		for (int dx = 0; dx < getWidth(); dx++) {
 			for (int dy = 0; dy < getHeight(); dy++) {
 				for (int dz = 0; dz < getDepth(); dz++) {
-					if (model.unsetBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz))) {
+					if (editableModelLayer.unsetBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz))) {
 						generate = true;
 					}
 				}
@@ -90,14 +89,14 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 	private final void updateHoveredBlock() {
 
 		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
+		EditableModelLayer modelLayer = this.guiModelView.getSelectedModelLayer();
 
 		// extract objects
-		if (modelInstance == null) {
+		if (modelInstance == null || modelLayer == null) {
 			return;
 		}
-		EditableModel model = (EditableModel) modelInstance.getModel();
 		Entity entity = modelInstance.getEntity();
-		float s = model.getBlockSizeUnit();
+		float s = modelLayer.getBlockSizeUnit();
 		ModelEditorCamera camera = (ModelEditorCamera) this.getCamera();
 
 		// origin relatively to the model
@@ -111,25 +110,19 @@ public class CameraToolRemove extends CameraTool implements Positioneable, Sizea
 		Vector3f ray = new Vector3f();
 		CameraPicker.ray(ray, camera, this.guiModelView.getMouseX(), this.guiModelView.getMouseY());
 
-		if (model.getBlockDataCount() > 0) {
-			Vector3i pos = new Vector3i();
-			Raycasting.raycast(origin.x, origin.y, origin.z, ray.x, ray.y, ray.z, 256.0f, 256.0f, 256.0f,
-					new RaycastingCallback() {
-						@Override
-						public boolean onRaycastCoordinates(int x, int y, int z, Vector3i theFace) {
-							// System.out.println(x + " : " + y + " : " + z);
-							if (y < model.getMiny() || model.getBlockData(pos.set(x, y, z)) != null) {
-								hovered.set(x, y, z);
-								face = theFace;
-								return (true);
-							}
-							return (false);
+		Vector3i pos = new Vector3i();
+		Raycasting.raycast(origin.x, origin.y, origin.z, ray.x, ray.y, ray.z, 256.0f, 256.0f, 256.0f,
+				new RaycastingCallback() {
+					@Override
+					public boolean onRaycastCoordinates(int x, int y, int z, Vector3i theFace) {
+						if (y < 0 || modelLayer.getBlockData(pos.set(x, y, z)) != null) {
+							hovered.set(x, y, z);
+							face = theFace;
+							return (true);
 						}
-					});
-		} else {
-			hovered.set(0, 0, 0);
-		}
-
+						return (false);
+					}
+				});
 	}
 
 	@Override

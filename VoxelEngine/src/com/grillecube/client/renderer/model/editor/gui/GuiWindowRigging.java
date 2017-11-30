@@ -12,7 +12,10 @@ import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.editor.camera.CameraToolRigging;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
+import com.grillecube.common.maths.Maths;
+import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.utils.Color;
 
 public class GuiWindowRigging extends GuiWindow {
@@ -55,6 +58,7 @@ public class GuiWindowRigging extends GuiWindow {
 
 			this.weight[i] = new GuiPrompt();
 			this.weight[i].setHint("blocks bone-weights");
+			this.weight[i].setHeldText("0.0");
 			this.weight[i].setBox(0.55f, 0.65f - i * h, w, h, 0.0f);
 			this.weight[i].setTextTestFormat(GuiPrompt.FORMAT_FLOAT);
 			this.weight[i].setHeldTextColor(Color.WHITE);
@@ -71,6 +75,13 @@ public class GuiWindowRigging extends GuiWindow {
 		this.confirm.addTextParameter(txtCenter);
 		this.confirm.setBox(0.25f, 0.15f, w, h, 0.0f);
 		this.addChild(this.confirm);
+		final EditableModelLayer modelLayer = cameraToolRigging.getModelLayer();
+		final int x0 = Maths.min(cameraToolRigging.getX(), modelLayer.getMinx());
+		final int y0 = Maths.min(cameraToolRigging.getY(), modelLayer.getMiny());
+		final int z0 = Maths.min(cameraToolRigging.getZ(), modelLayer.getMinz());
+		final int width = Maths.min(cameraToolRigging.getWidth(), modelLayer.getMaxx() - modelLayer.getMinx());
+		final int height = Maths.min(cameraToolRigging.getHeight(), modelLayer.getMaxy() - modelLayer.getMiny());
+		final int depth = Maths.min(cameraToolRigging.getDepth(), modelLayer.getMaxz() - modelLayer.getMinz());
 		this.confirm.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventPress<GuiButton> event) {
@@ -79,25 +90,26 @@ public class GuiWindowRigging extends GuiWindow {
 			}
 
 			private final void setBoneWeight() {
-				int x0 = cameraToolRigging.getX();
-				int y0 = cameraToolRigging.getY();
-				int z0 = cameraToolRigging.getZ();
-				for (int dx = 0; dx < cameraToolRigging.getWidth(); dx++) {
-					for (int dy = 0; dy < cameraToolRigging.getHeight(); dy++) {
-						for (int dz = 0; dz < cameraToolRigging.getDepth(); dz++) {
+				Vector3i tmp = new Vector3i();
+				for (int dx = 0; dx <= width; dx++) {
+					for (int dy = 0; dy <= height; dy++) {
+						for (int dz = 0; dz <= depth; dz++) {
 							int x = x0 + dx;
 							int y = y0 + dy;
 							int z = z0 + dz;
-							ModelBlockData blockData = cameraToolRigging.getModel().getBlockData(x, y, z);
+							ModelBlockData blockData = modelLayer.getBlockData(tmp.set(x, y, z));
 							if (blockData != null) {
-								int i = 0;
-								String bone = cameraToolRigging.getModel().getSkeleton().getBones().get(0).getName();
-								float weight = 0.5f;
-								blockData.setBone(i, bone, weight);
+								int i;
+								for (i = 0; i < bones.length; i++) {
+									String boneName = (String) bones[i].getPickedObject();
+									float w = weight[i].asFloat(0.0f);
+									blockData.setBone(i, boneName, w);
+								}
 							}
 						}
 					}
 				}
+				modelLayer.requestLayerUpdate();
 			}
 		});
 

@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Stack;
 
-import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.event.Event;
 import com.grillecube.common.event.world.EventTerrainBlocklightUpdate;
 import com.grillecube.common.event.world.EventTerrainDurabilityChanged;
@@ -147,7 +147,7 @@ public class Terrain {
 		this.updateBlockInstances();
 		this.updateSunLight();
 		this.updateBlockLights();
-//		this.updateBlocks();
+		// this.updateBlocks();
 	}
 
 	/** terrain face visibility update */
@@ -423,7 +423,7 @@ public class Terrain {
 	}
 
 	private void invokeEvent(Event event) {
-		VoxelEngineClient.instance().getResourceManager().getEventManager().invokeEvent(event);
+		VoxelEngine.instance().getResourceManager().getEventManager().invokeEvent(event);
 	}
 
 	/** remove and return the block instance at the given location */

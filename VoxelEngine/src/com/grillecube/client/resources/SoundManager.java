@@ -14,10 +14,10 @@
 
 package com.grillecube.client.resources;
 
+import com.grillecube.client.openal.ALH;
+import com.grillecube.client.openal.ALSound;
+import com.grillecube.client.openal.ALSourcePool;
 import com.grillecube.client.renderer.camera.CameraView;
-import com.grillecube.client.sound.ALH;
-import com.grillecube.client.sound.ALSound;
-import com.grillecube.client.sound.ALSourcePool;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.GenericManager;
 import com.grillecube.common.resources.ResourceManager;

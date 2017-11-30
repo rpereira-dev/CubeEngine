@@ -29,7 +29,12 @@ public class GuiWindow extends Gui {
 	protected void onDeinitialized(GuiRenderer renderer) {
 	}
 
-	protected void close() {
+	public final void open(Gui parent) {
+		parent.addChild(this);
+		this.setLayer(this.getTopestLayer() + 1);
+	}
+
+	public final void close() {
 		super.addTask(new GuiTask() {
 			@Override
 			public final boolean run() {

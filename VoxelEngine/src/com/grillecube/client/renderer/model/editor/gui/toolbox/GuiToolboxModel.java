@@ -13,6 +13,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.entity.Entity;
@@ -103,7 +104,6 @@ public class GuiToolboxModel extends GuiView {
 		}
 
 		this.panels.get(0).fadeIn(this, 0.15d);
-
 		this.refresh();
 	}
 
@@ -151,6 +151,10 @@ public class GuiToolboxModel extends GuiView {
 		return (this.skinPanel.getSelectedColor());
 	}
 
+	public final EditableModelLayer getSelectedModelLayer() {
+		return (this.buildPanel.getSelectedModelLayer());
+	}
+	
 	public final GuiToolboxModelPanelBuild getGuiToolboxModelPanelBuild() {
 		return (this.buildPanel);
 	}

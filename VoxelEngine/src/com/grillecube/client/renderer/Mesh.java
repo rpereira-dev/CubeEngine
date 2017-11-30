@@ -99,6 +99,9 @@ public abstract class Mesh {
 	}
 
 	public final ByteBuffer getVertices() {
+		if (this.vbo == null) {
+			return (null);
+		}
 		return (this.vbo.getContent(0));
 	}
 

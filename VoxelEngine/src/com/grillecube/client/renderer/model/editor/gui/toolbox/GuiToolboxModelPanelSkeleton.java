@@ -15,6 +15,7 @@ import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
+import com.grillecube.client.renderer.model.editor.gui.GuiWindowNewBone;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Quaternion;
 import com.grillecube.common.maths.Vector3f;
@@ -66,9 +67,12 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.addBone.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 				@Override
 				public void invoke(GuiEventClick<GuiButton> event) {
-					Bone bone = new Bone(getModel().getSkeleton(), (System.currentTimeMillis() % 10000) + "");
-					getModelSkeleton().addBone(bone);
-					refresh();
+					// Bone bone = new Bone(getModel().getSkeleton(),
+					// (System.currentTimeMillis() % 10000) + "");
+					// getModelSkeleton().addBone(bone);
+					// refresh();
+					GuiWindowNewBone win = new GuiWindowNewBone(getModel());
+					win.open(getOldestParent());
 				}
 			});
 

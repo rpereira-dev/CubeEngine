@@ -777,6 +777,18 @@ public abstract class Gui {
 		return (this.parent);
 	}
 
+	public final Gui getOldestParent() {
+		if (this.parent == null) {
+			return (null);
+		}
+
+		Gui oldest = this.parent;
+		while (oldest.getParent() != null) {
+			oldest = oldest.getParent();
+		}
+		return (oldest);
+	}
+
 	public final ArrayList<Gui> getChildren() {
 		return (this.children);
 	}

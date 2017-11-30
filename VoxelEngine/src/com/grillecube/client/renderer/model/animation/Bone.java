@@ -154,7 +154,11 @@ public class Bone {
 		Matrix4f.invert(bindTransform, this.inverseBindTransform);
 		if (this.hasChildren()) {
 			for (String childName : this.childrenNames) {
-				this.modelSkeleton.getBone(childName).calcInverseBindTransform(bindTransform);
+				Bone bone = this.modelSkeleton.getBone(childName);
+				if (bone == null) {
+					continue;
+				}
+				bone.calcInverseBindTransform(bindTransform);
 			}
 		}
 	}

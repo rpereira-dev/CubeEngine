@@ -4,6 +4,7 @@ package com.grillecube.client.renderer.model.editor.camera;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 
 public abstract class CameraTool {
@@ -28,9 +29,10 @@ public abstract class CameraTool {
 	 * do the action of the tool
 	 * 
 	 * @param modelInstance
-	 * @return : true if the model has been modified (the model mesh will be re-generated)
+	 * @return : true if the model has been modified (the model mesh will be
+	 *         re-generated)
 	 */
-	public boolean action(ModelInstance modelInstance) {
+	public boolean action(ModelInstance modelInstance, EditableModelLayer modelLayer) {
 		return (false);
 	}
 
@@ -57,7 +59,7 @@ public abstract class CameraTool {
 	}
 
 	public final float getBlockSizeUnit() {
-		return (this.getModel() == null ? 1.0f : this.getModel().getBlockSizeUnit());
+		return (this.getModelLayer() == null ? 1.0f : this.getModelLayer().getBlockSizeUnit());
 	}
 
 	public final ModelInstance getModelInstance() {
@@ -66,6 +68,10 @@ public abstract class CameraTool {
 
 	public final EditableModel getModel() {
 		return (this.guiModelView.getSelectedModel());
+	}
+
+	public final EditableModelLayer getModelLayer() {
+		return (this.guiModelView.getSelectedModelLayer());
 	}
 
 	public final ModelEditorCamera getCamera() {

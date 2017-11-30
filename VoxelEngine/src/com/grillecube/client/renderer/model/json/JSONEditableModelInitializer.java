@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.common.Logger;
 import com.grillecube.common.utils.JSONHelper;
@@ -35,25 +36,44 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 			return;
 		}
 
-		model.setBlockSizeUnit((float) (blocks.getDouble("sizeUnit")));
-		JSONArray blocksData = blocks.getJSONArray("blocks");
+		JSONArray layers = blocks.getJSONArray("layers");
+		for (int i = 0; i < layers.length(); i++) {
+			JSONObject layer = layers.getJSONObject(i);
+			String name = layer.getString("name");
+			float sizeUnit = (float) layer.getDouble("sizeUnit");
+			EditableModelLayer editableModelLayer = new EditableModelLayer(name);
+			editableModelLayer.setBlockSizeUnit(sizeUnit);
+			model.setLayer(editableModelLayer);
+		}
 
-		for (int i = 0; i < blocksData.length();) {
-			int x = blocksData.getInt(i++);
-			int y = blocksData.getInt(i++);
-			int z = blocksData.getInt(i++);
-			String b1 = blocksData.getString(i++);
-			String b2 = blocksData.getString(i++);
-			String b3 = blocksData.getString(i++);
-			float w1 = (float) blocksData.getDouble(i++);
-			float w2 = (float) blocksData.getDouble(i++);
-			float w3 = (float) blocksData.getDouble(i++);
+		JSONArray layersData = blocks.getJSONArray("layersData");
+		for (int i = 0; i < layersData.length(); i++) {
+			JSONObject layerData = layersData.getJSONObject(i);
+			String layerName = layerData.getString("layer");
 
-			ModelBlockData blockData = new ModelBlockData(x, y, z);
-			blockData.setBone(0, b1, w1);
-			blockData.setBone(1, b2, w2);
-			blockData.setBone(2, b3, w3);
-			model.setBlockData(blockData);
+			EditableModelLayer editableModelLayer = model.getLayer(layerName);
+			if (editableModelLayer == null) {
+				continue;
+			}
+			JSONArray layerBlocksData = layerData.getJSONArray("blocks");
+
+			for (int j = 0; j < layerBlocksData.length();) {
+				int x = layerBlocksData.getInt(j++);
+				int y = layerBlocksData.getInt(j++);
+				int z = layerBlocksData.getInt(j++);
+				String b1 = layerBlocksData.getString(j++);
+				String b2 = layerBlocksData.getString(j++);
+				String b3 = layerBlocksData.getString(j++);
+				float w1 = (float) layerBlocksData.getDouble(j++);
+				float w2 = (float) layerBlocksData.getDouble(j++);
+				float w3 = (float) layerBlocksData.getDouble(j++);
+
+				ModelBlockData blockData = new ModelBlockData(x, y, z);
+				blockData.setBone(0, b1, w1);
+				blockData.setBone(1, b2, w2);
+				blockData.setBone(2, b3, w3);
+				editableModelLayer.setBlockData(blockData);
+			}
 		}
 	}
 }

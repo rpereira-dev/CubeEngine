@@ -12,19 +12,22 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.sound;
+package com.grillecube.client.openal;
 
-import com.grillecube.common.maths.Vector3f;
+public abstract class ALObject
+{
+	private boolean _destroyed = false;
 
-public class ALListener {
-	public ALListener() {
+	/** free resources */
+	public void destroy()
+	{
+		if (this._destroyed)
+		{
+			return ;
+		}
+		this.onDestroy();
+		this._destroyed = true;
 	}
 
-	public void setPosition(Vector3f vec) {
-		ALH.alhSetListenerPosition(vec);
-	}
-
-	public void setOrientation(Vector3f vec) {
-		ALH.alhSetListenerOrientation(vec);
-	}
+	protected abstract void onDestroy();
 }

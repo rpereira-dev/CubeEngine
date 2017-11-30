@@ -4,9 +4,9 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
+import com.grillecube.client.tests.WorldTests;
 import com.grillecube.common.Logger;
 import com.grillecube.common.maths.MathTests;
-import com.grillecube.common.world.WorldTests;
 import com.grillecube.common.world.entity.collision.Collision;
 
 public class JUnitTestAll {

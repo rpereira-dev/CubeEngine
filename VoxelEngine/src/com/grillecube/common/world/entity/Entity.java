@@ -16,9 +16,8 @@ package com.grillecube.common.world.entity;
 
 import java.util.ArrayList;
 
-import com.grillecube.client.resources.SoundManager;
-import com.grillecube.client.sound.ALH;
-import com.grillecube.client.sound.ALSound;
+import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.event.world.entity.EventEntityPlaySound;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
@@ -369,35 +368,10 @@ public abstract class Entity extends PhysicObject {
 		return (this.getPositionVelocityY() < 0.0f);
 	}
 
-	/**
-	 * 
-	 * move the given PhysicObject by the velocity vector (dx, dy, dz) for a
-	 * time dt
-	 * 
-	 * 
-	 * @param object
-	 *            : the physicobject to move
-	 * @param dx
-	 * @param dy
-	 * @param dz
-	 * @param dt
-	 */
-	public static final void collisionMove(PhysicObject object, float dx, float dy, float dz, float dt) {
-		// TODO : implements
-		// https://www.gamedev.net/articles/programming/general-and-gameplay-programming/swept-aabb-collision-detection-and-response-r3084/
-	}
-
-	public void playSound(ALSound sound) {
-		// TODO : CLIENT SIDE ONLY
-		Vector3f pos = new Vector3f(this.getPositionX(), this.getPositionY(), this.getPositionZ());
-		Vector3f vel = new Vector3f(this.getPositionVelocityX(), this.getPositionVelocityY(),
-				this.getPositionVelocityZ());
-		SoundManager.instance().playSoundAt(sound, pos, vel);
-	}
-
-	public void playSound(String filepath) {
-		// TODO : CLIENT SIDE ONLY
-		this.playSound(ALH.alhLoadSound(filepath));
+	/** play the sound at the entity position and velocity */
+	public final void playSound(String soundName) {
+		EventEntityPlaySound event = new EventEntityPlaySound(this, soundName);
+		VoxelEngine.instance().getResourceManager().getEventManager().invokeEvent(event);
 	}
 
 	public final boolean isVisible() {

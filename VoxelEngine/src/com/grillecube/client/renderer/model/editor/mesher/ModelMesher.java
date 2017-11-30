@@ -24,7 +24,6 @@ import org.lwjgl.BufferUtils;
 import com.grillecube.client.renderer.model.ModelMesh;
 import com.grillecube.client.renderer.model.ModelMeshVertex;
 import com.grillecube.client.renderer.model.ModelSkin;
-import com.grillecube.common.Logger;
 
 /** an object which is used to generate model meshes dynamically */
 public abstract class ModelMesher {
@@ -33,15 +32,12 @@ public abstract class ModelMesher {
 	public ModelMesher() {
 	}
 
-	public final void generate(EditableModel editableModel) {
+	public final void generate(EditableModel editableModel, EditableModelLayer modelLayer) {
 
 		// if empty model
-		if (editableModel.getBlockDataCount() == 0) {
-			editableModel.getMesh().setVertices(null);
-			editableModel.getMesh().setIndices(null);
-			for (ModelSkin modelSkin : editableModel.getSkins()) {
-				modelSkin.getGLTexture().setData(null);
-			}
+		if (modelLayer.getBlockDataCount() == 0) {
+			modelLayer.setVertices(null);
+			modelLayer.setIndices(null);
 			return;
 		}
 
@@ -51,7 +47,7 @@ public abstract class ModelMesher {
 		HashMap<ModelSkin, BufferedImage> skinsData = new HashMap<ModelSkin, BufferedImage>();
 
 		// do the generation
-		this.doGenerate(editableModel, vertexStack, indicesStack, skinsData);
+		this.doGenerate(editableModel, modelLayer, vertexStack, indicesStack, skinsData);
 
 		// stack to buffer
 		ByteBuffer vertices = BufferUtils.createByteBuffer(vertexStack.size() * ModelMesh.BYTES_PER_VERTEX);
@@ -68,20 +64,39 @@ public abstract class ModelMesher {
 		indices.flip();
 
 		// set model data
-		editableModel.getMesh().setVertices(vertices);
-		editableModel.getMesh().setIndices(indices);
-		for (ModelSkin modelSkin : editableModel.getSkins()) {
-			BufferedImage skin = skinsData.get(modelSkin);
-			if (skin == null) {
-				Logger.get().log(Logger.Level.WARNING, "ModelMesher didn't generate every ModelSkins BufferedImage: "
-						+ skinsData.size() + "/" + editableModel.getSkins().size());
-
-			}
-			// may cause error if buffered image has a too high resolution
-			modelSkin.getGLTexture().setData(skin);
-		}
+		modelLayer.setVertices(vertices);
+		modelLayer.setIndices(indices);
 	}
 
-	protected abstract void doGenerate(EditableModel editableModel, Stack<ModelMeshVertex> vertices,
-			Stack<Short> indices, HashMap<ModelSkin, BufferedImage> skinsData);
+	protected abstract void doGenerate(EditableModel editableModel, EditableModelLayer modelLayer,
+			Stack<ModelMeshVertex> vertices, Stack<Short> indices, HashMap<ModelSkin, BufferedImage> skinsData);
+
+	/** merge editable model layers into the final mesh */
+	public final void mergeLayers(EditableModel editableModel) {
+		// if empty model
+		if (editableModel.getBlockDataCount() == 0) {
+			editableModel.getMesh().setVertices(null);
+			editableModel.getMesh().setIndices(null);
+			for (ModelSkin modelSkin : editableModel.getSkins()) {
+				modelSkin.getGLTexture().setData(null);
+			}
+			return;
+		}
+
+		// else
+		// ByteBuffer vertices, indices;
+		// editableModel.getMesh().setVertices(vertices);
+		// editableModel.getMesh().setIndices(indices);
+		// for (ModelSkin modelSkin : editableModel.getSkins()) {
+		// BufferedImage skin = skinsData.get(modelSkin);
+		// if (skin == null) {
+		// Logger.get().log(Logger.Level.WARNING, "ModelMesher didn't generate
+		// every ModelSkins BufferedImage: "
+		// + skinsData.size() + "/" + editableModel.getSkins().size());
+		//
+		// }
+		// // may cause error if buffered image has a too high resolution
+		// modelSkin.getGLTexture().setData(skin);
+		// }
+	}
 }

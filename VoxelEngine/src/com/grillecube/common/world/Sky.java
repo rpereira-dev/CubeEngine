@@ -34,13 +34,13 @@ public class Sky implements Taskable {
 	public static final float NIGHT_END = 0.9f;
 
 	/** state */
-	private int _state;
+	private int state;
 
-	private Random _rng;
+	private Random rng;
 
 	/** time [0.0 ; 1.0] */
-	private float _cycle_ratio;
-	private int _cycle_count;
+	private float cycleRatio;
+	private int cycleCount;
 
 	/** time in millis [0.0 ; MILLIS_PER_CYCLE] */
 	private long _cycle_millis;
@@ -49,53 +49,53 @@ public class Sky implements Taskable {
 	/** sky data */
 	private static final Vector3f SKY_COLOR_DAY = new Vector3f(0.4f, 0.71f, 0.99f);
 	private static final Vector3f SKY_COLOR_NIGHT = new Vector3f(0.01f, 0.14f, 0.19f);
-	private Vector3f _sky_color;
+	private Vector3f skyColor;
 
 	/** sun color */
 	private static final Vector3f SUN_RISE_COLOR = new Vector3f(1, 1, 1);
 
 	/** sun light */
-	private PointLight _sun;
+	private PointLight sun;
 
 	private static final float DAY_AMBIENT = 0.6f;
 	private static final float NIGHT_AMBIENT = 0.15f;
-	private float _ambient_light;
+	private float ambientLight;
 
 	/** fog data */
-	private Vector3f _fog_color;
-	private float _fog_density;
-	private float _fog_gradient;
-	private int _rain_strength;
-	private int _rain_strength_max;
-	private int _rain_timer;
+	private Vector3f fogColor;
+	private float fogDensity;
+	private float fogGradient;
+	private int rainStrength;
+	private int rainStrengthMax;
+	private int rainTimer;
 
 	public static final int MAX_RAIN_STRENGTH = 128;
 	public static final int MIN_RAIN_STRENGTH = 8;
 
 	/** weather factors */
-	private float _humidity;
-	private float _temperature;
-	private float _wind;
+	private float humidity;
+	private float temperature;
+	private float wind;
 
 	/** Weather constructor */
 	public Sky() {
 		this.setCycleRatio(Sky.DAY_START);
-		this._state = 0;
-		this._ambient_light = 0;
-		this._cycle_count = 0;
-		this._rain_timer = 0;
+		this.state = 0;
+		this.ambientLight = 0;
+		this.cycleCount = 0;
+		this.rainTimer = 0;
 
-		this._sky_color = new Vector3f();
+		this.skyColor = new Vector3f();
 
-		this._sun = new PointLight(new Vector3f(10000f, 10000f, 10000f), Sky.SUN_RISE_COLOR, 1.0f);
+		this.sun = new PointLight(new Vector3f(10000f, 10000f, 10000f), Sky.SUN_RISE_COLOR, 1.0f);
 
-		this._fog_color = new Vector3f(1.0f, 1.0f, 1.0f);
-		this._fog_density = 0.04f;
-		this._fog_gradient = 2.5f;
+		this.fogColor = new Vector3f(1.0f, 1.0f, 1.0f);
+		this.fogDensity = 0.04f;
+		this.fogGradient = 2.5f;
 	}
 
 	public void setCycleRatio(float f) {
-		this._cycle_ratio = f;
+		this.cycleRatio = f;
 		this._prev_millis = System.currentTimeMillis();
 		this._cycle_millis = (long) (f * MILLIS_PER_CYCLE);
 	}
@@ -113,25 +113,25 @@ public class Sky implements Taskable {
 
 	private void calculateLights() {
 		if (this.hasState(WeatherState.DAY_ENDING)) {
-			float intensity = 1 - (this._cycle_ratio - Sky.DAY_END) / (Sky.NIGHT_START - Sky.DAY_END);
-			this._sun.setIntensity(intensity);
-			this._ambient_light = intensity * Sky.DAY_AMBIENT + (1 - intensity) * Sky.NIGHT_AMBIENT;
+			float intensity = 1 - (this.cycleRatio - Sky.DAY_END) / (Sky.NIGHT_START - Sky.DAY_END);
+			this.sun.setIntensity(intensity);
+			this.ambientLight = intensity * Sky.DAY_AMBIENT + (1 - intensity) * Sky.NIGHT_AMBIENT;
 		}
 
 		if (this.hasState(WeatherState.NIGHT_ENDING)) {
-			float intensity = (this._cycle_ratio - Sky.NIGHT_END) / (1.0f - Sky.NIGHT_END);
-			this._sun.setIntensity(intensity);
-			this._ambient_light = intensity * Sky.DAY_AMBIENT + (1 - intensity) * Sky.NIGHT_AMBIENT;
+			float intensity = (this.cycleRatio - Sky.NIGHT_END) / (1.0f - Sky.NIGHT_END);
+			this.sun.setIntensity(intensity);
+			this.ambientLight = intensity * Sky.DAY_AMBIENT + (1 - intensity) * Sky.NIGHT_AMBIENT;
 		}
 
 		if (this.hasState(WeatherState.DAY)) {
-			this._sun.setIntensity(1.0f);
-			this._ambient_light = Sky.DAY_AMBIENT;
+			this.sun.setIntensity(1.0f);
+			this.ambientLight = Sky.DAY_AMBIENT;
 		}
 
 		if (this.hasState(WeatherState.NIGHT)) {
-			this._sun.setIntensity(0.0f);
-			this._ambient_light = Sky.NIGHT_AMBIENT;
+			this.sun.setIntensity(0.0f);
+			this.ambientLight = Sky.NIGHT_AMBIENT;
 		}
 	}
 
@@ -145,34 +145,34 @@ public class Sky implements Taskable {
 		this._cycle_millis += (time - this._prev_millis);
 		if (this._cycle_millis >= MILLIS_PER_CYCLE) {
 			this._cycle_millis = this._cycle_millis % MILLIS_PER_CYCLE;
-			this._cycle_count++;
+			this.cycleCount++;
 		}
-		this._cycle_ratio = this._cycle_millis / (float) MILLIS_PER_CYCLE;
+		this.cycleRatio = this._cycle_millis / (float) MILLIS_PER_CYCLE;
 		this._prev_millis = time;
 
-		if (this._cycle_ratio >= Sky.DAY_START && this._cycle_ratio < Sky.DAY_END) {
+		if (this.cycleRatio >= Sky.DAY_START && this.cycleRatio < Sky.DAY_END) {
 			this.setCycleState(WeatherState.DAY);
 		}
 
-		if (this._cycle_ratio >= Sky.DAY_END && this._cycle_ratio < Sky.NIGHT_START) {
+		if (this.cycleRatio >= Sky.DAY_END && this.cycleRatio < Sky.NIGHT_START) {
 			this.setCycleState(WeatherState.DAY_ENDING);
 		}
 
-		if (this._cycle_ratio > Sky.NIGHT_START && this._cycle_ratio <= Sky.NIGHT_END) {
+		if (this.cycleRatio > Sky.NIGHT_START && this.cycleRatio <= Sky.NIGHT_END) {
 			this.setCycleState(WeatherState.NIGHT);
 		}
 
-		if (this._cycle_ratio >= Sky.NIGHT_END) {
+		if (this.cycleRatio >= Sky.NIGHT_END) {
 			this.setCycleState(WeatherState.NIGHT_ENDING);
 		}
 	}
 
 	public int getDayCount() {
-		return (this._cycle_count);
+		return (this.cycleCount);
 	}
 
 	public float getCycleRatio() {
-		return (this._cycle_ratio);
+		return (this.cycleRatio);
 	}
 
 	/*********************************
@@ -194,15 +194,15 @@ public class Sky implements Taskable {
 	}
 
 	private void setState(int state) {
-		this._state = this._state | state;
+		this.state = this.state | state;
 	}
 
 	private void unsetState(int state) {
-		this._state = this._state & ~(state);
+		this.state = this.state & ~(state);
 	}
 
 	public boolean hasState(int state) {
-		return ((this._state & state) == state);
+		return ((this.state & state) == state);
 	}
 
 	/*********************************
@@ -220,15 +220,15 @@ public class Sky implements Taskable {
 		if (this.hasState(WeatherState.NIGHT)) {
 			ratio = 0;
 		} else if (this.hasState(WeatherState.DAY_ENDING)) {
-			ratio = 1 - (this._cycle_ratio - Sky.DAY_END) / (Sky.NIGHT_START - Sky.DAY_END);
+			ratio = 1 - (this.cycleRatio - Sky.DAY_END) / (Sky.NIGHT_START - Sky.DAY_END);
 		} else if (this.hasState(WeatherState.NIGHT_ENDING)) {
-			ratio = (this._cycle_ratio - Sky.NIGHT_END) / (1.0f - Sky.NIGHT_END);
+			ratio = (this.cycleRatio - Sky.NIGHT_END) / (1.0f - Sky.NIGHT_END);
 		}
-		Vector3f.mix(this._sky_color, Sky.SKY_COLOR_DAY, Sky.SKY_COLOR_NIGHT, ratio);
+		Vector3f.mix(this.skyColor, Sky.SKY_COLOR_DAY, Sky.SKY_COLOR_NIGHT, ratio);
 	}
 
 	public Vector3f getSkyColor() {
-		return (this._sky_color);
+		return (this.skyColor);
 	}
 
 	public Vector3f getCloudColor() {
@@ -246,34 +246,34 @@ public class Sky implements Taskable {
 	/**********************************************************************************/
 
 	protected void calculateFog() {
-		this._fog_gradient = 4.0f;
-		this._fog_density = 0.004f;
+		this.fogGradient = 4.0f;
+		this.fogDensity = 0.004f;
 
-		float r = this._sky_color.x * 1.2f;
-		float g = this._sky_color.y * 1.2f;
-		float b = this._sky_color.z * 1.2f;
-		this._fog_color.set(r, g, b);
-		this._fog_color.set(1, 1, 1);
+		float r = this.skyColor.x * 1.2f;
+		float g = this.skyColor.y * 1.2f;
+		float b = this.skyColor.z * 1.2f;
+		this.fogColor.set(r, g, b);
+		this.fogColor.set(1, 1, 1);
 	}
 
 	public Vector3f getFogColor() {
-		return (this._fog_color);
+		return (this.fogColor);
 	}
 
 	public void setFogColor(Vector3f color) {
-		this._fog_color = color;
+		this.fogColor = color;
 	}
 
 	public float getFogGradient() {
-		return (this._fog_gradient);
+		return (this.fogGradient);
 	}
 
 	public float getFogDensity() {
-		return (this._fog_density);
+		return (this.fogDensity);
 	}
 
 	public float getAmbientLight() {
-		return (this._ambient_light);
+		return (this.ambientLight);
 	}
 
 	/*********************************
@@ -286,14 +286,14 @@ public class Sky implements Taskable {
 	 *********************************/
 	/**********************************************************************************/
 	public PointLight getSun() {
-		return (this._sun);
+		return (this.sun);
 	}
 
 	private void calculateSunPosition() {
-		float x = (float) Math.cos(this._cycle_ratio * Math.PI * 2);
-		float y = (float) Math.sin(this._cycle_ratio * Math.PI * 2);
+		float x = (float) Math.cos(this.cycleRatio * Math.PI * 2);
+		float y = (float) Math.sin(this.cycleRatio * Math.PI * 2);
 		float z = 0.0f;
-		this._sun.setPosition(x, y, z);
+		this.sun.setPosition(x, y, z);
 	}
 
 	/*********************************
@@ -307,21 +307,21 @@ public class Sky implements Taskable {
 	/**********************************************************************************/
 	private void calculateRain() {
 		if (this.hasState(WeatherState.RAIN_STARTING)) {
-			if (this._rain_strength < this._rain_strength_max) {
-				this._rain_strength++;
+			if (this.rainStrength < this.rainStrengthMax) {
+				this.rainStrength++;
 			} else {
 				this.unsetState(WeatherState.RAIN_STARTING);
 				this.setState(WeatherState.RAINING);
 			}
 		} else if (this.hasState(WeatherState.RAINING)) {
-			this._rain_timer--;
-			if (this._rain_timer <= 0) {
+			this.rainTimer--;
+			if (this.rainTimer <= 0) {
 				this.unsetState(WeatherState.RAINING);
 				this.setState(WeatherState.RAIN_ENDING);
 			}
 		} else if (this.hasState(WeatherState.RAIN_ENDING)) {
-			if (this._rain_strength > 0) {
-				this._rain_strength--;
+			if (this.rainStrength > 0) {
+				this.rainStrength--;
 			} else {
 				this.unsetState(WeatherState.RAIN_ENDING);
 			}
@@ -329,7 +329,7 @@ public class Sky implements Taskable {
 	}
 
 	public void startRain() {
-		this.startRain((int) (this._rng.nextFloat()));
+		this.startRain((int) (this.rng.nextFloat()));
 	}
 
 	/**
@@ -343,26 +343,26 @@ public class Sky implements Taskable {
 
 	/** numbre of particles spawned per frames */
 	public void startRain(int particles) {
-		this._rain_strength_max = particles;
-		this._rain_strength = 0;
-		this._rain_timer = 60 * 16;
+		this.rainStrengthMax = particles;
+		this.rainStrength = 0;
+		this.rainTimer = 60 * 16;
 		this.setState(WeatherState.RAIN_STARTING);
 	}
 
 	public void setFogColor(float r, float g, float b) {
-		this._fog_color.set(r, g, b);
+		this.fogColor.set(r, g, b);
 	}
 
 	public void setFogGradient(float gradient) {
-		this._fog_gradient = gradient;
+		this.fogGradient = gradient;
 	}
 
 	public void setFogDensity(float density) {
-		this._fog_density = density;
+		this.fogDensity = density;
 	}
 
 	public int getRainStrength() {
-		return (this._rain_strength);
+		return (this.rainStrength);
 	}
 
 	public boolean isRaining() {

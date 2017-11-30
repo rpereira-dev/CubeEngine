@@ -117,4 +117,15 @@ public class ModelBlockData {
 		sb.append("}");
 		return (sb.toString());
 	}
+
+	public final boolean fit(ModelBlockData blockData) {
+		for (int i = 0; i < this.bones.length; i++) {
+			if (this.weights[i] == blockData.weights[i] && ((this.bones[i] == null && blockData.bones[i] == null)
+					|| this.bones[i].equals(blockData.bones[i]))) {
+				continue;
+			}
+			return (false);
+		}
+		return (true);
+	}
 }

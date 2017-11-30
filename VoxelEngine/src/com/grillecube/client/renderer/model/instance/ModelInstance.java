@@ -17,11 +17,9 @@ package com.grillecube.client.renderer.model.instance;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Random;
 
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelMesh;
-import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 import com.grillecube.common.world.entity.Entity;
 
 public class ModelInstance {
@@ -52,39 +50,41 @@ public class ModelInstance {
 
 			// TODO : make it cleaner, maybe add a size attribute to the model
 			ByteBuffer vertices = model.getMesh().getVertices();
-			float mx = Float.POSITIVE_INFINITY, my = Float.POSITIVE_INFINITY, mz = Float.POSITIVE_INFINITY;
-			float Mx = Float.NEGATIVE_INFINITY, My = Float.NEGATIVE_INFINITY, Mz = Float.NEGATIVE_INFINITY;
-			int position = 0;
-			while (position < vertices.capacity()) {
-				vertices.position(position);
-				float x = vertices.getFloat();
-				float y = vertices.getFloat();
-				float z = vertices.getFloat();
-				if (x < mx) {
-					mx = x;
-				} else if (x > Mx) {
-					Mx = x;
+			if (vertices != null) {
+				float mx = Float.POSITIVE_INFINITY, my = Float.POSITIVE_INFINITY, mz = Float.POSITIVE_INFINITY;
+				float Mx = Float.NEGATIVE_INFINITY, My = Float.NEGATIVE_INFINITY, Mz = Float.NEGATIVE_INFINITY;
+				int position = 0;
+				while (position < vertices.capacity()) {
+					vertices.position(position);
+					float x = vertices.getFloat();
+					float y = vertices.getFloat();
+					float z = vertices.getFloat();
+					if (x < mx) {
+						mx = x;
+					} else if (x > Mx) {
+						Mx = x;
+					}
+
+					if (y < my) {
+						my = y;
+					} else if (y > My) {
+						My = y;
+					}
+
+					if (z < mz) {
+						mz = z;
+					} else if (z > Mz) {
+						Mz = z;
+					}
+					position += ModelMesh.BYTES_PER_VERTEX;
 				}
 
-				if (y < my) {
-					my = y;
-				} else if (y > My) {
-					My = y;
-				}
-
-				if (z < mz) {
-					mz = z;
-				} else if (z > Mz) {
-					Mz = z;
-				}
-				position += ModelMesh.BYTES_PER_VERTEX;
+				float w = Math.max(Mx - mx, Mz - mz);
+				float eps = w * 0.05f;
+				entity.setSizeX(w - eps);
+				entity.setSizeY(My - my - eps);
+				entity.setSizeZ(w - eps);
 			}
-			
-			float w = Math.max(Mx - mx, Mz - mz);
-			float eps = w * 0.05f;
-			entity.setSizeX(w - eps);
-			entity.setSizeY(My - my - eps);
-			entity.setSizeZ(w - eps);
 		}
 		this.skinID = 0;
 		this.model = model;
@@ -92,13 +92,13 @@ public class ModelInstance {
 		this.animationInstances = new ArrayList<AnimationInstance>();
 
 		// init animations
-		ModelSkeletonAnimation modelAnimation = model.getAnimation(0);
-		if (modelAnimation != null) {
-			AnimationInstance instance = new AnimationInstance(modelAnimation);
-			instance.setTime(Math.abs(new Random().nextLong()));
-			instance.loop();
-			this.animationInstances.add(instance);
-		}
+		// ModelSkeletonAnimation modelAnimation = model.getAnimation(0);
+		// if (modelAnimation != null) {
+		// AnimationInstance instance = new AnimationInstance(modelAnimation);
+		// instance.setTime(Math.abs(new Random().nextLong()));
+		// instance.loop();
+		// this.animationInstances.add(instance);
+		// }
 	}
 
 	/** get model from this model instance */

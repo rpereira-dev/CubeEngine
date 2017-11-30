@@ -1,9 +1,6 @@
 package com.grillecube.client.renderer.model.json;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.json.JSONArray;
@@ -17,6 +14,7 @@ import com.grillecube.client.renderer.model.animation.BoneTransform;
 import com.grillecube.client.renderer.model.animation.KeyFrame;
 import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.utils.JSONHelper;
@@ -89,7 +87,8 @@ public class JSONModelExporter {
 			jsonIndices.put(i);
 		}
 		jsonMesh.put("indices", jsonIndices);
-		writeJSON(jsonMesh, dirPath, meshPath);
+		JSONHelper.writeJSONObjectToFile(Paths.get(dirPath, meshPath).toFile(), jsonMesh);
+
 		jsonInfo.put("mesh", meshPath);
 
 		// skeleton
@@ -134,27 +133,44 @@ public class JSONModelExporter {
 
 			jsonBones.put(jsonBone);
 		}
-		writeJSON(jsonSkeleton, dirPath, skeletonPath);
+		JSONHelper.writeJSONObjectToFile(Paths.get(dirPath, skeletonPath).toFile(), jsonSkeleton);
 
 		// blocks
 		String blocksPath = "blocks/blocks.json";
 		jsonInfo.put("blocks", blocksPath);
+
 		JSONObject jsonBlocks = new JSONObject();
-		jsonBlocks.put("sizeUnit", editableModel.getBlockSizeUnit());
-		JSONArray jsonBlocksData = new JSONArray();
-		for (ModelBlockData blockData : editableModel.getRawBlockDatas().values()) {
-			jsonBlocksData.put(blockData.getX());
-			jsonBlocksData.put(blockData.getY());
-			jsonBlocksData.put(blockData.getZ());
-			jsonBlocksData.put(blockData.getBone(0));
-			jsonBlocksData.put(blockData.getBone(1));
-			jsonBlocksData.put(blockData.getBone(2));
-			jsonBlocksData.put(blockData.getBoneWeight(0));
-			jsonBlocksData.put(blockData.getBoneWeight(1));
-			jsonBlocksData.put(blockData.getBoneWeight(2));
+
+		JSONArray jsonLayers = new JSONArray();
+		JSONArray jsonLayersData = new JSONArray();
+		for (EditableModelLayer editableModelLayer : editableModel.getRawLayers().values()) {
+			JSONObject jsonLayer = new JSONObject();
+			jsonLayer.put("name", editableModelLayer.getName());
+			jsonLayer.put("sizeUnit", editableModelLayer.getBlockSizeUnit());
+			jsonLayers.put(jsonLayer);
+
+			JSONObject jsonLayerData = new JSONObject();
+			JSONArray jsonLayerBlocks = new JSONArray();
+			for (ModelBlockData blockData : editableModelLayer.getRawBlockDatas().values()) {
+				jsonLayerBlocks.put(blockData.getX());
+				jsonLayerBlocks.put(blockData.getY());
+				jsonLayerBlocks.put(blockData.getZ());
+				jsonLayerBlocks.put(String.valueOf(blockData.getBone(0)));
+				jsonLayerBlocks.put(String.valueOf(blockData.getBone(1)));
+				jsonLayerBlocks.put(String.valueOf(blockData.getBone(2)));
+				jsonLayerBlocks.put(blockData.getBoneWeight(0));
+				jsonLayerBlocks.put(blockData.getBoneWeight(1));
+				jsonLayerBlocks.put(blockData.getBoneWeight(2));
+			}
+			jsonLayerData.put("layer", editableModelLayer.getName());
+			jsonLayerData.put("blocks", jsonLayerBlocks);
+
+			jsonLayersData.put(jsonLayerData);
 		}
-		jsonBlocks.put("blocks", jsonBlocksData);
-		writeJSON(jsonBlocks, dirPath, blocksPath);
+		jsonBlocks.put("layers", jsonLayers);
+		jsonBlocks.put("layersData", jsonLayersData);
+		JSONHelper.writeJSONObjectToFile(Paths.get(dirPath, blocksPath).toFile(), jsonBlocks);
+
 		jsonInfo.put("blocks", blocksPath);
 
 		// animations
@@ -201,7 +217,7 @@ public class JSONModelExporter {
 				jsonKeyFrames.put(jsonKeyFrame);
 			}
 			jsonAnimation.put("keyFrames", jsonKeyFrames);
-			writeJSON(jsonAnimation, dirPath, animationPath);
+			JSONHelper.writeJSONObjectToFile(Paths.get(dirPath, animationPath).toFile(), jsonAnimation);
 		}
 		jsonInfo.put("animations", jsonAnimations);
 
@@ -216,17 +232,13 @@ public class JSONModelExporter {
 			String texturePath = rawPath + ".png";
 			ImageUtils.exportPNGImage(Paths.get(dirPath, texturePath).toFile(), skin.getGLTexture().getData());
 			jsonSkin.put("texture", texturePath);
-			writeJSON(jsonSkin, dirPath, skinPath);
+			JSONHelper.writeJSONObjectToFile(Paths.get(dirPath, skinPath).toFile(), jsonSkin);
+
 		}
 		jsonInfo.put("skins", jsonSkins);
 
 		// finally, write file
-		writeJSON(jsonInfo, dirPath, "info.json");
-	}
+		JSONHelper.writeJSONObjectToFile(Paths.get(dirPath, "info.json").toFile(), jsonInfo);
 
-	private static final void writeJSON(JSONObject obj, String dirpath, String... more) throws IOException {
-		Path info = Paths.get(dirpath, more);
-		File file = info.toFile();
-		JSONHelper.writeJSONObjectToFile(file, obj);
 	}
 }

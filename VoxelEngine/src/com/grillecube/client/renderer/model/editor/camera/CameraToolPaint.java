@@ -10,6 +10,7 @@ import com.grillecube.client.renderer.lines.Line;
 import com.grillecube.client.renderer.lines.LineRendererFactory;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.faces.Face;
@@ -45,8 +46,7 @@ public class CameraToolPaint extends CameraTool implements Positioneable, Sizeab
 	}
 
 	@Override
-	public boolean action(ModelInstance modelInstance) {
-		EditableModel model = (EditableModel) modelInstance.getModel();
+	public boolean action(ModelInstance modelInstance, EditableModelLayer editableModelLayer) {
 		int x0 = getX();
 		int y0 = getY();
 		int z0 = getZ();
@@ -56,7 +56,7 @@ public class CameraToolPaint extends CameraTool implements Positioneable, Sizeab
 		for (int dx = 0; dx < getWidth(); dx++) {
 			for (int dy = 0; dy < getHeight(); dy++) {
 				for (int dz = 0; dz < getDepth(); dz++) {
-					ModelBlockData blockData = model.getBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz));
+					ModelBlockData blockData = editableModelLayer.getBlockData(pos.set(x0 + dx, y0 + dy, z0 + dz));
 					if (blockData != null) {
 						blockData.setColor(this.guiModelView.getSelectedSkin(), this.guiModelView.getSelectedColor(),
 								this.face);
@@ -97,14 +97,14 @@ public class CameraToolPaint extends CameraTool implements Positioneable, Sizeab
 	private final void updateHoveredBlock() {
 
 		ModelInstance modelInstance = this.guiModelView.getSelectedModelInstance();
+		EditableModelLayer modelLayer = this.guiModelView.getSelectedModelLayer();
 
 		// extract objects
-		if (modelInstance == null) {
+		if (modelInstance == null || modelLayer == null) {
 			return;
 		}
-		EditableModel model = (EditableModel) modelInstance.getModel();
 		Entity entity = modelInstance.getEntity();
-		float s = model.getBlockSizeUnit();
+		float s = modelLayer.getBlockSizeUnit();
 		ModelEditorCamera camera = (ModelEditorCamera) this.getCamera();
 
 		// origin relatively to the model
@@ -124,7 +124,7 @@ public class CameraToolPaint extends CameraTool implements Positioneable, Sizeab
 					@Override
 					public boolean onRaycastCoordinates(int x, int y, int z, Vector3i theFace) {
 						// System.out.println(x + " : " + y + " : " + z);
-						if (y < 0 || model.getBlockData(pos.set(x, y, z)) != null) {
+						if (y < 0 || modelLayer.getBlockData(pos.set(x, y, z)) != null) {
 							hovered.set(x, y, z);
 							face = Face.fromVec(theFace);
 							return (true);

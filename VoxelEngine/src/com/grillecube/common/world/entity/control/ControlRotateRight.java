@@ -1,6 +1,5 @@
 package com.grillecube.common.world.entity.control;
 
-import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.world.entity.Entity;
 
 public class ControlRotateRight extends Control<Entity> {

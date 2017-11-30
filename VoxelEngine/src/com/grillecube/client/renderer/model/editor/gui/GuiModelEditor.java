@@ -4,6 +4,7 @@ import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolbox;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.utils.Color;
 
@@ -54,7 +55,11 @@ public class GuiModelEditor extends Gui {
 	public final EditableModel getSelectedModel() {
 		return (this.toolbox.getSelectedModel());
 	}
-	
+
+	public final EditableModelLayer getSelectedModelLayer() {
+		return (this.toolbox.getSelectedModelLayer());
+	}
+
 	public final Color getSelectedColor() {
 		return (this.toolbox.getSelectedColor());
 	}

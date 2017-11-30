@@ -12,22 +12,28 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.sound;
+package com.grillecube.client.openal;
 
-public abstract class ALObject
-{
-	private boolean _destroyed = false;
+import org.lwjgl.openal.AL10;
 
-	/** free resources */
-	public void destroy()
-	{
-		if (this._destroyed)
-		{
-			return ;
-		}
-		this.onDestroy();
-		this._destroyed = true;
+public class ALBuffer extends ALObject {
+	private int _id;
+
+	public ALBuffer(int id) {
+		this._id = id;
 	}
 
-	protected abstract void onDestroy();
+	@Override
+	public void onDestroy() {
+		AL10.alDeleteBuffers(this._id);
+	}
+
+	public int getID() {
+		return (this._id);
+	}
+
+	public void bufferData(ALSound file) {
+		ALH.alhBufferData(this, file);
+	}
+
 }

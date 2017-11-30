@@ -305,8 +305,6 @@ public class Collision {
 	@Test
 	public void collisionRounding() {
 
-		float dt = 10.0f;
-
 		Entity entity = new Entity() {
 			@Override
 			protected void onUpdate(double dt) {
@@ -328,7 +326,6 @@ public class Collision {
 		{
 			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(entity, block);
 			Assert.assertEquals(collisionResponse, new CollisionResponse(entity, block, 0.0f, 1.0f, 0.0f, 5.0f));
-			dt -= collisionResponse.dt;
 
 			// move to collision
 			Positioneable.position(entity, collisionResponse.dt);
@@ -350,7 +347,6 @@ public class Collision {
 			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(entity, block);
 
 			Assert.assertEquals(collisionResponse, new CollisionResponse(entity, block, 0.0f, 1.0f, 0.0f, 0.0f));
-			dt -= collisionResponse.dt;
 
 			// if collision, move just before it collides
 			Positioneable.position(entity, collisionResponse.dt);

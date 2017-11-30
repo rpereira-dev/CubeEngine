@@ -1,4 +1,4 @@
-package com.grillecube.common.tests;
+package com.grillecube.client.tests;
 
 import com.grillecube.client.VoxelEngineClient;
 

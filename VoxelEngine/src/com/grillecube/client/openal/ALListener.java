@@ -12,28 +12,19 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.sound;
+package com.grillecube.client.openal;
 
-import org.lwjgl.openal.AL10;
+import com.grillecube.common.maths.Vector3f;
 
-public class ALBuffer extends ALObject {
-	private int _id;
-
-	public ALBuffer(int id) {
-		this._id = id;
+public class ALListener {
+	public ALListener() {
 	}
 
-	@Override
-	public void onDestroy() {
-		AL10.alDeleteBuffers(this._id);
+	public void setPosition(Vector3f vec) {
+		ALH.alhSetListenerPosition(vec);
 	}
 
-	public int getID() {
-		return (this._id);
+	public void setOrientation(Vector3f vec) {
+		ALH.alhSetListenerOrientation(vec);
 	}
-
-	public void bufferData(ALSound file) {
-		ALH.alhBufferData(this, file);
-	}
-
 }
