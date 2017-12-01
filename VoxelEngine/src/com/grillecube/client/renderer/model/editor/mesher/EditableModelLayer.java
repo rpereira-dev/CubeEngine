@@ -1,6 +1,5 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,8 +10,6 @@ public class EditableModelLayer {
 	private final String layerName;
 	private HashMap<Vector3i, ModelBlockData> blocksData;
 	private ArrayList<ModelPlane> planes;
-	private ByteBuffer vertices;
-	private ByteBuffer indices;
 
 	/**
 	 * the size of a single block of this model (N.B: a terrain block size is
@@ -28,13 +25,16 @@ public class EditableModelLayer {
 	private int maxy;
 	private int maxz;
 
-	private boolean meshUpToDate;
+	private boolean planesUpToDate;
+	private boolean isVisible;
 
 	public EditableModelLayer(String layerName) {
 		this.layerName = layerName;
 		this.blocksData = new HashMap<Vector3i, ModelBlockData>();
 		this.planes = new ArrayList<ModelPlane>();
 		this.blockSizeUnit = 1.0f;
+		this.isVisible = true;
+		this.planesUpToDate = false;
 		this.updateMinMax();
 	}
 
@@ -127,9 +127,6 @@ public class EditableModelLayer {
 		copy.maxx = this.maxx;
 		copy.maxy = this.maxy;
 		copy.maxz = this.maxz;
-
-		copy.vertices = this.vertices;
-		copy.indices = this.indices;
 
 		copy.planes.addAll(this.planes);
 
@@ -268,35 +265,19 @@ public class EditableModelLayer {
 		return (this.blockSizeUnit);
 	}
 
-	public final void setMeshUpToDate() {
-		this.meshUpToDate = true;
+	public final void setPlanesUpToDate() {
+		this.planesUpToDate = true;
 	}
 
-	public final boolean isMeshUpToDate() {
-		return (this.meshUpToDate);
+	public final boolean arePlanesUpToDate() {
+		return (this.planesUpToDate);
 	}
 
 	/**
 	 * request a mesh update
 	 */
-	public final void requestLayerUpdate() {
-		this.meshUpToDate = false;
-	}
-
-	public final ByteBuffer getVertices() {
-		return (this.vertices);
-	}
-
-	public final ByteBuffer getIndices() {
-		return (this.indices);
-	}
-
-	public final void setVertices(ByteBuffer vertices) {
-		this.vertices = vertices;
-	}
-
-	public final void setIndices(ByteBuffer indices) {
-		this.indices = indices;
+	public final void requestPlanesUpdate() {
+		this.planesUpToDate = false;
 	}
 
 	public final HashMap<Vector3i, ModelBlockData> getRawBlockDatas() {
@@ -309,5 +290,13 @@ public class EditableModelLayer {
 
 	public final String getName() {
 		return (this.layerName);
+	}
+
+	public final boolean isVisible() {
+		return (this.isVisible);
+	}
+
+	public final void setVisible(boolean b) {
+		this.isVisible = b;
 	}
 }

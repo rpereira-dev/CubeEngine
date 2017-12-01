@@ -18,11 +18,11 @@ public abstract class GuiToolboxModelPanel extends GuiView {
 	/** get panel title */
 	public abstract String getTitle();
 
-	public final EditableModel getModel() {
+	public final EditableModel getSelectedModel() {
 		return (((GuiToolboxModel) this.getParent()).getModel());
 	}
 
-	public final ModelInstance getModelInstance() {
+	public final ModelInstance getSelectedModelInstance() {
 		return (((GuiToolboxModel) this.getParent()).getModelInstance());
 	}
 }

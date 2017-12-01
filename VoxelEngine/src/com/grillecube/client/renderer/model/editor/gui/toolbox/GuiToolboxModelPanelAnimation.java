@@ -50,7 +50,7 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 				onAnimationPicked();
 			}
 		});
-		for (ModelSkeletonAnimation modelAnimation : this.getModel().getAnimations()) {
+		for (ModelSkeletonAnimation modelAnimation : this.getSelectedModel().getAnimations()) {
 			this.animations.add(modelAnimation, modelAnimation.getName());
 		}
 		this.animations.pick(0);

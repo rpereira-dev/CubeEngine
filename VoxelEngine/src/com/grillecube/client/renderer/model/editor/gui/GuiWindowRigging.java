@@ -109,7 +109,7 @@ public class GuiWindowRigging extends GuiWindow {
 						}
 					}
 				}
-				modelLayer.requestLayerUpdate();
+				modelLayer.requestPlanesUpdate();
 			}
 		});
 

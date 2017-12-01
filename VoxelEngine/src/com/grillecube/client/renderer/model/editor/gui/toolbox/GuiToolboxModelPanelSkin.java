@@ -61,7 +61,7 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 
 		this.skins.setHint("Skins...");
 		this.skins.setBox(1 / 3.0f, 0.70f, 1 / 3.0f, 0.05f, 0);
-		for (ModelSkin skin : this.getModel().getSkins()) {
+		for (ModelSkin skin : this.getSelectedModel().getSkins()) {
 			this.skins.add(skin, skin.getName());
 		}
 		this.skins.pick(0);

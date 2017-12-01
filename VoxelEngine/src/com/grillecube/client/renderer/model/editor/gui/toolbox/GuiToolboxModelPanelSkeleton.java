@@ -71,7 +71,7 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 					// (System.currentTimeMillis() % 10000) + "");
 					// getModelSkeleton().addBone(bone);
 					// refresh();
-					GuiWindowNewBone win = new GuiWindowNewBone(getModel());
+					GuiWindowNewBone win = new GuiWindowNewBone(getSelectedModel());
 					win.open(getOldestParent());
 				}
 			});
@@ -194,7 +194,7 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 	}
 
 	public final ModelSkeleton getModelSkeleton() {
-		return (this.getModel().getSkeleton());
+		return (this.getSelectedModel().getSkeleton());
 	}
 
 	private final Bone getSelectedBone() {

@@ -13,6 +13,8 @@ public class EditableModel extends Model {
 	/** blocks data : first key is the layer, value is the blocks data */
 	private HashMap<String, EditableModelLayer> blocksDataLayers;
 
+	private boolean meshUpToDate;
+
 	public EditableModel() {
 		this(null);
 	}
@@ -54,18 +56,26 @@ public class EditableModel extends Model {
 	@Override
 	public final void onBound() {
 		super.onBound();
-		boolean updated = false;
-		for (EditableModelLayer modelLayer : this.blocksDataLayers.values()) {
-			if (!modelLayer.isMeshUpToDate()) {
-				updated = true;
-				modelLayer.setMeshUpToDate();
-				this.modelMesher.generate(this, modelLayer);
-			}
+		if (!this.isMeshUpToDate()) {
+			this.setMeshUpToDate();
+			this.generate();
 		}
+	}
 
-		if (updated) {
-			this.mergeLayers();
-		}
+	public final void generate() {
+		this.modelMesher.generate(this);
+	}
+
+	private final void setMeshUpToDate() {
+		this.meshUpToDate = true;
+	}
+
+	private final boolean isMeshUpToDate() {
+		return (this.meshUpToDate);
+	}
+
+	public final void requestMeshUpdate() {
+		this.meshUpToDate = false;
 	}
 
 	/**
@@ -77,18 +87,5 @@ public class EditableModel extends Model {
 			sum += layer.getBlockDataCount();
 		}
 		return (sum);
-	}
-
-	/** merge current set layers into a single final mesh */
-	public final void mergeLayers() {
-		this.modelMesher.mergeLayers(this);
-	}
-
-	/** regenerate each layers */
-	public final void regenerateLayers() {
-		for (EditableModelLayer modelLayer : this.blocksDataLayers.values()) {
-			modelLayer.setMeshUpToDate();
-			this.modelMesher.generate(this, modelLayer);
-		}
 	}
 }

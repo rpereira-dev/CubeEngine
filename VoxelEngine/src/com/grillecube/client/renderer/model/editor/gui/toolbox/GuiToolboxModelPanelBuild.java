@@ -87,7 +87,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 
 		this.layers.setHint("layers...");
 		this.layers.setBox(1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0);
-		for (EditableModelLayer layer : this.getModel().getRawLayers().values()) {
+		for (EditableModelLayer layer : this.getSelectedModel().getRawLayers().values()) {
 			this.layers.add(layer, layer.getName());
 		}
 		this.layers.pick(0);
@@ -134,7 +134,8 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
 				getSelectedModelLayer().translate(1, 0, 0);
-				getSelectedModelLayer().requestLayerUpdate();
+				getSelectedModelLayer().requestPlanesUpdate();
+				getSelectedModel().requestMeshUpdate();
 			}
 		});
 		this.addChild(this.tx);
@@ -147,7 +148,8 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
 				getSelectedModelLayer().translate(0, 1, 0);
-				getSelectedModelLayer().requestLayerUpdate();
+				getSelectedModelLayer().requestPlanesUpdate();
+				getSelectedModel().requestMeshUpdate();
 			}
 		});
 		this.addChild(this.ty);
@@ -160,87 +162,94 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
 				getSelectedModelLayer().translate(0, 0, 1);
-				getSelectedModelLayer().requestLayerUpdate();
+				getSelectedModelLayer().requestPlanesUpdate();
+				getSelectedModel().requestMeshUpdate();
 			}
 		});
 		this.addChild(this.tz);
 
 		// translate
 		this.txm.setText("-X");
-		this.txm.setBox(0.0f, 0.55f, w, 0.05f, 0.0f);
+		this.txm.setBox(0.0f, 0.50f, w, 0.05f, 0.0f);
 		this.txm.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.txm.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.txm.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
 				getSelectedModelLayer().translate(-1, 0, 0);
-				getSelectedModelLayer().requestLayerUpdate();
+				getSelectedModelLayer().requestPlanesUpdate();
+				getSelectedModel().requestMeshUpdate();
 			}
 		});
 		this.addChild(this.txm);
 
 		this.tym.setText("-Y");
-		this.tym.setBox(w, 0.55f, w, 0.05f, 0.0f);
+		this.tym.setBox(w, 0.50f, w, 0.05f, 0.0f);
 		this.tym.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.tym.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.tym.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
 				getSelectedModelLayer().translate(0, -1, 0);
-				getSelectedModelLayer().requestLayerUpdate();
+				getSelectedModelLayer().requestPlanesUpdate();
+				getSelectedModel().requestMeshUpdate();
 			}
 		});
 		this.addChild(this.tym);
 
 		this.tzm.setText("-Z");
-		this.tzm.setBox(2.0f * w, 0.55f, w, 0.05f, 0.0f);
+		this.tzm.setBox(2.0f * w, 0.50f, w, 0.05f, 0.0f);
 		this.tzm.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.tzm.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.tzm.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
 				getSelectedModelLayer().translate(0, 0, -1);
-				getSelectedModelLayer().requestLayerUpdate();
+				getSelectedModelLayer().requestPlanesUpdate();
+				getSelectedModel().requestMeshUpdate();
 			}
 		});
 		this.addChild(this.tzm);
 
 		// rotate
 		this.rx.setText("RX");
-		this.rx.setBox(0.0f, 0.50f, w, 0.05f, 0.0f);
+		this.rx.setBox(0.0f, 0.45f, w, 0.05f, 0.0f);
 		this.rx.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.rx.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.rx.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
 				getSelectedModelLayer().rotateX();
-				getSelectedModelLayer().requestLayerUpdate();
+				getSelectedModelLayer().requestPlanesUpdate();
+				getSelectedModel().requestMeshUpdate();
 			}
 		});
 		this.addChild(this.rx);
 
 		this.ry.setText("RY");
-		this.ry.setBox(w, 0.50f, w, 0.05f, 0.0f);
+		this.ry.setBox(w, 0.45f, w, 0.05f, 0.0f);
 		this.ry.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.ry.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.ry.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
 				getSelectedModelLayer().rotateY();
-				getSelectedModelLayer().requestLayerUpdate();
+				getSelectedModelLayer().requestPlanesUpdate();
+				getSelectedModel().requestMeshUpdate();
 			}
 		});
 		this.addChild(this.ry);
 
 		this.rz.setText("RZ");
-		this.rz.setBox(2.0f * w, 0.50f, w, 0.05f, 0.0f);
+		this.rz.setBox(2.0f * w, 0.45f, w, 0.05f, 0.0f);
 		this.rz.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.rz.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.rz.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
 				getSelectedModelLayer().rotateZ();
-				getSelectedModelLayer().requestLayerUpdate();
+				getSelectedModelLayer().requestPlanesUpdate();
+				getSelectedModel().requestMeshUpdate();
 			}
 		});
 		this.addChild(this.rz);
@@ -284,7 +293,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 			return;
 		}
 		layer.setBlockSizeUnit(sizeUnit);
-		layer.requestLayerUpdate();
+		layer.requestPlanesUpdate();
 	}
 
 	@Override

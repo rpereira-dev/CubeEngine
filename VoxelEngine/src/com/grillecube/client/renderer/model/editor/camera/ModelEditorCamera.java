@@ -122,7 +122,7 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 					@Override
 					public void restoreState() {
 						model.setLayer(layerCopy);
-						model.mergeLayers();
+						model.requestMeshUpdate();
 					}
 				};
 
@@ -132,7 +132,8 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 						this.oldStates.pop();
 					}
 					this.stackState(state);
-					modelLayer.requestLayerUpdate();
+					modelLayer.requestPlanesUpdate();
+					model.requestMeshUpdate();
 				}
 			}
 		}

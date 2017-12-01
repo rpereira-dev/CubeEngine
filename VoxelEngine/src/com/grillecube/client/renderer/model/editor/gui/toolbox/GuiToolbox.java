@@ -164,8 +164,7 @@ public class GuiToolbox extends Gui {
 		EditableModel editableModel = new EditableModel(new JSONEditableModelInitializer(absolutePath));
 		try {
 			editableModel.initialize();
-			editableModel.regenerateLayers();
-			editableModel.mergeLayers();
+			editableModel.generate();
 		} catch (Exception e) {
 			Logger.get().log(Logger.Level.ERROR, "Error when parsing model", absolutePath);
 			e.printStackTrace(Logger.get().getPrintStream());
@@ -227,7 +226,7 @@ public class GuiToolbox extends Gui {
 	}
 
 	public final GuiToolboxModel getModelToolbox() {
-		return (this.modelList == null ? (GuiToolboxModel) this.modelList.getPickedObject() : null);
+		return (this.modelList != null ? (GuiToolboxModel) this.modelList.getPickedObject() : null);
 	}
 
 	public final EditableModelLayer getSelectedModelLayer() {

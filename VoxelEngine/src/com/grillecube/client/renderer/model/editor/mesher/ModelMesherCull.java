@@ -16,6 +16,7 @@ package com.grillecube.client.renderer.model.editor.mesher;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Stack;
@@ -33,25 +34,35 @@ import com.grillecube.common.utils.Color;
 public class ModelMesherCull extends ModelMesher {
 
 	/** generate the model planes, skins, and mesh */
-	public final void doGenerate(EditableModel editableModel, EditableModelLayer modelLayer,
-			Stack<ModelMeshVertex> vertices, Stack<Short> indices, HashMap<ModelSkin, BufferedImage> skinsData) {
+	public final void doGenerate(EditableModel editableModel, Stack<ModelMeshVertex> vertices, Stack<Short> indices,
+			HashMap<ModelSkin, BufferedImage> skinsData) {
 		long t = System.currentTimeMillis();
 
 		// GENERATE MODEL PLANS LIST
-		this.generateLayerPlanes(modelLayer);
+		for (EditableModelLayer modelLayer : editableModel.getRawLayers().values()) {
+			if (!modelLayer.arePlanesUpToDate()) {
+				this.generateLayerPlanes(modelLayer);
+				modelLayer.setPlanesUpToDate();
+			}
+		}
 
 		// GENERATE MESH FROM PLANS
-		this.generateMeshAndSkin(editableModel, modelLayer, vertices, indices, skinsData);
+		this.generateVerticesAndSkins(editableModel, vertices, indices, skinsData);
 
 		Logger.get().log(Logger.Level.DEBUG, "generation took: " + (System.currentTimeMillis() - t));
 	}
 
 	/** generate the model mesh */
-	private final void generateMeshAndSkin(EditableModel editableModel, EditableModelLayer modelLayer,
-			Stack<ModelMeshVertex> vertices, Stack<Short> indices, HashMap<ModelSkin, BufferedImage> skinsData) {
+	private final void generateVerticesAndSkins(EditableModel editableModel, Stack<ModelMeshVertex> vertices,
+			Stack<Short> indices, HashMap<ModelSkin, BufferedImage> skinsData) {
 
-		ArrayList<ModelPlane> planes = modelLayer.getPlanes();
+		ArrayList<ModelPlane> planes = new ArrayList<ModelPlane>();
+		Collection<EditableModelLayer> layers = editableModel.getRawLayers().values();
+		for (EditableModelLayer modelLayer : layers) {
+			planes.addAll(modelLayer.getPlanes());
+		}
 		ModelSkinPacker.fit(planes);
+
 		int txWidth = 0, txHeight = 0;
 
 		// calculate texture width/height
@@ -73,100 +84,104 @@ public class ModelMesherCull extends ModelMesher {
 			skinsData.put(skin, img);
 		}
 
-		// get raw blocks
-		HashMap<Vector3i, ModelBlockData> datas = modelLayer.getRawBlockDatas();
 		Vector3i pos = new Vector3i();
 		float uw = 1.0f / (float) txWidth;
 		float uh = 1.0f / (float) txHeight;
 
 		Random rng = new Random();
-		for (ModelPlane plane : planes) {
-			int planeColor = rng.nextInt(Integer.MAX_VALUE) | 0xFF000000;
-			Face planeFace = plane.getFace();
+		for (EditableModelLayer modelLayer : layers) {
 
-			for (int d1 = 0; d1 < plane.getTextureWidth(); d1++) {
-				for (int d2 = 0; d2 < plane.getTextureHeight(); d2++) {
+			HashMap<Vector3i, ModelBlockData> datas = modelLayer.getRawBlockDatas();
+			ArrayList<ModelPlane> layerPlanes = modelLayer.getPlanes();
 
-					// add vertices
-					int x = plane.getXMin();
-					int y = plane.getYMin();
-					int z = plane.getZMin();
-					float ux, uy, vx, vy;
-					if (planeFace.equals(Face.F_TOP) || planeFace.equals(Face.F_BOT)) {
-						x += d1;
-						z += d2;
-						ux = (plane.getU() + d1) * uw;
-						uy = (plane.getV() + d2) * uh;
-						vx = (plane.getU() + d1 + 1) * uw;
-						vy = (plane.getV() + d2 + 1) * uh;
-					} else if (planeFace.equals(Face.F_RIGHT) || planeFace.equals(Face.F_LEFT)) {
-						x += d1;
-						y += d2;
-						ux = (plane.getU() + d1) * uw;
-						uy = (plane.getV() + d2) * uh;
-						vx = (plane.getU() + d1 + 1) * uw;
-						vy = (plane.getV() + d2 + 1) * uh;
-					} else {
-						y += d1;
-						z += d2;
-						ux = (plane.getU() + d1) * uw;
-						uy = (plane.getV() + d2) * uh;
-						vx = (plane.getU() + d1 + 1) * uw;
-						vy = (plane.getV() + d2 + 1) * uh;
-					}
+			for (ModelPlane plane : layerPlanes) {
+				int planeColor = rng.nextInt(Integer.MAX_VALUE) | 0xFF000000;
+				Face planeFace = plane.getFace();
 
-					// the block data
-					ModelBlockData data = datas.get(pos.set(x, y, z));
+				for (int d1 = 0; d1 < plane.getTextureWidth(); d1++) {
+					for (int d2 = 0; d2 < plane.getTextureHeight(); d2++) {
 
-					// add vertices
-
-					// add indices (quad)
-					int i = vertices.size();
-
-					ModelMeshVertex v0 = this.generateVertex(editableModel, modelLayer, planeFace, ux, uy, data, 0);
-					ModelMeshVertex v1 = this.generateVertex(editableModel, modelLayer, planeFace, vx, uy, data, 1);
-					ModelMeshVertex v2 = this.generateVertex(editableModel, modelLayer, planeFace, vx, vy, data, 2);
-					ModelMeshVertex v3 = this.generateVertex(editableModel, modelLayer, planeFace, ux, vy, data, 3);
-
-					vertices.push(v0);
-					vertices.push(v1);
-					vertices.push(v2);
-					vertices.push(v3);
-
-					if (v0.ao + v2.ao < v1.ao + v3.ao) {
-						indices.add((short) i);
-						indices.add((short) (i + 1));
-						indices.add((short) (i + 2));
-						indices.add((short) i);
-						indices.add((short) (i + 2));
-						indices.add((short) (i + 3));
-					} else {
-						indices.add((short) (i + 1));
-						indices.add((short) (i + 2));
-						indices.add((short) (i + 3));
-						indices.add((short) (i + 1));
-						indices.add((short) (i + 3));
-						indices.add((short) i);
-					}
-
-					// skins
-					for (ModelSkin skin : editableModel.getSkins()) {
-						BufferedImage img = skinsData.get(skin);
-						Color color = data.getColor(skin, planeFace);
-						int r, g, b, a;
-						int c;
-						if (color != null) {
-							r = Maths.clamp((int) (color.getRed() * planeFace.getFaceFactor()), 0, 255);
-							g = Maths.clamp((int) (color.getGreen() * planeFace.getFaceFactor()), 0, 255);
-							b = Maths.clamp((int) (color.getBlue() * planeFace.getFaceFactor()), 0, 255);
-							a = color.getAlpha();
-							c = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+						// add vertices
+						int x = plane.getXMin();
+						int y = plane.getYMin();
+						int z = plane.getZMin();
+						float ux, uy, vx, vy;
+						if (planeFace.equals(Face.F_TOP) || planeFace.equals(Face.F_BOT)) {
+							x += d1;
+							z += d2;
+							ux = (plane.getU() + d1) * uw;
+							uy = (plane.getV() + d2) * uh;
+							vx = (plane.getU() + d1 + 1) * uw;
+							vy = (plane.getV() + d2 + 1) * uh;
+						} else if (planeFace.equals(Face.F_RIGHT) || planeFace.equals(Face.F_LEFT)) {
+							x += d1;
+							y += d2;
+							ux = (plane.getU() + d1) * uw;
+							uy = (plane.getV() + d2) * uh;
+							vx = (plane.getU() + d1 + 1) * uw;
+							vy = (plane.getV() + d2 + 1) * uh;
 						} else {
-							c = planeColor;
+							y += d1;
+							z += d2;
+							ux = (plane.getU() + d1) * uw;
+							uy = (plane.getV() + d2) * uh;
+							vx = (plane.getU() + d1 + 1) * uw;
+							vy = (plane.getV() + d2 + 1) * uh;
 						}
-						int px = plane.getU() + d1;
-						int py = plane.getV() + d2;
-						img.setRGB(px, py, c);
+
+						// the block data
+						ModelBlockData data = datas.get(pos.set(x, y, z));
+
+						// add vertices
+
+						// add indices (quad)
+						int i = vertices.size();
+
+						ModelMeshVertex v0 = this.generateVertex(editableModel, modelLayer, planeFace, ux, uy, data, 0);
+						ModelMeshVertex v1 = this.generateVertex(editableModel, modelLayer, planeFace, vx, uy, data, 1);
+						ModelMeshVertex v2 = this.generateVertex(editableModel, modelLayer, planeFace, vx, vy, data, 2);
+						ModelMeshVertex v3 = this.generateVertex(editableModel, modelLayer, planeFace, ux, vy, data, 3);
+
+						vertices.push(v0);
+						vertices.push(v1);
+						vertices.push(v2);
+						vertices.push(v3);
+
+						if (v0.ao + v2.ao < v1.ao + v3.ao) {
+							indices.add((short) i);
+							indices.add((short) (i + 1));
+							indices.add((short) (i + 2));
+							indices.add((short) i);
+							indices.add((short) (i + 2));
+							indices.add((short) (i + 3));
+						} else {
+							indices.add((short) (i + 1));
+							indices.add((short) (i + 2));
+							indices.add((short) (i + 3));
+							indices.add((short) (i + 1));
+							indices.add((short) (i + 3));
+							indices.add((short) i);
+						}
+
+						// skins
+						for (ModelSkin skin : editableModel.getSkins()) {
+							BufferedImage img = skinsData.get(skin);
+							Color color = data.getColor(skin, planeFace);
+							int r, g, b, a;
+							int c;
+							if (color != null) {
+								r = Maths.clamp((int) (color.getRed() * planeFace.getFaceFactor()), 0, 255);
+								g = Maths.clamp((int) (color.getGreen() * planeFace.getFaceFactor()), 0, 255);
+								b = Maths.clamp((int) (color.getBlue() * planeFace.getFaceFactor()), 0, 255);
+								a = color.getAlpha();
+								c = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+							} else {
+								c = planeColor;
+							}
+							int px = plane.getU() + d1;
+							int py = plane.getV() + d2;
+							img.setRGB(px, py, c);
+						}
 					}
 				}
 			}
@@ -186,7 +201,7 @@ public class ModelMesherCull extends ModelMesher {
 
 		int mx = editableModelLayer.getMinx();
 		int my = editableModelLayer.getMiny();
-		int mz = editableModelLayer.getMinx();
+		int mz = editableModelLayer.getMinz();
 		int Mx = editableModelLayer.getMaxx();
 		int My = editableModelLayer.getMaxy();
 		int Mz = editableModelLayer.getMaxz();
@@ -206,7 +221,7 @@ public class ModelMesherCull extends ModelMesher {
 							continue;
 						}
 
-						ModelBlockData blockData = blockDatas.get(tmp.set(x, y, z));
+						ModelBlockData blockData = blockDatas.get(tmp);
 
 						if (blockData == null) {
 							continue;
@@ -220,7 +235,7 @@ public class ModelMesherCull extends ModelMesher {
 
 						// if neighbor face is visible
 						ModelBlockData neighbor = blockDatas.get(tmp.set(nx, ny, nz));
-						if (neighbor != null && !neighbor.fit(blockData)) {
+						if (neighbor != null) {
 							continue;
 						}
 

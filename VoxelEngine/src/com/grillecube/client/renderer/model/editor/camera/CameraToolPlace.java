@@ -90,6 +90,8 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 		if (modelInstance == null || modelLayer == null) {
 			return;
 		}
+
+		
 		Entity entity = modelInstance.getEntity();
 		float s = modelLayer.getBlockSizeUnit();
 		ModelEditorCamera camera = (ModelEditorCamera) this.getCamera();
