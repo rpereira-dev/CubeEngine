@@ -503,9 +503,6 @@ public abstract class Gui {
 		}
 
 		Collection<ArrayList<GuiListener<?>>> allListeners = this.listeners.values();
-		if (listeners == null) {
-			return;
-		}
 
 		for (ArrayList<GuiListener<?>> listeners : allListeners) {
 			for (GuiListener<?> listener : listeners) {

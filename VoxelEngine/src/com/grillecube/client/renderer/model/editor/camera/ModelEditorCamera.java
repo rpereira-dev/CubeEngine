@@ -104,39 +104,6 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 	}
 
 	public void onKeyPress(GuiEventKeyPress<GuiModelView> event) {
-		ModelInstance modelInstance = event.getGui().getSelectedModelInstance();
-		EditableModelLayer modelLayer = event.getGui().getSelectedModelLayer();
-
-		if (modelInstance == null || modelLayer == null) {
-			return;
-		}
-		EditableModel model = ((EditableModel) modelInstance.getModel());
-
-		if (this.tools[this.toolID] != null) {
-			if (event.getKey() == GLFW.GLFW_KEY_Z) {
-				// do a deep copy of the current model block data
-
-				final EditableModelLayer layerCopy = modelLayer.clone();
-
-				ModelEditorState state = new ModelEditorState() {
-					@Override
-					public void restoreState() {
-						model.setLayer(layerCopy);
-						model.requestMeshUpdate();
-					}
-				};
-
-				if (this.tools[this.toolID].action(modelInstance, modelLayer)) {
-					// generate mesh, save
-					while (this.oldStates.size() >= HISTORIC_MAX_DEPTH) {
-						this.oldStates.pop();
-					}
-					this.stackState(state);
-					modelLayer.requestPlanesUpdate();
-					model.requestMeshUpdate();
-				}
-			}
-		}
 
 		GuiToolboxModel modelPanel = event.getGui().getToolbox().getModelToolbox();
 		if (modelPanel != null) {
@@ -153,9 +120,45 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 				if (this.oldStates.size() > 0) {
 					ModelEditorState state = this.oldStates.pop();
 					state.restoreState();
+					event.getGui().getToolbox().refresh();
 				} else {
 					GuiRenderer guiRenderer = event.getGui().getWorldRenderer().getMainRenderer().getGuiRenderer();
 					guiRenderer.toast(event.getGui(), "Nothing to be canceled", false);
+				}
+			}
+		}
+
+		ModelInstance modelInstance = event.getGui().getSelectedModelInstance();
+		EditableModelLayer modelLayer = event.getGui().getSelectedModelLayer();
+
+		if (modelInstance != null && modelLayer != null) {
+
+			EditableModel model = ((EditableModel) modelInstance.getModel());
+
+			if (this.tools[this.toolID] != null) {
+				if (event.getKey() == GLFW.GLFW_KEY_Z) {
+					// do a deep copy of the current model block data
+
+					final EditableModelLayer layerCopy = modelLayer.clone();
+
+					ModelEditorState state = new ModelEditorState() {
+						@Override
+						public void restoreState() {
+							model.setLayer(layerCopy);
+							model.requestMeshUpdate();
+						}
+					};
+
+					if (this.tools[this.toolID].action(modelInstance, modelLayer)) {
+						// generate mesh, save
+						while (this.oldStates.size() >= HISTORIC_MAX_DEPTH) {
+							this.oldStates.pop();
+						}
+						this.stackState(state);
+						modelLayer.requestPlanesUpdate();
+						model.requestMeshUpdate();
+						event.getGui().getToolbox().refresh();
+					}
 				}
 			}
 		}

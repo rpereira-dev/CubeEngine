@@ -12,6 +12,7 @@ import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 
 public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
@@ -21,7 +22,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 
 	// TODO
 	private final GuiButton addLayer;
-	private final GuiSpinnerEditor layers;
+	private final GuiSpinnerEditor layersName;
 	private final GuiButton removeLayer;
 
 	/** the model block size unit slider bar */
@@ -43,7 +44,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		super();
 		this.tools = new GuiSpinnerEditor();
 		this.addLayer = new GuiButton();
-		this.layers = new GuiSpinnerEditor();
+		this.layersName = new GuiSpinnerEditor();
 		this.removeLayer = new GuiButton();
 		this.modelBlockSizeUnit = new GuiPromptEditor("Size-unit:", "block size");
 
@@ -80,24 +81,27 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.addLayer.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
-				// TODO
+				EditableModelLayer layer = new EditableModelLayer(String.valueOf(System.currentTimeMillis()));
+				getSelectedModel().setLayer(layer);
+				layersName.add(layer.getName());
+				layersName.pick(layersName.count() - 1);
+				refresh();
 			}
 		});
 		this.addChild(this.addLayer);
 
-		this.layers.setHint("layers...");
-		this.layers.setBox(1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0);
+		this.layersName.setHint("layers...");
+		this.layersName.setBox(1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0);
 		for (EditableModelLayer layer : this.getSelectedModel().getRawLayers().values()) {
-			this.layers.add(layer, layer.getName());
+			this.layersName.add(layer.getName());
 		}
-		this.layers.pick(0);
-		this.layers.addListener(new GuiListener<GuiSpinnerEventPick<GuiSpinner>>() {
+		this.layersName.addListener(new GuiListener<GuiSpinnerEventPick<GuiSpinner>>() {
 			@Override
 			public void invoke(GuiSpinnerEventPick<GuiSpinner> event) {
 				onLayerPicked();
 			}
 		});
-		this.addChild(this.layers);
+		this.addChild(this.layersName);
 
 		this.removeLayer.setText("Remove");
 		this.removeLayer.setBox(2 * 1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0.0f);
@@ -106,7 +110,14 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.removeLayer.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
-				// TODO
+				EditableModelLayer layer = getSelectedModelLayer();
+				EditableModel model = getSelectedModel();
+				if (layer == null || layer == null) {
+					return;
+				}
+				model.removeLayer(layer);
+				model.requestMeshUpdate();
+				layersName.remove(layersName.getPickedIndex());
 				refresh();
 			}
 		});
@@ -272,28 +283,25 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		if (layer != null) {
 			this.modelBlockSizeUnit.setValue(layer.getBlockSizeUnit());
 		}
-
-		String v = this.getSelectedModelLayer() == null ? "0.0"
-				: String.valueOf(this.getSelectedModelLayer().getBlockSizeUnit());
-		this.modelBlockSizeUnit.getPrompt().setHeldText(v);
 	}
 
 	private final void onBlockSizeUnitChanged() {
+		EditableModel model = this.getSelectedModel();
 		EditableModelLayer layer = this.getSelectedModelLayer();
-		if (layer == null) {
+		if (model == null || layer == null) {
 			return;
 		}
 		float sizeUnit = 1.0f;
 		try {
 			sizeUnit = this.modelBlockSizeUnit.getPrompt().asFloat();
 		} catch (Exception e) {
-			this.modelBlockSizeUnit.getPrompt().setHeldText("1.0");
 		}
 		if (sizeUnit == layer.getBlockSizeUnit()) {
 			return;
 		}
 		layer.setBlockSizeUnit(sizeUnit);
-		layer.requestPlanesUpdate();
+		model.requestMeshUpdate();
+
 	}
 
 	@Override
@@ -302,6 +310,9 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 	}
 
 	public final int getSelectedTool() {
+		if (this.tools.getPickedObject() == null) {
+			return (0);
+		}
 		return ((Integer) this.tools.getPickedObject());
 	}
 
@@ -314,7 +325,11 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 	}
 
 	public final EditableModelLayer getSelectedModelLayer() {
-		return ((EditableModelLayer) this.layers.getPickedObject());
+		String layerName = (String) this.layersName.getPickedObject();
+		if (layerName == null) {
+			return (null);
+		}
+		return (this.getSelectedModel().getLayer(layerName));
 	}
 
 	public final int selectNextTool() {

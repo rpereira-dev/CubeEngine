@@ -128,6 +128,9 @@ public class EditableModelLayer {
 		copy.maxy = this.maxy;
 		copy.maxz = this.maxz;
 
+		copy.blockSizeUnit = this.blockSizeUnit;
+		copy.isVisible = this.isVisible;
+		
 		copy.planes.addAll(this.planes);
 
 		return (copy);

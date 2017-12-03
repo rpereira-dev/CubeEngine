@@ -322,6 +322,7 @@ public class ModelMesherCull extends ModelMesher {
 				}
 			}
 		}
+		System.out.println(modelPlanes.size());
 	}
 
 	private void setVisited(HashMap<Vector3i, Boolean> visited, int x, int y, int z, int width, int height, int depth) {

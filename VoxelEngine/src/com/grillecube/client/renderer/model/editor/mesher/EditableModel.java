@@ -44,6 +44,14 @@ public class EditableModel extends Model {
 		return (this.blocksDataLayers.get(layerName));
 	}
 
+	public void removeLayer(String layerName) {
+		this.blocksDataLayers.remove(layerName);
+	}
+
+	public void removeLayer(EditableModelLayer layer) {
+		this.blocksDataLayers.remove(layer.getName());
+	}
+
 	public final void setLayer(EditableModelLayer editableModelLayer) {
 		this.blocksDataLayers.put(editableModelLayer.getName(), editableModelLayer);
 	}

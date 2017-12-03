@@ -51,6 +51,8 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 
 	@Override
 	public void onMouseMove() {
+		this.updateCameraRotation();
+		this.updateSelection();
 	}
 
 	@Override
@@ -63,11 +65,10 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 		ModelEditorCamera camera = this.getCamera();
 		camera.getWindow().setCursor(false);
 		float u = this.getBlockSizeUnit();
-		float x = 0;
-		float y = 0;
-		float z = 0;
+		float x = this.hovered.x;
+		float y = this.hovered.y;
+		float z = this.hovered.z;
 		this.getCamera().setCenter((x + 0.5f) * u, (y + 0.5f) * u, (z + 0.5f) * u);
-		camera.setDistanceFromCenter((float) Vector3f.distance(camera.getCenter(), camera.getPosition()));
 	}
 
 	@Override
@@ -155,8 +156,7 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 
 	@Override
 	public void onUpdate() {
-		this.updateCameraRotation();
-		this.updateSelection();
+		super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this, this);
 	}
 
 	private final void updateSelection() {
@@ -164,7 +164,6 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 			this.firstBlock.set(this.hovered);
 		}
 		this.updateSecondBlock();
-		super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this, this);
 	}
 
 	private final void updateCameraRotation() {
@@ -175,17 +174,9 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 
 			float angle = (float) ((this.guiModelView.getPrevMouseX() - this.guiModelView.getMouseX()) * 128.0f);
 			this.getCamera().increaseAngleAroundCenter(angle);
-
-			this.hovered.set(0, 0, 0);
 		} else {
 			this.updateHoveredBlock();
 		}
-
-		float u = this.getBlockSizeUnit();
-		float x = 0;
-		float y = 0;
-		float z = 0;
-		this.getCamera().setCenter((x + 0.5f) * u, (y + 0.5f) * u, (z + 0.5f) * u);
 	}
 
 	@Override
