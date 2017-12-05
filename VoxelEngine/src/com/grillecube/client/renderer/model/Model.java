@@ -117,8 +117,13 @@ public class Model {
 	}
 
 	/** add an animation to the model */
-	public void addAnimation(ModelSkeletonAnimation animation) {
+	public final void addAnimation(ModelSkeletonAnimation animation) {
 		this.animations.add(animation);
+	}
+
+	/** remove an animation from the model */
+	public final void removeAnimation(ModelSkeletonAnimation animation) {
+		this.animations.remove(animation);
 	}
 
 	/** get the animations this model can play */

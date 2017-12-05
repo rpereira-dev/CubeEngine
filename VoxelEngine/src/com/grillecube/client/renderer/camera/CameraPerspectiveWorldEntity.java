@@ -24,7 +24,7 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 	public void update() {
 		super.update();
 		float x = this.getEntity().getPositionX() + this.getEntity().getSizeX() * 0.5f;
-		float y = this.getEntity().getPositionY() + this.getEntity().getSizeY() * 1.1f;
+		float y = this.getEntity().getPositionY() + this.getEntity().getSizeY() * 1.0f;
 		float z = this.getEntity().getPositionZ() + this.getEntity().getSizeZ() * 0.5f;
 		super.setCenter(x, y, z);
 

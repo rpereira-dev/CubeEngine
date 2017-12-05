@@ -11,12 +11,12 @@ public class ModelSkeletonAnimation {
 	private final ArrayList<KeyFrame> keyFrames;
 
 	/** animation length */
-	private final long duration;
+	private long duration;
 
-	public ModelSkeletonAnimation(String name, long duration, ArrayList<KeyFrame> keyFrames) {
+	public ModelSkeletonAnimation(String name) {
 		this.name = name;
-		this.duration = duration;
-		this.keyFrames = keyFrames;
+		this.duration = 0;
+		this.keyFrames = new ArrayList<KeyFrame>();
 	}
 
 	public String getName() {
@@ -34,11 +34,17 @@ public class ModelSkeletonAnimation {
 		while (i < this.keyFrames.size() && this.keyFrames.get(i++).getTime() < keyFrame.getTime())
 			;
 		this.keyFrames.add(i, keyFrame);
+		this.duration = this.keyFrames.get(this.keyFrames.size() - 1).getTime();
 		return (keyFrame);
 	}
 
 	/** get the time of the last keyframe for this animation */
 	public final long getDuration() {
 		return (this.duration);
+	}
+
+	public final void removeKeyFrame(KeyFrame keyFrame) {
+		this.keyFrames.remove(keyFrame);
+		this.duration = (this.keyFrames.size() > 0) ? this.keyFrames.get(this.keyFrames.size() - 1).getTime() : 0;
 	}
 }

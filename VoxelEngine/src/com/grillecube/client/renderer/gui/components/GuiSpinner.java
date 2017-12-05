@@ -1,7 +1,6 @@
 package com.grillecube.client.renderer.gui.components;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
@@ -61,7 +60,7 @@ public abstract class GuiSpinner extends Gui {
 	}
 
 	/** add a value to the spinner */
-	public final void remove(Object value) {
+	public final Object remove(Object value) {
 		int i = 0;
 		for (Pair<Object, String> pair : this.values) {
 			if (pair.left.equals(value)) {
@@ -69,15 +68,15 @@ public abstract class GuiSpinner extends Gui {
 			}
 			++i;
 		}
-		if (i == this.values.size()) {
-			return;
+		if (i >= this.values.size()) {
+			return (null);
 		}
-		this.remove(i);
+		return (this.remove(i));
 	}
 
-	public final void remove(int index) {
+	public final Object remove(int index) {
 		if (index < 0 || index >= this.values.size()) {
-			return;
+			return (null);
 		}
 		Pair<Object, String> value = this.values.remove(index);
 		if (this.pickedIndex >= this.values.size()) {
@@ -85,6 +84,7 @@ public abstract class GuiSpinner extends Gui {
 		}
 		this.onObjectRemoved(index);
 		super.stackEvent(new GuiSpinnerEventRemove<GuiSpinner>(this, index, value.left, value.right));
+		return (value.left);
 	}
 
 	/** sort the spinner */

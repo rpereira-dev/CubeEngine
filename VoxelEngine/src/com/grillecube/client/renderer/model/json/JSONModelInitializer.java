@@ -3,8 +3,6 @@ package com.grillecube.client.renderer.model.json;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -232,14 +230,16 @@ public class JSONModelInitializer implements ModelInitializer {
 				continue;
 			}
 			String name = animation.getString("name");
-			long duration = animation.getLong("duration");
 			JSONArray jsonKeyFrames = animation.getJSONArray("keyFrames");
-			ArrayList<KeyFrame> keyFrames = new ArrayList<KeyFrame>(jsonKeyFrames.length());
+			ModelSkeletonAnimation modelAnimation = new ModelSkeletonAnimation(name);
 
 			for (int j = 0; j < jsonKeyFrames.length(); j++) {
+				KeyFrame keyFrame = new KeyFrame();
+
 				JSONObject jsonKeyFrame = jsonKeyFrames.getJSONObject(j);
 				long time = jsonKeyFrame.getLong("time");
-				HashMap<String, BoneTransform> boneTransforms = new HashMap<String, BoneTransform>();
+				keyFrame.setTime(time);
+
 				JSONArray pose = jsonKeyFrame.getJSONArray("pose");
 				for (int k = 0; k < pose.length(); k++) {
 					JSONObject bonePose = pose.getJSONObject(k);
@@ -264,14 +264,12 @@ public class JSONModelInitializer implements ModelInitializer {
 					Quaternion rotation = new Quaternion(x, y, z, w);
 
 					BoneTransform boneTransform = new BoneTransform(position, rotation);
-					boneTransforms.put(boneName, boneTransform);
+					keyFrame.setBoneTransform(boneName, boneTransform);
 				}
 
-				KeyFrame keyFrame = new KeyFrame(time, boneTransforms);
-				keyFrames.add(keyFrame);
+				modelAnimation.addKeyFrame(keyFrame);
 			}
 
-			ModelSkeletonAnimation modelAnimation = new ModelSkeletonAnimation(name, duration, keyFrames);
 			model.addAnimation(modelAnimation);
 		}
 	}

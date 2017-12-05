@@ -181,7 +181,6 @@ public class JSONModelExporter {
 
 			JSONObject jsonAnimation = new JSONObject();
 			jsonAnimation.put("name", animation.getName());
-			jsonAnimation.put("duration", animation.getDuration());
 
 			JSONArray jsonKeyFrames = new JSONArray();
 			for (KeyFrame keyFrame : animation.getKeyFrames()) {

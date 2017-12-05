@@ -95,7 +95,6 @@ public class GuiButton extends GuiLabel {
 
 				this.lastUpdate = super.getTimer().getTime();
 				return (false);
-
 			}
 		});
 	}

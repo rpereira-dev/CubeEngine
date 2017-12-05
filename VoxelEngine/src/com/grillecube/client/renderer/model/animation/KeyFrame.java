@@ -19,27 +19,30 @@ import java.util.HashMap;
  */
 public class KeyFrame implements Comparable<KeyFrame> {
 
-	private final long time;
-	private final HashMap<String, BoneTransform> pose;
-
 	/**
 	 * @param time
 	 *            - the time (in millis) that this keyframe occurs during the
 	 *            animation.
-	 * @param jointKeyFrames
+	 */
+	private long time;
+
+	/**
+	 * @param pose
 	 *            - the local-space transforms for all the joints at this
 	 *            keyframe, indexed by the name of the joint that they should be
 	 *            applied to.
 	 */
-	public KeyFrame(long time, HashMap<String, BoneTransform> jointKeyFrames) {
-		this.time = time;
-		this.pose = jointKeyFrames;
+	private final HashMap<String, BoneTransform> pose;
+
+	public KeyFrame() {
+		this.pose = new HashMap<String, BoneTransform>();
+		this.time = 0;
 	}
 
 	/**
 	 * @return The time in ms of the keyframe in the animation.
 	 */
-	public long getTime() {
+	public final long getTime() {
 		return (this.time);
 	}
 
@@ -49,8 +52,16 @@ public class KeyFrame implements Comparable<KeyFrame> {
 	 *         they correspond to. This basically represents the "pose" at this
 	 *         keyframe.
 	 */
-	public HashMap<String, BoneTransform> getBoneKeyFrames() {
+	public final HashMap<String, BoneTransform> getBoneKeyFrames() {
 		return (this.pose);
+	}
+
+	public final void setTime(long t) {
+		this.time = t;
+	}
+
+	public final void setBoneTransform(String boneName, BoneTransform boneTransform) {
+		this.pose.put(boneName, boneTransform);
 	}
 
 	@Override
