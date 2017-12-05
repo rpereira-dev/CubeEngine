@@ -64,10 +64,14 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 	public void onRightPressed() {
 		ModelEditorCamera camera = this.getCamera();
 		camera.getWindow().setCursor(false);
+		camera.getWindow().setCursorCenter();
 		float u = this.getBlockSizeUnit();
-		float x = this.hovered.x;
-		float y = this.hovered.y;
-		float z = this.hovered.z;
+		float x = 0;// (this.getModelLayer().getMinx() +
+					// this.getModelLayer().getMaxx()) * 0.5f;
+		float y = 0;// (this.getModelLayer().getMiny() +
+					// this.getModelLayer().getMaxy()) * 0.5f;
+		float z = 0;// (this.getModelLayer().getMinz() +
+					// this.getModelLayer().getMaxz()) * 0.5f;
 		this.getCamera().setCenter((x + 0.5f) * u, (y + 0.5f) * u, (z + 0.5f) * u);
 	}
 
@@ -92,7 +96,6 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 			return;
 		}
 
-		
 		Entity entity = modelInstance.getEntity();
 		float s = modelLayer.getBlockSizeUnit();
 		ModelEditorCamera camera = (ModelEditorCamera) this.getCamera();

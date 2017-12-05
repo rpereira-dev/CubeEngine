@@ -95,6 +95,9 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		for (EditableModelLayer layer : this.getSelectedModel().getRawLayers().values()) {
 			this.layersName.add(layer.getName());
 		}
+		if (this.layersName.count() > 0) {
+			this.layersName.pick(0);
+		}
 		this.layersName.addListener(new GuiListener<GuiSpinnerEventPick<GuiSpinner>>() {
 			@Override
 			public void invoke(GuiSpinnerEventPick<GuiSpinner> event) {
@@ -264,6 +267,8 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 			}
 		});
 		this.addChild(this.rz);
+
+		this.refresh();
 	}
 
 	@Override
