@@ -516,7 +516,7 @@ public abstract class Gui {
 
 	/** update animations and gui tasks */
 	public final void update() {
-		if (!this.isEnabled() || !this.isInitialized()) {
+		if (!this.isInitialized()) {
 			return;
 		}
 		if (this.tasks.size() > 0) {

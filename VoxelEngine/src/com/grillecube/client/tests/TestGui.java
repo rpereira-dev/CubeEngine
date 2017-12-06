@@ -5,7 +5,7 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
 import com.grillecube.client.renderer.gui.components.GuiPrompt;
-import com.grillecube.client.renderer.gui.components.GuiSliderBar;
+import com.grillecube.client.renderer.gui.components.GuiItemBar;
 import com.grillecube.client.renderer.gui.components.GuiTexture;
 import com.grillecube.client.renderer.gui.components.GuiView;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
@@ -13,7 +13,7 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.event.GuiEventMouseEnter;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseExit;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
+import com.grillecube.client.renderer.model.editor.gui.GuiItemBarEditor;
 import com.grillecube.common.Logger;
 import com.grillecube.common.resources.R;
 
@@ -36,9 +36,9 @@ public class TestGui {
 			}
 
 			private void addGuiSliderBar() {
-				GuiSliderBarEditor guiSliderBar = new GuiSliderBarEditor();
+				GuiItemBarEditor guiSliderBar = new GuiItemBarEditor();
 				guiSliderBar.setBox(0.25f, 0.75f, 0.5f, 0.10f, 0.0f);
-				Float[] floats = GuiSliderBar.floatRange(0, 1000, 1001);
+				Float[] floats = GuiItemBar.floatRange(0, 1000, 1001);
 				guiSliderBar.addValues(floats);
 				this.addChild(guiSliderBar);
 			}

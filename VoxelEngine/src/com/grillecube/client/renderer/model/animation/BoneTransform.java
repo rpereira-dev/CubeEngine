@@ -37,10 +37,14 @@ public class BoneTransform {
 	 *            (bone-space) at a certain keyframe.
 	 */
 	public BoneTransform(Vector3f position, Quaternion rotation) {
-		this.position = new Vector3f();
-		this.rotation = new Quaternion(0, 0, 0, 0);
-		this.localTransform = new Matrix4f();
+		this();
 		this.set(position, rotation);
+	}
+
+	public BoneTransform() {
+		this.position = new Vector3f();
+		this.rotation = new Quaternion();
+		this.localTransform = new Matrix4f();
 	}
 
 	private void set(Vector3f position, Quaternion rotation) {

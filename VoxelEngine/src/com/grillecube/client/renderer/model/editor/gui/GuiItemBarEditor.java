@@ -3,18 +3,19 @@ package com.grillecube.client.renderer.model.editor.gui;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.GuiColoredQuad;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
-import com.grillecube.client.renderer.gui.components.GuiSliderBar;
+import com.grillecube.client.renderer.gui.components.GuiItemBar;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.gui.event.GuiSliderBarEventSelect;
+import com.grillecube.client.renderer.gui.event.GuiItemBarEventValueChanged;
+import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.utils.Color;
 
-public class GuiSliderBarEditor extends GuiSliderBar {
+public class GuiItemBarEditor extends GuiItemBar {
 
-	private static final GuiListener<GuiSliderBarEventSelect<GuiSliderBarEditor>> VALUE_LISTENER = new GuiListener<GuiSliderBarEventSelect<GuiSliderBarEditor>>() {
+	private static final GuiListener<GuiItemBarEventValueChanged<GuiItemBarEditor>> LISTENER = new GuiListener<GuiItemBarEventValueChanged<GuiItemBarEditor>>() {
 		@Override
-		public void invoke(GuiSliderBarEventSelect<GuiSliderBarEditor> event) {
+		public void invoke(GuiItemBarEventValueChanged<GuiItemBarEditor> event) {
 			event.getGui().onValueChanged();
 		}
 	};
@@ -29,7 +30,7 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 	private GuiColoredQuad selected;
 	private GuiLabel guiLabel;
 
-	public GuiSliderBarEditor() {
+	public GuiItemBarEditor() {
 		super();
 		this.total = new GuiColoredQuad();
 		this.total.setColor(BG_COLOR);
@@ -48,17 +49,7 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 		this.guiLabel.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.addChild(this.guiLabel);
 
-		this.addListener(VALUE_LISTENER);
-		this.addListener(ON_PRESS_FOCUS_LISTENER);
-	}
-
-	@Override
-	protected void onInputUpdate() {
-		super.onInputUpdate();
-		if (this.isPressed() && this.hasFocus() && this.isEnabled()) {
-			this.select(this.getMouseX());
-//			System.out.println("IN");
-		}
+		this.addListener(LISTENER);
 	}
 
 	@Override
@@ -73,15 +64,9 @@ public class GuiSliderBarEditor extends GuiSliderBar {
 	}
 
 	protected void onValueChanged() {
-		this.selected.setBox(0, 0, this.getPercent(), 1, 0);
-		String value = String.valueOf(this.getPercent());
-		while (value.length() < 4) {
-			value += "0";
-		}
-		if (value.length() > 4) {
-			value = value.substring(0, 4);
-		}
-		this.guiLabel.setText(this.getPrefix() + value + this.getSuffix());
+		float width = this.getPercent();
+		this.selected.setBox(0, 0, width, 1, 0);
+		this.guiLabel.setText(this.getPrefix() + this.getSelectedValue().toString() + this.getSuffix());
 	}
 
 	public void setText(String title) {

@@ -8,8 +8,11 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
+import com.grillecube.client.renderer.model.animation.Bone;
+import com.grillecube.client.renderer.model.animation.BoneTransform;
 import com.grillecube.client.renderer.model.animation.KeyFrame;
 import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
+import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 
 public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
@@ -22,6 +25,10 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 	private final GuiSpinnerEditor frames;
 	private final GuiButton removeFrame;
 
+	private final GuiSpinnerEditor poses;
+
+	private final GuiSliderBarEditor timer;
+
 	public GuiToolboxModelPanelAnimation() {
 		super();
 		this.addAnimation = new GuiButton();
@@ -31,6 +38,10 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		this.addFrame = new GuiButton();
 		this.frames = new GuiSpinnerEditor();
 		this.removeFrame = new GuiButton();
+
+		this.poses = new GuiSpinnerEditor();
+
+		this.timer = new GuiSliderBarEditor();
 	}
 
 	@Override
@@ -42,6 +53,10 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		this.addChild(this.addFrame);
 		this.addChild(this.frames);
 		this.addChild(this.removeFrame);
+
+		this.addChild(this.poses);
+
+		this.addChild(this.timer);
 
 		this.addAnimation.setText("Add");
 		this.addAnimation.setBox(0.0f, 0.70f, 1 / 3.0f, 0.05f, 0.0f);
@@ -56,7 +71,7 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 				getSelectedModel().addAnimation(animation);
 				animations.add(animation);
 				animations.pick(animations.count() - 1);
-				addAnimation.setEnabled(true);
+				refresh();
 			}
 		});
 
@@ -66,12 +81,12 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 			@Override
 			public void invoke(GuiSpinnerEventPick<GuiSpinner> event) {
 				onAnimationPicked();
+				refresh();
 			}
 		});
 		for (ModelSkeletonAnimation modelAnimation : this.getSelectedModel().getAnimations()) {
 			this.animations.add(modelAnimation, modelAnimation.getName());
 		}
-		this.animations.pick(0);
 
 		this.removeAnimation.setText("Remove");
 		this.removeAnimation.setBox(2 * 1 / 3.0f, 0.70f, 1 / 3.0f, 0.05f, 0.0f);
@@ -84,9 +99,7 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 					int idx = animations.getPickedIndex();
 					ModelSkeletonAnimation animation = (ModelSkeletonAnimation) animations.remove(idx);
 					getSelectedModel().removeAnimation(animation);
-					if (animations.count() == 0) {
-						removeAnimation.setEnabled(false);
-					}
+					refresh();
 				}
 			}
 		});
@@ -99,10 +112,11 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
 				KeyFrame keyFrame = new KeyFrame();
+				keyFrame.setTime(getSelectedAnimation().getDuration() + 1000);
 				getSelectedAnimation().addKeyFrame(keyFrame);
 				frames.add(keyFrame, String.valueOf(keyFrame.getTime()));
 				frames.pick(frames.count() - 1);
-				addFrame.setEnabled(true);
+				refresh();
 			}
 		});
 
@@ -112,9 +126,9 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 			@Override
 			public void invoke(GuiSpinnerEventPick<GuiSpinner> event) {
 				onFramePicked();
+				refresh();
 			}
 		});
-		this.frames.pick(0);
 
 		this.removeFrame.setText("Remove");
 		this.removeFrame.setBox(2 * 1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0.0f);
@@ -127,46 +141,77 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 					int idx = frames.getPickedIndex();
 					KeyFrame keyFrame = (KeyFrame) frames.remove(idx);
 					getSelectedAnimation().removeKeyFrame(keyFrame);
-					if (frames.count() == 0) {
-						removeFrame.setEnabled(false);
-					}
+					refresh();
 				}
 			}
 		});
 
-		refresh();
-	}
+		this.poses.setHint("Poses...");
+		this.poses.setBox(0.0f, 0.60f, 1.0f, 0.05f, 0);
+		this.poses.addListener(new GuiListener<GuiSpinnerEventPick<GuiSpinner>>() {
+			@Override
+			public void invoke(GuiSpinnerEventPick<GuiSpinner> event) {
+				onPosePicked();
+				refresh();
+			}
+		});
 
-	protected final void onFramePicked() {
-		// TODO Auto-generated method stub
-	}
-
-	public final ModelSkeletonAnimation getSelectedAnimation() {
-		return ((ModelSkeletonAnimation) this.animations.getPickedObject());
-	}
-
-	@Override
-	public final void refresh() {
-		this.removeAnimation.setEnabled(this.animations.count() > 0);
-		this.removeFrame.setEnabled(this.frames.count() > 0);
-		this.refreshFrames();
-	}
-
-	@Override
-	public final String getTitle() {
-		return ("Animation");
+		this.timer.setBox(0.2f, 0.1f, 0.6f, 0.05f, 0.0f);
+		this.timer.setPrefix("time: ");
+		this.timer.select(0.5f);
 	}
 
 	private final void onAnimationPicked() {
-		this.refreshFrames();
-	}
-
-	private void refreshFrames() {
 		this.frames.removeAll();
 		if (this.getSelectedAnimation() != null) {
 			for (KeyFrame keyFrame : this.getSelectedAnimation().getKeyFrames()) {
 				this.frames.add(keyFrame, String.valueOf(keyFrame.getTime()));
 			}
 		}
+		this.frames.pick(-1);
+	}
+
+	private final void onFramePicked() {
+		this.poses.removeAll();
+		KeyFrame frame = this.getSelectedKeyFrame();
+		if (frame != null) {
+			for (Bone bone : this.getSelectedModel().getSkeleton().getBones()) {
+				BoneTransform boneTransform = frame.getBoneKeyFrames().get(bone.getName());
+				if (boneTransform == null) {
+					boneTransform = new BoneTransform();
+					frame.getBoneKeyFrames().put(bone.getName(), boneTransform);
+				}
+				this.poses.add(boneTransform, bone.getName());
+			}
+		}
+		this.poses.pick(-1);
+	}
+
+	private final void onPosePicked() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public final ModelSkeletonAnimation getSelectedAnimation() {
+		return ((ModelSkeletonAnimation) this.animations.getPickedObject());
+	}
+
+	public final KeyFrame getSelectedKeyFrame() {
+		return ((KeyFrame) this.frames.getPickedObject());
+	}
+
+	@Override
+	public final void refresh() {
+		this.removeAnimation.setEnabled(this.animations.count() > 0);
+		this.removeFrame.setEnabled(this.frames.count() > 0);
+		this.addFrame.setVisible(this.animations.count() > 0);
+		this.frames.setVisible(this.animations.count() > 0);
+		this.removeFrame.setVisible(this.animations.count() > 0);
+		this.poses.setVisible(this.frames.count() > 0);
+	}
+
+	@Override
+	public final String getTitle() {
+		return ("Animation");
 	}
 }
