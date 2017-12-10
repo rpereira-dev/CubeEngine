@@ -1,7 +1,5 @@
 package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
-import java.awt.image.BufferedImage;
-
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiButton;
@@ -10,8 +8,8 @@ import com.grillecube.client.renderer.gui.components.GuiTexture;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
-import com.grillecube.client.renderer.gui.event.GuiEventMouseHover;
 import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
 import com.grillecube.client.renderer.gui.event.GuiTextureEventTextureChanged;
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerColor;
@@ -29,7 +27,6 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 	private final GuiButton removeColor;
 
 	private final GuiTexture skinPreview;
-
 	private final GuiPrompt skinName;
 
 	private float windowAspectRatio;
@@ -62,7 +59,7 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.skins.setHint("Skins...");
 		this.skins.setBox(1 / 3.0f, 0.70f, 1 / 3.0f, 0.05f, 0);
 		for (ModelSkin skin : this.getSelectedModel().getSkins()) {
-			this.skins.add(skin, skin.getName());
+			this.skins.add(skin);
 		}
 		this.skins.pick(0);
 		this.addChild(this.skins);
@@ -116,25 +113,6 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.addChild(this.removeColor);
 
 		// skin preview
-		this.skinPreview.addListener(new GuiListener<GuiEventMouseHover<GuiTexture>>() {
-			@Override
-			public void invoke(GuiEventMouseHover<GuiTexture> event) {
-				if (!event.getGui().isPressed()) {
-					return;
-				}
-				BufferedImage data = skinPreview.getGLTexture().getData();
-				Color color = getSelectedColor();
-				int px = (int) (data.getWidth() * event.getGui().getMouseX());
-				int py = (int) (data.getHeight() * event.getGui().getMouseY());
-				int argb = color.getARGB();
-				if (px < 0 || py < 0 || px >= data.getWidth() || py >= data.getHeight()
-						|| data.getRGB(px, py) == argb) {
-					return;
-				}
-				data.setRGB(px, py, argb);
-				skinPreview.getGLTexture().setData(data);
-			}
-		});
 		this.skinPreview.addListener(new GuiListener<GuiTextureEventTextureChanged<GuiTexture>>() {
 			@Override
 			public void invoke(GuiTextureEventTextureChanged<GuiTexture> event) {
@@ -149,6 +127,17 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.skinName.setHintColor(0.5f, 0.5f, 0.5f, 1.0f);
 		this.skinName.setHint("Enter skin name...");
 		this.addChild(this.skinName);
+		this.skinName.addListener(new GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>>() {
+			@Override
+			public void invoke(GuiPromptEventHeldTextChanged<GuiPrompt> event) {
+				ModelSkin skin = getSelectedSkin();
+				if (skin == null) {
+					return;
+				}
+				skin.setName(event.getGui().getHeldText());
+				skins.setName(skin, skin.getName());
+			}
+		});
 
 		this.windowAspectRatio = guiRenderer.getMainRenderer().getGLFWWindow().getAspectRatio();
 		this.refresh();
@@ -189,6 +178,12 @@ public class GuiToolboxModelPanelSkin extends GuiToolboxModelPanel {
 		this.removeSkin.setEnabled(this.skins.count() > 1);
 		if (this.getSelectedSkin() != null) {
 			this.skinPreview.setTexture(this.getSelectedSkin().getGLTexture(), 0, 0, 1, 1);
+			this.skinName.setHeldText(this.getSelectedSkin().getName());
+			this.skinPreview.setVisible(true);
+			this.skinName.setVisible(true);
+		} else {
+			this.skinPreview.setVisible(false);
+			this.skinName.setVisible(false);
 		}
 	}
 

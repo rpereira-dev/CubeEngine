@@ -349,6 +349,34 @@ public class GuiPrompt extends GuiLabel {
 		return (defaultValue);
 	}
 
+	/** get the value as an integer, throw exception if parsed error failed */
+	public final int asInteger() throws Exception {
+		return (Integer.parseInt(this.getHeldText()));
+	}
+
+	/** get the value as a integer, throw exception if parsed error failed */
+	public final int asInteger(int defaultValue) {
+		try {
+			return (Integer.parseInt(this.getHeldText()));
+		} catch (Exception e) {
+		}
+		return (defaultValue);
+	}
+
+	/** get the value as an integer, throw exception if parsed error failed */
+	public final long asLong() throws Exception {
+		return (Long.parseLong(this.getHeldText()));
+	}
+
+	/** get the value as a integer, throw exception if parsed error failed */
+	public final long asLong(long defaultValue) {
+		try {
+			return (Long.parseLong(this.getHeldText()));
+		} catch (Exception e) {
+		}
+		return (defaultValue);
+	}
+
 	/** get the value as a string, throw exception if parsed error failed */
 	public final String asString() {
 		return (this.getHeldText());

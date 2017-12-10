@@ -123,4 +123,14 @@ public class GuiSpinnerEditor extends GuiSpinner {
 			this.title.setText(super.getHint());
 		}
 	}
+
+	@Override
+	protected void onObjectRenamed(int index) {
+		String str = ">   " + super.getName(index);
+		this.guiButtons.get(index).setText(str);
+		if (index == super.getPickedIndex()) {
+			this.title.setText(str);
+		}
+	}
+
 }

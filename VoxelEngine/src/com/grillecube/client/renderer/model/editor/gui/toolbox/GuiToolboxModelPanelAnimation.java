@@ -1,17 +1,22 @@
 package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
+import java.util.Comparator;
+
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.GuiButton;
+import com.grillecube.client.renderer.gui.components.GuiPrompt;
 import com.grillecube.client.renderer.gui.components.GuiSpinner;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
 import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.animation.BoneTransform;
 import com.grillecube.client.renderer.model.animation.KeyFrame;
 import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
+import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 
@@ -27,6 +32,16 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 
 	private final GuiSpinnerEditor poses;
 
+	private final GuiPromptEditor time;
+
+	private final GuiPromptEditor posX;
+	private final GuiPromptEditor posY;
+	private final GuiPromptEditor posZ;
+
+	private final GuiPromptEditor rotX;
+	private final GuiPromptEditor rotY;
+	private final GuiPromptEditor rotZ;
+
 	private final GuiSliderBarEditor timer;
 
 	public GuiToolboxModelPanelAnimation() {
@@ -41,7 +56,18 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 
 		this.poses = new GuiSpinnerEditor();
 
+		this.time = new GuiPromptEditor("time", "time (ms)");
+
+		this.posX = new GuiPromptEditor("X", "pos. x");
+		this.posY = new GuiPromptEditor("Y", "pos. y");
+		this.posZ = new GuiPromptEditor("Z", "pos. z");
+
+		this.rotX = new GuiPromptEditor("rX", "rot. x");
+		this.rotY = new GuiPromptEditor("rY", "rot. y");
+		this.rotZ = new GuiPromptEditor("rZ", "rot. z");
+
 		this.timer = new GuiSliderBarEditor();
+
 	}
 
 	@Override
@@ -50,11 +76,21 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		this.addChild(this.animations);
 		this.addChild(this.removeAnimation);
 
+		this.addChild(this.time);
+
+		this.addChild(this.poses);
+
+		this.addChild(this.posX);
+		this.addChild(this.posY);
+		this.addChild(this.posZ);
+
+		this.addChild(this.rotX);
+		this.addChild(this.rotY);
+		this.addChild(this.rotZ);
+
 		this.addChild(this.addFrame);
 		this.addChild(this.frames);
 		this.addChild(this.removeFrame);
-
-		this.addChild(this.poses);
 
 		this.addChild(this.timer);
 
@@ -111,6 +147,10 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		this.addFrame.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
+				if (getSelectedAnimation() == null) {
+					// TODO : toast
+					return;
+				}
 				KeyFrame keyFrame = new KeyFrame();
 				keyFrame.setTime(getSelectedAnimation().getDuration() + 1000);
 				getSelectedAnimation().addKeyFrame(keyFrame);
@@ -146,8 +186,29 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 			}
 		});
 
+		this.time.setBox(0, 0.60f, 1.0f, 0.05f, 0);
+		this.time.getPrompt().addListener(new GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>>() {
+			@Override
+			public void invoke(GuiPromptEventHeldTextChanged<GuiPrompt> event) {
+				KeyFrame frame = getSelectedKeyFrame();
+				if (frame == null) {
+					return;
+				}
+
+				frame.setTime(time.getPrompt().asLong(0));
+				frames.setName(frame, String.valueOf(frame.getTime()));
+				frames.sort(new Comparator<Object>() {
+					@Override
+					public int compare(Object o1, Object o2) {
+						KeyFrame f1 = (KeyFrame) o1;
+						KeyFrame f2 = (KeyFrame) o2;
+						return ((int) (f1.getTime() - f2.getTime()));
+					}
+				});
+			}
+		});
 		this.poses.setHint("Poses...");
-		this.poses.setBox(0.0f, 0.60f, 1.0f, 0.05f, 0);
+		this.poses.setBox(0.0f, 0.55f, 1.0f, 0.05f, 0);
 		this.poses.addListener(new GuiListener<GuiSpinnerEventPick<GuiSpinner>>() {
 			@Override
 			public void invoke(GuiSpinnerEventPick<GuiSpinner> event) {
@@ -156,9 +217,19 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 			}
 		});
 
+		this.posX.setBox(0, 0.50f, 1.0f, 0.05f, 0);
+		this.posY.setBox(0, 0.45f, 1.0f, 0.05f, 0);
+		this.posZ.setBox(0, 0.40f, 1.0f, 0.05f, 0);
+
+		this.rotX.setBox(0, 0.35f, 1.0f, 0.05f, 0);
+		this.rotY.setBox(0, 0.30f, 1.0f, 0.05f, 0);
+		this.rotZ.setBox(0, 0.25f, 1.0f, 0.05f, 0);
+
 		this.timer.setBox(0.2f, 0.1f, 0.6f, 0.05f, 0.0f);
 		this.timer.setPrefix("time: ");
 		this.timer.select(0.5f);
+
+		this.refresh();
 	}
 
 	private final void onAnimationPicked() {
@@ -200,14 +271,33 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		return ((KeyFrame) this.frames.getPickedObject());
 	}
 
+	public final BoneTransform getSelectedPose() {
+		return ((BoneTransform) this.poses.getPickedObject());
+	}
+
 	@Override
 	public final void refresh() {
 		this.removeAnimation.setEnabled(this.animations.count() > 0);
-		this.removeFrame.setEnabled(this.frames.count() > 0);
-		this.addFrame.setVisible(this.animations.count() > 0);
-		this.frames.setVisible(this.animations.count() > 0);
-		this.removeFrame.setVisible(this.animations.count() > 0);
-		this.poses.setVisible(this.frames.count() > 0);
+		this.removeFrame.setEnabled(this.getSelectedKeyFrame() != null);
+
+		this.addFrame.setVisible(this.getSelectedAnimation() != null);
+		this.frames.setVisible(this.getSelectedAnimation() != null);
+		this.removeFrame.setVisible(this.getSelectedAnimation() != null);
+
+		this.time.setVisible(this.getSelectedKeyFrame() != null);
+		this.time.getPrompt().setHeldText(
+				this.getSelectedKeyFrame() == null ? "" : String.valueOf(this.getSelectedKeyFrame().getTime()));
+
+		this.poses.setVisible(this.getSelectedKeyFrame() != null);
+
+		this.posX.setVisible(this.getSelectedPose() != null);
+		this.posY.setVisible(this.getSelectedPose() != null);
+		this.posZ.setVisible(this.getSelectedPose() != null);
+		this.rotX.setVisible(this.getSelectedPose() != null);
+		this.rotY.setVisible(this.getSelectedPose() != null);
+		this.rotZ.setVisible(this.getSelectedPose() != null);
+
+		this.timer.setVisible(this.getSelectedAnimation() != null);
 	}
 
 	@Override

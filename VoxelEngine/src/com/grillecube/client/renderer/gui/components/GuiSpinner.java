@@ -2,6 +2,7 @@ package com.grillecube.client.renderer.gui.components;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventAdd;
@@ -9,14 +10,15 @@ import com.grillecube.client.renderer.gui.event.GuiSpinnerEventExpanded;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventRemove;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventRemoveAll;
+import com.grillecube.client.renderer.gui.event.GuiSpinnerEventRename;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventSorted;
-import com.grillecube.common.utils.Pair;
 
 /** a spinner list */
 public abstract class GuiSpinner extends Gui {
 
 	/** the objects hold */
-	private final ArrayList<Pair<Object, String>> values;
+	private final ArrayList<Object> values;
+	private final HashMap<Object, String> valuesNames;
 
 	/** true if this spinner is expanded */
 	private boolean expanded;
@@ -29,7 +31,8 @@ public abstract class GuiSpinner extends Gui {
 
 	public GuiSpinner() {
 		super();
-		this.values = new ArrayList<Pair<Object, String>>();
+		this.values = new ArrayList<Object>();
+		this.valuesNames = new HashMap<Object, String>();
 		this.expanded = false;
 		this.pickedIndex = -1;
 		this.hintText = "...";
@@ -54,42 +57,64 @@ public abstract class GuiSpinner extends Gui {
 	}
 
 	public final void add(Object value, String name, int index) {
-		this.values.add(index, new Pair<Object, String>(value, name));
+		this.values.add(index, value);
+		this.valuesNames.put(value, name);
 		this.onObjectAdded(index);
 		super.stackEvent(new GuiSpinnerEventAdd<GuiSpinner>(this, index, value, name));
 	}
 
+	/** update an object name */
+	public final void setName(Object value, String name) {
+		int index = this.values.indexOf(value);
+
+		if (index >= 0) {
+			this.valuesNames.put(value, name);
+			this.onObjectRenamed(index);
+			super.stackEvent(new GuiSpinnerEventRename<GuiSpinner>(this, index));
+		}
+	}
+
+	/** update an object name */
+	public final void setName(Object value) {
+		this.setName(value, value.toString());
+	}
+
 	/** add a value to the spinner */
 	public final Object remove(Object value) {
-		int i = 0;
-		for (Pair<Object, String> pair : this.values) {
-			if (pair.left.equals(value)) {
-				break;
-			}
-			++i;
+		if (!this.values.remove(value)) {
+			return (false);
 		}
-		if (i >= this.values.size()) {
-			return (null);
-		}
-		return (this.remove(i));
+		this.valuesNames.remove(value);
+		return (value);
 	}
 
 	public final Object remove(int index) {
 		if (index < 0 || index >= this.values.size()) {
 			return (null);
 		}
-		Pair<Object, String> value = this.values.remove(index);
+		Object value = this.values.remove(index);
+		String name = this.valuesNames.remove(value);
 		if (this.pickedIndex >= this.values.size()) {
 			this.pick(this.values.size() - 1);
 		}
 		this.onObjectRemoved(index);
-		super.stackEvent(new GuiSpinnerEventRemove<GuiSpinner>(this, index, value.left, value.right));
-		return (value.left);
+		super.stackEvent(new GuiSpinnerEventRemove<GuiSpinner>(this, index, value, name));
+		return (value);
 	}
 
-	/** sort the spinner */
+	/**
+	 * sort the spinner, keep the selected object as selected (meaning sorting
+	 * may changes picked index)
+	 */
 	public final void sort(Comparator<Object> comparator) {
+		Object picked = this.getPickedObject();
 		this.values.sort(comparator);
+		for (int i = 0; i < this.values.size(); i++) {
+			if (this.values.get(i) == picked) {
+				this.pickedIndex = i;
+				break;
+			}
+		}
 		this.onObjectsSorted();
 		super.stackEvent(new GuiSpinnerEventSorted<GuiSpinner>(this));
 	}
@@ -118,7 +143,7 @@ public abstract class GuiSpinner extends Gui {
 	}
 
 	/** get the objets */
-	public final ArrayList<Pair<Object, String>> getValues() {
+	public final ArrayList<Object> getRawValues() {
 		return (this.values);
 	}
 
@@ -147,7 +172,7 @@ public abstract class GuiSpinner extends Gui {
 		if (index < 0 || index >= this.values.size()) {
 			return (null);
 		}
-		return (this.values.get(index).left);
+		return (this.values.get(index));
 	}
 
 	/** get the name at given index */
@@ -155,7 +180,7 @@ public abstract class GuiSpinner extends Gui {
 		if (index < 0 || index >= this.values.size()) {
 			return (null);
 		}
-		return (this.values.get(index).right);
+		return (this.valuesNames.get(this.getObject(index)));
 	}
 
 	/** get the index of the picked item (or -1 if empty, or no item picked) */
@@ -190,5 +215,8 @@ public abstract class GuiSpinner extends Gui {
 	}
 
 	protected void onObjectRemoved(int index) {
+	}
+
+	protected void onObjectRenamed(int index) {
 	}
 }

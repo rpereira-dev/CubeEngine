@@ -14,9 +14,6 @@
 
 package com.grillecube.client.renderer.model;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-
 import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLTexture;
 import com.grillecube.client.opengl.object.ImageUtils;
@@ -45,6 +42,10 @@ public class ModelSkin {
 		this.filepath = filepath;
 		this.glTexture = GLH.glhGenTexture();
 		this.load();
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getName() {
