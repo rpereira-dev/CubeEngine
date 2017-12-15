@@ -17,7 +17,7 @@ package com.grillecube.client.renderer.sky;
 import org.lwjgl.opengl.GL20;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLProgram;
+import com.grillecube.client.opengl.GLProgram;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;

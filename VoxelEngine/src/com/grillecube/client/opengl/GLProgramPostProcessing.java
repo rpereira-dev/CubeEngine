@@ -1,9 +1,8 @@
-package com.grillecube.client.opengl.object;
+package com.grillecube.client.opengl;
 
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 
-import com.grillecube.client.opengl.GLH;
 import com.grillecube.common.resources.R;
 
 public final class GLProgramPostProcessing extends GLProgram {

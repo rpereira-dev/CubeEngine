@@ -1,8 +1,7 @@
-package com.grillecube.client.opengl.object;
+package com.grillecube.client.opengl;
 
 import org.lwjgl.opengl.GL30;
 
-import com.grillecube.client.opengl.GLH;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
 

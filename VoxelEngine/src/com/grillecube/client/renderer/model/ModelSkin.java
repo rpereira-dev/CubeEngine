@@ -15,8 +15,8 @@
 package com.grillecube.client.renderer.model;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLTexture;
-import com.grillecube.client.opengl.object.ImageUtils;
+import com.grillecube.client.opengl.GLTexture;
+import com.grillecube.client.opengl.ImageUtils;
 
 public class ModelSkin {
 

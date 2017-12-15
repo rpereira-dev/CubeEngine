@@ -5,8 +5,8 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import com.grillecube.client.opengl.object.GLVertexArray;
-import com.grillecube.client.opengl.object.GLVertexBuffer;
+import com.grillecube.client.opengl.GLVertexArray;
+import com.grillecube.client.opengl.GLVertexBuffer;
 import com.grillecube.client.renderer.Mesh;
 import com.grillecube.client.renderer.geometry.Cube;
 

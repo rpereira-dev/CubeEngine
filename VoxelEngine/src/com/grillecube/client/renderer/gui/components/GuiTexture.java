@@ -1,6 +1,6 @@
 package com.grillecube.client.renderer.gui.components;
 
-import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.GLTexture;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.event.GuiTextureEventTextureChanged;
 import com.grillecube.common.maths.Matrix4f;

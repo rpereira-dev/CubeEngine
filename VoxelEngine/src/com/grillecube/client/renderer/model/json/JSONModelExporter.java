@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.grillecube.client.opengl.object.ImageUtils;
+import com.grillecube.client.opengl.ImageUtils;
 import com.grillecube.client.renderer.model.ModelMesh;
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.animation.Bone;

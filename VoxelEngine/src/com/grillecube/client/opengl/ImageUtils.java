@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl.object;
+package com.grillecube.client.opengl;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -30,7 +30,7 @@ public class ImageUtils {
 		try {
 			image = ImageIO.read(new File(filepath));
 		} catch (IOException e) {
-			Logger.get().log(Logger.Level.WARNING, "Cant get texture file: " + filepath);
+			Logger.get().log(Logger.Level.WARNING, "Cant get image file: " + filepath);
 		}
 		return (image);
 	}

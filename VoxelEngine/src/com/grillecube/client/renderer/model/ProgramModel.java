@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLProgram;
+import com.grillecube.client.opengl.GLProgram;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.Logger;

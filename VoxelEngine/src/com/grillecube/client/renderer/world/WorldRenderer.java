@@ -23,11 +23,11 @@ import org.lwjgl.opengl.GL30;
 
 import com.grillecube.client.event.renderer.EventPostWorldRender;
 import com.grillecube.client.event.renderer.EventPreWorldRender;
+import com.grillecube.client.opengl.GLFrameBuffer;
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLFrameBuffer;
-import com.grillecube.client.opengl.object.GLProgramPostProcessing;
-import com.grillecube.client.opengl.object.GLRenderBuffer;
-import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.GLProgramPostProcessing;
+import com.grillecube.client.opengl.GLRenderBuffer;
+import com.grillecube.client.opengl.GLTexture;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.camera.CameraProjective;

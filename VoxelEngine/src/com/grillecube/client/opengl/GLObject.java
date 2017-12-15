@@ -12,10 +12,9 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl.object;
+package com.grillecube.client.opengl;
 
-public interface GLObject
-{
+public interface GLObject {
 	/** free resources */
 	public void delete();
 }

@@ -14,18 +14,13 @@
 
 package com.grillecube.client.opengl.window;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
-import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
@@ -33,9 +28,10 @@ import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL11;
 
+import com.grillecube.client.opengl.GLCursor;
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLObject;
-import com.grillecube.client.opengl.object.ImageUtils;
+import com.grillecube.client.opengl.GLIcon;
+import com.grillecube.client.opengl.GLObject;
 import com.grillecube.client.opengl.window.event.GLFWEvent;
 import com.grillecube.client.opengl.window.event.GLFWEventChar;
 import com.grillecube.client.opengl.window.event.GLFWEventKeyPress;
@@ -91,21 +87,23 @@ public class GLFWWindow implements GLObject {
 	/** events handler */
 	private HashMap<Class<? extends GLFWEvent>, ArrayList<GLFWListener<? extends GLFWEvent>>> listeners;
 
+	/** cursor used */
+	private GLCursor cursor;
+
 	/** events callback for garbage collector */
-	private GLFWScrollCallback _callback_scroll;
-	private GLFWCursorPosCallback _callback_cursor_pos;
-	private GLFWMouseButtonCallback _callback_mouse_button;
-	private GLFWKeyCallback _callback_key;
-	private GLFWCharCallback _callback_char;
-	private GLFWWindowSizeCallback _resize_callback;
-	private GLFWWindowFocusCallback _focus_callback;
+	private GLFWScrollCallback callback_scroll;
+	private GLFWCursorPosCallback callback_cursor_pos;
+	private GLFWMouseButtonCallback callback_mouse_button;
+	private GLFWKeyCallback callback_key;
+	private GLFWCharCallback callback_char;
+	private GLFWWindowSizeCallback callback_resize;
+	private GLFWWindowFocusCallback callback_focus;
 
 	private static final int STATE_HOVERED = (1 << 0);
 	private static final int STATE_FOCUSED = (1 << 1);
 	private int state;
 
 	public GLFWWindow() {
-
 	}
 
 	/** create the window and initialize gl context */
@@ -147,6 +145,8 @@ public class GLFWWindow implements GLObject {
 		this.fps_counter = 0;
 		this.fps = 0;
 
+		this.setCursor(new GLCursor());
+
 		this.initEvents();
 	}
 
@@ -167,23 +167,41 @@ public class GLFWWindow implements GLObject {
 		});
 	}
 
+	/**
+	 * set the cursor to be rendered. NB: the previous cursor isn't freed! care for
+	 * memory leaks when using this function
+	 * 
+	 * @param cursor
+	 */
+	public final void setCursor(GLCursor cursor) {
+		GLFW.glfwSetCursor(this.windowPtr, cursor.getID());
+		this.cursor = cursor;
+	}
+
+	/**
+	 * get the current rendered cursor
+	 */
+	public final GLCursor getCursor() {
+		return (this.cursor);
+	}
+
 	private final void initWindowEvents() {
-		this._resize_callback = new GLFWWindowSizeCallback() {
+		this.callback_resize = new GLFWWindowSizeCallback() {
 			@Override
 			public void invoke(long window, int width, int height) {
 				resize(width, height);
 				GLFWWindow.this.invokeEvent(new GLFWEventWindowResize(GLFWWindow.this));
 			}
 		};
-		GLFW.glfwSetWindowSizeCallback(this.windowPtr, this._resize_callback);
+		GLFW.glfwSetWindowSizeCallback(this.windowPtr, this.callback_resize);
 
-		this._focus_callback = new GLFWWindowFocusCallback() {
+		this.callback_focus = new GLFWWindowFocusCallback() {
 			@Override
 			public void invoke(long window, boolean focused) {
 				setState(STATE_FOCUSED, focused);
 			}
 		};
-		GLFW.glfwSetWindowFocusCallback(this.windowPtr, this._focus_callback);
+		GLFW.glfwSetWindowFocusCallback(this.windowPtr, this.callback_focus);
 
 	}
 
@@ -235,15 +253,15 @@ public class GLFWWindow implements GLObject {
 
 	private final void initKeyEvents() {
 
-		this._callback_char = new GLFWCharCallback() {
+		this.callback_char = new GLFWCharCallback() {
 			@Override
 			public void invoke(long window, int codepoint) {
 				GLFWWindow.this.invokeEvent(new GLFWEventChar(GLFWWindow.this, codepoint));
 			}
 		};
-		GLFW.glfwSetCharCallback(this.windowPtr, this._callback_char);
+		GLFW.glfwSetCharCallback(this.windowPtr, this.callback_char);
 
-		this._callback_key = new GLFWKeyCallback() {
+		this.callback_key = new GLFWKeyCallback() {
 			@Override
 			public void invoke(long window, int key, int scancode, int action, int mods) {
 				if (action == GLFW.GLFW_PRESS) {
@@ -253,11 +271,11 @@ public class GLFWWindow implements GLObject {
 				}
 			}
 		};
-		GLFW.glfwSetKeyCallback(this.windowPtr, this._callback_key);
+		GLFW.glfwSetKeyCallback(this.windowPtr, this.callback_key);
 	}
 
 	private final void initMouseEvents() {
-		this._callback_scroll = new GLFWScrollCallback() {
+		this.callback_scroll = new GLFWScrollCallback() {
 
 			@Override
 			public void invoke(long window, double xpos, double ypos) {
@@ -265,7 +283,7 @@ public class GLFWWindow implements GLObject {
 			}
 		};
 
-		this._callback_cursor_pos = new GLFWCursorPosCallback() {
+		this.callback_cursor_pos = new GLFWCursorPosCallback() {
 
 			@Override
 			public void invoke(long window, double xpos, double ypos) {
@@ -278,7 +296,7 @@ public class GLFWWindow implements GLObject {
 			}
 		};
 
-		this._callback_mouse_button = new GLFWMouseButtonCallback() {
+		this.callback_mouse_button = new GLFWMouseButtonCallback() {
 
 			@Override
 			public void invoke(long window, int button, int action, int mods) {
@@ -289,9 +307,9 @@ public class GLFWWindow implements GLObject {
 				}
 			}
 		};
-		GLFW.glfwSetScrollCallback(this.windowPtr, this._callback_scroll);
-		GLFW.glfwSetCursorPosCallback(this.windowPtr, this._callback_cursor_pos);
-		GLFW.glfwSetMouseButtonCallback(this.windowPtr, this._callback_mouse_button);
+		GLFW.glfwSetScrollCallback(this.windowPtr, this.callback_scroll);
+		GLFW.glfwSetCursorPosCallback(this.windowPtr, this.callback_cursor_pos);
+		GLFW.glfwSetMouseButtonCallback(this.windowPtr, this.callback_mouse_button);
 	}
 
 	/** in pixels */
@@ -500,31 +518,14 @@ public class GLFWWindow implements GLObject {
 	}
 
 	/** set the icon of this window */
-	public final void setIcon(String imagePath) {
-		BufferedImage bufferedImage = ImageUtils.readImage(imagePath);
-		int imwidth = bufferedImage.getWidth();
-		int imheight = bufferedImage.getHeight();
-		GLFWImage image = GLFWImage.malloc();
-		ByteBuffer pixels = BufferUtils.createByteBuffer(imwidth * imheight * 4);
-		for (int y = 0; y < imheight; y++) {
-			for (int x = 0; x < imwidth; x++) {
-				Color color = new Color(bufferedImage.getRGB(x, y), true);
-				pixels.put((byte) color.getRed());
-				pixels.put((byte) color.getGreen());
-				pixels.put((byte) color.getBlue());
-				pixels.put((byte) color.getAlpha());
-			}
-		}
-		pixels.flip();
-		image.set(imwidth, imheight, pixels);
+	public final void setIcon(String filepath) {
+		GLIcon glIcon = GLH.glhCreateIcon(filepath);
+		this.setIcon(glIcon);
+		GLH.glhDeleteObject(glIcon);
+	}
 
-		GLFWImage.Buffer images = GLFWImage.malloc(1);
-		images.put(0, image);
-
-		GLFW.glfwSetWindowIcon(this.windowPtr, images);
-
-		images.free();
-		image.free();
+	public final void setIcon(GLIcon glIcon) {
+		GLFW.glfwSetWindowIcon(this.windowPtr, glIcon.getBuffer());
 	}
 
 	private final boolean hasState(int state) {

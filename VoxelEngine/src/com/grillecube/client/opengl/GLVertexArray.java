@@ -12,14 +12,12 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl.object;
+package com.grillecube.client.opengl;
 
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL33;
-
-import com.grillecube.client.opengl.GLH;
 
 public class GLVertexArray implements GLObject {
 

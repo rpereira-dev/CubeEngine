@@ -23,9 +23,11 @@ import org.lwjgl.opengl.GL15;
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.event.renderer.EventPostRender;
 import com.grillecube.client.event.renderer.EventPreRender;
+import com.grillecube.client.opengl.GLCursor;
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLVertexArray;
-import com.grillecube.client.opengl.object.GLVertexBuffer;
+import com.grillecube.client.opengl.GLIcon;
+import com.grillecube.client.opengl.GLVertexArray;
+import com.grillecube.client.opengl.GLVertexBuffer;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.opengl.window.event.GLFWEventWindowResize;
 import com.grillecube.client.opengl.window.event.GLFWListener;
@@ -41,6 +43,7 @@ import com.grillecube.common.Logger.Level;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.common.resources.R;
 
 public class MainRenderer implements Taskable {
 
@@ -160,8 +163,18 @@ public class MainRenderer implements Taskable {
 		this.getGLFWWindow().addListener(this.windowResizeListener);
 		this.onWindowResize(this.getGLFWWindow());
 
+		this.initializeCursor();
+
 		Logger.get().log(Level.FINE, "Done");
 		GLH.glhCheckError("post mainrenderer started");
+	}
+
+	private final void initializeCursor() {
+		/** cursor setting */
+		GLIcon glIcon = GLH.glhCreateIcon(R.getResPath("textures/blocks/bedrock.png"));
+		GLCursor cursor = new GLCursor(glIcon, 8, 8);
+		this.getGLFWWindow().setCursor(cursor);
+		GLH.glhDeleteObject(glIcon);
 	}
 
 	public void deinitialize() {

@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl.object;
+package com.grillecube.client.opengl;
 
 import java.awt.Graphics2D;
 import java.awt.Image;

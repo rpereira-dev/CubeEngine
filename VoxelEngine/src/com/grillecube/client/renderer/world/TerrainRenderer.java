@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.GLTexture;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.camera.CameraProjective;

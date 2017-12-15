@@ -15,7 +15,7 @@
 package com.grillecube.client.renderer.particles;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.GLTexture;
 
 /** there should be only one instance per texture of this object */
 public class TextureSprite

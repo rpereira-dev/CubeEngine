@@ -21,8 +21,8 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLVertexArray;
-import com.grillecube.client.opengl.object.GLVertexBuffer;
+import com.grillecube.client.opengl.GLVertexArray;
+import com.grillecube.client.opengl.GLVertexBuffer;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector2f;
 import com.grillecube.common.maths.Vector3f;

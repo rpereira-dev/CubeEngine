@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl.object;
+package com.grillecube.client.opengl;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
-import com.grillecube.client.opengl.GLH;
 import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix3f;
 import com.grillecube.common.maths.Matrix4f;

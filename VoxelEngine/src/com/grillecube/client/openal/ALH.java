@@ -70,9 +70,14 @@ public class ALH {
 
 	/** get the device with this specifier */
 	public static ALDevice alhGetDefaultDevice() {
-		ALDevice device = new ALDevice(ALC10.alcOpenDevice((ByteBuffer) null));
-		_objects.add(device);
-		return (device);
+		try {
+			ALDevice device = new ALDevice(ALC10.alcOpenDevice((ByteBuffer) null));
+			_objects.add(device);
+			return (device);
+		} catch (Exception e) {
+			Logger.get().log(Logger.Level.ERROR, e.getLocalizedMessage());
+			return (null);
+		}
 	}
 
 	/** generate a new al buffer */

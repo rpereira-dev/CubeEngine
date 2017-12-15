@@ -24,14 +24,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
 
-import com.grillecube.client.opengl.object.GLFrameBuffer;
-import com.grillecube.client.opengl.object.GLObject;
-import com.grillecube.client.opengl.object.GLRenderBuffer;
-import com.grillecube.client.opengl.object.GLShader;
-import com.grillecube.client.opengl.object.GLTexture;
-import com.grillecube.client.opengl.object.GLVertexArray;
-import com.grillecube.client.opengl.object.GLVertexBuffer;
-import com.grillecube.client.opengl.object.ImageUtils;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
@@ -167,8 +159,8 @@ public class GLH {
 	}
 
 	/**
-	 * create opengl textures ID and fill it data with the given bufferedimage
-	 * (rgba format)
+	 * create opengl textures ID and fill it data with the given bufferedimage (rgba
+	 * format)
 	 */
 	public static GLTexture glhGenTexture(BufferedImage image) {
 		GLTexture texture = GLH.glhGenTexture();
@@ -299,5 +291,11 @@ public class GLH {
 		Logger.get().log(Logger.Level.FINE, "Context set properly. Sleeping 5 seconds");
 		Thread.sleep(5000);
 		GLH.glhStop();
+	}
+
+	/** create a new GLFW image */
+	public static GLIcon glhCreateIcon(String imagePath) {
+		GLIcon glIcon = new GLIcon(imagePath);
+		return (glIcon);
 	}
 }

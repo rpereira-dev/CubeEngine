@@ -12,7 +12,7 @@
 **                                     1-----2
 */
 
-package com.grillecube.client.opengl.object;
+package com.grillecube.client.opengl;
 
 import java.nio.ByteBuffer;
 
