@@ -25,22 +25,23 @@ public class ModelEditor {
 		/* 1 */
 		// initialize engine
 		VoxelEngineClient engine = new VoxelEngineClient();
-		engine.initialize();
-
-		/* 2 */
-		// inject resources to be loaded
-		engine.getModLoader().injectMod(ModelEditorMod.class);
-
-		// load resources (mods)
-		engine.load();
-
-		/* prepare engine before looping */
-		this.prepareEngine(engine);
-
-		/* 3 */
-		// loop, every allocated memory will be released properly on program
-		// termination */
 		try {
+			engine.initialize();
+
+			/* 2 */
+			// inject resources to be loaded
+			engine.getModLoader().injectMod(ModelEditorMod.class);
+
+			// load resources (mods)
+			engine.load();
+
+			/* prepare engine before looping */
+			this.prepareEngine(engine);
+
+			/* 3 */
+			// loop, every allocated memory will be released properly on program
+			// termination */
+
 			engine.loop();
 		} catch (InterruptedException e) {
 			Logger.get().log(Logger.Level.ERROR, "That's unfortunate... VoxelEngine crashed.", e.getLocalizedMessage());

@@ -163,18 +163,8 @@ public class MainRenderer implements Taskable {
 		this.getGLFWWindow().addListener(this.windowResizeListener);
 		this.onWindowResize(this.getGLFWWindow());
 
-		this.initializeCursor();
-
 		Logger.get().log(Level.FINE, "Done");
 		GLH.glhCheckError("post mainrenderer started");
-	}
-
-	private final void initializeCursor() {
-		/** cursor setting */
-		GLIcon glIcon = GLH.glhCreateIcon(R.getResPath("textures/blocks/bedrock.png"));
-		GLCursor cursor = new GLCursor(glIcon, 8, 8);
-		this.getGLFWWindow().setCursor(cursor);
-		GLH.glhDeleteObject(glIcon);
 	}
 
 	public void deinitialize() {

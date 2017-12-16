@@ -36,7 +36,7 @@ public class GLH {
 	/** if we use debug */
 	public static boolean DEBUG = false;
 
-	private static GLFWContext _context;
+	private static GLFWContext theContext;
 
 	/** called to init opengl */
 	public static void glhInit() {
@@ -59,7 +59,7 @@ public class GLH {
 		GL.setCapabilities(context.getCapabilities());
 
 		// singleton update
-		_context = context;
+		theContext = context;
 
 		// add the window to GLH objects so it is clean properly on program
 		// termination
@@ -68,7 +68,7 @@ public class GLH {
 
 	/** get the last set context */
 	public static GLFWContext glhGetContext() {
-		return (_context);
+		return (theContext);
 	}
 
 	public static GLFWWindow glhGetWindow() {
@@ -117,7 +117,7 @@ public class GLH {
 	/** clean all generated data */
 	public static void glhStop() {
 		Logger.get().log(Logger.Level.FINE, "Cleaning GLObjects...");
-		_context.destroy();
+		theContext.destroy();
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class GLH {
 		if (DEBUG) {
 			Logger.get().log(Level.DEBUG, "GLH: adding", object.getClass().getSimpleName());
 		}
-		_context.addObject(object);
+		theContext.addObject(object);
 	}
 
 	/** remove the object */
@@ -141,7 +141,7 @@ public class GLH {
 		if (DEBUG) {
 			Logger.get().log(Level.DEBUG, "GLH: removing", object.getClass().getSimpleName());
 		}
-		_context.removeObject(object);
+		theContext.removeObject(object);
 		object.delete();
 	}
 
@@ -243,20 +243,20 @@ public class GLH {
 
 	public static void glhDrawArrays(int dst, int begin, int vertex_count) {
 		GL11.glDrawArrays(dst, begin, vertex_count);
-		_context.incrementDrawCalls();
-		_context.increaseVerticesDrawn(vertex_count);
+		theContext.incrementDrawCalls();
+		theContext.increaseVerticesDrawn(vertex_count);
 	}
 
 	public static void glhDrawElements(int glTriangles, int indexCount, int indiceType, long indices) {
 		GL11.glDrawElements(glTriangles, indexCount, indiceType, indices);
-		_context.incrementDrawCalls();
-		_context.increaseVerticesDrawn(indexCount / 3);
+		theContext.incrementDrawCalls();
+		theContext.increaseVerticesDrawn(indexCount / 3);
 	}
 
 	public static void glhDrawArraysInstanced(int mode, int first, int count, int primcount) {
 		GL31.glDrawArraysInstanced(mode, first, count, primcount);
-		_context.incrementDrawCalls();
-		_context.increaseVerticesDrawn(3 * count);
+		theContext.incrementDrawCalls();
+		theContext.increaseVerticesDrawn(3 * count);
 	}
 
 	/** MAIN TESTS */

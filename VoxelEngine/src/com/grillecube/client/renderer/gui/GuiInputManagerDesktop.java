@@ -2,11 +2,16 @@ package com.grillecube.client.renderer.gui;
 
 import java.util.ArrayList;
 
+import org.lwjgl.glfw.GLFW;
+
+import com.grillecube.client.opengl.GLCursor;
 import com.grillecube.client.opengl.window.event.GLFWEventChar;
 import com.grillecube.client.opengl.window.event.GLFWEventKeyPress;
 import com.grillecube.client.opengl.window.event.GLFWEventMouseScroll;
 import com.grillecube.client.opengl.window.event.GLFWListener;
 import com.grillecube.client.renderer.gui.components.Gui;
+import com.grillecube.client.renderer.gui.components.GuiButton;
+import com.grillecube.client.renderer.gui.components.GuiPrompt;
 import com.grillecube.client.renderer.gui.event.GuiEventChar;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
@@ -21,6 +26,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventMouseRightRelease;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
 import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiEventUnpress;
+import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector4f;
 
@@ -31,6 +37,11 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 	private GLFWListener<GLFWEventKeyPress> keyPressListener;
 	private GLFWListener<GLFWEventChar> charListener;
 	private GLFWListener<GLFWEventMouseScroll> scrollListener;
+	private Gui topestGui;
+
+	/** default cursors */
+	public GLCursor[] cursor = new GLCursor[6];
+	private static final int ARROW = 0, IBEAM = 1, CROSSHAIR = 2, HAND = 3, HRESIZE = 4, VRESIZE = 5;
 
 	/** add listeners to the window */
 	@Override
@@ -69,6 +80,13 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 		super.getGLFWWindow().addListener(this.keyPressListener);
 		super.getGLFWWindow().addListener(this.charListener);
 		super.getGLFWWindow().addListener(this.scrollListener);
+
+		this.cursor[ARROW] = new GLCursor(GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR));
+		this.cursor[IBEAM] = new GLCursor(GLFW.glfwCreateStandardCursor(GLFW.GLFW_IBEAM_CURSOR));
+		this.cursor[CROSSHAIR] = new GLCursor(GLFW.glfwCreateStandardCursor(GLFW.GLFW_CROSSHAIR_CURSOR));
+		this.cursor[HAND] = new GLCursor(GLFW.glfwCreateStandardCursor(GLFW.GLFW_HAND_CURSOR));
+		this.cursor[HRESIZE] = new GLCursor(GLFW.glfwCreateStandardCursor(GLFW.GLFW_HRESIZE_CURSOR));
+		this.cursor[VRESIZE] = new GLCursor(GLFW.glfwCreateStandardCursor(GLFW.GLFW_VRESIZE_CURSOR));
 	}
 
 	/** remove listeners from the window */
@@ -79,10 +97,23 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 		super.getGLFWWindow().removeListener(this.scrollListener);
 	}
 
+	@Override
+	protected void onUpdate() {
+		// TODO add a cursor event update
+		if (this.topestGui instanceof GuiPrompt) {
+			super.getGLFWWindow().setCursor(this.cursor[IBEAM]);
+		} else if (this.topestGui instanceof GuiButton) {
+			super.getGLFWWindow().setCursor(this.cursor[HAND]);
+		} else if (topestGui instanceof GuiModelView) {
+			super.getGLFWWindow().setCursor(this.cursor[CROSSHAIR]);
+		} else {
+			super.getGLFWWindow().setCursor(this.cursor[ARROW]);
+		}
+	}
+
 	/** update the given guis, which should be sorted by their layers */
 	@Override
-	public final void onUpdate(ArrayList<Gui> guis) {
-
+	protected void onGuisUpdate(ArrayList<Gui> guis) {
 		double xpos = super.getGLFWWindow().getMouseX();
 		double ypos = super.getGLFWWindow().getMouseY();
 		float mx = (float) (xpos / super.getGLFWWindow().getWidth());
@@ -119,6 +150,7 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 			if (!topestHoveredFound && gui.isHoverable() && (x >= 0.0f && x < 1.0f && y >= 0.0f && y <= 1.0f)) {
 				topestHoveredFound = true;
 				gui.stackEvent(new GuiEventMouseHover<Gui>(gui));
+				this.topestGui = gui;
 				// if gui wasnt hovered earlier
 				if (!gui.isHovered()) {
 					gui.setHovered(true);

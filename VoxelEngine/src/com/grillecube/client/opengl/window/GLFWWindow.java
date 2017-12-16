@@ -174,8 +174,10 @@ public class GLFWWindow implements GLObject {
 	 * @param cursor
 	 */
 	public final void setCursor(GLCursor cursor) {
-		GLFW.glfwSetCursor(this.windowPtr, cursor.getID());
-		this.cursor = cursor;
+		if (this.cursor != cursor || this.cursor.getID() != cursor.getID()) {
+			GLFW.glfwSetCursor(this.windowPtr, cursor.getID());
+			this.cursor = cursor;
+		}
 	}
 
 	/**
