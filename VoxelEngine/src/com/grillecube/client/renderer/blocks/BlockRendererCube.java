@@ -31,9 +31,8 @@ public class BlockRendererCube extends BlockRenderer {
 	 *            : the face and texture ID's
 	 * 
 	 *            e.g: new BlockRendererCube(Blocks.GRASS, Face.LEFT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.RIGHT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.FRONT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.BACK,
+	 *            ClientBlocks.T_GRASS_SIDE, Face.RIGHT, ClientBlocks.T_GRASS_SIDE,
+	 *            Face.FRONT, ClientBlocks.T_GRASS_SIDE, Face.BACK,
 	 *            ClientBlocks.T_GRASS_SIDE, Face.TOP, ClientBlocks.T_GRASS_TOP,
 	 *            Face.BOT, ClientBlocks.T_DIRT);
 	 */
@@ -95,7 +94,6 @@ public class BlockRendererCube extends BlockRenderer {
 	private final BlockFace createBlockFace(Terrain terrain, Block block, Face face, int x, int y, int z) {
 
 		// if the face-neighboor block is visible isnt transparent
-		// TODO : find a solution on leaves square
 		if (!this.canRenderFace(terrain, block, face, x, y, z)) {
 			// the face isnt visible
 			return (null);
@@ -121,8 +119,8 @@ public class BlockRendererCube extends BlockRenderer {
 	}
 
 	/**
-	 * return the vertex for the given face at the given coordinates, for it
-	 * given id
+	 * return the vertex for the given face at the given coordinates, for it given
+	 * id
 	 */
 	public TerrainMeshVertex createBlockFaceVertex(Terrain terrain, Face face, int x, int y, int z, int faceVertexID) {
 

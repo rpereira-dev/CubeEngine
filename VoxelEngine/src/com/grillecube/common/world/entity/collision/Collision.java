@@ -277,8 +277,6 @@ public class Collision {
 		// TODO
 	}
 
-	// TODO : test 0, 69, 0
-
 	@Test
 	public void collisionFalling() {
 		Entity entity = new Entity() {

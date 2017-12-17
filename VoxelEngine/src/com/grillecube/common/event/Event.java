@@ -1,5 +1,7 @@
 package com.grillecube.common.event;
 
+import java.util.ArrayList;
+
 /** abstract class for an engine event */
 public abstract class Event {
 
@@ -18,12 +20,35 @@ public abstract class Event {
 		this.onReset();
 	}
 
-	public final void run() {
-		if (this.hasState(STATE_CANCELLED)) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public final void run(ArrayList<Listener> listeners) {
+		if (this.isCancelled()) {
 			return;
 		}
+
+		if (listeners == null) {
+			this.process();
+			return;
+		}
+
+		for (Listener listener : listeners) {
+			listener.pre(this);
+			if (this.isCancelled()) {
+				return;
+			}
+		}
+
 		this.process();
+
 		this.setState(STATE_POST);
+
+		for (Listener listener : listeners) {
+			listener.post(this);
+			if (this.isCancelled()) {
+				this.unprocess();
+				return;
+			}
+		}
 	}
 
 	/** process this event */

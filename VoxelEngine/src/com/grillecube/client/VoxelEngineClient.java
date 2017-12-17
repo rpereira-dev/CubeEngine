@@ -117,7 +117,6 @@ public class VoxelEngineClient extends VoxelEngine {
 
 		// get tasks
 		this.registerEventCallback(new Listener<EventGetTasks>() {
-
 			@Override
 			public void pre(EventGetTasks event) {
 			}

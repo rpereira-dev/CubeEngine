@@ -26,23 +26,8 @@ public class EventManager extends GenericManager<EventHandler> {
 
 	/** raise an event */
 	public void invokeEvent(Event event) {
-		ArrayList<Listener> callbacks = this.eventListeners.get(event.getClass());
-		if (callbacks == null) {
-			event.run();
-			return;
-		}
-
-		for (Listener callback : callbacks) {
-			callback.pre(event);
-		}
-
-		event.run();
-
-		if (!event.isCancelled()) {
-			for (Listener callback : callbacks) {
-				callback.post(event);
-			}
-		}
+		ArrayList<Listener> listeners = this.eventListeners.get(event.getClass());
+		event.run(listeners);
 	}
 
 	/** a listener to the mouse hovering the gui */

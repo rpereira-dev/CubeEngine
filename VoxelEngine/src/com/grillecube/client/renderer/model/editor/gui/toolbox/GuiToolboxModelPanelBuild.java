@@ -20,7 +20,6 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 	/** the building tools list */
 	private final GuiSpinner tools;
 
-	// TODO
 	private final GuiButton addLayer;
 	private final GuiSpinnerEditor layersName;
 	private final GuiButton removeLayer;
