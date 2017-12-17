@@ -22,4 +22,22 @@ public class EventTerrainSetBlock extends EventTerrain {
 		return (this.block);
 	}
 
+	@Override
+	protected void process() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void unprocess() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onReset() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

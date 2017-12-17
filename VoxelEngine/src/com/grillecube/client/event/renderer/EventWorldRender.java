@@ -1,18 +1,18 @@
 package com.grillecube.client.event.renderer;
 
 import com.grillecube.client.renderer.world.WorldRenderer;
-import com.grillecube.common.world.World;
 
+@SuppressWarnings("rawtypes")
 public abstract class EventWorldRender extends EventRender {
 
-	private final WorldRenderer<World> worldRenderer;
+	private final WorldRenderer worldRenderer;
 
-	public EventWorldRender(WorldRenderer<World> worldRenderer) {
+	public EventWorldRender(WorldRenderer worldRenderer) {
 		super(worldRenderer.getMainRenderer());
 		this.worldRenderer = worldRenderer;
 	}
 
-	public final WorldRenderer<World> getWorldRenderer() {
+	public final WorldRenderer getWorldRenderer() {
 		return (this.worldRenderer);
 	}
 

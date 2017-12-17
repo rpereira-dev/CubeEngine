@@ -21,4 +21,22 @@ public class EventTerrainDurabilityChanged extends EventTerrain {
 		return (this.old);
 	}
 
+	@Override
+	protected void process() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void unprocess() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onReset() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -9,7 +9,7 @@ import com.grillecube.client.event.renderer.model.EventModelInstanceRemoved;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.Logger;
-import com.grillecube.common.event.EventListener;
+import com.grillecube.common.event.Listener;
 import com.grillecube.common.event.world.entity.EventEntityDespawn;
 import com.grillecube.common.event.world.entity.EventEntitySpawn;
 import com.grillecube.common.resources.EventManager;
@@ -57,9 +57,14 @@ public class ModelManager extends GenericManager<Model> {
 	@Override
 	protected final void onLoaded() {
 		EventManager eventManager = this.getResourceManager().getEventManager();
-		eventManager.addListener(new EventListener<EventEntitySpawn>() {
+		eventManager.addListener(new Listener<EventEntitySpawn>() {
+
 			@Override
-			public void invoke(EventEntitySpawn event) {
+			public void pre(EventEntitySpawn event) {
+			}
+
+			@Override
+			public void post(EventEntitySpawn event) {
 				Entity entity = event.getEntity();
 				Model model = getModelForEntity(entity);
 				if (model == null) {
@@ -76,9 +81,14 @@ public class ModelManager extends GenericManager<Model> {
 			}
 		});
 
-		eventManager.addListener(new EventListener<EventEntityDespawn>() {
+		eventManager.addListener(new Listener<EventEntityDespawn>() {
+
 			@Override
-			public void invoke(EventEntityDespawn event) {
+			public void pre(EventEntityDespawn event) {
+			}
+
+			@Override
+			public void post(EventEntityDespawn event) {
 				Entity entity = event.getEntity();
 				ModelInstance modelInstance = getModelInstance(entity);
 				if (modelInstance == null) {
@@ -134,16 +144,15 @@ public class ModelManager extends GenericManager<Model> {
 	}
 
 	/**
-	 * register a new model, link it with the entity class, and return the model
-	 * ID
+	 * register a new model, link it with the entity class, and return the model ID
 	 */
 	public final int registerModel(Model model) {
 		return (super.registerObject(model));
 	}
 
 	/**
-	 * attach an entity to a model, so when the entity spawns, a new model
-	 * instance is created
+	 * attach an entity to a model, so when the entity spawns, a new model instance
+	 * is created
 	 * 
 	 * @param entityClass
 	 *            : the entity class to attach

@@ -1,11 +1,9 @@
 package com.grillecube.common.event;
 
-import com.grillecube.common.VoxelEngine;
+/** an event which is called during the main game loop */
+public class EventLoop extends Event {
 
-/** an event which is called right before the main loop ends */
-public class EventPreLoop extends Event {
-
-	public EventPreLoop() {
+	public EventLoop() {
 		super();
 	}
 

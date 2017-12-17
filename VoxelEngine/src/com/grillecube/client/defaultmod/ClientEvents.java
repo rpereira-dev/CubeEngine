@@ -1,16 +1,9 @@
 package com.grillecube.client.defaultmod;
 
-import com.grillecube.client.event.renderer.EventPostRender;
-import com.grillecube.client.event.renderer.EventPostRendererInitialisation;
-import com.grillecube.client.event.renderer.EventPostWorldRender;
-import com.grillecube.client.event.renderer.EventPreRender;
-import com.grillecube.client.event.renderer.EventPreWorldRender;
-import com.grillecube.client.event.renderer.model.EventModelInstanceAdded;
-import com.grillecube.client.event.renderer.model.EventModelInstanceRemoved;
 import com.grillecube.client.openal.ALH;
 import com.grillecube.client.openal.ALSound;
 import com.grillecube.client.resources.ResourceManagerClient;
-import com.grillecube.common.event.EventListener;
+import com.grillecube.common.event.Listener;
 import com.grillecube.common.event.world.entity.EventEntityPlaySound;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.mod.IModResource;
@@ -26,19 +19,15 @@ public class ClientEvents implements IModResource {
 		// default events
 		EventManager eventManager = manager.getEventManager();
 
-		// rendering events
-		eventManager.registerEvent(EventPostRender.class);
-		eventManager.registerEvent(EventPreRender.class);
-		eventManager.registerEvent(EventPostWorldRender.class);
-		eventManager.registerEvent(EventPreWorldRender.class);
-		eventManager.registerEvent(EventPostRendererInitialisation.class);
-		eventManager.registerEvent(EventModelInstanceAdded.class);
-		eventManager.registerEvent(EventModelInstanceRemoved.class);
-
 		// TODO keep this here?
-		eventManager.addListener(new EventListener<EventEntityPlaySound>() {
+		eventManager.addListener(new Listener<EventEntityPlaySound>() {
+
 			@Override
-			public void invoke(EventEntityPlaySound event) {
+			public void pre(EventEntityPlaySound event) {
+			}
+
+			@Override
+			public void post(EventEntityPlaySound event) {
 				Entity e = event.getEntity();
 				float x = e.getPositionX();
 				float y = e.getPositionY();

@@ -41,9 +41,5 @@ public class GuiTextParameterTextFillBox extends GuiParameter<GuiText> {
 		float rcy = 2.0f * guiText.getBoxCenterY() - 1.0f;
 		float rcz = 0;
 		fontModel.set(x, y, 0.0f, scale, scale, 1.0f, 0.0f, 0.0f, rot, rcx, rcy, rcz);
-
-		if (guiText.getText().equals("Build")) {
-			System.out.println("scaling box");
-		}
 	}
 }

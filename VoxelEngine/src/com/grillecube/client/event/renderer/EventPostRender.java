@@ -11,4 +11,22 @@ public class EventPostRender extends EventRender {
 	public String getName() {
 		return ("Post World Render");
 	}
+
+	@Override
+	protected void process() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void unprocess() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onReset() {
+		// TODO Auto-generated method stub
+		
+	}
 }

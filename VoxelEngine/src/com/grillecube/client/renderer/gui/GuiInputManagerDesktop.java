@@ -99,16 +99,24 @@ public class GuiInputManagerDesktop extends GuiInputManager {
 
 	@Override
 	protected void onUpdate() {
-		// TODO add a cursor event update
+		this.updateCursor();
+	}
+
+	private final void updateCursor() {
+		GLCursor cursor;
 		if (this.topestGui instanceof GuiPrompt) {
-			super.getGLFWWindow().setCursor(this.cursor[IBEAM]);
+			cursor = this.cursor[IBEAM];
 		} else if (this.topestGui instanceof GuiButton) {
-			super.getGLFWWindow().setCursor(this.cursor[HAND]);
+			cursor = this.cursor[HAND];
+
 		} else if (topestGui instanceof GuiModelView) {
-			super.getGLFWWindow().setCursor(this.cursor[CROSSHAIR]);
+			cursor = this.cursor[CROSSHAIR];
+
 		} else {
-			super.getGLFWWindow().setCursor(this.cursor[ARROW]);
+			cursor = this.cursor[ARROW];
 		}
+		
+		super.getGLFWWindow().setCursor(cursor);
 	}
 
 	/** update the given guis, which should be sorted by their layers */

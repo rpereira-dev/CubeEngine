@@ -16,9 +16,9 @@ package com.grillecube.common.world.entity;
 
 import java.util.ArrayList;
 
-import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.event.world.entity.EventEntityPlaySound;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
@@ -182,8 +182,7 @@ public abstract class Entity extends PhysicObject {
 	}
 
 	/**
-	 * update this entity's position, depending on forces and controls applied
-	 * to it
+	 * update this entity's position, depending on forces and controls applied to it
 	 * 
 	 * really basis of the physic engine: the acceleration vector is reset every
 	 * frame and has to be recalculated via 'Entity.addForce(Vector3f force)'
@@ -200,35 +199,32 @@ public abstract class Entity extends PhysicObject {
 	}
 
 	private final void runForces(double dt) {
-		// simulate forces applied to this object
-		Vector3f resultant = new Vector3f();
-
 		// add constant forces
 		this.addForce(Force.GRAVITY);
 		this.addForce(Force.FRICTION);
 
+		// calculate resultant of the applied forces
+		Vector3f resultant = new Vector3f();
 		for (Force<Entity> force : this.forces) {
 			force.updateResultant(this, resultant);
 		}
 		this.forces.clear();
 
-		// advance depending on last update
+		// m.a = F
 		float m = this.getMass();
-		// this.teleport(0, 200, 0);
-		float ax = resultant.x * Terrain.METER_TO_BLOCK / m;
-		float ay = resultant.y * Terrain.METER_TO_BLOCK / m;
-		float az = resultant.z * Terrain.METER_TO_BLOCK / m;
+		float ax = resultant.x * Terrain.BLOCKS_PER_METER / m;
+		float ay = resultant.y * Terrain.BLOCKS_PER_METER / m;
+		float az = resultant.z * Terrain.BLOCKS_PER_METER / m;
 		this.setPositionAccelerationX(ax);
 		this.setPositionAccelerationY(ay);
 		this.setPositionAccelerationZ(az);
 
-		// update velocity of this entity
+		// update velocity of this entity (integrate)
 		Positioneable.velocity(this, dt);
 
-		// if this entity is spawned in any worlds, do collision, else ignore
-		// collisions
-		// this.teleport(0, 200, 0);
+		// if this entity is part of a world
 		if (this.getWorld() != null) {
+			// move with collision detection
 			PhysicObject.move(this.getWorld(), this, dt);
 		} else {
 			Positioneable.position(this, dt);
@@ -371,7 +367,7 @@ public abstract class Entity extends PhysicObject {
 	/** play the sound at the entity position and velocity */
 	public final void playSound(String soundName) {
 		EventEntityPlaySound event = new EventEntityPlaySound(this, soundName);
-		VoxelEngine.instance().getResourceManager().getEventManager().invokeEvent(event);
+		EventManager.instance().invokeEvent(event);
 	}
 
 	public final boolean isVisible() {

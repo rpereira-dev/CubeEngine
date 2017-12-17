@@ -18,7 +18,7 @@ import com.grillecube.client.renderer.world.TerrainMesh;
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.client.renderer.world.TerrainRenderer;
-import com.grillecube.common.event.EventListener;
+import com.grillecube.common.event.Listener;
 import com.grillecube.common.event.world.EventTerrainBlocklightUpdate;
 import com.grillecube.common.event.world.EventTerrainDespawn;
 import com.grillecube.common.event.world.EventTerrainDurabilityChanged;
@@ -148,9 +148,15 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 		this.transparentRenderingList = new ArrayList<TerrainMesh>();
 
 		EventManager eventManager = ResourceManager.instance().getEventManager();
-		eventManager.addListener(new EventListener<EventTerrainDespawn>() {
+		eventManager.addListener(new Listener<EventTerrainDespawn>() {
+
 			@Override
-			public void invoke(EventTerrainDespawn event) {
+			public void pre(EventTerrainDespawn event) {
+
+			}
+
+			@Override
+			public void post(EventTerrainDespawn event) {
 				Terrain terrain = event.getTerrain();
 				if (terrain.getWorld() != world) {
 					return;
@@ -163,9 +169,14 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			}
 		});
 
-		eventManager.addListener(new EventListener<EventTerrainSetBlock>() {
+		eventManager.addListener(new Listener<EventTerrainSetBlock>() {
+
 			@Override
-			public void invoke(EventTerrainSetBlock event) {
+			public void pre(EventTerrainSetBlock event) {
+			}
+
+			@Override
+			public void post(EventTerrainSetBlock event) {
 				if (event.getTerrain().getWorld() != world) {
 					return;
 				}
@@ -173,9 +184,14 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			}
 		});
 
-		eventManager.addListener(new EventListener<EventTerrainBlocklightUpdate>() {
+		eventManager.addListener(new Listener<EventTerrainBlocklightUpdate>() {
+
 			@Override
-			public void invoke(EventTerrainBlocklightUpdate event) {
+			public void pre(EventTerrainBlocklightUpdate event) {
+			}
+
+			@Override
+			public void post(EventTerrainBlocklightUpdate event) {
 				if (event.getTerrain().getWorld() != world) {
 					return;
 				}
@@ -183,9 +199,14 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			}
 		});
 
-		eventManager.addListener(new EventListener<EventTerrainSunlightUpdate>() {
+		eventManager.addListener(new Listener<EventTerrainSunlightUpdate>() {
+
 			@Override
-			public void invoke(EventTerrainSunlightUpdate event) {
+			public void pre(EventTerrainSunlightUpdate event) {
+			}
+
+			@Override
+			public void post(EventTerrainSunlightUpdate event) {
 				if (event.getTerrain().getWorld() != world) {
 					return;
 				}
@@ -193,9 +214,13 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			}
 		});
 
-		eventManager.addListener(new EventListener<EventTerrainDurabilityChanged>() {
+		eventManager.addListener(new Listener<EventTerrainDurabilityChanged>() {
 			@Override
-			public void invoke(EventTerrainDurabilityChanged event) {
+			public void pre(EventTerrainDurabilityChanged event) {
+			}
+
+			@Override
+			public void post(EventTerrainDurabilityChanged event) {
 				if (event.getTerrain().getWorld() != world) {
 					return;
 				}
@@ -235,8 +260,8 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 			if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X)) {
 				DT = 0;
 
-//				this.mesher = i % 5 == 0 ? new FlatTerrainMesherGreedy()
-//						: new MarchingCubesTerrainMesher((int) (Math.pow(2, i % 5 - 1)));
+				// this.mesher = i % 5 == 0 ? new FlatTerrainMesherGreedy()
+				// : new MarchingCubesTerrainMesher((int) (Math.pow(2, i % 5 - 1)));
 				// this.mesher = new MarchingCubesTerrainMesher((int)
 				// (Math.pow(2, 0)));
 				// this.mesher = i % 2 == 0 ? new FlatTerrainMesherGreedy()

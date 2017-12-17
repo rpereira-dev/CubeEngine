@@ -10,7 +10,7 @@ import com.grillecube.client.renderer.particles.ParticleRendererFactory;
 import com.grillecube.client.renderer.particles.TextureSprite;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Side;
-import com.grillecube.common.event.EventListener;
+import com.grillecube.common.event.Listener;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.mod.IModResource;
 import com.grillecube.common.mod.Mod;
@@ -53,11 +53,15 @@ public class POTParticles implements IModResource {
 
 }
 
-class PostRenderCallback extends EventListener<EventPreWorldRender> {
+class PostRenderCallback extends Listener<EventPreWorldRender> {
 	private static Vector3f pos = new Vector3f();
 
 	@Override
-	public void invoke(EventPreWorldRender event) {
+	public void pre(EventPreWorldRender event) {
+	}
+
+	@Override
+	public void post(EventPreWorldRender event) {
 
 		ParticleRendererFactory renderer = event.getWorldRenderer().getParticleRendererFactory();
 

@@ -6,7 +6,7 @@ import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.model.ModelRendererFactory;
 import com.grillecube.client.renderer.sky.SkyRendererFactory;
 import com.grillecube.client.renderer.world.WorldRenderer;
-import com.grillecube.common.event.EventListener;
+import com.grillecube.common.event.Listener;
 import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.world.WorldFlat;
 
@@ -16,8 +16,8 @@ public class WorldFlatRenderer extends WorldRenderer<WorldFlat> {
 	private FlatTerrainRendererFactory terrainFactory;
 	private final ModelRendererFactory modelFactory;
 
-	private EventListener<EventModelInstanceAdded> modelInstanceAddCallback;
-	private EventListener<EventModelInstanceRemoved> modelInstanceRemoveCallback;
+	private Listener<EventModelInstanceAdded> modelInstanceAddCallback;
+	private Listener<EventModelInstanceRemoved> modelInstanceRemoveCallback;
 
 	public WorldFlatRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
@@ -31,20 +31,30 @@ public class WorldFlatRenderer extends WorldRenderer<WorldFlat> {
 		super.addFactory(this.terrainFactory, 3);
 		// particle renderer here
 
-		this.modelInstanceAddCallback = new EventListener<EventModelInstanceAdded>() {
+		this.modelInstanceAddCallback = new Listener<EventModelInstanceAdded>() {
 			@Override
-			public void invoke(EventModelInstanceAdded event) {
+			public void pre(EventModelInstanceAdded event) {
+			}
+
+			@Override
+			public void post(EventModelInstanceAdded event) {
 				if (event.getModelInstance().getEntity().getWorld() == getWorld()) {
 					modelFactory.addModelInstance(event.getModelInstance());
 				}
 			}
 		};
-		this.modelInstanceRemoveCallback = new EventListener<EventModelInstanceRemoved>() {
+		this.modelInstanceRemoveCallback = new Listener<EventModelInstanceRemoved>() {
+
 			@Override
-			public void invoke(EventModelInstanceRemoved event) {
+			public void pre(EventModelInstanceRemoved event) {
+			}
+
+			@Override
+			public void post(EventModelInstanceRemoved event) {
 				if (event.getModelInstance().getEntity().getWorld() == getWorld()) {
 					modelFactory.removeModelInstance(event.getModelInstance());
 				}
+
 			}
 		};
 

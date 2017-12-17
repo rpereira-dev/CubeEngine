@@ -14,4 +14,21 @@ public class EventEntityPlaySound extends EventEntity {
 	public final String getSound() {
 		return (this.sound);
 	}
+
+	@Override
+	protected void process() {
+		// TODO
+	}
+
+	@Override
+	protected void unprocess() {
+		// TODO : stop sound!
+	}
+
+	@Override
+	protected void onReset() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

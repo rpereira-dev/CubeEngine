@@ -6,56 +6,65 @@ import java.util.HashMap;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
 import com.grillecube.common.event.Event;
-import com.grillecube.common.event.EventListener;
+import com.grillecube.common.event.Listener;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class EventManager extends GenericManager<EventHandler> {
 
-	private HashMap<Class<? extends Event>, ArrayList<EventListener>> events;
+	private static EventManager instance;
 
-	public EventManager(ResourceManager resource_manager) {
-		super(resource_manager);
+	private HashMap<Class<? extends Event>, ArrayList<Listener>> eventListeners;
+
+	public EventManager(ResourceManager resourceManager) {
+		super(resourceManager);
+		instance = this;
+	}
+
+	public static final EventManager instance() {
+		return (instance);
 	}
 
 	/** raise an event */
 	public void invokeEvent(Event event) {
-		ArrayList<EventListener> callbacks = this.events.get(event.getClass());
+		ArrayList<Listener> callbacks = this.eventListeners.get(event.getClass());
 		if (callbacks == null) {
-			Logger.get().log(Level.WARNING,
-					"Tried to invoke an un-existing event! " + event.getClass().getSimpleName());
+			event.run();
 			return;
 		}
 
-		for (EventListener callback : callbacks) {
-			callback.invoke(event);
+		for (Listener callback : callbacks) {
+			callback.pre(event);
+		}
+
+		event.run();
+
+		if (!event.isCancelled()) {
+			for (Listener callback : callbacks) {
+				callback.post(event);
+			}
 		}
 	}
 
-	/** register an event */
-	public void registerEvent(Class<? extends Event> eventclass) {
-		if (this.events.get(eventclass) != null) {
-			Logger.get().log(Level.WARNING, "Tried to add an already registered event! " + eventclass);
+	/** a listener to the mouse hovering the gui */
+	public final <T extends Event> void addListener(Listener<T> listener) {
+		if (listener == null) {
 			return;
 		}
-		ArrayList lst = new ArrayList<EventListener>();
-		this.events.put(eventclass, lst);
-		super.registerObject(new EventHandler(eventclass, lst));
-		Logger.get().log(Level.FINE, "Registered event: " + eventclass.getSimpleName());
+		ArrayList<Listener> lst = this.eventListeners.get(listener.getEventClass());
+		if (lst == null) {
+			lst = new ArrayList<Listener>();
+			this.eventListeners.put(listener.getEventClass(), lst);
+			super.registerObject(new EventHandler(listener.getEventClass(), lst));
+		}
+
+		lst.add(listener);
+		Logger.get().log(Level.FINE, "Added an event listener : " + listener.getClass().getSimpleName() + " on : "
+				+ listener.getEventClass().getSimpleName());
 	}
 
-	public <T extends Event> void addListener(EventListener<T> callback) {
-		ArrayList<EventListener> event = this.events.get(callback.getEventClass());
-		if (event == null) {
-			Logger.get().log(Level.ERROR, "Tried to add an event listener on an un-existing event! "
-					+ callback.getEventClass().getSimpleName());
-		}
-		event.add(callback);
-		Logger.get().log(Level.FINE, "Added event callback : " + callback.getClass().getSimpleName() + " on : "
-				+ callback.getEventClass().getSimpleName());
-	}
-	
-	public <T extends Event> void removeListener(EventListener<T> callback) {
-		ArrayList<EventListener> event = this.events.get(callback.getEventClass());
+	/** remove a listener */
+	public <T extends Event> void removeListener(Listener<T> callback) {
+		ArrayList<Listener> event = this.eventListeners.get(callback.getEventClass());
 		if (event == null) {
 			Logger.get().log(Level.ERROR, "Tried to remove an event callback on an un-existing event! "
 					+ callback.getEventClass().getSimpleName());
@@ -69,10 +78,10 @@ public class EventManager extends GenericManager<EventHandler> {
 	@Override
 	protected void onObjectRegistered(EventHandler object) {
 	}
-	
+
 	@Override
 	public void onInitialized() {
-		this.events = new HashMap<Class<? extends Event>, ArrayList<EventListener>>();
+		this.eventListeners = new HashMap<Class<? extends Event>, ArrayList<Listener>>();
 	}
 
 	@Override
@@ -81,23 +90,23 @@ public class EventManager extends GenericManager<EventHandler> {
 
 	@Override
 	protected void onDeinitialized() {
-		this.events.clear();
-		this.events = null;
+		this.eventListeners.clear();
+		this.eventListeners = null;
 	}
 
 	@Override
 	protected void onUnloaded() {
-		this.events.clear();
+		this.eventListeners.clear();
 	}
 }
 
 @SuppressWarnings({ "rawtypes" })
 class EventHandler {
 
-	private final ArrayList<EventListener> callbacks;
+	private final ArrayList<Listener> callbacks;
 	private final Class<? extends Event> event;
 
-	public EventHandler(Class<? extends Event> event, ArrayList<EventListener> lst) {
+	public EventHandler(Class<? extends Event> event, ArrayList<Listener> lst) {
 		this.event = event;
 		this.callbacks = lst;
 	}
@@ -111,7 +120,7 @@ class EventHandler {
 		return (this.event);
 	}
 
-	public ArrayList<EventListener> getCallbacks() {
+	public ArrayList<Listener> getCallbacks() {
 		return (this.callbacks);
 	}
 
