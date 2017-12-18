@@ -19,6 +19,8 @@ import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
+import com.grillecube.common.maths.Quaternion;
+import com.grillecube.common.maths.Vector3f;
 
 public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 
@@ -229,6 +231,32 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		this.timer.setPrefix("time: ");
 		this.timer.select(0.5f);
 
+		GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>> listener = new GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>>() {
+			@Override
+			public void invoke(GuiPromptEventHeldTextChanged<GuiPrompt> event) {
+				BoneTransform bt = getSelectedPose();
+				Vector3f pos = bt.getTranslation();
+				Quaternion quat = bt.getRotation();
+				Vector3f rot = Quaternion.toEulerAngle(quat);
+
+				rot.setX(rotX.getPrompt().asFloat(rot.x));
+				rot.setY(rotY.getPrompt().asFloat(rot.y));
+				rot.setZ(rotZ.getPrompt().asFloat(rot.z));
+				Quaternion.toQuaternion(quat, rot);
+
+				pos.setX(posX.getPrompt().asFloat(bt.getTranslation().x));
+				pos.setY(posY.getPrompt().asFloat(bt.getTranslation().y));
+				pos.setZ(posZ.getPrompt().asFloat(bt.getTranslation().z));
+				bt.set(pos, quat);
+			}
+		};
+		this.posX.getPrompt().addListener(listener);
+		this.posY.getPrompt().addListener(listener);
+		this.posZ.getPrompt().addListener(listener);
+		this.rotX.getPrompt().addListener(listener);
+		this.rotY.getPrompt().addListener(listener);
+		this.rotZ.getPrompt().addListener(listener);
+
 		this.refresh();
 	}
 
@@ -243,6 +271,7 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 	}
 
 	private final void onFramePicked() {
+		int idx = this.poses.getPickedIndex();
 		this.poses.removeAll();
 		KeyFrame frame = this.getSelectedKeyFrame();
 		if (frame != null) {
@@ -254,13 +283,27 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 				}
 				this.poses.add(boneTransform, bone.getName());
 			}
+			this.timer.select(frame.getTime() / (float) this.getSelectedAnimation().getDuration());
+		} else {
+			this.timer.select(0);
 		}
-		this.poses.pick(-1);
+		this.poses.pick(idx);
 	}
 
 	private final void onPosePicked() {
-		// TODO Auto-generated method stub
+		BoneTransform bt = this.getSelectedPose();
+		if (bt == null) {
+			return;
+		}
 
+		this.posX.setValue(bt.getTranslation().x);
+		this.posY.setValue(bt.getTranslation().y);
+		this.posZ.setValue(bt.getTranslation().z);
+
+		Vector3f rot = Quaternion.toEulerAngle(bt.getRotation());
+		this.rotX.setValue(rot.x);
+		this.rotY.setValue(rot.y);
+		this.rotZ.setValue(rot.z);
 	}
 
 	public final ModelSkeletonAnimation getSelectedAnimation() {

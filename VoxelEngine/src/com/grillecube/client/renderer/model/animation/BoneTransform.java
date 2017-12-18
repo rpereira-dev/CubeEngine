@@ -28,10 +28,10 @@ public class BoneTransform {
 	 * 
 	 * @param position
 	 *            - the position of the joint relative to the parent joint
-	 *            (bone-space) at a certain keyframe. For example, if this joint
-	 *            is at (5, 12, 0) in the model's coordinate system, and the
-	 *            parent of this joint is at (2, 8, 0), then the position of
-	 *            this joint relative to the parent is (3, 4, 0).
+	 *            (bone-space) at a certain keyframe. For example, if this joint is
+	 *            at (5, 12, 0) in the model's coordinate system, and the parent of
+	 *            this joint is at (2, 8, 0), then the position of this joint
+	 *            relative to the parent is (3, 4, 0).
 	 * @param rotation
 	 *            - the rotation of the joint relative to the parent joint
 	 *            (bone-space) at a certain keyframe.
@@ -47,7 +47,7 @@ public class BoneTransform {
 		this.localTransform = new Matrix4f();
 	}
 
-	private void set(Vector3f position, Quaternion rotation) {
+	public void set(Vector3f position, Quaternion rotation) {
 		this.position.set(position);
 		this.rotation.set(rotation);
 		this.localTransform.setIdentity();
@@ -56,15 +56,14 @@ public class BoneTransform {
 	}
 
 	/**
-	 * In this method the bone-space transform matrix is constructed by
-	 * translating an identity matrix using the position variable and then
-	 * applying the rotation. The rotation is applied by first converting the
-	 * quaternion into a rotation matrix, which is then multiplied with the
-	 * transform matrix.
+	 * In this method the bone-space transform matrix is constructed by translating
+	 * an identity matrix using the position variable and then applying the
+	 * rotation. The rotation is applied by first converting the quaternion into a
+	 * rotation matrix, which is then multiplied with the transform matrix.
 	 * 
-	 * @return This bone-space joint transform as a matrix. The exact same
-	 *         transform as represented by the position and rotation in this
-	 *         instance, just in matrix form.
+	 * @return This bone-space joint transform as a matrix. The exact same transform
+	 *         as represented by the position and rotation in this instance, just in
+	 *         matrix form.
 	 */
 	public Matrix4f getLocalTransform() {
 		return (this.localTransform);
@@ -85,10 +84,10 @@ public class BoneTransform {
 	 *            - the next transform
 	 * @param progression
 	 *            - a number between 0 and 1 indicating how far between the two
-	 *            transforms to interpolate. A progression value of 0 would
-	 *            return a transform equal to "frameA", a value of 1 would
-	 *            return a transform equal to "frameB". Everything else gives a
-	 *            transform somewhere in-between the two.
+	 *            transforms to interpolate. A progression value of 0 would return a
+	 *            transform equal to "frameA", a value of 1 would return a transform
+	 *            equal to "frameB". Everything else gives a transform somewhere
+	 *            in-between the two.
 	 * @return
 	 */
 	public static BoneTransform interpolate(BoneTransform frameA, BoneTransform frameB, float progression) {
