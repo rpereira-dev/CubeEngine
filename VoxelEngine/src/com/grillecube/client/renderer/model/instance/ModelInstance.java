@@ -15,11 +15,12 @@
 package com.grillecube.client.renderer.model.instance;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelMesh;
+import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 import com.grillecube.common.world.entity.Entity;
 
 public class ModelInstance {
@@ -33,7 +34,7 @@ public class ModelInstance {
 	private final ModelSkeletonInstance skeleton;
 
 	/** the animation list for this model */
-	private final ArrayList<AnimationInstance> animationInstances;
+	private final HashMap<ModelSkeletonAnimation, AnimationInstance> animationInstances;
 
 	/** curent skin id */
 	private int skinID;
@@ -89,16 +90,7 @@ public class ModelInstance {
 		this.skinID = 0;
 		this.model = model;
 		this.skeleton = new ModelSkeletonInstance(model.getSkeleton());
-		this.animationInstances = new ArrayList<AnimationInstance>();
-
-		// init animations
-		// ModelSkeletonAnimation modelAnimation = model.getAnimation(0);
-		// if (modelAnimation != null) {
-		// AnimationInstance instance = new AnimationInstance(modelAnimation);
-		// instance.setTime(Math.abs(new Random().nextLong()));
-		// instance.loop();
-		// this.animationInstances.add(instance);
-		// }
+		this.animationInstances = new HashMap<ModelSkeletonAnimation, AnimationInstance>();
 	}
 
 	/** get model from this model instance */
@@ -120,14 +112,13 @@ public class ModelInstance {
 		long dt = curr - this.lastUpdate;
 
 		this.updateAnimations(dt);
-		this.skeleton.update(this.animationInstances);
-
+		this.skeleton.update(this.animationInstances.values());
 		this.lastUpdate = curr;
 	}
 
 	private void updateAnimations(long dt) {
 		// update animation
-		Iterator<AnimationInstance> iterator = this.animationInstances.iterator();
+		Iterator<AnimationInstance> iterator = this.animationInstances.values().iterator();
 		while (iterator.hasNext()) {
 			AnimationInstance animationInstance = iterator.next();
 			animationInstance.update(dt);
@@ -148,7 +139,28 @@ public class ModelInstance {
 	}
 
 	/** get the animations this model can play */
-	public ArrayList<AnimationInstance> getAnimationInstances() {
+	public HashMap<ModelSkeletonAnimation, AnimationInstance> getAnimationInstances() {
 		return (this.animationInstances);
+	}
+
+	/** start an animation */
+	public final AnimationInstance getAnimationInstance(ModelSkeletonAnimation modelSkeletonAnimation) {
+		return (this.animationInstances.get(modelSkeletonAnimation));
+	}
+
+	/** start an animation */
+	public final AnimationInstance startAnimation(ModelSkeletonAnimation animation) {
+		if (this.animationInstances.containsKey(animation)) {
+			AnimationInstance animationInstance = this.animationInstances.get(animation);
+			return (animationInstance);
+		}
+		AnimationInstance animationInstance = new AnimationInstance(animation);
+		this.animationInstances.put(animation, animationInstance);
+		return (animationInstance);
+	}
+
+	/** stop an animation */
+	public final void stopAnimation(ModelSkeletonAnimation animation) {
+		this.animationInstances.remove(animation);
 	}
 }

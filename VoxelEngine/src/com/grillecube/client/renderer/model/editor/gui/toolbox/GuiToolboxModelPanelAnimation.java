@@ -5,12 +5,15 @@ import java.util.Comparator;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiPrompt;
+import com.grillecube.client.renderer.gui.components.GuiSliderBar;
 import com.grillecube.client.renderer.gui.components.GuiSpinner;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiEventClick;
+import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
+import com.grillecube.client.renderer.gui.event.GuiSliderBarEventSelect;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
 import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.animation.BoneTransform;
@@ -19,6 +22,8 @@ import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
+import com.grillecube.client.renderer.model.instance.AnimationInstance;
+import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.maths.Quaternion;
 import com.grillecube.common.maths.Vector3f;
 
@@ -44,6 +49,8 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 	private final GuiPromptEditor rotY;
 	private final GuiPromptEditor rotZ;
 
+	private final GuiButton run;
+	private final GuiButton loop;
 	private final GuiSliderBarEditor timer;
 
 	public GuiToolboxModelPanelAnimation() {
@@ -68,6 +75,8 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		this.rotY = new GuiPromptEditor("rY", "rot. y");
 		this.rotZ = new GuiPromptEditor("rZ", "rot. z");
 
+		this.run = new GuiButton();
+		this.loop = new GuiButton();
 		this.timer = new GuiSliderBarEditor();
 
 	}
@@ -94,6 +103,8 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		this.addChild(this.frames);
 		this.addChild(this.removeFrame);
 
+		this.addChild(this.run);
+		this.addChild(this.loop);
 		this.addChild(this.timer);
 
 		this.addAnimation.setText("Add");
@@ -227,9 +238,50 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		this.rotY.setBox(0, 0.30f, 1.0f, 0.05f, 0);
 		this.rotZ.setBox(0, 0.25f, 1.0f, 0.05f, 0);
 
-		this.timer.setBox(0.2f, 0.1f, 0.6f, 0.05f, 0.0f);
+		this.run.setBox(0.2f, 0.15f, 0.3f, 0.05f, 0.0f);
+		this.run.setText("Run");
+		this.run.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
+		this.run.addTextParameter(new GuiTextParameterTextCenterBox());
+		this.run.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
+			@Override
+			public void invoke(GuiEventPress<GuiButton> event) {
+				ModelInstance modelInstance = getSelectedModelInstance();
+				ModelSkeletonAnimation animation = getSelectedAnimation();
+				AnimationInstance instance = modelInstance.startAnimation(animation);
+				instance.setTime((long) (timer.getPercent() * animation.getDuration()));
+				instance.restart();
+			}
+		});
+
+		this.loop.setBox(0.5f, 0.15f, 0.3f, 0.05f, 0.0f);
+		this.loop.setText("Loop");
+		this.loop.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
+		this.loop.addTextParameter(new GuiTextParameterTextCenterBox());
+		this.loop.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
+			@Override
+			public void invoke(GuiEventPress<GuiButton> event) {
+				ModelInstance modelInstance = getSelectedModelInstance();
+				ModelSkeletonAnimation animation = getSelectedAnimation();
+				AnimationInstance instance = modelInstance.startAnimation(animation);
+				instance.setTime((long) (timer.getPercent() * animation.getDuration()));
+				instance.loop();
+			}
+		});
+
+		this.timer.setBox(0.2f, 0.075f, 0.6f, 0.05f, 0.0f);
 		this.timer.setPrefix("time: ");
 		this.timer.select(0.5f);
+
+		this.timer.addListener(new GuiListener<GuiSliderBarEventSelect<GuiSliderBar>>() {
+			@Override
+			public void invoke(GuiSliderBarEventSelect<GuiSliderBar> event) {
+				ModelInstance modelInstance = getSelectedModelInstance();
+				ModelSkeletonAnimation animation = getSelectedAnimation();
+				AnimationInstance instance = modelInstance.startAnimation(animation);
+				instance.setTime((long) (timer.getPercent() * animation.getDuration()));
+				instance.freeze();
+			}
+		});
 
 		GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>> listener = new GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>>() {
 			@Override
@@ -340,6 +392,8 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		this.rotY.setVisible(this.getSelectedPose() != null);
 		this.rotZ.setVisible(this.getSelectedPose() != null);
 
+		this.run.setVisible(this.getSelectedAnimation() != null);
+		this.loop.setVisible(this.getSelectedAnimation() != null);
 		this.timer.setVisible(this.getSelectedAnimation() != null);
 	}
 
