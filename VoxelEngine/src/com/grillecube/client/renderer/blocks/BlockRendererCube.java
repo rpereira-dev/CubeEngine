@@ -99,12 +99,14 @@ public class BlockRendererCube extends BlockRenderer {
 			return (null);
 		}
 
+		byte durability = terrain.getDurability(x, y, z);
+
 		// else the face is visible, create it!
 		TerrainMeshVertex v0 = this.createBlockFaceVertex(terrain, face, x, y, z, 0);
 		TerrainMeshVertex v1 = this.createBlockFaceVertex(terrain, face, x, y, z, 1);
 		TerrainMeshVertex v2 = this.createBlockFaceVertex(terrain, face, x, y, z, 2);
 		TerrainMeshVertex v3 = this.createBlockFaceVertex(terrain, face, x, y, z, 3);
-		BlockFace blockface = new BlockFace(block, this.textureIDs[face.getID()], v0, v1, v2, v3);
+		BlockFace blockface = new BlockFace(block, this.textureIDs[face.getID()], durability, v0, v1, v2, v3);
 		return (blockface);
 
 	}

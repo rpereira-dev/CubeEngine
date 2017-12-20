@@ -299,7 +299,9 @@ public class GuiRenderer extends Renderer {
 		if (value == null) {
 			return (null);
 		}
-		Color color = new Color((int) Long.parseLong(value.replace("#", ""), 16));
+		System.out.println(value);
+		int colorInt = 0xFF000000 | Integer.parseInt(value.replace("#", ""), 16);
+		Color color = new Color(colorInt);
 		return (color);
 	}
 

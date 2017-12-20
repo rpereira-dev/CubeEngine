@@ -12,16 +12,20 @@ public class BlockFace {
 	// the block
 	public final Block block;
 
+	// the durability
+	public final byte durability;
+
 	// the vertices
 	public TerrainMeshVertex[] vertices;
 
 	// the texture id
 	public int textureID;
 
-	public BlockFace(Block block, int textureID, TerrainMeshVertex... vertices) {
+	public BlockFace(Block block, int textureID, byte durability, TerrainMeshVertex... vertices) {
 		this.block = block;
 		this.textureID = textureID;
 		this.vertices = vertices;
+		this.durability = durability;
 	}
 
 	public boolean hasSameTexture(BlockFace other) {
@@ -43,7 +47,11 @@ public class BlockFace {
 
 		BlockFace other = (BlockFace) object;
 
-		return (this.hasSameTexture(other) && this.hasSameBrightness(other));
+		return (this.hasSameTexture(other) && this.hasSameBrightness(other) && this.hasSameDurability(other));
+	}
+
+	private boolean hasSameDurability(BlockFace other) {
+		return (other.durability == this.durability);
 	}
 
 	/** push this face vertices to the stack */

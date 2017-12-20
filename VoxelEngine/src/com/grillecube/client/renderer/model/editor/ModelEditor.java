@@ -43,11 +43,11 @@ public class ModelEditor {
 			// termination */
 
 			engine.loop();
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			Logger.get().log(Logger.Level.ERROR, "That's unfortunate... VoxelEngine crashed.", e.getLocalizedMessage());
 			String path = R.getResPath("models/tmp/" + System.currentTimeMillis());
 			try {
-				Logger.get().log(Logger.Level.ERROR, "Trying to save model...", path);
+				Logger.get().log(Logger.Level.ERROR, "Trying to save model", path);
 				JSONModelExporter.export(guiModelEditor.getSelectedModel(), path);
 			} catch (Exception exception) {
 				Logger.get().log(Logger.Level.ERROR, "Couldn't save model... sorry bro",

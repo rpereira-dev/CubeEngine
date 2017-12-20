@@ -70,7 +70,7 @@ public class Terrain {
 
 	/** max durability of a block */
 	public static final byte MIN_DURABILITY = 0;
-	public static final byte MAX_DURABILITY = 7;
+	public static final byte MAX_DURABILITY = 15;
 
 	/** terrain location */
 	private final Vector2i index2;

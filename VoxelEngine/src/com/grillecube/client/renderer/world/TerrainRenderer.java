@@ -31,6 +31,7 @@ import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
 import com.grillecube.common.maths.Vector3f;
+import com.grillecube.common.resources.R;
 import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.WorldFlat;
 
@@ -38,6 +39,7 @@ public class TerrainRenderer extends Renderer {
 
 	/** rendering program */
 	private ProgramTerrain terrainProgram;
+	private GLTexture breakAtlas;
 
 	public TerrainRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
@@ -46,6 +48,7 @@ public class TerrainRenderer extends Renderer {
 	@Override
 	public void initialize() {
 		this.terrainProgram = new ProgramTerrain();
+		this.breakAtlas = GLH.glhGenTexture(R.getResPath("textures/block_atlas/break.png"));
 	}
 
 	@Override
@@ -75,6 +78,7 @@ public class TerrainRenderer extends Renderer {
 		if (texture != null) {
 			texture.bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
 		}
+		this.breakAtlas.bind(GL13.GL_TEXTURE1, GL11.GL_TEXTURE_2D);
 
 	}
 
