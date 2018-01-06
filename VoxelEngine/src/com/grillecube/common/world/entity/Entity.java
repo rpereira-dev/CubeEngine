@@ -46,7 +46,7 @@ public abstract class Entity extends PhysicObject {
 	private World world;
 
 	/** entity AI */
-	private final ArrayList<EntityAI> ais;
+	private final ArrayList<EntityAI<Entity>> ais;
 
 	/** entity forces */
 	private final ArrayList<Force<Entity>> forces;
@@ -106,8 +106,8 @@ public abstract class Entity extends PhysicObject {
 		this.sz = depth;
 
 		// aies
-		this.ais = new ArrayList<EntityAI>();
-		this.addAI(new EntityAIIdle(this));
+		this.ais = new ArrayList<EntityAI<Entity>>();
+		this.addAI(new EntityAIIdle<Entity>());
 
 		// default states
 		this.setState(Entity.STATE_VISIBLE);
@@ -146,8 +146,8 @@ public abstract class Entity extends PhysicObject {
 
 	private final void updateAI(double dt) {
 		for (int i = 0; i < this.ais.size(); i++) {
-			EntityAI ai = this.ais.get(i);
-			ai.update(dt);
+			EntityAI<Entity> ai = this.ais.get(i);
+			ai.update(this, dt);
 		}
 	}
 

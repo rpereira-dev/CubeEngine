@@ -299,11 +299,8 @@ public class GuiRenderer extends Renderer {
 		if (value == null) {
 			return (null);
 		}
-		System.out.println(value);
 		int colorInt = 0xFF000000 | Integer.parseInt(value.replace("#", ""), 16);
 		Color color = new Color(colorInt);
 		return (color);
 	}
-
-	// TODO : more tiny fd dialogs
 }

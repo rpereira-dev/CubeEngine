@@ -13,9 +13,11 @@ import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
 import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.client.renderer.model.animation.Bone;
+import com.grillecube.client.renderer.model.editor.gui.GuiPopUpCallback;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiWindowNewBone;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Quaternion;
 import com.grillecube.common.maths.Vector3f;
@@ -71,8 +73,23 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 					// (System.currentTimeMillis() % 10000) + "");
 					// getModelSkeleton().addBone(bone);
 					// refresh();
-					GuiWindowNewBone win = new GuiWindowNewBone(getSelectedModel());
-					win.open(getOldestParent());
+					new GuiWindowNewBone(getSelectedModel(), new GuiPopUpCallback<GuiWindowNewBone>() {
+
+						@Override
+						public void onConfirm(GuiWindowNewBone win) {
+							EditableModel model = getSelectedModel();
+							Bone bone = new Bone(model.getSkeleton(), win.name.getHeldText());
+							bone.setParent((String) win.parent.getPickedObject());
+							model.getSkeleton().addBone(bone);
+							bones.add(bone, bone.getName());
+							bones.pick(bones.count() - 1);
+							guiRenderer.toast("Bone added.");
+						}
+
+						@Override
+						public void onCancel(GuiWindowNewBone win) {
+						}
+					}).open(getOldestParent());
 				}
 			});
 
@@ -96,8 +113,10 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.removeBone.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 				@Override
 				public void invoke(GuiEventClick<GuiButton> event) {
-					getModelSkeleton().removeBone(getSelectedBone());
-					refresh();
+					Bone bone = getSelectedBone();
+					getModelSkeleton().removeBone(bone);
+					bones.remove(bone);
+					guiRenderer.toast("Bone removed.");
 				}
 			});
 		}
