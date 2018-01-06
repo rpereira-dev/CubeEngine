@@ -2,18 +2,18 @@ package com.grillecube.client.renderer.model.editor.mesher;
 
 import java.util.HashMap;
 
+import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelInitializer;
 
 public class EditableModel extends Model {
 
-	/** the mesher to be used for this model */
-	private final ModelMesher modelMesher;
-
 	/** blocks data : first key is the layer, value is the blocks data */
 	private HashMap<String, EditableModelLayer> blocksDataLayers;
 
+	/** a boolean set to true if mesh should be rebuild */
 	private boolean meshUpToDate;
+	private final EditableModelMeshingEvent meshingEvent;
 
 	public EditableModel() {
 		this(null);
@@ -22,7 +22,7 @@ public class EditableModel extends Model {
 	public EditableModel(ModelInitializer modelInitializer) {
 		super(modelInitializer);
 		this.blocksDataLayers = new HashMap<String, EditableModelLayer>();
-		this.modelMesher = new ModelMesherCull();
+		this.meshingEvent = new EditableModelMeshingEvent(this);
 	}
 
 	/** return raw blocks data */
@@ -66,12 +66,9 @@ public class EditableModel extends Model {
 		super.onBound();
 		if (!this.isMeshUpToDate()) {
 			this.setMeshUpToDate();
-			this.generate();
+			this.meshingEvent.process();
+			VoxelEngineClient.instance().getResourceManager().getEventManager().invokeEvent(this.meshingEvent);
 		}
-	}
-
-	public final void generate() {
-		this.modelMesher.generate(this);
 	}
 
 	private final void setMeshUpToDate() {

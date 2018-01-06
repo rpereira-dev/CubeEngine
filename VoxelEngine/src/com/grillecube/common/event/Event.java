@@ -20,6 +20,16 @@ public abstract class Event {
 		this.onReset();
 	}
 
+	/**
+	 * run this event with the given list of listener
+	 * 
+	 * if event was cancelled, nothing happens
+	 * 
+	 * if one of the listener cancel the event, it stop, and the listeners which
+	 * wasn't already called are ignored.
+	 * 
+	 * @param listeners
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public final void run(ArrayList<Listener> listeners) {
 		if (this.isCancelled()) {
@@ -51,12 +61,16 @@ public abstract class Event {
 		}
 	}
 
-	/** process this event */
 	// TODO : slowly moves every event processing in this function, and implements
 	// unprocessing
+	/**
+	 * process this event, shouldn't be called actually,
+	 * 
+	 * @see EventManager#invokeEvent(Event)
+	 */
 	protected abstract void process();
 
-	/** undo this event (called after a 'process()' call is needed */
+	/** undo this event (called after a 'process()') */
 	protected abstract void unprocess();
 
 	/** reset the event */

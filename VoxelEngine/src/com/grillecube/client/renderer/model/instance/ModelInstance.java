@@ -47,50 +47,65 @@ public class ModelInstance {
 
 	public ModelInstance(Model model, Entity entity, boolean entitySizeMatchModel) {
 		this.entity = entity;
-		if (entitySizeMatchModel) {
-
-			// TODO : make it cleaner, maybe add a size attribute to the model
-			ByteBuffer vertices = model.getMesh().getVertices();
-			if (vertices != null) {
-				float mx = Float.POSITIVE_INFINITY, my = Float.POSITIVE_INFINITY, mz = Float.POSITIVE_INFINITY;
-				float Mx = Float.NEGATIVE_INFINITY, My = Float.NEGATIVE_INFINITY, Mz = Float.NEGATIVE_INFINITY;
-				int position = 0;
-				while (position < vertices.capacity()) {
-					vertices.position(position);
-					float x = vertices.getFloat();
-					float y = vertices.getFloat();
-					float z = vertices.getFloat();
-					if (x < mx) {
-						mx = x;
-					} else if (x > Mx) {
-						Mx = x;
-					}
-
-					if (y < my) {
-						my = y;
-					} else if (y > My) {
-						My = y;
-					}
-
-					if (z < mz) {
-						mz = z;
-					} else if (z > Mz) {
-						Mz = z;
-					}
-					position += ModelMesh.BYTES_PER_VERTEX;
-				}
-
-				float w = Math.max(Mx - mx, Mz - mz);
-				float eps = w * 0.05f;
-				entity.setSizeX(w - eps);
-				entity.setSizeY(My - my - eps);
-				entity.setSizeZ(w - eps);
-			}
-		}
 		this.skinID = 0;
 		this.model = model;
 		this.skeleton = new ModelSkeletonInstance(model.getSkeleton());
 		this.animationInstances = new HashMap<ModelSkeletonAnimation, AnimationInstance>();
+		if (entitySizeMatchModel) {
+			this.boxMatchModel();
+		}
+	}
+
+	/**
+	 * update the instance AABB to match the model vertices
+	 */
+	public final void boxMatchModel() {
+		if (this.getModel() == null) {
+			entity.setSizeX(0.05f);
+			entity.setSizeY(0.05f);
+			entity.setSizeZ(0.05f);
+			return;
+		}
+
+		ByteBuffer vertices = this.getModel().getMesh().getVertices();
+		if (vertices != null) {
+			float mx = Float.POSITIVE_INFINITY, my = Float.POSITIVE_INFINITY, mz = Float.POSITIVE_INFINITY;
+			float Mx = Float.NEGATIVE_INFINITY, My = Float.NEGATIVE_INFINITY, Mz = Float.NEGATIVE_INFINITY;
+			int position = 0;
+			while (position < vertices.capacity()) {
+				vertices.position(position);
+				float x = vertices.getFloat();
+				float y = vertices.getFloat();
+				float z = vertices.getFloat();
+				if (x < mx) {
+					mx = x;
+				} else if (x > Mx) {
+					Mx = x;
+				}
+
+				if (y < my) {
+					my = y;
+				} else if (y > My) {
+					My = y;
+				}
+
+				if (z < mz) {
+					mz = z;
+				} else if (z > Mz) {
+					Mz = z;
+				}
+				position += ModelMesh.BYTES_PER_VERTEX;
+			}
+
+			float w = Math.max(Mx - mx, Mz - mz);
+			float epsw = w * 0.05f;
+			float epsh = (My - my) * 0.05f;
+			entity.setSizeX(w - epsw);
+			entity.setSizeY(My - my - epsh);
+			entity.setSizeZ(w - epsw);
+			System.out.println(entity.getSizeX() + " : " + entity.getSizeY() + " : " + entity.getSizeZ());
+
+		}
 	}
 
 	/** get model from this model instance */

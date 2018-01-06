@@ -165,9 +165,9 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 	}
 
 	public final void loadTools(GuiModelView guiModelView) {
-		this.tools = new CameraTool[] { new CameraToolPlace(guiModelView), new CameraToolPaint(guiModelView),
-				new CameraToolRemove(guiModelView), new CameraToolExtrude(guiModelView),
-				new CameraToolRigging(guiModelView) };
+		this.tools = new CameraTool[] { new CameraToolPlace(guiModelView), new CameraToolRemove(guiModelView),
+				new CameraToolPaint(guiModelView), new CameraToolFillSurface(guiModelView),
+				new CameraToolExtrude(guiModelView), new CameraToolRigging(guiModelView) };
 	}
 
 	public CameraTool getTool() {

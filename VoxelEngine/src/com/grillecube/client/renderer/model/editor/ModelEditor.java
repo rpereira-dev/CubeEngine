@@ -44,7 +44,10 @@ public class ModelEditor {
 
 			engine.loop();
 		} catch (Exception e) {
-			Logger.get().log(Logger.Level.ERROR, "That's unfortunate... VoxelEngine crashed.", e.getLocalizedMessage());
+			Logger.get().log(Logger.Level.ERROR,
+					"That's unfortunate... VoxelEngine crashed. Please send me the following crash report.");
+			Logger.get().log(Logger.Level.ERROR, e);
+			e.printStackTrace(Logger.get().getPrintStream());
 			String path = R.getResPath("models/tmp/" + System.currentTimeMillis());
 			try {
 				Logger.get().log(Logger.Level.ERROR, "Trying to save model", path);

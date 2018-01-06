@@ -20,7 +20,8 @@ import com.grillecube.common.maths.Vector3i;
 public class FaceBack implements Face {
 	private static Vector3i vec = new Vector3i(1, 0, 0);
 	private static Vector3f normal = new Vector3f(1, 0, 0);
-	private static Vector3i movement = new Vector3i(0, 1, 1);
+	private static Vector3i movement = FaceFront.movement;
+	private static Vector3i neighbors[] = FaceFront.neighbors;
 
 	@Override
 	public String getName() {
@@ -51,9 +52,14 @@ public class FaceBack implements Face {
 	public float getFaceFactor() {
 		return (0.85f);
 	}
-	
+
 	@Override
 	public Vector3i getAllowedTranslation() {
 		return (movement);
+	}
+
+	@Override
+	public Vector3i[] getNeighbors() {
+		return (neighbors);
 	}
 }

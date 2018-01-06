@@ -1,15 +1,23 @@
 
 package com.grillecube.client.renderer.model.editor.camera;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import com.grillecube.client.renderer.blocks.BlockRenderer;
 import com.grillecube.client.renderer.camera.CameraPicker;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
+import com.grillecube.client.renderer.lines.Line;
+import com.grillecube.client.renderer.lines.LineRendererFactory;
+import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.gui.GuiModelView;
-import com.grillecube.client.renderer.model.editor.gui.GuiWindowRigging;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
+import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
-import com.grillecube.common.maths.Maths;
+import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
@@ -19,32 +27,64 @@ import com.grillecube.common.world.entity.Entity;
 import com.grillecube.common.world.entity.collision.Positioneable;
 import com.grillecube.common.world.entity.collision.Sizeable;
 
-public class CameraToolRigging extends CameraTool implements Positioneable, Sizeable {
+public class CameraToolFillSurface extends CameraTool implements Positioneable, Sizeable {
 
 	protected final Vector3i hovered;
-	private final Vector3i firstBlock;
-	private final Vector3i secondBlock;
-	private Vector3i face;
-	private int expansion;
+	private final Vector3i theBlock;
+	private Face face;
+	private Vector3f[] quad;
+	private Line[] lines;
 
-	public CameraToolRigging(GuiModelView guiModelView) {
+	public CameraToolFillSurface(GuiModelView guiModelView) {
 		super(guiModelView);
 		this.hovered = new Vector3i();
-		this.firstBlock = new Vector3i();
-		this.secondBlock = new Vector3i();
-		this.expansion = 0;
+		this.theBlock = new Vector3i();
+		this.quad = new Vector3f[] { new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f() };
+		this.lines = new Line[] { new Line(this.quad[0], Color.ORANGE, this.quad[1], Color.ORANGE),
+				new Line(this.quad[1], Color.ORANGE, this.quad[2], Color.ORANGE),
+				new Line(this.quad[2], Color.ORANGE, this.quad[3], Color.ORANGE),
+				new Line(this.quad[3], Color.ORANGE, this.quad[0], Color.ORANGE) };
 	}
 
 	@Override
 	public boolean action(ModelInstance modelInstance, EditableModelLayer editableModelLayer) {
-		GuiWindowRigging gui = new GuiWindowRigging(this);
-		gui.open(this.guiModelView);
-		return (false);
-	}
 
-	private void expand(int d) {
-		this.expansion += d;
-		this.updateSecondBlock();
+		boolean generate = false;
+		ModelSkin skin = this.guiModelView.getSelectedSkin();
+		Color color = this.guiModelView.getSelectedColor();
+
+		Queue<Vector3i> visitQueue = new LinkedList<Vector3i>();
+		HashMap<Vector3i, Boolean> visited = new HashMap<Vector3i, Boolean>(128);
+
+		visitQueue.add(this.theBlock);
+		visited.put(this.theBlock, true);
+
+		while (!visitQueue.isEmpty()) {
+			/** pop block */
+			Vector3i block = visitQueue.poll();
+
+			/** mark it as visited */
+			/** color it */
+			ModelBlockData blockData = editableModelLayer.getBlockData(block);
+			if (blockData == null) {
+				continue;
+			}
+			blockData.setColor(skin, color, this.face);
+			generate = true;
+
+			/** pour chaque voisin */
+			for (Vector3i d : face.getNeighbors()) {
+				Vector3i nextpos = new Vector3i(block.x + d.x, block.y + d.y, block.z + d.z);
+				if (visited.containsKey(nextpos)) {
+					continue;
+				}
+				visited.put(nextpos, true);
+				visitQueue.add(nextpos);
+			}
+
+		}
+
+		return (generate);
 	}
 
 	@Override
@@ -70,13 +110,7 @@ public class CameraToolRigging extends CameraTool implements Positioneable, Size
 	}
 
 	@Override
-	public void onLeftPressed() {
-		this.expansion = 0;
-	}
-
-	@Override
 	public void onLeftReleased() {
-		this.expansion = 0;
 	}
 
 	private final void updateHoveredBlock() {
@@ -111,34 +145,21 @@ public class CameraToolRigging extends CameraTool implements Positioneable, Size
 						// System.out.println(x + " : " + y + " : " + z);
 						if (y < 0 || modelLayer.getBlockData(pos.set(x, y, z)) != null) {
 							hovered.set(x, y, z);
-							face = theFace;
+							face = Face.fromVec(theFace);
 							return (true);
 						}
 						return (false);
 					}
 				});
+
 	}
 
 	@Override
 	public void onMouseScroll(GuiEventMouseScroll<GuiModelView> event) {
-		if (super.guiModelView.isLeftPressed()) {
-			int dy = -Maths.sign(event.getScrollY());
-			this.expand(dy);
-		} else {
+		if (!super.guiModelView.isLeftPressed()) {
 			float speed = this.getCamera().getDistanceFromCenter() * 0.14f;
 			this.getCamera().increaseDistanceFromCenter((float) (-event.getScrollY() * speed));
 		}
-	}
-
-	private final void updateSecondBlock() {
-		if (this.face == null) {
-			this.secondBlock.set(this.hovered);
-			return;
-		}
-		int x = this.hovered.x + this.expansion * this.face.x;
-		int y = this.hovered.y + this.expansion * this.face.y;
-		int z = this.hovered.z + this.expansion * this.face.z;
-		this.secondBlock.set(x, y, z);
 	}
 
 	@Override
@@ -149,10 +170,27 @@ public class CameraToolRigging extends CameraTool implements Positioneable, Size
 
 	private final void updateSelection() {
 		if (!this.guiModelView.isLeftPressed()) {
-			this.firstBlock.set(this.hovered);
+			this.theBlock.set(this.hovered);
 		}
-		this.updateSecondBlock();
-		super.guiModelView.getWorldRenderer().getLineRendererFactory().addBox(this, this, Color.GREEN);
+
+		Vector3i o0 = BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][0]];
+		Vector3i o1 = BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][1]];
+		Vector3i o2 = BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][2]];
+		Vector3i o3 = BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][3]];
+		this.quad[0].set(this.getPositionX() + this.getSizeX() * o0.x, this.getPositionY() + this.getSizeY() * o0.y,
+				this.getPositionZ() + this.getSizeZ() * o0.z);
+		this.quad[1].set(this.getPositionX() + this.getSizeX() * o1.x, this.getPositionY() + this.getSizeY() * o1.y,
+				this.getPositionZ() + this.getSizeZ() * o1.z);
+		this.quad[2].set(this.getPositionX() + this.getSizeX() * o2.x, this.getPositionY() + this.getSizeY() * o2.y,
+				this.getPositionZ() + this.getSizeZ() * o2.z);
+		this.quad[3].set(this.getPositionX() + this.getSizeX() * o3.x, this.getPositionY() + this.getSizeY() * o3.y,
+				this.getPositionZ() + this.getSizeZ() * o3.z);
+
+		LineRendererFactory factory = super.guiModelView.getWorldRenderer().getLineRendererFactory();
+		for (Line line : this.lines) {
+			factory.addLine(line);
+		}
+
 	}
 
 	private final void updateCameraRotation() {
@@ -178,43 +216,39 @@ public class CameraToolRigging extends CameraTool implements Positioneable, Size
 
 	@Override
 	public String getName() {
-		return ("Rigging");
+		return ("Paint");
 	}
 
-	public Vector3i getFirstBlock() {
-		return (this.firstBlock);
+	public Vector3i gettheBlock() {
+		return (this.theBlock);
 	}
 
-	public Vector3i getSecondBlock() {
-		return (this.secondBlock);
-	}
-
-	public Vector3i getFace() {
+	public Face getFace() {
 		return (this.face);
 	}
 
 	public final int getX() {
-		return (Maths.min(this.firstBlock.x, this.secondBlock.x));
+		return (this.theBlock.x);
 	}
 
 	public final int getY() {
-		return (Maths.min(this.firstBlock.y, this.secondBlock.y));
+		return (this.theBlock.y);
 	}
 
 	public final int getZ() {
-		return (Maths.min(this.firstBlock.z, this.secondBlock.z));
+		return (this.theBlock.z);
 	}
 
 	public final int getWidth() {
-		return (Maths.abs(this.firstBlock.x - this.secondBlock.x) + 1);
+		return (1);
 	}
 
 	public final int getHeight() {
-		return (Maths.abs(this.firstBlock.y - this.secondBlock.y) + 1);
+		return (1);
 	}
 
 	public final int getDepth() {
-		return (Maths.abs(this.firstBlock.z - this.secondBlock.z) + 1);
+		return (1);
 	}
 
 	@Override

@@ -108,4 +108,6 @@ public interface Face {
 	}
 
 	public Vector3i getAllowedTranslation();
+
+	public Vector3i[] getNeighbors();
 }
