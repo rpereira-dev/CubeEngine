@@ -35,13 +35,13 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 			vel.setY(-this.getViewVector().y);
 			vel.setZ(-this.getViewVector().z);
 		} else if (this.hasState(STATE_MOVE_RIGHT)) {
-			vel.setX(-this.getViewVector().z);
-			vel.setY(0);
-			vel.setZ(this.getViewVector().x);
+			vel.setX(this.getViewVector().y);
+			vel.setY(-this.getViewVector().x);
+			vel.setZ(0);
 		} else if (this.hasState(STATE_MOVE_LEFT)) {
-			vel.setX(this.getViewVector().z);
-			vel.setY(0);
-			vel.setZ(-this.getViewVector().x);
+			vel.setX(-this.getViewVector().y);
+			vel.setY(this.getViewVector().x);
+			vel.setZ(0);
 		} else {
 			vel.setX(0);
 			vel.setY(0);
@@ -114,9 +114,8 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 
 	@Override
 	public void invokeCursorPos(GLFWWindow window, double xpos, double ypos) {
-		this.increaseYaw((float) ((xpos - _prevx) * 0.3f));
-		this.increasePitch((float) ((ypos - _prevy) * 0.3f));
-
+		this.increaseRotZ((float) ((xpos - _prevx) * 0.003f));
+		this.increaseRotX((float) ((ypos - _prevy) * 0.003f));
 		_prevx = xpos;
 		_prevy = ypos;
 	}

@@ -21,6 +21,7 @@ import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
 import com.grillecube.common.faces.Face;
+import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.Terrain;
 
 /** an object which is used to generate terrain meshes dynamically */
@@ -66,44 +67,39 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 						if (faceID == Face.TOP || faceID == Face.BOT) {
 
 							int width = 1;
-							int depth = 1;
 
 							// generate the rectangle width
 							while (x + width < Terrain.DIMX && !visited[faceID][x + width][y][z]
 									&& face.equals(faces[faceID][x + width][y][z])) {
+								visited[faceID][x + width][y][z] = true;
 								++width;
 							}
 
-							// generate the rectangle depth
-							depth_test: while (z + depth < Terrain.DIMZ) {
+							// generate the rectangle height
+							int depth = 1;
+							depth_test: while (y + depth < Terrain.DIMY) {
 								for (int dx = 0; dx < width; dx++) {
-									if (visited[faceID][x + dx][y][z + depth]
-											|| !face.equals(faces[faceID][x + dx][y][z + depth])) {
+									if (visited[faceID][x + dx][y + depth][z]
+											|| !face.equals(faces[faceID][x + dx][y + depth][z])) {
 										break depth_test;
 									}
+									visited[faceID][x + dx][y + depth - 1][z] = true;
 								}
 								++depth;
 							}
 
 							// now we have the rectangle width / height
 							for (int i = 0; i < 4; i++) {
-
+								Vector3i offset = BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]];
 								TerrainMeshVertex vertex = face.vertices[i];
 
-								vertex.posx = x * Terrain.BLOCK_SIZE
-										+ BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]].x
-												* Terrain.BLOCK_SIZE * width;
-								vertex.posz = z * Terrain.BLOCK_SIZE
-										+ BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]].z
-												* Terrain.BLOCK_SIZE * depth;
+								vertex.posx = x + offset.x * width;
+								vertex.posy = y + offset.y * depth;
 
-								vertex.u *= depth;
-								vertex.v *= width;
+								vertex.u *= width;
+								vertex.v *= depth;
 							}
 							face.pushVertices(stack);
-
-							// set visited position
-							this.setVisited(visited, faceID, x, y, z, width, 1, depth);
 
 							// pass visited blocks
 							x += width - 1;
@@ -112,106 +108,84 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 						// RIGHT OR LEFT FACE
 						else if (faceID == Face.RIGHT || faceID == Face.LEFT) {
 							int width = 1;
-							int height = 1;
 
 							// generate the rectangle width
 							while (x + width < Terrain.DIMX && !visited[faceID][x + width][y][z]
 									&& face.equals(faces[faceID][x + width][y][z])) {
+								visited[faceID][x + width][y][z] = true;
 								++width;
 							}
 
-							// generate the rectangle depth
-							height_test: while (y + height < Terrain.DIMY) {
+							// generate the rectangle height
+							int height = 1;
+							height_test: while (z + height < Terrain.DIMZ) {
 								for (int dx = 0; dx < width; dx++) {
-									if (visited[faceID][x + dx][y + height][z]
-											|| !face.equals(faces[faceID][x + dx][y + height][z])) {
+									if (visited[faceID][x + dx][y][z + height]
+											|| !face.equals(faces[faceID][x + dx][y][z + height])) {
 										break height_test;
 									}
+									visited[faceID][x + dx][y][z + height - 1] = true;
 								}
 								++height;
 							}
 
 							// now we have the rectangle width / height
 							for (int i = 0; i < 4; i++) {
-
+								Vector3i offset = BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]];
 								TerrainMeshVertex vertex = face.vertices[i];
 
-								vertex.posx = x * Terrain.BLOCK_SIZE
-										+ BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]].x
-												* Terrain.BLOCK_SIZE * width;
-								vertex.posy = y * Terrain.BLOCK_SIZE
-										+ BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]].y
-												* Terrain.BLOCK_SIZE * height;
+								vertex.posx = x + offset.x * width;
+								vertex.posz = z + offset.z * height;
 
 								vertex.u *= width;
 								vertex.v *= height;
 							}
 							face.pushVertices(stack);
 
-							// set visited position
-							this.setVisited(visited, faceID, x, y, z, width, height, 1);
-
 							// pass visited blocks
 							x += width - 1;
 						}
 
 						// ELSE : FRONT OR BACK
-						else {
+						else if (faceID == Face.FRONT || faceID == Face.BACK) {
 
 							int depth = 1;
-							int height = 1;
 
 							// generate the rectangle width
-							while (z + depth < Terrain.DIMZ && !visited[faceID][x][y][z + depth]
-									&& face.equals(faces[faceID][x][y][z + depth])) {
+							while (y + depth < Terrain.DIMY && !visited[faceID][x][y + depth][z]
+									&& face.equals(faces[faceID][x][y + depth][z])) {
+								visited[faceID][x][y + depth][z] = true;
 								++depth;
 							}
 
 							// generate the rectangle depth
-							height_test: while (y + height < Terrain.DIMY) {
-								for (int dz = 0; dz < depth; dz++) {
-									if (visited[faceID][x][y + height][z + dz]
-											|| !face.equals(faces[faceID][x][y + height][z + dz])) {
+							int height = 1;
+							height_test: while (z + height < Terrain.DIMZ) {
+								for (int dy = 0; dy < depth; dy++) {
+									if (visited[faceID][x][y + dy][z + height]
+											|| !face.equals(faces[faceID][x][y + dy][z + height])) {
 										break height_test;
 									}
+									visited[faceID][x][y + dy][z + height - 1] = true;
 								}
 								++height;
 							}
 
 							// now we have the rectangle width / height
 							for (int i = 0; i < 4; i++) {
+								Vector3i offset = BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]];
 
 								TerrainMeshVertex vertex = face.vertices[i];
 
-								vertex.posz = z * Terrain.BLOCK_SIZE
-										+ BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]].z
-												* Terrain.BLOCK_SIZE * depth;
-								vertex.posy = y * Terrain.BLOCK_SIZE
-										+ BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][i]].y
-												* Terrain.BLOCK_SIZE * height;
+								vertex.posy = y + offset.y * depth;
+								vertex.posz = z + offset.z * height;
 
 								vertex.u *= depth;
 								vertex.v *= height;
 							}
 							face.pushVertices(stack);
-
-							// set visited position
-							this.setVisited(visited, faceID, x, y, z, 1, height, depth);
-
-							// pass visited blocks
 						}
 					}
-				}
-			}
-		}
-	}
-
-	private void setVisited(boolean[][][][] visited, int faceID, int x, int y, int z, int width, int height,
-			int depth) {
-		for (int dx = 0; dx < width; dx++) {
-			for (int dy = 0; dy < height; dy++) {
-				for (int dz = 0; dz < depth; dz++) {
-					visited[faceID][x + dx][y + dy][z + dz] = true;
 				}
 			}
 		}

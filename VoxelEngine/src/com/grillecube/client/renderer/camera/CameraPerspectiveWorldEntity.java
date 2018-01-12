@@ -60,15 +60,14 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 	public void invokeCursorPos(GLFWWindow window, double xpos, double ypos) {
 		if (window.isMouseRightPressed()) {
 			float pitch = (float) ((window.getMouseDY()) * 0.1f);
-			super.increasePitch(pitch);
+			super.increaseRotX(pitch);
 
 			float angle = (float) ((window.getMouseDX()) * 0.3f);
-			super.setAngleAroundCenter((float) (super.getAngleAroundCenter() - angle));
+			super.increaseRotZ(-angle);
 		} else {
-			double dy = -(window.getMouseDX() * 0.2f);
-			this.entity.setRotationY(this.entity.getRotationY() + (float) dy);
-			super.increasePitch((float) (window.getMouseDY() * 0.1f));
-			super.increaseAngleAroundCenter((float) dy);
+			super.increaseRotX((float) (window.getMouseDY() * 0.1f));
+			super.increaseRotZ((float) -window.getMouseDX() * 0.2f);
+			this.entity.setRotationZ(this.getRotZ());
 		}
 	}
 
@@ -89,12 +88,12 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 
 	@Override
 	public void invokeMouseScroll(GLFWWindow window, double xpos, double ypos) {
-		float speed = (float) Maths.max(super.getDistanceFromCenter() * 0.1f, 0.2f);
-		this.increaseDistanceFromCenter((float) (-ypos * speed));
+		float speed = (float) Maths.max(super.getR() * 0.1f, 0.2f);
+		this.increaseR((float) (-ypos * speed));
 	}
 
 	@Override
-	public void setYaw(float yaw) {
-		super.setYaw(yaw + this.getEntity().getRotationY());
+	public void setRotY(float yaw) {
+		super.setRotY(yaw + this.getEntity().getRotationY());
 	}
 }

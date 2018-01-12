@@ -129,13 +129,13 @@ public class BlockRendererCube extends BlockRenderer {
 		int vertexID = FACES_VERTICES[face.getID()][faceVertexID];
 
 		// position
-		float px = (x + VERTICES[vertexID].x) * Terrain.BLOCK_SIZE;
-		float py = (y + VERTICES[vertexID].y) * Terrain.BLOCK_SIZE;
-		float pz = (z + VERTICES[vertexID].z) * Terrain.BLOCK_SIZE;
+		float px = (x + VERTICES[vertexID].x);
+		float py = (y + VERTICES[vertexID].y);
+		float pz = (z + VERTICES[vertexID].z);
 
 		// uv
-		float uvx = FACES_UV[faceVertexID][0];
-		float uvy = FACES_UV[faceVertexID][1];
+		float u = FACES_UV[faceVertexID][0];
+		float v = FACES_UV[faceVertexID][1];
 		int textureID = this.textureIDs[face.getID()];
 		float atlasX = super.getAtlasX(textureID);
 		float atlasY = super.getAtlasY(textureID);
@@ -165,8 +165,7 @@ public class BlockRendererCube extends BlockRenderer {
 		float nx = face.getNormal().x;
 		float ny = face.getNormal().y;
 		float nz = face.getNormal().z;
-		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, uvx, uvy, color, brightness, ao,
-				durability));
+		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, u, v, color, brightness, ao, durability));
 	}
 
 	@Override

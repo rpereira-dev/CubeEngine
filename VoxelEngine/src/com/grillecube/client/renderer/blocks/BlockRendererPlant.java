@@ -78,16 +78,10 @@ public class BlockRendererPlant extends BlockRenderer {
 		float py = y + VERTICES[FACES_VERTICES[face.getID()][vertexID]].y;
 		float pz = z + VERTICES[FACES_VERTICES[face.getID()][vertexID]].z;
 
-		// TODO : noise is regular on each terrain for now, keep this?
-		float d = ((float) World.NOISE_OCTAVE.noise(x, z)) * 0.3f;
+		float d = ((float) World.NOISE_OCTAVE.noise(x, y)) * 0.3f;
 		px -= 0.5f * face.getNormal().x + d;
-		pz -= 0.5f * face.getNormal().z + d;
+		py -= 0.5f * face.getNormal().y + d;
 
-		px *= Terrain.BLOCK_SIZE;
-		py *= Terrain.BLOCK_SIZE;
-		pz *= Terrain.BLOCK_SIZE;
-
-		// uv
 		float uvx = FACES_UV[vertexID][0];
 		float uvy = FACES_UV[vertexID][1];
 		float atlasX = super.getAtlasX(textureID);

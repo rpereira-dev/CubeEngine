@@ -16,8 +16,9 @@ public class Maths {
 	public static float[] SIN_TABLE = new float[180];
 	public static float DEG_TO_RAD = 0.01745329251f;
 	public static float RAD_TO_DEG = 57.2957795131f;
-	public static float PI_2 = 1.57079632679f;
-	public static float PI_4 = 0.78539816339f;
+	public static float PI = (float) Math.PI;
+	public static float PI_2 = (float) (Math.PI / 2);
+	public static float PI_4 = (float) (Math.PI / 4);
 	public static final float ESPILON = 0.000000000000000000000000000000000000000000001f;
 
 	static {
@@ -203,7 +204,7 @@ public class Maths {
 		Assert.assertEquals(0.1f, Maths.approximatate(0.123456789f, 10.0f), e);
 		Assert.assertEquals(0.12f, Maths.approximatate(0.123456789f, 100.0f), e);
 		Assert.assertEquals(0.123f, Maths.approximatate(0.123456789f, 1000.0f), e);
-		
+
 		Assert.assertEquals(4.25f, Maths.floor(4.26f, 0.25f), e);
 		Assert.assertEquals(4.25f, Maths.floor(4.49f, 0.25f), e);
 		Assert.assertEquals(4.50f, Maths.floor(4.50f, 0.25f), e);

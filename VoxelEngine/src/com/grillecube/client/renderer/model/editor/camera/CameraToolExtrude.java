@@ -139,7 +139,7 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 		float y = 0;
 		float z = 0;
 		this.getCamera().setCenter((x + 0.5f) * u, (y + 0.5f) * u, (z + 0.5f) * u);
-		camera.setDistanceFromCenter((float) Vector3f.distance(camera.getCenter(), camera.getPosition()));
+		camera.setR((float) Vector3f.distance(camera.getCenter(), camera.getPosition()));
 	}
 
 	@Override
@@ -195,8 +195,8 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 	@Override
 	public void onMouseScroll(GuiEventMouseScroll<GuiModelView> event) {
 		if (!super.guiModelView.isLeftPressed()) {
-			float speed = this.getCamera().getDistanceFromCenter() * 0.14f;
-			this.getCamera().increaseDistanceFromCenter((float) (-event.getScrollY() * speed));
+			float speed = this.getCamera().getR() * 0.14f;
+			this.getCamera().increaseR((float) (-event.getScrollY() * speed));
 		}
 	}
 
@@ -236,10 +236,10 @@ public class CameraToolExtrude extends CameraTool implements Positioneable, Size
 		// rotate
 		if (this.guiModelView.isRightPressed()) {
 			float pitch = (float) ((this.guiModelView.getPrevMouseY() - this.guiModelView.getMouseY()) * 64.0f);
-			this.getCamera().increasePitch(pitch);
+			this.getCamera().increaseRotX(pitch);
 
 			float angle = (float) ((this.guiModelView.getPrevMouseX() - this.guiModelView.getMouseX()) * 128.0f);
-			this.getCamera().increaseAngleAroundCenter(angle);
+			this.getCamera().increaseRotZ(angle);
 
 			this.hovered.set(0, 0, 0);
 		} else {

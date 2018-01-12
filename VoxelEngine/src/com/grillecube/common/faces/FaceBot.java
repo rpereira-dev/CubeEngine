@@ -18,8 +18,8 @@ import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 
 public class FaceBot implements Face {
-	private static Vector3i vec = new Vector3i(0, -1, 0);
-	private static Vector3f normal = new Vector3f(0, -1, 0);
+	private static Vector3i vec = new Vector3i(0, 0, -1);
+	private static Vector3f normal = new Vector3f(0, 0, -1);
 	private static Vector3i movement = FaceTop.movement;
 	private static Vector3i[] neighbors = FaceTop.neighbors;
 

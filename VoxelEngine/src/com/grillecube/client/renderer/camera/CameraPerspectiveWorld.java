@@ -57,12 +57,12 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 
 	public CameraPerspectiveWorld(GLFWWindow window) {
 		super(window);
-		super.setPosition(0, 16, 0);
+		super.setPosition(0, 0, 16);
 		super.setPositionVelocity(0, 0, 0);
 		super.setRotationVelocity(0, 0, 0);
-		super.setPitch(0);
-		super.setYaw(0);
-		super.setRoll(0);
+		this.setRotX(0);
+		this.setRotY(0);
+		this.setRotZ(0);
 		super.setSpeed(0.2f);
 		super.setRotSpeed(1);
 
@@ -81,9 +81,9 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 	public Camera clone() {
 		CameraPerspectiveWorld camera = new CameraPerspectiveWorld(null);
 		camera.setAspect(this.getAspect());
-		camera.setPitch(this.getPitch());
-		camera.setYaw(this.getYaw());
-		camera.setRoll(this.getRoll());
+		camera.setRotX(this.getRotX());
+		camera.setRotY(this.getRotZ());
+		camera.setRotZ(this.getRotY());
 		camera.setFov(this.getFov());
 		camera.setNearDistance(this.getNearDistance());
 		camera.setFarDistance(this.getFarDistance());
@@ -131,7 +131,7 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 		Vector3f right = Vector3f.cross(forward, up, null);
 
 		up.normalise();
-		forward.normalise();
+		forward = forward.normalise(null);
 		right.normalise();
 
 		float tang = (float) Math.tan(Math.toRadians(this.getFov() * 0.5f));
@@ -234,13 +234,13 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 
 	@Override
 	public boolean isBoxInFrustum(float x, float y, float z, float sx, float sy, float sz) {
-
 		for (int i = 0; i < 6; i++) {
-
 			CameraPlane plane = this.planes[i];
-
-			if (plane.distance(this.getVertexP(plane.normal, x, y, z, sx, sy, sz)) < 0) {
+			if (plane.distance(this.getVertexP(plane.normal, x, y, z, sx, sy, sz)) < 10) {
 				return (false); // outside
+			}
+			if (plane.distance(this.getVertexN(plane.normal, x, y, z, sx, sy, sz)) < 0) {
+				return (true); // intersect
 			}
 		}
 		return (true); // fully inside
@@ -248,33 +248,32 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 
 	private Vector3f getVertexP(Vector3f normal, float x, float y, float z, float sx, float sy, float sz) {
 		Vector3f res = new Vector3f(x, y, z);
-		if (normal.x > 0) {
+		if (normal.x >= 0) {
 			res.x += sx;
 		}
-		if (normal.y > 0) {
+		if (normal.y >= 0) {
 			res.y += sy;
 		}
-		if (normal.z > 0) {
+		if (normal.z >= 0) {
 			res.z += sz;
 		}
 		return (res);
 	}
 
-	// private Vector3f getVertexN(Vector3f normal, float x, float y, float z,
-	// float sx, float sy, float sz) {
-	//
-	// Vector3f res = new Vector3f(x, y, z);
-	// if (normal.x < 0) {
-	// res.x += sx;
-	// }
-	// if (normal.y < 0) {
-	// res.y += sy;
-	// }
-	// if (normal.z < 0) {
-	// res.z += sz;
-	// }
-	// return (res);
-	// }
+	private Vector3f getVertexN(Vector3f normal, float x, float y, float z, float sx, float sy, float sz) {
+
+		Vector3f res = new Vector3f(x, y, z);
+		if (normal.x <= 0) {
+			res.x += sx;
+		}
+		if (normal.y <= 0) {
+			res.y += sy;
+		}
+		if (normal.z <= 0) {
+			res.z += sz;
+		}
+		return (res);
+	}
 
 	@Override
 	public boolean isSphereInFrustum(Vector3f center, float radius) {

@@ -18,8 +18,8 @@ import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 
 public class FaceBack implements Face {
-	private static Vector3i vec = new Vector3i(1, 0, 0);
-	private static Vector3f normal = new Vector3f(1, 0, 0);
+	private static Vector3i vec = new Vector3i(-1, 0, 0);
+	private static Vector3f normal = new Vector3f(-1, 0, 0);
 	private static Vector3i movement = FaceFront.movement;
 	private static Vector3i neighbors[] = FaceFront.neighbors;
 

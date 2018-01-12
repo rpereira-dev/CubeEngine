@@ -66,13 +66,12 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 		camera.getWindow().setCursor(false);
 		camera.getWindow().setCursorCenter();
 		float u = this.getBlockSizeUnit();
-		float x = 0;// (this.getModelLayer().getMinx() +
-					// this.getModelLayer().getMaxx()) * 0.5f;
-		float y = 0;// (this.getModelLayer().getMiny() +
-					// this.getModelLayer().getMaxy()) * 0.5f;
-		float z = 0;// (this.getModelLayer().getMinz() +
-					// this.getModelLayer().getMaxz()) * 0.5f;
+		float x = 0;// this.firstBlock.x;
+		float y = 0;// this.firstBlock.y;
+		float z = 0;// his.firstBlock.z;
 		this.getCamera().setCenter((x + 0.5f) * u, (y + 0.5f) * u, (z + 0.5f) * u);
+		// this.getCamera().setR((float) Vector3f.distance(this.getCamera().getCenter(),
+		// this.getCamera().getPosition()));
 	}
 
 	@Override
@@ -136,8 +135,8 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 			int d = -Maths.sign(event.getScrollY());
 			this.expand(d);
 		} else {
-			float speed = this.getCamera().getDistanceFromCenter() * 0.14f;
-			this.getCamera().increaseDistanceFromCenter((float) (-event.getScrollY() * speed));
+			float speed = this.getCamera().getR() * 0.14f;
+			this.getCamera().increaseR((float) (-event.getScrollY() * speed));
 		}
 	}
 
@@ -172,11 +171,14 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 	private final void updateCameraRotation() {
 		// rotate
 		if (this.guiModelView.isRightPressed()) {
-			float pitch = (float) ((this.guiModelView.getPrevMouseY() - this.guiModelView.getMouseY()) * 64.0f);
-			this.getCamera().increasePitch(pitch);
+			float mx = this.guiModelView.getMouseX();
+			float pmx = this.guiModelView.getPrevMouseX();
 
-			float angle = (float) ((this.guiModelView.getPrevMouseX() - this.guiModelView.getMouseX()) * 128.0f);
-			this.getCamera().increaseAngleAroundCenter(angle);
+			float my = this.guiModelView.getMouseY();
+			float pmy = this.guiModelView.getPrevMouseY();
+
+			this.getCamera().increaseTheta(-(my - pmy) * 1.5f);
+			this.getCamera().increasePhi((mx - pmx) * 1.5f);
 		} else {
 			this.updateHoveredBlock();
 		}

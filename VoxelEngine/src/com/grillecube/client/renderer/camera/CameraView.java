@@ -6,29 +6,29 @@ import com.grillecube.common.maths.Vector3f;
 public abstract class CameraView extends Camera {
 
 	/** position */
-	private Vector3f _pos;
-	private Vector3f _rot;
+	private final Vector3f pos;
+	private final Vector3f rot;
 
 	/** velocities */
-	private Vector3f _pos_vel;
-	private Vector3f _rot_vel;
+	private final Vector3f posVel;
+	private final Vector3f rotVel;
 
 	/** speeds */
-	private float _speed;
-	private float _rot_speed;
+	private float speed;
+	private float rotSpeed;
 
 	/** view informations */
-	private Matrix4f _view_matrix;
-	private Vector3f _view_vec;
+	private Matrix4f viewMatrix;
+	private Vector3f viewVec;
 
 	public CameraView() {
 		super();
-		this._view_vec = new Vector3f();
-		this._view_matrix = new Matrix4f();
-		this._pos = new Vector3f();
-		this._rot = new Vector3f();
-		this._pos_vel = new Vector3f();
-		this._rot_vel = new Vector3f();
+		this.viewVec = new Vector3f();
+		this.viewMatrix = new Matrix4f();
+		this.pos = new Vector3f();
+		this.rot = new Vector3f();
+		this.posVel = new Vector3f();
+		this.rotVel = new Vector3f();
 	}
 
 	@Override
@@ -36,15 +36,15 @@ public abstract class CameraView extends Camera {
 		super.update();
 		this.createViewVector(this.getViewVector());
 		this.createViewMatrix(this.getViewMatrix());
-		this.move(this._pos_vel);
-		this.rotate(this._rot_vel);
+		this.move(this.posVel);
+		this.rotate(this.rotVel);
 	}
 
 	protected void createViewMatrix(Matrix4f dst) {
 		dst.setIdentity();
-		dst.rotate((float) Math.toRadians(this.getPitch()), Vector3f.AXIS_X);
-		dst.rotate((float) Math.toRadians(this.getYaw()), Vector3f.AXIS_Y);
-		dst.rotate((float) Math.toRadians(this.getRoll()), Vector3f.AXIS_Z);
+		dst.rotate(this.getRotX(), Vector3f.AXIS_X);
+		dst.rotate(this.getRotY(), Vector3f.AXIS_Y);
+		dst.rotate(this.getRotZ(), Vector3f.AXIS_Z);
 		dst.translate(this.getPosition().negate(null));
 	}
 
@@ -53,28 +53,31 @@ public abstract class CameraView extends Camera {
 	 * normalized)
 	 */
 	protected void createViewVector(Vector3f dst) {
+		float x, y, z;
+		x = (float) (Math.sin(this.getRotZ()) * Math.sin(-this.getRotX()));
+		y = (float) (Math.cos(this.getRotZ()) * Math.sin(-this.getRotX()));
+		z = (float) (-Math.cos(-this.getRotX()));
+		dst.set(x, y, z).normalise();
 
-		float f = (float) Math.cos(Math.toRadians(this.getPitch()));
-		this._view_vec.setX((float) (f * Math.sin(Math.toRadians(this.getYaw()))));
-		this._view_vec.setY((float) -Math.sin(Math.toRadians(this.getPitch())));
-		this._view_vec.setZ((float) (-f * Math.cos(Math.toRadians(this.getYaw()))));
-		this._view_vec.normalise();
+		if (System.currentTimeMillis() % 500 < 60) {
+			// System.out.println(pitch);
+		}
 	}
 
 	public Vector3f getPosition() {
-		return (this._pos);
+		return (this.pos);
 	}
 
 	public void setRotationVelocity(float x, float y, float z) {
-		this._rot_vel.set(x, y, z);
+		this.rotVel.set(x, y, z);
 	}
 
 	public void setPositionVelocity(float x, float y, float z) {
-		this._pos_vel.set(x, y, z);
+		this.posVel.set(x, y, z);
 	}
 
 	public void setPosition(float x, float y, float z) {
-		this._pos.set(x, y, z);
+		this.pos.set(x, y, z);
 	}
 
 	public void setPosition(Vector3f pos) {
@@ -82,88 +85,77 @@ public abstract class CameraView extends Camera {
 	}
 
 	public Vector3f getViewVector() {
-		return (this._view_vec);
+		return (this.viewVec);
 	}
 
 	public Matrix4f getViewMatrix() {
-		return (this._view_matrix);
+		return (this.viewMatrix);
 	}
 
 	protected Vector3f getPositionVelocity() {
-		return (this._pos_vel);
+		return (this.posVel);
 	}
 
 	protected Vector3f getRotationVelocity() {
-		return (this._rot_vel);
+		return (this.rotVel);
 	}
 
 	public void move(Vector3f dpos) {
-		this.setPosition(this._pos.x + dpos.x * this._speed, this._pos.y + dpos.y * this._speed,
-				this._pos.z + dpos.z * this._speed);
+		this.setPosition(this.pos.x + dpos.x * this.speed, this.pos.y + dpos.y * this.speed,
+				this.pos.z + dpos.z * this.speed);
 	}
 
 	public void rotate(Vector3f drot) {
-		this.setRotation(this._rot.x + drot.x * this._rot_speed, this._rot.y + drot.y * this._rot_speed,
-				this._rot.z + drot.z * this._rot_speed);
+		this.setRotation(this.rot.x + drot.x * this.rotSpeed, this.rot.y + drot.y * this.rotSpeed,
+				this.rot.z + drot.z * this.rotSpeed);
 	}
 
 	private void setRotation(float x, float y, float z) {
-		this._rot.set(x, y, z);
+		this.rot.set(x, y, z);
 	}
 
 	public void setSpeed(float f) {
-		this._speed = f;
+		this.speed = f;
 	}
 
 	public void setRotSpeed(float f) {
-		this._rot_speed = f;
+		this.rotSpeed = f;
 	}
 
-	public float getPitch() {
-		return (this._rot.x);
+	public float getRotX() {
+		return (this.rot.x);
 	}
 
-	public float getYaw() {
-		return (this._rot.y);
+	public float getRotY() {
+		return (this.rot.y);
 	}
 
-	public float getRoll() {
-		return (this._rot.z);
+	public float getRotZ() {
+		return (this.rot.z);
 	}
 
-	public void invertPitch() {
-		this._rot.x = -this._rot.x;
+	public void setRotX(float x) {
+		this.rot.x = x;
 	}
 
-	public void invertYaw() {
-		this._rot.y = -this._rot.y;
+	public void setRotY(float y) {
+		this.rot.y = y;
 	}
 
-	public void invertRoll() {
-		this._rot.z = -this._rot.z;
+	public void setRotZ(float z) {
+		this.rot.z = z;
 	}
 
-	public void setPitch(float pitch) {
-		this._rot.x = pitch;
+	public void increaseRotX(float x) {
+		this.rot.x += x;
 	}
 
-	public void setYaw(float yaw) {
-		this._rot.y = yaw;
+	public void increaseRotY(float y) {
+		this.rot.y += y;
 	}
 
-	public void setRoll(float roll) {
-		this._rot.z = roll;
+	public void increaseRotZ(float z) {
+		this.rot.z += z;
 	}
 
-	public void increasePitch(float pitch) {
-		this._rot.x += pitch;
-	}
-
-	public void increaseYaw(float yaw) {
-		this._rot.y += yaw;
-	}
-
-	public void increaseRoll(float roll) {
-		this._rot.z += roll;
-	}
 }

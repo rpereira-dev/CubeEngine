@@ -78,14 +78,11 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 		}
 
 		boolean isInFrustrum() {
-			return (this.isInFrustrum);
+			return (this.isInFrustrum || true);
 		}
 
 		void glUpdate() {
-			if (COUNT == MAX_COUNT) {
-				return;
-			}
-			if (this.meshUpToDate) {
+			if (COUNT == MAX_COUNT || this.meshUpToDate) {
 				return;
 			}
 			++COUNT;
@@ -247,7 +244,6 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 
 	}
 
-	static int i = 0;
 	static double DT = 0;
 	static int COUNT = 0;
 	static int MAX_COUNT = 16;
@@ -255,26 +251,32 @@ public class FlatTerrainRendererFactory extends RendererFactory {
 	@Override
 	public void update(double dt) {
 		COUNT = 0;
-		DT += dt;
-		if ((DT < 0 || DT > 0.2)) {
-			if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X)) {
-				DT = 0;
-
-				// this.mesher = i % 5 == 0 ? new FlatTerrainMesherGreedy()
-				// : new MarchingCubesTerrainMesher((int) (Math.pow(2, i % 5 - 1)));
-				// this.mesher = new MarchingCubesTerrainMesher((int)
-				// (Math.pow(2, 0)));
-				// this.mesher = i % 2 == 0 ? new FlatTerrainMesherGreedy()
-				// : new MarchingCubesTerrainMesher((int) (Math.pow(2, 0)));
-
-				for (TerrainRenderingData terrainRenderingData : terrainsRenderingData.values()) {
-					terrainRenderingData.requestUpdate();
-				}
-				++i;
-			}
-		}
+		// DT += dt;
+		// if ((DT < 0 || DT > 0.2)) {
+		// if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X)) {
+		// DT = 0;
+		//
+		// // this.mesher = i % 5 == 0 ? new FlatTerrainMesherGreedy()
+		// // : new MarchingCubesTerrainMesher((int) (Math.pow(2, i % 5 - 1)));
+		// // this.mesher = new MarchingCubesTerrainMesher((int) (Math.pow(2, 0)));
+		//// this.mesher = i % 2 == 0 ? new FlatTerrainMesherGreedy()
+		//// : new MarchingCubesTerrainMesher((int) (Math.pow(2, 0)));
+		//
+		// for (TerrainRenderingData terrainRenderingData :
+		// terrainsRenderingData.values()) {
+		// terrainRenderingData.requestUpdate();
+		// }
+		// ++i;
+		// }
+		// }
 		this.updateLoadedMeshes();
 		this.updateRenderingList();
+
+		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_X)) {
+			for (TerrainRenderingData terrainRenderingData : terrainsRenderingData.values()) {
+				terrainRenderingData.requestUpdate();
+			}
+		}
 	}
 
 	public static boolean LIGHT = true;

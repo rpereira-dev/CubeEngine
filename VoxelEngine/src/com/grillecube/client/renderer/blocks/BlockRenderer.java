@@ -12,11 +12,8 @@
  **			|  /          |  /
  **			| /           | /
  **			|/            |/
- **			0-------------1
- **
- **
- **
- **
+ **			0-------------1	
+ **	
  **							TOP
  **
  **										RIGHT
@@ -26,8 +23,8 @@
  **					 /  |          /  |
  **					x-------2-----x---|
  **					|   7         |   |
- **					|   |         |   5			BACK
- **		FRONT		|   |         |   |
+ **					|   |         |   5			FRONT
+ **		BACK		|   |         |   |
  **					3   x-----4---1---x
  **					|  /          |  /
  **					| 8           | 9
@@ -39,7 +36,7 @@
  **			^
  **			|    ^
  **			|   /
- **			y  z
+ **			z  y
  **			| /
  **			|/
  **			------x----->
@@ -89,10 +86,10 @@ public abstract class BlockRenderer {
 	static {
 		VERTICES[0] = new Vector3i(0, 0, 0);
 		VERTICES[1] = new Vector3i(1, 0, 0);
-		VERTICES[2] = new Vector3i(1, 1, 0);
-		VERTICES[3] = new Vector3i(0, 1, 0);
-		VERTICES[4] = new Vector3i(0, 0, 1);
-		VERTICES[5] = new Vector3i(1, 0, 1);
+		VERTICES[2] = new Vector3i(1, 0, 1);
+		VERTICES[3] = new Vector3i(0, 0, 1);
+		VERTICES[4] = new Vector3i(0, 1, 0);
+		VERTICES[5] = new Vector3i(1, 1, 0);
 		VERTICES[6] = new Vector3i(1, 1, 1);
 		VERTICES[7] = new Vector3i(0, 1, 1);
 
@@ -130,136 +127,136 @@ public abstract class BlockRenderer {
 		}
 
 		/** left face */
-		FACES_VERTICES[Face.LEFT][0] = 2;
-		FACES_VERTICES[Face.LEFT][1] = 1;
-		FACES_VERTICES[Face.LEFT][2] = 0;
-		FACES_VERTICES[Face.LEFT][3] = 3;
+		FACES_VERTICES[Face.LEFT][0] = 0;
+		FACES_VERTICES[Face.LEFT][1] = 3;
+		FACES_VERTICES[Face.LEFT][2] = 2;
+		FACES_VERTICES[Face.LEFT][3] = 1;
 
-		FACES_NEIGHBORS[Face.LEFT][0][0] = new Vector3i(0, 1, -1);
-		FACES_NEIGHBORS[Face.LEFT][0][1] = new Vector3i(1, 0, -1);
-		FACES_NEIGHBORS[Face.LEFT][0][2] = new Vector3i(1, 1, -1);
+		FACES_NEIGHBORS[Face.LEFT][0][0] = new Vector3i(0, -1, -1);
+		FACES_NEIGHBORS[Face.LEFT][0][1] = new Vector3i(-1, -1, 0);
+		FACES_NEIGHBORS[Face.LEFT][0][2] = new Vector3i(-1, -1, -1);
 
-		FACES_NEIGHBORS[Face.LEFT][1][0] = new Vector3i(0, -1, -1);
-		FACES_NEIGHBORS[Face.LEFT][1][1] = new Vector3i(1, 0, -1);
-		FACES_NEIGHBORS[Face.LEFT][1][2] = new Vector3i(1, -1, -1);
+		FACES_NEIGHBORS[Face.LEFT][1][0] = new Vector3i(0, -1, 1);
+		FACES_NEIGHBORS[Face.LEFT][1][1] = new Vector3i(-1, -1, 0);
+		FACES_NEIGHBORS[Face.LEFT][1][2] = new Vector3i(-1, -1, 1);
 
-		FACES_NEIGHBORS[Face.LEFT][2][0] = new Vector3i(0, -1, -1);
-		FACES_NEIGHBORS[Face.LEFT][2][1] = new Vector3i(-1, 0, -1);
-		FACES_NEIGHBORS[Face.LEFT][2][2] = new Vector3i(-1, -1, -1);
+		FACES_NEIGHBORS[Face.LEFT][2][0] = new Vector3i(0, -1, 1);
+		FACES_NEIGHBORS[Face.LEFT][2][1] = new Vector3i(1, -1, 0);
+		FACES_NEIGHBORS[Face.LEFT][2][2] = new Vector3i(1, -1, 1);
 
-		FACES_NEIGHBORS[Face.LEFT][3][0] = new Vector3i(0, 1, -1);
-		FACES_NEIGHBORS[Face.LEFT][3][1] = new Vector3i(-1, 0, -1);
-		FACES_NEIGHBORS[Face.LEFT][3][2] = new Vector3i(-1, 1, -1);
+		FACES_NEIGHBORS[Face.LEFT][3][0] = new Vector3i(0, -1, -1);
+		FACES_NEIGHBORS[Face.LEFT][3][1] = new Vector3i(1, -1, 0);
+		FACES_NEIGHBORS[Face.LEFT][3][2] = new Vector3i(1, -1, -1);
 
 		/** right face */
-		FACES_VERTICES[Face.RIGHT][0] = 7;
-		FACES_VERTICES[Face.RIGHT][1] = 4;
-		FACES_VERTICES[Face.RIGHT][2] = 5;
-		FACES_VERTICES[Face.RIGHT][3] = 6;
+		FACES_VERTICES[Face.RIGHT][0] = 5;
+		FACES_VERTICES[Face.RIGHT][1] = 6;
+		FACES_VERTICES[Face.RIGHT][2] = 7;
+		FACES_VERTICES[Face.RIGHT][3] = 4;
 
-		FACES_NEIGHBORS[Face.RIGHT][0][0] = new Vector3i(0, 1, 1);
-		FACES_NEIGHBORS[Face.RIGHT][0][1] = new Vector3i(-1, 0, 1);
-		FACES_NEIGHBORS[Face.RIGHT][0][2] = new Vector3i(-1, 1, 1);
+		FACES_NEIGHBORS[Face.RIGHT][0][0] = new Vector3i(0, 1, -1);
+		FACES_NEIGHBORS[Face.RIGHT][0][1] = new Vector3i(1, 1, 0);
+		FACES_NEIGHBORS[Face.RIGHT][0][2] = new Vector3i(1, 1, -1);
 
-		FACES_NEIGHBORS[Face.RIGHT][1][0] = new Vector3i(0, -1, 1);
-		FACES_NEIGHBORS[Face.RIGHT][1][1] = new Vector3i(-1, 0, 1);
-		FACES_NEIGHBORS[Face.RIGHT][1][2] = new Vector3i(-1, -1, 1);
+		FACES_NEIGHBORS[Face.RIGHT][1][0] = new Vector3i(0, 1, 1);
+		FACES_NEIGHBORS[Face.RIGHT][1][1] = new Vector3i(1, 1, 0);
+		FACES_NEIGHBORS[Face.RIGHT][1][2] = new Vector3i(1, 1, 1);
 
-		FACES_NEIGHBORS[Face.RIGHT][2][0] = new Vector3i(0, -1, 1);
-		FACES_NEIGHBORS[Face.RIGHT][2][1] = new Vector3i(1, 0, 1);
-		FACES_NEIGHBORS[Face.RIGHT][2][2] = new Vector3i(1, -1, 1);
+		FACES_NEIGHBORS[Face.RIGHT][2][0] = new Vector3i(0, 1, 1);
+		FACES_NEIGHBORS[Face.RIGHT][2][1] = new Vector3i(-1, 1, 0);
+		FACES_NEIGHBORS[Face.RIGHT][2][2] = new Vector3i(-1, 1, 1);
 
-		FACES_NEIGHBORS[Face.RIGHT][3][0] = new Vector3i(0, 1, 1);
-		FACES_NEIGHBORS[Face.RIGHT][3][1] = new Vector3i(1, 0, 1);
-		FACES_NEIGHBORS[Face.RIGHT][3][2] = new Vector3i(1, 1, 1);
-
-		/** back face */
-		FACES_VERTICES[Face.BACK][0] = 6;
-		FACES_VERTICES[Face.BACK][1] = 5;
-		FACES_VERTICES[Face.BACK][2] = 1;
-		FACES_VERTICES[Face.BACK][3] = 2;
-
-		FACES_NEIGHBORS[Face.BACK][0][0] = new Vector3i(1, 1, 0);
-		FACES_NEIGHBORS[Face.BACK][0][1] = new Vector3i(1, 0, 1);
-		FACES_NEIGHBORS[Face.BACK][0][2] = new Vector3i(1, 1, 1);
-
-		FACES_NEIGHBORS[Face.BACK][1][0] = new Vector3i(1, -1, 0);
-		FACES_NEIGHBORS[Face.BACK][1][1] = new Vector3i(1, 0, 1);
-		FACES_NEIGHBORS[Face.BACK][1][2] = new Vector3i(1, -1, 1);
-
-		FACES_NEIGHBORS[Face.BACK][2][0] = new Vector3i(1, -1, 0);
-		FACES_NEIGHBORS[Face.BACK][2][1] = new Vector3i(1, 0, -1);
-		FACES_NEIGHBORS[Face.BACK][2][2] = new Vector3i(1, -1, -1);
-
-		FACES_NEIGHBORS[Face.BACK][3][0] = new Vector3i(1, 1, 0);
-		FACES_NEIGHBORS[Face.BACK][3][1] = new Vector3i(1, 0, -1);
-		FACES_NEIGHBORS[Face.BACK][3][2] = new Vector3i(1, 1, -1);
+		FACES_NEIGHBORS[Face.RIGHT][3][0] = new Vector3i(0, 1, -1);
+		FACES_NEIGHBORS[Face.RIGHT][3][1] = new Vector3i(-1, 1, 0);
+		FACES_NEIGHBORS[Face.RIGHT][3][2] = new Vector3i(-1, 1, -1);
 
 		/** front face */
-		FACES_VERTICES[Face.FRONT][0] = 3;
-		FACES_VERTICES[Face.FRONT][1] = 0;
-		FACES_VERTICES[Face.FRONT][2] = 4;
-		FACES_VERTICES[Face.FRONT][3] = 7;
+		FACES_VERTICES[Face.FRONT][0] = 1;
+		FACES_VERTICES[Face.FRONT][1] = 2;
+		FACES_VERTICES[Face.FRONT][2] = 6;
+		FACES_VERTICES[Face.FRONT][3] = 5;
 
-		FACES_NEIGHBORS[Face.FRONT][0][0] = new Vector3i(-1, 1, 0);
-		FACES_NEIGHBORS[Face.FRONT][0][1] = new Vector3i(-1, 0, -1);
-		FACES_NEIGHBORS[Face.FRONT][0][2] = new Vector3i(-1, 1, -1);
+		FACES_NEIGHBORS[Face.FRONT][0][0] = new Vector3i(1, 0, -1);
+		FACES_NEIGHBORS[Face.FRONT][0][1] = new Vector3i(1, -1, 0);
+		FACES_NEIGHBORS[Face.FRONT][0][2] = new Vector3i(1, -1, -1);
 
-		FACES_NEIGHBORS[Face.FRONT][1][0] = new Vector3i(-1, -1, 0);
-		FACES_NEIGHBORS[Face.FRONT][1][1] = new Vector3i(-1, 0, -1);
-		FACES_NEIGHBORS[Face.FRONT][1][2] = new Vector3i(-1, -1, -1);
+		FACES_NEIGHBORS[Face.FRONT][1][0] = new Vector3i(1, 0, 1);
+		FACES_NEIGHBORS[Face.FRONT][1][1] = new Vector3i(1, -1, 0);
+		FACES_NEIGHBORS[Face.FRONT][1][2] = new Vector3i(1, -1, 1);
 
-		FACES_NEIGHBORS[Face.FRONT][2][0] = new Vector3i(-1, -1, 0);
-		FACES_NEIGHBORS[Face.FRONT][2][1] = new Vector3i(-1, 0, 1);
-		FACES_NEIGHBORS[Face.FRONT][2][2] = new Vector3i(-1, -1, 1);
+		FACES_NEIGHBORS[Face.FRONT][2][0] = new Vector3i(1, 0, 1);
+		FACES_NEIGHBORS[Face.FRONT][2][1] = new Vector3i(1, 1, 0);
+		FACES_NEIGHBORS[Face.FRONT][2][2] = new Vector3i(1, 1, 1);
 
-		FACES_NEIGHBORS[Face.FRONT][3][0] = new Vector3i(-1, 1, 0);
-		FACES_NEIGHBORS[Face.FRONT][3][1] = new Vector3i(-1, 0, 1);
-		FACES_NEIGHBORS[Face.FRONT][3][2] = new Vector3i(-1, 1, 1);
+		FACES_NEIGHBORS[Face.FRONT][3][0] = new Vector3i(1, 0, -1);
+		FACES_NEIGHBORS[Face.FRONT][3][1] = new Vector3i(1, 1, 0);
+		FACES_NEIGHBORS[Face.FRONT][3][2] = new Vector3i(1, 1, -1);
 
-		/** bottom face */
+		/** back face */
+		FACES_VERTICES[Face.BACK][0] = 0;
+		FACES_VERTICES[Face.BACK][1] = 3;
+		FACES_VERTICES[Face.BACK][2] = 7;
+		FACES_VERTICES[Face.BACK][3] = 4;
+
+		FACES_NEIGHBORS[Face.BACK][0][0] = new Vector3i(-1, 0, -1);
+		FACES_NEIGHBORS[Face.BACK][0][1] = new Vector3i(-1, -1, 0);
+		FACES_NEIGHBORS[Face.BACK][0][2] = new Vector3i(-1, -1, -1);
+
+		FACES_NEIGHBORS[Face.BACK][1][0] = new Vector3i(-1, 0, 1);
+		FACES_NEIGHBORS[Face.BACK][1][1] = new Vector3i(-1, -1, 0);
+		FACES_NEIGHBORS[Face.BACK][1][2] = new Vector3i(-1, -1, 1);
+
+		FACES_NEIGHBORS[Face.BACK][2][0] = new Vector3i(-1, 0, 1);
+		FACES_NEIGHBORS[Face.BACK][2][1] = new Vector3i(-1, 1, 0);
+		FACES_NEIGHBORS[Face.BACK][2][2] = new Vector3i(-1, 1, 1);
+
+		FACES_NEIGHBORS[Face.BACK][3][0] = new Vector3i(-1, 0, -1);
+		FACES_NEIGHBORS[Face.BACK][3][1] = new Vector3i(-1, 1, 0);
+		FACES_NEIGHBORS[Face.BACK][3][2] = new Vector3i(-1, 1, -1);
+
+		/** bot face */
 		FACES_VERTICES[Face.BOT][0] = 0;
-		FACES_VERTICES[Face.BOT][1] = 1;
+		FACES_VERTICES[Face.BOT][1] = 4;
 		FACES_VERTICES[Face.BOT][2] = 5;
-		FACES_VERTICES[Face.BOT][3] = 4;
+		FACES_VERTICES[Face.BOT][3] = 1;
 
 		FACES_NEIGHBORS[Face.BOT][0][0] = new Vector3i(0, -1, -1);
-		FACES_NEIGHBORS[Face.BOT][0][1] = new Vector3i(-1, -1, 0);
+		FACES_NEIGHBORS[Face.BOT][0][1] = new Vector3i(-1, 0, -1);
 		FACES_NEIGHBORS[Face.BOT][0][2] = new Vector3i(-1, -1, -1);
 
-		FACES_NEIGHBORS[Face.BOT][1][0] = new Vector3i(0, -1, -1);
-		FACES_NEIGHBORS[Face.BOT][1][1] = new Vector3i(1, -1, 0);
-		FACES_NEIGHBORS[Face.BOT][1][2] = new Vector3i(1, -1, -1);
+		FACES_NEIGHBORS[Face.BOT][1][0] = new Vector3i(0, 1, -1);
+		FACES_NEIGHBORS[Face.BOT][1][1] = new Vector3i(-1, 0, -1);
+		FACES_NEIGHBORS[Face.BOT][1][2] = new Vector3i(-1, 1, -1);
 
-		FACES_NEIGHBORS[Face.BOT][2][0] = new Vector3i(0, -1, 1);
-		FACES_NEIGHBORS[Face.BOT][2][1] = new Vector3i(1, -1, 0);
-		FACES_NEIGHBORS[Face.BOT][2][2] = new Vector3i(1, -1, 1);
+		FACES_NEIGHBORS[Face.BOT][2][0] = new Vector3i(0, 1, -1);
+		FACES_NEIGHBORS[Face.BOT][2][1] = new Vector3i(1, 0, -1);
+		FACES_NEIGHBORS[Face.BOT][2][2] = new Vector3i(1, 1, -1);
 
-		FACES_NEIGHBORS[Face.BOT][3][0] = new Vector3i(0, -1, 1);
-		FACES_NEIGHBORS[Face.BOT][3][1] = new Vector3i(-1, -1, 0);
-		FACES_NEIGHBORS[Face.BOT][3][2] = new Vector3i(-1, -1, 1);
+		FACES_NEIGHBORS[Face.BOT][3][0] = new Vector3i(0, -1, -1);
+		FACES_NEIGHBORS[Face.BOT][3][1] = new Vector3i(1, 0, -1);
+		FACES_NEIGHBORS[Face.BOT][3][2] = new Vector3i(1, -1, -1);
 
 		/** top face */
-		FACES_VERTICES[Face.TOP][0] = 2;
-		FACES_VERTICES[Face.TOP][1] = 3;
-		FACES_VERTICES[Face.TOP][2] = 7;
-		FACES_VERTICES[Face.TOP][3] = 6;
+		FACES_VERTICES[Face.TOP][0] = 3;
+		FACES_VERTICES[Face.TOP][1] = 7;
+		FACES_VERTICES[Face.TOP][2] = 6;
+		FACES_VERTICES[Face.TOP][3] = 2;
 
-		FACES_NEIGHBORS[Face.TOP][0][0] = new Vector3i(0, 1, -1);
-		FACES_NEIGHBORS[Face.TOP][0][1] = new Vector3i(1, 1, 0);
-		FACES_NEIGHBORS[Face.TOP][0][2] = new Vector3i(1, 1, -1);
+		FACES_NEIGHBORS[Face.TOP][0][0] = new Vector3i(0, -1, 1);
+		FACES_NEIGHBORS[Face.TOP][0][1] = new Vector3i(-1, 0, 1);
+		FACES_NEIGHBORS[Face.TOP][0][2] = new Vector3i(-1, -1, 1);
 
-		FACES_NEIGHBORS[Face.TOP][1][0] = new Vector3i(0, 1, -1);
-		FACES_NEIGHBORS[Face.TOP][1][1] = new Vector3i(-1, 1, 0);
-		FACES_NEIGHBORS[Face.TOP][1][2] = new Vector3i(-1, 1, -1);
+		FACES_NEIGHBORS[Face.TOP][1][0] = new Vector3i(0, 1, 1);
+		FACES_NEIGHBORS[Face.TOP][1][1] = new Vector3i(-1, 0, 1);
+		FACES_NEIGHBORS[Face.TOP][1][2] = new Vector3i(-1, 1, 1);
 
 		FACES_NEIGHBORS[Face.TOP][2][0] = new Vector3i(0, 1, 1);
-		FACES_NEIGHBORS[Face.TOP][2][1] = new Vector3i(-1, 1, 0);
-		FACES_NEIGHBORS[Face.TOP][2][2] = new Vector3i(-1, 1, 1);
+		FACES_NEIGHBORS[Face.TOP][2][1] = new Vector3i(1, 0, 1);
+		FACES_NEIGHBORS[Face.TOP][2][2] = new Vector3i(1, 1, 1);
 
-		FACES_NEIGHBORS[Face.TOP][3][0] = new Vector3i(0, 1, 1);
-		FACES_NEIGHBORS[Face.TOP][3][1] = new Vector3i(1, 1, 0);
-		FACES_NEIGHBORS[Face.TOP][3][2] = new Vector3i(1, 1, 1);
+		FACES_NEIGHBORS[Face.TOP][3][0] = new Vector3i(0, -1, 1);
+		FACES_NEIGHBORS[Face.TOP][3][1] = new Vector3i(1, 0, 1);
+		FACES_NEIGHBORS[Face.TOP][3][2] = new Vector3i(1, -1, 1);
 
 		/** vertices faces */
 		for (int vertexID = 0; vertexID < 8; vertexID++) {
@@ -288,7 +285,7 @@ public abstract class BlockRenderer {
 		}
 	};
 
-	public static final float[][] FACES_UV = { { 0, 0 }, { 0, 1 }, { 1, 1 }, { 1, 0 } };
+	public static final float[][] FACES_UV = { { 0, 1 }, { 0, 0 }, { 1, 0 }, { 1, 1 } };
 
 	/**
 	 * generate the vertices for the given block, in the given terrain and (x, y, z)

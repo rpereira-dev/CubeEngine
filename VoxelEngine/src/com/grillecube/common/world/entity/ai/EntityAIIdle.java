@@ -17,9 +17,9 @@ public class EntityAIIdle<T extends Entity> extends EntityAI<T> {
 	@Override
 	protected void onTimedUpdate(Entity entity) {
 
-		if (!entity.isInAir()) {
-			entity.jump();
-		}
+		// if (!entity.isInAir()) {
+		// entity.jump();
+		// }
 	}
 
 }

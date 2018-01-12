@@ -82,7 +82,7 @@ public class WorldFlatTerrainStorage extends WorldTerrainStorage {
 			return (previous);
 		}
 
-		int height = terrain.getWorldIndex3().y;
+		int height = terrain.getWorldIndex3().z;
 		if (height > this.getMaxHeightIndex()) {
 			Logger.get().log(Level.WARNING, "Tried to spawn a terrain above the current maximum height! " + height
 					+ " / " + this.getMaxHeightIndex());
@@ -102,12 +102,12 @@ public class WorldFlatTerrainStorage extends WorldTerrainStorage {
 
 		Vector2i index2 = terrain.getWorldIndex2();
 		Terrain top = this.topTerrains.get(index2);
-		if (top == null || top.getWorldIndex3().y < terrain.getWorldIndex3().y) {
+		if (top == null || top.getWorldIndex3().z < terrain.getWorldIndex3().z) {
 			this.topTerrains.put(index2, terrain);
 		}
 
 		Terrain bot = this.botTerrains.get(index2);
-		if (bot == null || bot.getWorldIndex3().y > terrain.getWorldIndex3().y) {
+		if (bot == null || bot.getWorldIndex3().z > terrain.getWorldIndex3().z) {
 			this.botTerrains.put(index2, terrain);
 		}
 
@@ -313,8 +313,7 @@ public class WorldFlatTerrainStorage extends WorldTerrainStorage {
 	}
 
 	/**
-	 * set a block, world coordinates, return the terrain on which the block was
-	 * set
+	 * set a block, world coordinates, return the terrain on which the block was set
 	 */
 	@Override
 	public Terrain setBlock(Block block, float x, float y, float z) {
@@ -384,8 +383,7 @@ public class WorldFlatTerrainStorage extends WorldTerrainStorage {
 
 	/**
 	 * get the topest terrain where the column (located in the (ix, iz) world
-	 * terrain index, at coordinates (x, z) relatively to the terrain) is non
-	 * empty
+	 * terrain index, at coordinates (x, z) relatively to the terrain) is non empty
 	 */
 	public final Terrain getTopestTerrainWithNonEmptyColumn(Vector2i index2, int x, int z) {
 		Terrain topest = this.getTop(index2);

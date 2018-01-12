@@ -14,6 +14,7 @@ import com.grillecube.client.renderer.model.editor.gui.toolbox.GuiToolboxModel;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
+import com.grillecube.common.maths.Maths;
 
 public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 
@@ -26,18 +27,16 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 
 	public ModelEditorCamera(GLFWWindow window) {
 		super(window);
-		super.setPosition(0, 16, 0);
+		super.setPosition(0, 0, 16);
 		super.setPositionVelocity(0, 0, 0);
 		super.setRotationVelocity(0, 0, 0);
-		super.setPitch(0);
-		super.setYaw(0);
-		super.setRoll(0);
+		super.setRotX(-Maths.PI_4);
+		super.setRotY(0);
+		super.setRotZ(0);
 		super.setSpeed(0.2f);
 		super.setRotSpeed(1);
 		super.setFarDistance(Float.MAX_VALUE);
 		super.setRenderDistance(Float.MAX_VALUE);
-		super.setDistanceFromCenter(16);
-		super.setAngleAroundCenter(-45);
 		this.oldStates = new Stack<ModelEditorState>();
 	}
 

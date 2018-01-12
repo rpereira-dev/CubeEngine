@@ -22,30 +22,30 @@ public interface Face {
 	public static final int NULL = -1;
 
 	/** z - */
-	public static final int LEFT = 0;
+	public static final int TOP = 0;
 
 	/** z + */
-	public static final int RIGHT = 1;
+	public static final int BOT = 1;
 
 	/** y + */
-	public static final int TOP = 2;
+	public static final int RIGHT = 2;
 
 	/** y - */
-	public static final int BOT = 3;
-
-	/** x - */
-	public static final int FRONT = 4;
+	public static final int LEFT = 3;
 
 	/** x + */
+	public static final int FRONT = 4;
+
+	/** x - */
 	public static final int BACK = 5;
 
 	static final Face[] faces = { new FaceLeft(), new FaceRight(), new FaceTop(), new FaceBot(), new FaceFront(),
 			new FaceBack(), };
 
-	public static final Face F_LEFT = Face.get(LEFT);
-	public static final Face F_RIGHT = Face.get(RIGHT);
 	public static final Face F_TOP = Face.get(TOP);
 	public static final Face F_BOT = Face.get(BOT);
+	public static final Face F_RIGHT = Face.get(RIGHT);
+	public static final Face F_LEFT = Face.get(LEFT);
 	public static final Face F_FRONT = Face.get(FRONT);
 	public static final Face F_BACK = Face.get(BACK);
 
