@@ -41,15 +41,15 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 			return;
 		}
 
-		boolean[][][][] visited = new boolean[Face.faces.length][Terrain.DIMX][Terrain.DIMY][Terrain.DIMZ];
-
 		// for each face
 		for (int faceID = 0; faceID < Face.faces.length; faceID++) {
+			boolean[][][] visited = new boolean[Terrain.DIMX][Terrain.DIMY][Terrain.DIMZ];
+
 			for (int z = 0; z < Terrain.DIMZ; z++) {
 				for (int y = 0; y < Terrain.DIMY; y++) {
 					for (int x = 0; x < Terrain.DIMX; x++) {
 
-						if (visited[faceID][x][y][z]) {
+						if (visited[x][y][z]) {
 							continue;
 						}
 
@@ -69,9 +69,9 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 							int width = 1;
 
 							// generate the rectangle width
-							while (x + width < Terrain.DIMX && !visited[faceID][x + width][y][z]
+							while (x + width < Terrain.DIMX && !visited[x + width][y][z]
 									&& face.equals(faces[faceID][x + width][y][z])) {
-								visited[faceID][x + width][y][z] = true;
+								visited[x + width][y][z] = true;
 								++width;
 							}
 
@@ -79,11 +79,11 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 							int depth = 1;
 							depth_test: while (y + depth < Terrain.DIMY) {
 								for (int dx = 0; dx < width; dx++) {
-									if (visited[faceID][x + dx][y + depth][z]
+									if (visited[x + dx][y + depth][z]
 											|| !face.equals(faces[faceID][x + dx][y + depth][z])) {
 										break depth_test;
 									}
-									visited[faceID][x + dx][y + depth - 1][z] = true;
+									visited[x + dx][y + depth - 1][z] = true;
 								}
 								++depth;
 							}
@@ -110,9 +110,9 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 							int width = 1;
 
 							// generate the rectangle width
-							while (x + width < Terrain.DIMX && !visited[faceID][x + width][y][z]
+							while (x + width < Terrain.DIMX && !visited[x + width][y][z]
 									&& face.equals(faces[faceID][x + width][y][z])) {
-								visited[faceID][x + width][y][z] = true;
+								visited[x + width][y][z] = true;
 								++width;
 							}
 
@@ -120,11 +120,11 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 							int height = 1;
 							height_test: while (z + height < Terrain.DIMZ) {
 								for (int dx = 0; dx < width; dx++) {
-									if (visited[faceID][x + dx][y][z + height]
+									if (visited[x + dx][y][z + height]
 											|| !face.equals(faces[faceID][x + dx][y][z + height])) {
 										break height_test;
 									}
-									visited[faceID][x + dx][y][z + height - 1] = true;
+									visited[x + dx][y][z + height - 1] = true;
 								}
 								++height;
 							}
@@ -152,9 +152,9 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 							int depth = 1;
 
 							// generate the rectangle width
-							while (y + depth < Terrain.DIMY && !visited[faceID][x][y + depth][z]
+							while (y + depth < Terrain.DIMY && !visited[x][y + depth][z]
 									&& face.equals(faces[faceID][x][y + depth][z])) {
-								visited[faceID][x][y + depth][z] = true;
+								visited[x][y + depth][z] = true;
 								++depth;
 							}
 
@@ -162,11 +162,11 @@ public class FlatTerrainMesherGreedy extends TerrainMesher {
 							int height = 1;
 							height_test: while (z + height < Terrain.DIMZ) {
 								for (int dy = 0; dy < depth; dy++) {
-									if (visited[faceID][x][y + dy][z + height]
+									if (visited[x][y + dy][z + height]
 											|| !face.equals(faces[faceID][x][y + dy][z + height])) {
 										break height_test;
 									}
-									visited[faceID][x][y + dy][z + height - 1] = true;
+									visited[x][y + dy][z + height - 1] = true;
 								}
 								++height;
 							}

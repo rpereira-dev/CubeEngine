@@ -39,8 +39,10 @@ public interface Face {
 	/** x - */
 	public static final int BACK = 5;
 
-	static final Face[] faces = { new FaceLeft(), new FaceRight(), new FaceTop(), new FaceBot(), new FaceFront(),
-			new FaceBack(), };
+	public static final Face[] faces = new Face[] { new FaceTop(), new FaceBot(), new FaceRight(), new FaceLeft(),
+			new FaceFront(), new FaceBack()
+
+	};
 
 	public static final Face F_TOP = Face.get(TOP);
 	public static final Face F_BOT = Face.get(BOT);

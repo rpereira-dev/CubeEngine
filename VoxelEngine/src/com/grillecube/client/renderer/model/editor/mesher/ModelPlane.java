@@ -1,7 +1,5 @@
 package com.grillecube.client.renderer.model.editor.mesher;
 
-import com.grillecube.common.faces.Face;
-
 /**
  * Represent a plan of an EditableModel.
  * 
@@ -14,7 +12,7 @@ import com.grillecube.common.faces.Face;
 public final class ModelPlane {
 
 	/** face of this plan */
-	private final Face face;
+	private final int faceID;
 
 	/**
 	 * corner of the plan, coordinates are relative to the model referential
@@ -31,8 +29,8 @@ public final class ModelPlane {
 	private int u;
 	private int v;
 
-	public ModelPlane(Face face, int xmin, int ymin, int zmin, int txWidth, int txHeight) {
-		this.face = face;
+	public ModelPlane(int faceID, int xmin, int ymin, int zmin, int txWidth, int txHeight) {
+		this.faceID = faceID;
 		this.xmin = xmin;
 		this.ymin = ymin;
 		this.zmin = zmin;
@@ -66,8 +64,8 @@ public final class ModelPlane {
 	/**
 	 * @return @see {@link #face}
 	 */
-	public final Face getFace() {
-		return (this.face);
+	public final int getFace() {
+		return (this.faceID);
 	}
 
 	/**

@@ -40,8 +40,8 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 		int y0 = getY();
 		int z0 = getZ();
 		for (int dx = 0; dx < getWidth(); dx++) {
-			for (int dy = 0; dy < getHeight(); dy++) {
-				for (int dz = 0; dz < getDepth(); dz++) {
+			for (int dy = 0; dy < getDepth(); dy++) {
+				for (int dz = 0; dz < getHeight(); dz++) {
 					editableModelLayer.setBlockData(new ModelBlockData(x0 + dx, y0 + dy, z0 + dz));
 				}
 			}
@@ -116,7 +116,7 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 					@Override
 					public boolean onRaycastCoordinates(int x, int y, int z, Vector3i theFace) {
 						// System.out.println(x + " : " + y + " : " + z);
-						if (y < 0 || modelLayer.getBlockData(pos.set(x, y, z)) != null) {
+						if (z < 0 || modelLayer.getBlockData(pos.set(x, y, z)) != null) {
 							int bx = x + theFace.x;
 							int by = y + theFace.y;
 							int bz = z + theFace.z;
@@ -217,11 +217,11 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 		return (Maths.abs(this.firstBlock.x - this.secondBlock.x) + 1);
 	}
 
-	public final int getHeight() {
+	public final int getDepth() {
 		return (Maths.abs(this.firstBlock.y - this.secondBlock.y) + 1);
 	}
 
-	public final int getDepth() {
+	public final int getHeight() {
 		return (Maths.abs(this.firstBlock.z - this.secondBlock.z) + 1);
 	}
 
@@ -232,12 +232,12 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 
 	@Override
 	public float getPositionY() {
-		return ((this.getY() + 0.05f) * this.getBlockSizeUnit());
+		return (this.getY() * this.getBlockSizeUnit());
 	}
 
 	@Override
 	public float getPositionZ() {
-		return (this.getZ() * this.getBlockSizeUnit());
+		return ((this.getZ() + 0.05f) * this.getBlockSizeUnit());
 	}
 
 	@Override
@@ -313,12 +313,12 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 
 	@Override
 	public float getSizeY() {
-		return (this.getHeight() * this.getBlockSizeUnit());
+		return (this.getDepth() * this.getBlockSizeUnit());
 	}
 
 	@Override
 	public float getSizeZ() {
-		return (this.getDepth() * this.getBlockSizeUnit());
+		return (this.getHeight() * this.getBlockSizeUnit());
 	}
 
 	@Override

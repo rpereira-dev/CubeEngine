@@ -36,8 +36,8 @@ public class ModelBlockData {
 		return (copy);
 	}
 
-	public final Color getColor(ModelSkin modelSkin, Face face) {
-		return (this.colors.containsKey(modelSkin) ? this.colors.get(modelSkin)[face.getID()] : null);
+	public final Color getColor(ModelSkin modelSkin, int faceID) {
+		return (this.colors.containsKey(modelSkin) ? this.colors.get(modelSkin)[faceID] : null);
 	}
 
 	public final void setColor(ModelSkin modelSkin, Color color, Face face) {
