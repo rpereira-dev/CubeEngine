@@ -79,17 +79,10 @@ public class CameraPerspectiveWorldCentered extends CameraPerspectiveWorld {
 	 * relative to the center)
 	 */
 	private final void calculateCameraPosition() {
-		this.setCenter(0, 0, 0);
 
-		double h = (this.r * Math.cos(this.getTheta()));
-		double v = (this.r * Math.sin(this.getTheta()));
-
-		float offx = (float) (h * Math.sin(this.getPhi()));
-		float offy = (float) (h * Math.cos(this.getPhi()));
-
-		float x = this.center.x + offx;
-		float y = this.center.y + offy;
-		float z = (float) (center.z + v);
+		float x = (float) (this.center.x + this.r * Math.cos(this.getTheta()) * Math.sin(this.getPhi()));
+		float y = (float) (this.center.y + this.r * Math.cos(this.getTheta()) * Math.cos(this.getPhi()));
+		float z = (float) (this.center.z + this.r * Math.sin(this.getTheta()));
 		super.setPosition(x, y, z);
 
 		// this.setRotX(this.theta + Maths.PI);

@@ -163,16 +163,14 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	}
 
 	/**
-	 * Add a vector to another vector and place the result in a destination
-	 * vector.
+	 * Add a vector to another vector and place the result in a destination vector.
 	 * 
 	 * @param left
 	 *            The LHS vector
 	 * @param right
 	 *            The RHS vector
 	 * @param dest
-	 *            The destination vector, or null if a new vector is to be
-	 *            created
+	 *            The destination vector, or null if a new vector is to be created
 	 * @return the sum of left and right in dest
 	 */
 	public static Vector3f add(Vector3f left, Vector3f right, Vector3f dest) {
@@ -185,16 +183,15 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	}
 
 	/**
-	 * Subtract a vector from another vector and place the result in a
-	 * destination vector.
+	 * Subtract a vector from another vector and place the result in a destination
+	 * vector.
 	 * 
 	 * @param left
 	 *            The LHS vector
 	 * @param right
 	 *            The RHS vector
 	 * @param dest
-	 *            The destination vector, or null if a new vector is to be
-	 *            created
+	 *            The destination vector, or null if a new vector is to be created
 	 * @return left minus right in dest
 	 */
 	public static Vector3f sub(Vector3f left, Vector3f right, Vector3f dest) {
@@ -214,8 +211,7 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	 * @param right
 	 *            The RHS vector
 	 * @param dest
-	 *            The destination result, or null if a new vector is to be
-	 *            created
+	 *            The destination result, or null if a new vector is to be created
 	 * @return left cross right
 	 */
 	public static Vector3f cross(Vector3f left, Vector3f right, Vector3f dest) {
@@ -245,8 +241,7 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	 * Negate a vector and place the result in a destination vector.
 	 * 
 	 * @param dest
-	 *            The destination vector or null if a new vector is to be
-	 *            created
+	 *            The destination vector or null if a new vector is to be created
 	 * @return the negated vector
 	 */
 	public Vector3f negate(Vector3f dest) {
@@ -262,8 +257,7 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	 * Normalise this vector and place the result in another vector.
 	 * 
 	 * @param dest
-	 *            The destination vector, or null if a new vector is to be
-	 *            created
+	 *            The destination vector, or null if a new vector is to be created
 	 * @return the normalised vector
 	 */
 	public Vector3f normalise(Vector3f dest) {
@@ -278,8 +272,8 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	}
 
 	/**
-	 * The dot product of two vectors is calculated as v1.x * v2.x + v1.y * v2.y
-	 * + v1.z * v2.z
+	 * The dot product of two vectors is calculated as v1.x * v2.x + v1.y * v2.y +
+	 * v1.z * v2.z
 	 * 
 	 * @param left
 	 *            The LHS vector
@@ -454,8 +448,12 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 		this.z += vec.z;
 	}
 
+	public static double distance(float ax, float ay, float az, float bx, float by, float bz) {
+		return (Math.sqrt(distanceSquare(ax, ay, az, bx, by, bz)));
+	}
+
 	public static double distance(Vector3f a, Vector3f b) {
-		return (Math.sqrt(Vector3f.distanceSquare(a, b)));
+		return (distance(a.x, a.y, a.z, b.x, b.y, b.z));
 	}
 
 	public static double distanceSquare(Vector3f a, Vector3f b) {
@@ -506,8 +504,8 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	}
 
 	/**
-	 * rotate the vector by 90 degrees around the Y axis (right-handed
-	 * coordinate system)
+	 * rotate the vector by 90 degrees around the Y axis (right-handed coordinate
+	 * system)
 	 */
 	public void rotateY90() {
 		float x = this.x;
@@ -516,8 +514,8 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	}
 
 	/**
-	 * rotate the vector by 270 degrees around the Y axis (right-handed
-	 * coordinate system)
+	 * rotate the vector by 270 degrees around the Y axis (right-handed coordinate
+	 * system)
 	 */
 	public void rotateY270() {
 		float x = this.x;

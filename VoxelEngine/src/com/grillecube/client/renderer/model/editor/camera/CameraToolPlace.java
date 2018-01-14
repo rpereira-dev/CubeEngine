@@ -65,13 +65,39 @@ public class CameraToolPlace extends CameraTool implements Positioneable, Sizeab
 		ModelEditorCamera camera = this.getCamera();
 		camera.getWindow().setCursor(false);
 		camera.getWindow().setCursorCenter();
+
+		float cx = this.getCamera().getPosition().x;
+		float cy = this.getCamera().getPosition().y;
+		float cz = this.getCamera().getPosition().z;
+
+		float cphi = this.getCamera().getPhi();
+		float ctheta = this.getCamera().getTheta();
+		float cr = this.getCamera().getR();
+
 		float u = this.getBlockSizeUnit();
-		float x = 0;// this.firstBlock.x;
-		float y = 0;// this.firstBlock.y;
-		float z = 0;// his.firstBlock.z;
-		this.getCamera().setCenter((x + 0.5f) * u, (y + 0.5f) * u, (z + 0.5f) * u);
-		// this.getCamera().setR((float) Vector3f.distance(this.getCamera().getCenter(),
-		// this.getCamera().getPosition()));
+
+		float x = (this.firstBlock.x + 0.5f) * u;
+		float y = (this.firstBlock.y + 0.5f) * u;
+		float z = (this.firstBlock.z + 0.5f) * u;
+
+		// float dx = x - this.getCamera().getCenter().getX();
+		// float dy = y - this.getCamera().getCenter().getY();
+		// float dz = z - this.getCamera().getCenter().getZ();
+		//
+		// float A = (float) (-dx / cr + Math.cos(ctheta) * Math.sin(cphi));
+		// float B = (float) (-dy / cr + Math.cos(ctheta) * Math.cos(cphi));
+		//
+		// float theta = (float) Math.asin(Math.sin(ctheta) - dz / cr);
+		// float phi = (float) 0.0f;
+
+		float phi = cphi;
+		float theta = ctheta;
+		float r = (float) Vector3f.distance(x, y, z, cx, cy, cz);
+
+		this.getCamera().setCenter(x, y, z);
+		this.getCamera().setR(r);
+		this.getCamera().setPhi(phi);
+		this.getCamera().setTheta(theta);
 	}
 
 	@Override
