@@ -40,6 +40,10 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 	private final GuiButton ry;
 	private final GuiButton rz;
 
+	private final GuiPromptEditor ox;
+	private final GuiPromptEditor oy;
+	private final GuiPromptEditor oz;
+
 	public GuiToolboxModelPanelBuild() {
 		super();
 		this.tools = new GuiSpinnerEditor();
@@ -57,7 +61,9 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.txm = new GuiButton();
 		this.tym = new GuiButton();
 		this.tzm = new GuiButton();
-
+		this.ox = new GuiPromptEditor("origin X", "origin X");
+		this.oy = new GuiPromptEditor("origin Y", "origin Y");
+		this.oz = new GuiPromptEditor("origin Z", "origin Z");
 	}
 
 	@Override
@@ -72,9 +78,28 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.tools.setBox(0, 0.70f, 1.0f, 0.05f, 0);
 		this.addChild(this.tools);
 
+		this.ox.setBox(0, 0.65f, 1.0f, 0.05f, 0);
+		this.oy.setBox(0, 0.60f, 1.0f, 0.05f, 0);
+		this.oz.setBox(0, 0.55f, 1.0f, 0.05f, 0);
+		GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>> listener = new GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>>() {
+			@Override
+			public void invoke(GuiPromptEventHeldTextChanged<GuiPrompt> event) {
+				float x = ox.getPrompt().asFloat(0.0f);
+				float y = oy.getPrompt().asFloat(0.0f);
+				float z = oz.getPrompt().asFloat(0.0f);
+				getSelectedModel().setOrigin(x, y, z);
+			}
+		};
+		this.ox.getPrompt().addListener(listener);
+		this.oy.getPrompt().addListener(listener);
+		this.oz.getPrompt().addListener(listener);
+		this.addChild(ox);
+		this.addChild(oy);
+		this.addChild(oz);
+
 		// layers
 		this.addLayer.setText("Add");
-		this.addLayer.setBox(0.0f, 0.65f, 1 / 3.0f, 0.05f, 0.0f);
+		this.addLayer.setBox(0.0f, 0.50f, 1 / 3.0f, 0.05f, 0.0f);
 		this.addLayer.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.addLayer.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.addLayer.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -90,7 +115,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.addChild(this.addLayer);
 
 		this.layersName.setHint("layers...");
-		this.layersName.setBox(1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0);
+		this.layersName.setBox(1 / 3.0f, 0.50f, 1 / 3.0f, 0.05f, 0);
 		for (EditableModelLayer layer : this.getSelectedModel().getRawLayers().values()) {
 			this.layersName.add(layer.getName());
 		}
@@ -106,7 +131,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.addChild(this.layersName);
 
 		this.removeLayer.setText("Remove");
-		this.removeLayer.setBox(2 * 1 / 3.0f, 0.65f, 1 / 3.0f, 0.05f, 0.0f);
+		this.removeLayer.setBox(2 * 1 / 3.0f, 0.50f, 1 / 3.0f, 0.05f, 0.0f);
 		this.removeLayer.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.removeLayer.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.removeLayer.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -126,7 +151,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.addChild(this.removeLayer);
 
 		// block size unit slider bar
-		this.modelBlockSizeUnit.setBox(0, 0.60f, 1.0f, 0.05f, 0);
+		this.modelBlockSizeUnit.setBox(0, 0.45f, 1.0f, 0.05f, 0);
 		this.modelBlockSizeUnit.getPrompt().addListener(new GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>>() {
 
 			@Override
@@ -140,7 +165,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 
 		// translate
 		this.tx.setText("+X");
-		this.tx.setBox(0.0f, 0.55f, w, 0.05f, 0.0f);
+		this.tx.setBox(0.0f, 0.40f, w, 0.05f, 0.0f);
 		this.tx.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.tx.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.tx.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -154,7 +179,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.addChild(this.tx);
 
 		this.ty.setText("+Y");
-		this.ty.setBox(w, 0.55f, w, 0.05f, 0.0f);
+		this.ty.setBox(w, 0.40f, w, 0.05f, 0.0f);
 		this.ty.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.ty.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.ty.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -168,7 +193,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.addChild(this.ty);
 
 		this.tz.setText("+Z");
-		this.tz.setBox(2.0f * w, 0.55f, w, 0.05f, 0.0f);
+		this.tz.setBox(2.0f * w, 0.40f, w, 0.05f, 0.0f);
 		this.tz.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.tz.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.tz.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -183,7 +208,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 
 		// translate
 		this.txm.setText("-X");
-		this.txm.setBox(0.0f, 0.50f, w, 0.05f, 0.0f);
+		this.txm.setBox(0.0f, 0.35f, w, 0.05f, 0.0f);
 		this.txm.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.txm.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.txm.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -197,7 +222,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.addChild(this.txm);
 
 		this.tym.setText("-Y");
-		this.tym.setBox(w, 0.50f, w, 0.05f, 0.0f);
+		this.tym.setBox(w, 0.35f, w, 0.05f, 0.0f);
 		this.tym.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.tym.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.tym.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -211,7 +236,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.addChild(this.tym);
 
 		this.tzm.setText("-Z");
-		this.tzm.setBox(2.0f * w, 0.50f, w, 0.05f, 0.0f);
+		this.tzm.setBox(2.0f * w, 0.35f, w, 0.05f, 0.0f);
 		this.tzm.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.tzm.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.tzm.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -226,7 +251,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 
 		// rotate
 		this.rx.setText("RX");
-		this.rx.setBox(0.0f, 0.45f, w, 0.05f, 0.0f);
+		this.rx.setBox(0.0f, 0.30f, w, 0.05f, 0.0f);
 		this.rx.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.rx.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.rx.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -240,7 +265,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.addChild(this.rx);
 
 		this.ry.setText("RY");
-		this.ry.setBox(w, 0.45f, w, 0.05f, 0.0f);
+		this.ry.setBox(w, 0.30f, w, 0.05f, 0.0f);
 		this.ry.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.ry.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.ry.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -254,7 +279,7 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		this.addChild(this.ry);
 
 		this.rz.setText("RZ");
-		this.rz.setBox(2.0f * w, 0.45f, w, 0.05f, 0.0f);
+		this.rz.setBox(2.0f * w, 0.30f, w, 0.05f, 0.0f);
 		this.rz.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.rz.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.rz.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
@@ -287,6 +312,10 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 		if (layer != null) {
 			this.modelBlockSizeUnit.setValue(layer.getBlockSizeUnit());
 		}
+
+		this.ox.setValue(this.getSelectedModel().getOrigin().x);
+		this.oy.setValue(this.getSelectedModel().getOrigin().y);
+		this.oz.setValue(this.getSelectedModel().getOrigin().z);
 	}
 
 	private final void onBlockSizeUnitChanged() {

@@ -199,12 +199,6 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 				e.printStackTrace();
 			}
 		}
-
-		/*
-		 * new CameraToolPlace(guiModelView), new CameraToolRemove(guiModelView), new
-		 * CameraToolPaint(guiModelView), new CameraToolFillSurface(guiModelView), new
-		 * CameraToolExtrude(guiModelView), new CameraToolRigging(guiModelView) };
-		 */
 	}
 
 }

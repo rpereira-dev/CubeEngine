@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelInitializer;
+import com.grillecube.common.maths.Vector3f;
 
 public class EditableModel extends Model {
 
@@ -15,6 +16,9 @@ public class EditableModel extends Model {
 	private boolean meshUpToDate;
 	private final EditableModelMeshingEvent meshingEvent;
 
+	/** center coordinate of this model, vertices are translated before export */
+	private final Vector3f origin;
+
 	public EditableModel() {
 		this(null);
 	}
@@ -23,6 +27,15 @@ public class EditableModel extends Model {
 		super(modelInitializer);
 		this.blocksDataLayers = new HashMap<String, EditableModelLayer>();
 		this.meshingEvent = new EditableModelMeshingEvent(this);
+		this.origin = new Vector3f(0, 0, 0);
+	}
+
+	public final Vector3f getOrigin() {
+		return (this.origin);
+	}
+
+	public final void setOrigin(float x, float y, float z) {
+		this.origin.set(x, y, z);
 	}
 
 	/** return raw blocks data */
