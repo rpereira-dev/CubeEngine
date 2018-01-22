@@ -21,10 +21,10 @@ public interface Face {
 
 	public static final int NULL = -1;
 
-	/** z - */
+	/** z + */
 	public static final int TOP = 0;
 
-	/** z + */
+	/** z - */
 	public static final int BOT = 1;
 
 	/** y + */
@@ -73,40 +73,40 @@ public interface Face {
 
 	public static Face fromVec(Vector3f vec) {
 		if (vec.x > 0 && vec.x > vec.y && vec.x > vec.z) {
-			return (Face.get(Face.BACK));
-		}
-		if (vec.x < 0 && vec.x < vec.y && vec.x < vec.z) {
 			return (Face.get(Face.FRONT));
 		}
+		if (vec.x < 0 && vec.x < vec.y && vec.x < vec.z) {
+			return (Face.get(Face.BACK));
+		}
 		if (vec.y > 0 && vec.y > vec.x && vec.y > vec.z) {
-			return (Face.get(Face.TOP));
-		}
-		if (vec.y < 0 && vec.y < vec.x && vec.y < vec.z) {
-			return (Face.get(Face.BOT));
-		}
-		if (vec.z > 0 && vec.z > vec.x && vec.z > vec.y) {
 			return (Face.get(Face.RIGHT));
 		}
-		return (Face.get(Face.LEFT));
+		if (vec.y < 0 && vec.y < vec.x && vec.y < vec.z) {
+			return (Face.get(Face.LEFT));
+		}
+		if (vec.z > 0 && vec.z > vec.x && vec.z > vec.y) {
+			return (Face.get(Face.TOP));
+		}
+		return (Face.get(Face.BOT));
 	}
 
 	public static Face fromVec(Vector3i vec) {
 		if (vec.x > 0 && vec.x > vec.y && vec.x > vec.z) {
-			return (Face.get(Face.BACK));
-		}
-		if (vec.x < 0 && vec.x < vec.y && vec.x < vec.z) {
 			return (Face.get(Face.FRONT));
 		}
+		if (vec.x < 0 && vec.x < vec.y && vec.x < vec.z) {
+			return (Face.get(Face.BACK));
+		}
 		if (vec.y > 0 && vec.y > vec.x && vec.y > vec.z) {
-			return (Face.get(Face.TOP));
-		}
-		if (vec.y < 0 && vec.y < vec.x && vec.y < vec.z) {
-			return (Face.get(Face.BOT));
-		}
-		if (vec.z > 0 && vec.z > vec.x && vec.z > vec.y) {
 			return (Face.get(Face.RIGHT));
 		}
-		return (Face.get(Face.LEFT));
+		if (vec.y < 0 && vec.y < vec.x && vec.y < vec.z) {
+			return (Face.get(Face.LEFT));
+		}
+		if (vec.z > 0 && vec.z > vec.x && vec.z > vec.y) {
+			return (Face.get(Face.TOP));
+		}
+		return (Face.get(Face.BOT));
 	}
 
 	public Vector3i getAllowedTranslation();

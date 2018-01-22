@@ -15,7 +15,6 @@
 package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
@@ -119,7 +118,7 @@ public class GuiViewDebug extends GuiView {
 
 			if (cam instanceof ModelEditorCamera) {
 				builder.append("\n");
-				builder.append(((ModelEditorCamera) cam).getTool().getName());
+				builder.append(ModelEditorCamera.TOOLS_NAME[((ModelEditorCamera) cam).getToolID()]);
 			}
 		}
 

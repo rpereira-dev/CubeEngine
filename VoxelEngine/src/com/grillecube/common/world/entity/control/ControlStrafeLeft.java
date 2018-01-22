@@ -14,7 +14,7 @@ public class ControlStrafeLeft extends Control<Entity> {
 
 		// set control velocity, and move
 		Vector3f view = entity.getViewVector();
-		entity.setPositionVelocity(view.z * entity.getSpeed(), 0.0f, -view.x * entity.getSpeed());
+		entity.setPositionVelocity(-view.y * entity.getSpeed(), view.x * entity.getSpeed(), 0.0f);
 		PhysicObject.move(entity.getWorld(), entity, dt);
 
 		// reset velocities

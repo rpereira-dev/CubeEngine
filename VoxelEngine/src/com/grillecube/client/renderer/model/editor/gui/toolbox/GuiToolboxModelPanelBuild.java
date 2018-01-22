@@ -10,6 +10,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventClick;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
+import com.grillecube.client.renderer.model.editor.camera.ModelEditorCamera;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
@@ -63,12 +64,10 @@ public class GuiToolboxModelPanelBuild extends GuiToolboxModelPanel {
 	public final void onInitialized(GuiRenderer guiRenderer) {
 
 		this.tools.setHint("Tools...");
-		this.tools.add(0, "Place");
-		this.tools.add(1, "Remove");
-		this.tools.add(2, "Paint");
-		this.tools.add(3, "Fill surface");
-		this.tools.add(4, "Extrude");
-		this.tools.add(5, "Rigging");
+		for (int i = 0; i < ModelEditorCamera.TOOLS_NAME.length; i++) {
+			this.tools.add(i, ModelEditorCamera.TOOLS_NAME[i]);
+		}
+
 		this.tools.pick(0);
 		this.tools.setBox(0, 0.70f, 1.0f, 0.05f, 0);
 		this.addChild(this.tools);

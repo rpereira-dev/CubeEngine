@@ -166,12 +166,10 @@ public abstract class Entity extends PhysicObject {
 	 */
 	private final void updateRotation(double dt) {
 		// update looking vector
-		double rx = Math.toRadians(this.getRotationX());
-		double ry = Math.toRadians(this.getRotationY());
-		float f = (float) Math.cos(rx);
-		this.lookVec.setX((float) (f * Math.sin(ry)));
-		this.lookVec.setY((float) -Math.sin(rx));
-		this.lookVec.setZ((float) (f * Math.cos(ry)));
+		this.lookVec.x = (float) (Math.sin(this.getRotationZ()) * Math.sin(-this.getRotationX()));
+		this.lookVec.y = (float) (Math.cos(this.getRotationZ()) * Math.sin(-this.getRotationX()));
+		this.lookVec.z = (float) (-Math.cos(-this.getRotationX()));
+
 		this.lookVec.normalise();
 
 		Rotationable.rotate(this, dt);
@@ -221,11 +219,11 @@ public abstract class Entity extends PhysicObject {
 
 		// update velocity of this entity (integrate)
 		Positioneable.velocity(this, dt);
-
+		// this.setPosition(0, 0, 16);
 		// if this entity is part of a world
 		if (this.getWorld() != null) {
 			// move with collision detection
-			PhysicObject.move(this.getWorld(), this, dt);
+			PhysicObject.move(this.getWorld(), this, (float) dt);
 		} else {
 			Positioneable.position(this, dt);
 		}

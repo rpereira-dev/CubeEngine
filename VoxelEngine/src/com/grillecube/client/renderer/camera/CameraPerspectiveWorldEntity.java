@@ -24,8 +24,10 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 	public void update() {
 		super.update();
 		float x = this.getEntity().getPositionX() + this.getEntity().getSizeX() * 0.5f;
-		float y = this.getEntity().getPositionY() + this.getEntity().getSizeY() * 1.0f;
-		float z = this.getEntity().getPositionZ() + this.getEntity().getSizeZ() * 0.5f;
+		float y = this.getEntity().getPositionY() + this.getEntity().getSizeY() * 0.5f;
+		float z = this.getEntity().getPositionZ() + this.getEntity().getSizeZ() * 1.0f;
+		this.getEntity().setRotation(this.getRotX(), this.getRotY(), this.getRotZ());
+
 		super.setCenter(x, y, z);
 
 		if (GLH.glhGetWindow().isKeyPressed(GLFW.GLFW_KEY_SPACE)) {
@@ -65,10 +67,13 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 			float angle = (float) ((window.getMouseDX()) * 0.3f);
 			super.increaseRotZ(-angle);
 		} else {
-			super.increaseRotX((float) (window.getMouseDY() * 0.1f));
-			super.increaseRotZ((float) -window.getMouseDX() * 0.2f);
-			this.entity.setRotationZ(this.getRotZ());
+
+			super.increaseTheta((float) (super.getWindow().getMouseDY()) * 0.005f);
+			super.increasePhi((float) ((super.getWindow().getMouseDX()) * 0.005f));
 		}
+		// this.getEntity().setPosition(0, 0, 16);
+		// this.getEntity().setPositionVelocity(0, 0, 0);
+
 	}
 
 	@Override
@@ -93,7 +98,11 @@ public class CameraPerspectiveWorldEntity extends CameraPerspectiveWorldCentered
 	}
 
 	@Override
-	public void setRotY(float yaw) {
-		super.setRotY(yaw + this.getEntity().getRotationY());
+	public void setRotY(float y) {
+		if (this.getEntity() != null) {
+			super.setRotY(y + this.getEntity().getRotationY());
+		} else {
+			super.setRotY(y);
+		}
 	}
 }

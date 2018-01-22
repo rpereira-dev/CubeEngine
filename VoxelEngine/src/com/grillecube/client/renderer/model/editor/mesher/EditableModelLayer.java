@@ -12,8 +12,7 @@ public class EditableModelLayer {
 	private ArrayList<ModelPlane> planes;
 
 	/**
-	 * the size of a single block of this model (N.B: a terrain block size is
-	 * 1.0f)
+	 * the size of a single block of this model (N.B: a terrain block size is 1.0f)
 	 */
 	private float blockSizeUnit;
 
@@ -40,10 +39,11 @@ public class EditableModelLayer {
 
 	/**
 	 * set the block data for this model, may cause crash if capacity isnt
-	 * enough, @see {@link #setBlockData(ModelBlockData, int, int, int)} to
-	 * ensure the capacity automatically
+	 * enough, @see {@link #setBlockData(ModelBlockData, int, int, int)} to ensure
+	 * the capacity automatically
 	 */
-	public final void setBlockData(ModelBlockData blockData) {
+	public final boolean setBlockData(ModelBlockData blockData) {
+
 		this.blocksData.put(blockData.getPos(), blockData);
 		if (blockData.getPos().x < this.minx) {
 			this.minx = blockData.getPos().x;
@@ -68,6 +68,7 @@ public class EditableModelLayer {
 		if (blockData.getPos().z > this.maxz) {
 			this.maxz = blockData.getPos().z;
 		}
+		return (true);
 	}
 
 	private final void updateMinMax() {
@@ -130,7 +131,7 @@ public class EditableModelLayer {
 
 		copy.blockSizeUnit = this.blockSizeUnit;
 		copy.isVisible = this.isVisible;
-		
+
 		copy.planes.addAll(this.planes);
 
 		return (copy);
@@ -254,11 +255,10 @@ public class EditableModelLayer {
 	}
 
 	/**
-	 * the size of a single block of this model (N.B: a terrain block size is
-	 * 1.0f).
+	 * the size of a single block of this model (N.B: a terrain block size is 1.0f).
 	 * 
-	 * Notice that each block of a model has the same size, they are "uniforms"
-	 * to make things easier for now
+	 * Notice that each block of a model has the same size, they are "uniforms" to
+	 * make things easier for now
 	 */
 	public final void setBlockSizeUnit(float size) {
 		this.blockSizeUnit = size;

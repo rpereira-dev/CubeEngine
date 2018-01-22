@@ -3,10 +3,8 @@ package com.grillecube.common.world.entity.collision;
 import java.util.ArrayList;
 
 import com.grillecube.common.Logger;
-import com.grillecube.common.Logger.Level;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 
 /**
@@ -119,8 +117,8 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 	}
 
 	/**
-	 * move the given physic object in the given world, moving at velocity (vx,
-	 * vy, vz) for a time of 'dt'
+	 * move the given physic object in the given world, moving at velocity (vx, vy,
+	 * vz) for a time of 'dt'
 	 * 
 	 * @param world
 	 * @param physicObject
@@ -171,25 +169,29 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 			maxz = z + sz;
 		}
 
-//		Logger.get().log(Level.DEBUG, minx, miny, minz, maxx, maxy, maxz);
+		// Logger.get().log(Level.DEBUG, minx, miny, minz, maxx, maxy, maxz);
 		int i = 0;
 		while (dt > Maths.ESPILON) {
-			ArrayList<PhysicObject> objects = world.getCollidingPhysicObjects(physicObject, minx, miny, minz, maxx, maxy, maxz);
-			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(physicObject, objects);
+			ArrayList<PhysicObject> objects = world.getCollidingPhysicObjects(physicObject, minx, miny, minz, maxx,
+					maxy, maxz);
+			CollisionDetection collisionDetection = CollisionDetection.detect(physicObject, objects, dt);
 			// if no collision, move
-			if (collisionResponse == null || collisionResponse.dt > dt) {
+			// System.out.println(collisionResponse);;
+
+			if (collisionDetection == null || collisionDetection.dt >= dt) {
 				Positioneable.position(physicObject, dt);
 				break;
 			}
 
 			// if collision, move just before it collides
-			Positioneable.position(physicObject, collisionResponse.dt);
+			Positioneable.position(physicObject, collisionDetection.dt);
 
 			// dt now contains the remaning time
-			dt -= collisionResponse.dt;
+			dt -= collisionDetection.dt;
 
 			// stick right before collision, and continue collisions
-			Collision.deflects(physicObject, collisionResponse, 0.15f);
+			CollisionResponse.deflects(physicObject, collisionDetection, 0.00001f);
+			// CollisionResponse.push(physicObject, collisionDetection);
 
 			if (++i >= 5) {
 				Logger.get().log(Logger.Level.WARNING,

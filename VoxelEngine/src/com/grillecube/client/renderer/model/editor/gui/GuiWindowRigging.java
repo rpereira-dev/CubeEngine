@@ -11,7 +11,7 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.model.animation.Bone;
-import com.grillecube.client.renderer.model.editor.camera.CameraToolRigging;
+import com.grillecube.client.renderer.model.editor.camera.CameraSelector;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.editor.mesher.ModelBlockData;
 import com.grillecube.common.maths.Maths;
@@ -26,7 +26,7 @@ public class GuiWindowRigging extends GuiWindow {
 	private final GuiButton confirm;
 	private final GuiButton cancel;
 
-	public GuiWindowRigging(CameraToolRigging cameraToolRigging) {
+	public GuiWindowRigging(CameraSelector cameraSelector) {
 		super();
 
 		super.setBox(0.25f, 0.25f, 0.5f, 0.5f, 0.0f);
@@ -50,7 +50,7 @@ public class GuiWindowRigging extends GuiWindow {
 		for (int i = 0; i < 3; i++) {
 			this.bones[i] = new GuiSpinnerEditor();
 			this.bones[i].add(null);
-			for (Bone bone : cameraToolRigging.getModel().getSkeleton().getBones()) {
+			for (Bone bone : cameraSelector.getModel().getSkeleton().getBones()) {
 				this.bones[i].add(bone.getName());
 			}
 			this.bones[i].setBox(0.35f, 0.65f - i * h, w, h, 0.0f);
@@ -75,13 +75,13 @@ public class GuiWindowRigging extends GuiWindow {
 		this.confirm.addTextParameter(txtCenter);
 		this.confirm.setBox(0.25f, 0.15f, w, h, 0.0f);
 		this.addChild(this.confirm);
-		final EditableModelLayer modelLayer = cameraToolRigging.getModelLayer();
-		final int x0 = Maths.min(cameraToolRigging.getX(), modelLayer.getMinx());
-		final int y0 = Maths.min(cameraToolRigging.getY(), modelLayer.getMiny());
-		final int z0 = Maths.min(cameraToolRigging.getZ(), modelLayer.getMinz());
-		final int width = Maths.min(cameraToolRigging.getWidth(), modelLayer.getMaxx() - modelLayer.getMinx());
-		final int height = Maths.min(cameraToolRigging.getHeight(), modelLayer.getMaxy() - modelLayer.getMiny());
-		final int depth = Maths.min(cameraToolRigging.getDepth(), modelLayer.getMaxz() - modelLayer.getMinz());
+		final EditableModelLayer modelLayer = cameraSelector.getModelLayer();
+		final int x0 = Maths.min(cameraSelector.getX(), modelLayer.getMinx());
+		final int y0 = Maths.min(cameraSelector.getY(), modelLayer.getMiny());
+		final int z0 = Maths.min(cameraSelector.getZ(), modelLayer.getMinz());
+		final int width = Maths.min(cameraSelector.getWidth(), modelLayer.getMaxx() - modelLayer.getMinx());
+		final int height = Maths.min(cameraSelector.getHeight(), modelLayer.getMaxy() - modelLayer.getMiny());
+		final int depth = Maths.min(cameraSelector.getDepth(), modelLayer.getMaxz() - modelLayer.getMinz());
 		this.confirm.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventPress<GuiButton> event) {

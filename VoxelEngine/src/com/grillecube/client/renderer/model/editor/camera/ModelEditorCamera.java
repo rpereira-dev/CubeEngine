@@ -15,6 +15,7 @@ import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.maths.Maths;
+import com.grillecube.common.utils.Color;
 
 public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 
@@ -47,46 +48,56 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 	@Override
 	public void update() {
 		super.update();
-		this.tools[this.toolID].update();
+		if (this.getTool() != null) {
+			this.getTool().update();
+		}
 	}
 
-	public void setTool(int toolID) {
+	public final void setTool(int toolID) {
 		this.toolID = toolID;
 	}
 
+	public final CameraTool getTool() {
+		return (this.tools != null ? this.tools[this.toolID] : null);
+	}
+
+	public final int getToolID() {
+		return (this.toolID);
+	}
+
 	public void onRightReleased() {
-		if (this.tools[this.toolID] != null) {
-			this.tools[this.toolID].onRightReleased();
+		if (this.getTool() != null) {
+			this.getTool().getCameraSelector().onRightReleased();
 		}
 	}
 
 	public void onMouseMove() {
-		if (this.tools[this.toolID] != null) {
-			this.tools[this.toolID].onMouseMove();
+		if (this.getTool() != null) {
+			this.getTool().getCameraSelector().onMouseMove();
 		}
 	}
 
 	public void onMouseScroll(GuiEventMouseScroll<GuiModelView> event) {
-		if (this.tools[this.toolID] != null) {
-			this.tools[this.toolID].onMouseScroll(event);
+		if (this.getTool() != null) {
+			this.getTool().getCameraSelector().onMouseScroll(event);
 		}
 	}
 
 	public void onRightPressed() {
-		if (this.tools[this.toolID] != null) {
-			this.tools[this.toolID].onRightPressed();
+		if (this.getTool() != null) {
+			this.getTool().getCameraSelector().onRightPressed();
 		}
 	}
 
 	public void onLeftReleased() {
-		if (this.tools[this.toolID] != null) {
-			this.tools[this.toolID].onLeftReleased();
+		if (this.getTool() != null) {
+			this.getTool().getCameraSelector().onLeftReleased();
 		}
 	}
 
 	public void onLeftPressed() {
-		if (this.tools[this.toolID] != null) {
-			this.tools[this.toolID].onLeftPressed();
+		if (this.getTool() != null) {
+			this.getTool().getCameraSelector().onLeftPressed();
 		}
 	}
 
@@ -148,7 +159,7 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 						}
 					};
 
-					if (this.tools[this.toolID].action(modelInstance, modelLayer)) {
+					if (this.getTool().getCameraAction().action(this.getTool().getCameraSelector())) {
 						// generate mesh, save
 						while (this.oldStates.size() >= HISTORIC_MAX_DEPTH) {
 							this.oldStates.pop();
@@ -163,13 +174,37 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 		}
 	}
 
+	public static final String[] TOOLS_NAME = { "Place", "Remove", "Paint", "Fill Surface", "Extrude", "Rigging" };
+
+	public static final Color[] TOOLS_COLOR = { Color.BLUE, Color.RED, Color.BLUE, Color.ORANGE, Color.YELLOW,
+			Color.GREEN };
+
+	public static final CameraAction[] TOOLS_ACTIONS = { new CameraActionPlace(), new CameraActionRemove(),
+			new CameraActionPaint(), new CameraActionFillSurface(), new CameraActionExtrude(),
+			new CameraActionRigging() };
+
+	public static final Class<?>[] TOOLS_SELECTORS = { CameraSelectorBlockFace.class, CameraSelectorBlock.class,
+			CameraSelectorFace.class, CameraSelectorFace.class, CameraSelectorFace.class, CameraSelectorFace.class };
+
 	public final void loadTools(GuiModelView guiModelView) {
-		this.tools = new CameraTool[] { new CameraToolPlace(guiModelView), new CameraToolRemove(guiModelView),
-				new CameraToolPaint(guiModelView), new CameraToolFillSurface(guiModelView),
-				new CameraToolExtrude(guiModelView), new CameraToolRigging(guiModelView) };
+		this.tools = new CameraTool[TOOLS_NAME.length];
+		for (int i = 0; i < this.tools.length; i++) {
+			Class<?> selector = TOOLS_SELECTORS[i];
+			CameraSelector cameraSelector;
+			try {
+				cameraSelector = (CameraSelector) selector.getConstructor(GuiModelView.class, Color.class)
+						.newInstance(guiModelView, TOOLS_COLOR[i]);
+				this.tools[i] = new CameraTool(TOOLS_ACTIONS[i], cameraSelector);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		/*
+		 * new CameraToolPlace(guiModelView), new CameraToolRemove(guiModelView), new
+		 * CameraToolPaint(guiModelView), new CameraToolFillSurface(guiModelView), new
+		 * CameraToolExtrude(guiModelView), new CameraToolRigging(guiModelView) };
+		 */
 	}
 
-	public CameraTool getTool() {
-		return (this.tools != null ? this.tools[this.toolID] : null);
-	}
 }
