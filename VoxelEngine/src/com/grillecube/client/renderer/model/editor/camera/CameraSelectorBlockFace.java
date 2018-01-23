@@ -1,5 +1,6 @@
 package com.grillecube.client.renderer.model.editor.camera;
 
+import com.grillecube.client.renderer.camera.CameraDestinationCenter;
 import com.grillecube.client.renderer.camera.CameraPicker;
 import com.grillecube.client.renderer.camera.Raycasting;
 import com.grillecube.client.renderer.camera.RaycastingCallback;
@@ -145,38 +146,23 @@ public class CameraSelectorBlockFace extends CameraSelector {
 		camera.getWindow().setCursor(false);
 		camera.getWindow().setCursorCenter();
 
-		float cx = this.getCamera().getPosition().x;
-		float cy = this.getCamera().getPosition().y;
-		float cz = this.getCamera().getPosition().z;
+		float cx = (this.firstBlock.x + 0.5f) * this.getBlockSizeUnit();
+		float cy = (this.firstBlock.y + 0.5f) * this.getBlockSizeUnit();
+		float cz = (this.firstBlock.z + 0.5f) * this.getBlockSizeUnit();
 
-		float cphi = this.getCamera().getPhi();
-		float ctheta = this.getCamera().getTheta();
-		// float cr = this.getCamera().getR();
+		float X = camera.getPosition().x - cx;
+		float Y = camera.getPosition().y - cy;
+		float Z = camera.getPosition().z - cz;
 
-		float u = this.getBlockSizeUnit();
-
-		float x = (this.firstBlock.x + 0.5f) * u;
-		float y = (this.firstBlock.y + 0.5f) * u;
-		float z = (this.firstBlock.z + 0.5f) * u;
-
-		// float dx = x - this.getCamera().getCenter().getX();
-		// float dy = y - this.getCamera().getCenter().getY();
-		// float dz = z - this.getCamera().getCenter().getZ();
-		//
-		// float A = (float) (-dx / cr + Math.cos(ctheta) * Math.sin(cphi));
-		// float B = (float) (-dy / cr + Math.cos(ctheta) * Math.cos(cphi));
-		//
-		// float theta = (float) Math.asin(Math.sin(ctheta) - dz / cr);
-		// float phi = (float) 0.0f;
-
-		float phi = cphi;
-		float theta = ctheta;
-		float r = (float) Vector3f.distance(x, y, z, cx, cy, cz);
-
-		this.getCamera().setCenter(x, y, z);
-		this.getCamera().setR(r);
-		this.getCamera().setPhi(phi);
-		this.getCamera().setTheta(theta);
+		float r = Maths.sqrt(X * X + Y * Y + Z * Z);
+		float theta = Maths.asin(Z / r);
+		float phi = camera.getPhi();// (float) Math.atan2(X, Y);
+		Vector3f center = new Vector3f(cx, cy, cz);
+		// camera.setCenter(center);
+		// camera.setR(r);
+		// camera.setTheta(theta);
+		// camera.setPhi(phi);
+		camera.addDestination(new CameraDestinationCenter(r, phi, theta, center, 0.2f));
 	}
 
 	@Override

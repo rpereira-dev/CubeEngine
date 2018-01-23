@@ -211,4 +211,9 @@ public class Maths {
 
 	}
 
+	/** return the given angle normalize in [-PI, PI] */
+	public static float angleModPI(float angle) {
+		return (float) Math.atan2(Math.sin(angle), Math.cos(angle));
+	}
+
 }

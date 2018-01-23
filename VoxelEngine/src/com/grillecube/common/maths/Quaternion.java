@@ -76,13 +76,13 @@ public class Quaternion {
 	/**
 	 * convert euler angles to quaternion
 	 * 
-	 * @param pitch
-	 * @param yaw
-	 * @param roll
+	 * @param rx
+	 * @param ry
+	 * @param rz
 	 * @return
 	 */
-	public static final Quaternion toQuaternion(double pitch, double yaw, double roll) {
-		return (toQuaternion(null, pitch, yaw, roll));
+	public static final Quaternion toQuaternion(double rx, double ry, double rz) {
+		return (toQuaternion(null, rx, ry, rz));
 	}
 
 	/**

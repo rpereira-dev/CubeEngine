@@ -27,6 +27,7 @@ import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Maths;
+import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldFlat;
@@ -37,6 +38,7 @@ public class GuiModelView extends Gui {
 	private ArrayList<ModelInstance> modelInstances;
 	private GuiViewWorld guiViewWorld;
 	private ModelEditorCamera camera;
+	private GuiButton view;
 	private GuiButton rotateX;
 	private GuiButton rotateY;
 	private GuiButton rotateZ;
@@ -60,6 +62,21 @@ public class GuiModelView extends Gui {
 		this.camera.loadTools(this);
 		this.addChild(new GuiViewDebug(camera));
 
+		this.view = new GuiButton();
+		this.view.setBox(0.80f, 0.95f, 0.05f, 0.05f, 0.0f);
+		this.view.setText("P");
+		this.addChild(this.view);
+		this.view.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
+			@Override
+			public void invoke(GuiEventPress<GuiButton> event) {
+				getCamera().setCenter(getSelectedModel() == null ? Vector3f.NULL_VEC : getSelectedModel().getOrigin());
+				float phi = getCamera().getPhi() - getCamera().getPhi() % (2.0f * Maths.PI) + Maths.PI_4 - Maths.PI_2;
+				float theta = getCamera().getTheta() - getCamera().getTheta() % (2.0f * Maths.PI) + Maths.PI_4 / 2.0f;
+				getCamera().addDestination(
+						new CameraDestinationCenter(getCamera().getR(), phi, theta, getCamera().getCenter(), 1));
+			}
+		});
+
 		this.rotateX = new GuiButton();
 		this.rotateX.setBox(0.85f, 0.95f, 0.05f, 0.05f, 0.0f);
 		this.rotateX.setText("X");
@@ -67,10 +84,11 @@ public class GuiModelView extends Gui {
 		this.rotateX.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventPress<GuiButton> event) {
-				getCamera().setCenter(getSelectedModel().getOrigin());
+				getCamera().setCenter(getSelectedModel() == null ? Vector3f.NULL_VEC : getSelectedModel().getOrigin());
 				float phi = getCamera().getPhi() - getCamera().getPhi() % (2.0f * Maths.PI) - Maths.PI_2;
 				float theta = getCamera().getTheta() - getCamera().getTheta() % (2.0f * Maths.PI);
-				getCamera().addDestination(new CameraDestinationCenter(getCamera().getR(), phi, theta, 1));
+				getCamera().addDestination(
+						new CameraDestinationCenter(getCamera().getR(), phi, theta, getCamera().getCenter(), 1));
 			}
 		});
 
@@ -81,10 +99,11 @@ public class GuiModelView extends Gui {
 		this.rotateY.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventPress<GuiButton> event) {
-				getCamera().setCenter(getSelectedModel().getOrigin());
+				getCamera().setCenter(getSelectedModel() == null ? Vector3f.NULL_VEC : getSelectedModel().getOrigin());
 				float phi = getCamera().getPhi() - getCamera().getPhi() % (2.0f * Maths.PI);
 				float theta = getCamera().getTheta() - getCamera().getTheta() % (2.0f * Maths.PI);
-				getCamera().addDestination(new CameraDestinationCenter(getCamera().getR(), phi, theta, 1));
+				getCamera().addDestination(
+						new CameraDestinationCenter(getCamera().getR(), phi, theta, getCamera().getCenter(), 1));
 			}
 		});
 
@@ -95,10 +114,11 @@ public class GuiModelView extends Gui {
 		this.rotateZ.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventPress<GuiButton> event) {
-				getCamera().setCenter(getSelectedModel().getOrigin());
+				getCamera().setCenter(getSelectedModel() == null ? Vector3f.NULL_VEC : getSelectedModel().getOrigin());
 				float phi = getCamera().getPhi() - getCamera().getPhi() % (2.0f * Maths.PI) - Maths.PI_2;
 				float theta = getCamera().getPhi() - getCamera().getPhi() % (2.0f * Maths.PI) + Maths.PI_2;
-				getCamera().addDestination(new CameraDestinationCenter(getCamera().getR(), phi, theta, 1));
+				getCamera().addDestination(
+						new CameraDestinationCenter(getCamera().getR(), phi, theta, getCamera().getCenter(), 1));
 			}
 		});
 

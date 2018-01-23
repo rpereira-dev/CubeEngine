@@ -38,24 +38,24 @@ public class CameraPerspectiveWorldCentered extends CameraPerspectiveWorld {
 		return (this.theta);
 	}
 
-	public final void setTheta(float x) {
-		this.theta = x;
+	public final void setTheta(float theta) {
+		this.theta = theta;
 	}
 
 	public final void increaseTheta(float x) {
-		this.theta += x;
+		this.setTheta(this.theta + x);
 	}
 
 	public final float getPhi() {
 		return (this.phi);
 	}
 
-	public final void setPhi(float y) {
-		this.phi = y;
+	public final void setPhi(float phi) {
+		this.phi = phi;
 	}
 
 	public final void increasePhi(float y) {
-		this.phi += y;
+		this.setPhi(this.phi + y);
 	}
 
 	public final void setR(float r) {
@@ -67,7 +67,7 @@ public class CameraPerspectiveWorldCentered extends CameraPerspectiveWorld {
 	}
 
 	public final void increaseR(float dr) {
-		this.r += dr;
+		this.setR(this.r + dr);
 	}
 
 	public final Vector3f getCenter() {
