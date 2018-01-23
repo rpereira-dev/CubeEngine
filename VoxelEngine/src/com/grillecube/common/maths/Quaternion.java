@@ -69,19 +69,7 @@ public class Quaternion {
 		if (dst == null) {
 			dst = new Quaternion();
 		}
-
-		// Abbreviations for the various angular functions
-		double cy = Math.cos(roll * 0.5);
-		double sy = Math.sin(roll * 0.5);
-		double cr = Math.cos(yaw * 0.5);
-		double sr = Math.sin(yaw * 0.5);
-		double cp = Math.cos(pitch * 0.5);
-		double sp = Math.sin(pitch * 0.5);
-
-		dst.w = (float) (cy * cr * cp + sy * sr * sp);
-		dst.x = (float) (cy * sr * cp - sy * cr * sp);
-		dst.y = (float) (cy * cr * sp + sy * sr * cp);
-		dst.z = (float) (sy * cr * cp - cy * sr * sp);
+		dst.set(pitch, yaw, roll);
 		return (dst);
 	}
 
@@ -115,20 +103,40 @@ public class Quaternion {
 		if (rotate == null) {
 			rotate = new Vector3f();
 		}
+		rotate.x = toEulerAngleX(x, y, z, w);
+		rotate.y = toEulerAngleY(x, y, z, w);
+		rotate.z = toEulerAngleZ(x, y, z, w);
 
+		return (rotate);
+	}
+
+	public static final float toEulerAngleX(Quaternion q) {
+		return (toEulerAngleX(q.x, q.y, q.z, q.w));
+	}
+
+	public static final float toEulerAngleY(Quaternion q) {
+		return (toEulerAngleY(q.x, q.y, q.z, q.w));
+	}
+
+	public static final float toEulerAngleZ(Quaternion q) {
+		return (toEulerAngleZ(q.x, q.y, q.z, q.w));
+	}
+
+	public static final float toEulerAngleX(float x, float y, float z, float w) {
+		double sinp = +2.0 * (w * y - z * x);
+		return ((float) (Math.abs(sinp) >= 1 ? Math.PI / 2.0f : Math.asin(sinp)));
+	}
+
+	public static final float toEulerAngleY(float x, float y, float z, float w) {
 		double sinr = +2.0 * (w * x + y * z);
 		double cosr = +1.0 - 2.0 * (x * x + y * y);
+		return ((float) Math.atan2(sinr, cosr));
+	}
 
-		double sinp = +2.0 * (w * y - z * x);
-		rotate.x = (float) (Math.abs(sinp) >= 1 ? Math.PI / 2.0f : Math.asin(sinp));
-
-		rotate.y = (float) Math.atan2(sinr, cosr);
-
+	public static final float toEulerAngleZ(float x, float y, float z, float w) {
 		double siny = +2.0 * (w * z + x * y);
 		double cosy = +1.0 - 2.0 * (y * y + z * z);
-		rotate.z = (float) Math.atan2(siny, cosy);
-		return (rotate);
-
+		return ((float) Math.atan2(siny, cosy));
 	}
 
 	/**
@@ -259,6 +267,28 @@ public class Quaternion {
 		this.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	}
 
+	/** setter function using euler angles */
+	public void set(float rx, float ry, float rz) {
+		// Abbreviations for the various angular functions
+		double cp = Math.cos(rx * 0.5);
+		double sp = Math.sin(rx * 0.5);
+		double cr = Math.cos(ry * 0.5);
+		double sr = Math.sin(ry * 0.5);
+		double cy = Math.cos(rz * 0.5);
+		double sy = Math.sin(rz * 0.5);
+
+		this.w = (float) (cy * cr * cp + sy * sr * sp);
+		this.x = (float) (cy * sr * cp - sy * cr * sp);
+		this.y = (float) (cy * cr * sp + sy * sr * cp);
+		this.z = (float) (sy * cr * cp - cy * sr * sp);
+	}
+
+	/** setter function using euler angles */
+	public void set(double rx, double ry, double rz) {
+		this.set((float) rx, (float) ry, (float) rz);
+	}
+
+	/** setter function using quaternions coordinates */
 	public void set(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;

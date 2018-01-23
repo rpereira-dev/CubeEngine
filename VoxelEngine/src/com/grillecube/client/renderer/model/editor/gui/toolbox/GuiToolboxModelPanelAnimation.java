@@ -2,6 +2,7 @@ package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
 import java.util.Comparator;
 
+import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiPrompt;
@@ -19,9 +20,11 @@ import com.grillecube.client.renderer.model.animation.Bone;
 import com.grillecube.client.renderer.model.animation.BoneTransform;
 import com.grillecube.client.renderer.model.animation.KeyFrame;
 import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
+import com.grillecube.client.renderer.model.editor.gui.GuiPopUpCallback;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSliderBarEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
+import com.grillecube.client.renderer.model.editor.gui.GuiWindowNewAnimation;
 import com.grillecube.client.renderer.model.instance.AnimationInstance;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.maths.Quaternion;
@@ -114,12 +117,26 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 		this.addAnimation.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 			@Override
 			public void invoke(GuiEventClick<GuiButton> event) {
-				// TODO : animation name
-				String animationName = String.valueOf(System.currentTimeMillis());
-				ModelSkeletonAnimation animation = new ModelSkeletonAnimation(animationName);
-				getSelectedModel().addAnimation(animation);
-				animations.add(animation);
-				animations.pick(animations.count() - 1);
+
+				new GuiWindowNewAnimation(new GuiPopUpCallback<GuiWindowNewAnimation>() {
+
+					@Override
+					public void onConfirm(GuiWindowNewAnimation popUp) {
+						String animationName = popUp.name.asString();
+						ModelSkeletonAnimation animation = new ModelSkeletonAnimation(animationName);
+						getSelectedModel().addAnimation(animation);
+						animations.add(animation, animation.getName());
+						animations.pick(animations.count() - 1);
+						VoxelEngineClient.instance().getRenderer().getGuiRenderer().toast("Animation added");
+
+					}
+
+					@Override
+					public void onCancel(GuiWindowNewAnimation popUp) {
+					}
+
+				}).open(getOldestParent());
+
 				refresh();
 			}
 		});

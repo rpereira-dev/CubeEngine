@@ -1,8 +1,7 @@
 package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.renderer.gui.animations.GuiAnimation;
-import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextAlignLeft;
-import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterYBox;
+import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextCenterBox;
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.common.utils.Color;
 
@@ -41,8 +40,7 @@ public class GuiButton extends GuiLabel {
 		this.bg.setHoverable(false);
 
 		this.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
-		this.addTextParameter(new GuiTextParameterTextCenterYBox());
-		this.addTextParameter(new GuiTextParameterTextAlignLeft(0.1f));
+		this.addTextParameter(new GuiTextParameterTextCenterBox());
 
 		this.setDefaultColors();
 

@@ -29,13 +29,9 @@ public class ModelEditorCamera extends CameraPerspectiveWorldCentered {
 	public ModelEditorCamera(GLFWWindow window) {
 		super(window);
 		super.setPosition(0, 0, 16);
-		super.setPositionVelocity(0, 0, 0);
-		super.setRotationVelocity(0, 0, 0);
 		super.setRotX(-Maths.PI_4);
 		super.setRotY(0);
 		super.setRotZ(0);
-		super.setSpeed(0.2f);
-		super.setRotSpeed(1);
 		super.setFarDistance(Float.MAX_VALUE);
 		super.setRenderDistance(Float.MAX_VALUE);
 		this.oldStates = new Stack<ModelEditorState>();

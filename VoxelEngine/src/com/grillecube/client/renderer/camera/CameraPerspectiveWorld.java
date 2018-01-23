@@ -58,13 +58,9 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 	public CameraPerspectiveWorld(GLFWWindow window) {
 		super(window);
 		super.setPosition(0, 0, 16);
-		super.setPositionVelocity(0, 0, 0);
-		super.setRotationVelocity(0, 0, 0);
 		this.setRotX(0);
 		this.setRotY(0);
 		this.setRotZ(0);
-		super.setSpeed(0.2f);
-		super.setRotSpeed(1);
 
 		this.planes = new CameraPlane[6];
 		for (int i = 0; i < this.planes.length; i++) {
@@ -81,9 +77,7 @@ public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 	public Camera clone() {
 		CameraPerspectiveWorld camera = new CameraPerspectiveWorld(null);
 		camera.setAspect(this.getAspect());
-		camera.setRotX(this.getRotX());
-		camera.setRotY(this.getRotZ());
-		camera.setRotZ(this.getRotY());
+		camera.setRot(this.getRot());
 		camera.setFov(this.getFov());
 		camera.setNearDistance(this.getNearDistance());
 		camera.setFarDistance(this.getFarDistance());

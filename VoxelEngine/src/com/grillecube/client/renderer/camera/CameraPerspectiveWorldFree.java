@@ -20,12 +20,11 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 	@Override
 	public void update() {
 		super.update();
-		this.setSpeed(0.5f);
 		this.updateMove();
 	}
 
 	protected void updateMove() {
-		Vector3f vel = this.getPositionVelocity();
+		Vector3f vel = new Vector3f();
 		if (this.hasState(STATE_MOVE_FORWARD)) {
 			vel.setX(this.getViewVector().x);
 			vel.setY(this.getViewVector().y);
@@ -48,7 +47,7 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 			vel.setZ(0);
 		}
 
-		this.move(vel.scale(2.0F));
+		this.move(vel, 2.0f);
 	}
 
 	@Override

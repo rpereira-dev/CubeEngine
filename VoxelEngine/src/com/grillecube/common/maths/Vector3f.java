@@ -545,4 +545,15 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	public static float length(float x, float y, float z) {
 		return (float) Math.sqrt(lengthSquared(x, y, z));
 	}
+
+	public static Vector3f interpolate(Vector3f a, Vector3f b, float ratio, Vector3f dst) {
+		if (dst == null) {
+			dst = new Vector3f();
+		}
+		dst.x = a.x * (1.0f - ratio) + b.x * ratio;
+		dst.y = a.y * (1.0f - ratio) + b.y * ratio;
+		dst.z = a.z * (1.0f - ratio) + b.z * ratio;
+		return (dst);
+
+	}
 }

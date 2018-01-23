@@ -1,5 +1,5 @@
 
-package com.grillecube.client.renderer.model.editor.gui;
+package com.grillecube.client.renderer.gui;
 
 import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiLabel;
@@ -10,6 +10,7 @@ import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameter
 import com.grillecube.client.renderer.gui.components.parameters.GuiTextParameterTextFillBox;
 import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;
+import com.grillecube.client.renderer.model.editor.gui.GuiPopUpCallback;
 import com.grillecube.common.utils.Color;
 
 public class GuiPopUp extends GuiWindow {

@@ -134,17 +134,17 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		this.fboDepthBuffer.storage(GL11.GL_DEPTH_COMPONENT, this.width, this.height);
 	}
 
-	HashMap<Entity, Integer> BB = new HashMap<Entity, Integer>();
+	private final HashMap<Entity, Integer> BB = new HashMap<Entity, Integer>();
 
 	// TODO : remove this
 	private final void renderEntitiesAABB() {
-		for (Entity e : this.world.getEntityStorage().getEntities()) {
-			if (!BB.containsKey(e)) {
-				BB.put(e, this.lineFactory.addBox(e, e));
-			} else {
-				this.lineFactory.setBox(e, e, BB.get(e), Color.BLUE);
-			}
-		}
+		// for (Entity e : this.world.getEntityStorage().getEntities()) {
+		// if (!BB.containsKey(e)) {
+		// BB.put(e, this.lineFactory.addBox(e, e));
+		// } else {
+		// this.lineFactory.setBox(e, e, BB.get(e), Color.BLUE);
+		// }
+		// }
 	}
 
 	/** render the given world */

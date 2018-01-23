@@ -26,6 +26,9 @@ public class ImageUtils {
 
 	/** return an image for this file */
 	public static BufferedImage readImage(String filepath) {
+		if (filepath == null) {
+			return (null);
+		}
 		BufferedImage image = null;
 		try {
 			image = ImageIO.read(new File(filepath));

@@ -62,7 +62,7 @@ public abstract class CameraSelector implements Positioneable, Sizeable {
 
 	@Override
 	public float getPositionZ() {
-		return ((this.getZ() + 0.05f) * this.getBlockSizeUnit());
+		return (this.getZ() * this.getBlockSizeUnit());
 	}
 
 	@Override
