@@ -1,14 +1,16 @@
-package com.grillecube.common.world.entity.collision;
+package com.grillecube.common.world.physic;
 
 import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
 
-public class PhysicObjectBlock extends PhysicObject {
+public class WorldObjectBlock extends WorldObject {
 
 	private final Block block;
 	private final float posx, posy, posz;
 
-	public PhysicObjectBlock(Block block, float posx, float posy, float posz) {
+	public WorldObjectBlock(World world, Block block, float posx, float posy, float posz) {
+		super(world);
 		this.block = block;
 		this.posx = posx;
 		this.posy = posy;

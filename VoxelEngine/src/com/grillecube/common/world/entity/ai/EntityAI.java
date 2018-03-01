@@ -1,8 +1,8 @@
 package com.grillecube.common.world.entity.ai;
 
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
-public abstract class EntityAI<T extends Entity> {
+public abstract class EntityAI<T extends WorldEntity> {
 
 	/** in seconds, accumulate times since last update */
 	private double accumulator;

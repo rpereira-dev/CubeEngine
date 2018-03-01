@@ -1,9 +1,9 @@
 package com.grillecube.common.world.entity.ai;
 
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 /** a simple idle ai, to test the system */
-public class EntityAIIdle<T extends Entity> extends EntityAI<T> {
+public class EntityAIIdle<T extends WorldEntity> extends EntityAI<T> {
 
 	public EntityAIIdle() {
 		super();
@@ -15,7 +15,7 @@ public class EntityAIIdle<T extends Entity> extends EntityAI<T> {
 	}
 
 	@Override
-	protected void onTimedUpdate(Entity entity) {
+	protected void onTimedUpdate(WorldEntity entity) {
 
 		// if (!entity.isInAir()) {
 		// entity.jump();

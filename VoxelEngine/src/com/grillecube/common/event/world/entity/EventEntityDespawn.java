@@ -1,9 +1,9 @@
 package com.grillecube.common.event.world.entity;
 
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public class EventEntityDespawn extends EventEntity {
-	public EventEntityDespawn(Entity entity) {
+	public EventEntityDespawn(WorldEntity entity) {
 		super(entity);
 	}
 

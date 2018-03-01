@@ -12,6 +12,7 @@ import com.grillecube.common.event.world.entity.EventEntityDespawn;
 import com.grillecube.common.event.world.entity.EventEntitySpawn;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldStorage;
+import com.grillecube.common.world.physic.WorldPhysicSystem;
 
 /**
  * data structure which contains every entities
@@ -23,50 +24,54 @@ import com.grillecube.common.world.WorldStorage;
 public class WorldEntityStorage extends WorldStorage {
 
 	/** the entities by their UUID */
-	private HashMap<Integer, Entity> entities;
+	private HashMap<Integer, WorldEntity> entities;
 
 	/** the list of the entities sharing the class */
-	private HashMap<Class<? extends Entity>, ArrayList<Entity>> entitiesByClass;
+	private HashMap<Class<? extends WorldEntity>, ArrayList<WorldEntity>> entitiesByClass;
+
+	/** world physic */
+	private final WorldPhysicSystem physics;
 
 	public WorldEntityStorage(World world) {
 		super(world);
-		this.entities = new HashMap<Integer, Entity>();
-		this.entitiesByClass = new HashMap<Class<? extends Entity>, ArrayList<Entity>>();
+		this.entities = new HashMap<Integer, WorldEntity>();
+		this.entitiesByClass = new HashMap<Class<? extends WorldEntity>, ArrayList<WorldEntity>>();
+		this.physics = new WorldPhysicSystem();
 	}
 
 	/** get all entities */
-	public Collection<Entity> getEntities() {
+	public Collection<WorldEntity> getEntities() {
 		return (this.entities.values());
 	}
 
-	public Entity getEntity(Integer worldID) {
+	public WorldEntity getEntity(Integer worldID) {
 		return (this.entities.get(worldID));
 	}
 
 	/** return a list of entities using the same class */
-	public ArrayList<Entity> getEntitiesByClass(Class<? extends Entity> clazz) {
+	public ArrayList<WorldEntity> getEntitiesByClass(Class<? extends WorldEntity> clazz) {
 		return (this.entitiesByClass.get(clazz));
 	}
 
-	public ArrayList<Entity> getEntitiesByClass(Entity entity) {
+	public ArrayList<WorldEntity> getEntitiesByClass(WorldEntity entity) {
 		return (this.getEntitiesByClass(entity.getClass()));
 	}
 
 	/**
-	 * return a collection of array list of entities, where each array list
-	 * holds entities of the same class
+	 * return a collection of array list of entities, where each array list holds
+	 * entities of the same class
 	 */
-	public Collection<ArrayList<Entity>> getEntitiesByClass() {
+	public Collection<ArrayList<WorldEntity>> getEntitiesByClass() {
 		return (this.entitiesByClass.values());
 	}
 
 	/** return the entity with the given world id */
-	public Entity getEntityByID(Integer id) {
+	public WorldEntity getEntityByID(Integer id) {
 		return (this.entities.get(id));
 	}
 
 	/** return true if the entity is already stored, false else way */
-	public boolean contains(Entity entity) {
+	public boolean contains(WorldEntity entity) {
 		return (this.entities.containsValue(entity));
 	}
 
@@ -75,7 +80,7 @@ public class WorldEntityStorage extends WorldStorage {
 	}
 
 	/** add an entity to the storage */
-	public Entity spawn(Entity entity) {
+	public WorldEntity spawn(WorldEntity entity) {
 
 		if (this.contains(entity)) {
 			Logger.get().log(Logger.Level.WARNING, "Tried to spawn an already spawned entity", entity);
@@ -104,10 +109,10 @@ public class WorldEntityStorage extends WorldStorage {
 		return (entity);
 	}
 
-	private void addEntityToTypeList(Entity entity) {
-		ArrayList<Entity> type_list = this.getEntitiesByClass(entity.getClass());
+	private void addEntityToTypeList(WorldEntity entity) {
+		ArrayList<WorldEntity> type_list = this.getEntitiesByClass(entity.getClass());
 		if (type_list == null) {
-			type_list = new ArrayList<Entity>(1);
+			type_list = new ArrayList<WorldEntity>(1);
 			this.entitiesByClass.put(entity.getClass(), type_list);
 		}
 		type_list.add(entity);
@@ -117,10 +122,10 @@ public class WorldEntityStorage extends WorldStorage {
 	 * generate unique id for the given entity (assuming the entity isnt already
 	 * stored
 	 */
-	private Integer generateNextEntityID(Entity entity) {
+	private Integer generateNextEntityID(WorldEntity entity) {
 
 		// get the entity id if it already has one
-		if (entity.getEntityID() != Entity.DEFAULT_ENTITY_ID && !(this.contains(entity.getEntityID()))) {
+		if (entity.getEntityID() != WorldEntity.DEFAULT_ENTITY_ID && !(this.contains(entity.getEntityID()))) {
 			return (entity.getEntityID());
 		}
 
@@ -133,7 +138,7 @@ public class WorldEntityStorage extends WorldStorage {
 	}
 
 	/** remove the given entity */
-	public Entity despawn(Entity entity) {
+	public WorldEntity despawn(WorldEntity entity) {
 		if (!(this.contains(entity))) {
 			Logger.get().log(Level.WARNING, "Tried to remove an entity which wasnt in the world");
 			return (null);
@@ -143,7 +148,7 @@ public class WorldEntityStorage extends WorldStorage {
 		this.entities.remove(entity.getEntityID());
 
 		// remove from type list
-		ArrayList<Entity> type_list = this.getEntitiesByClass(entity);
+		ArrayList<WorldEntity> type_list = this.getEntitiesByClass(entity);
 		if (type_list != null) {
 			type_list.remove(entity);
 			if (type_list.size() == 0) {
@@ -166,18 +171,27 @@ public class WorldEntityStorage extends WorldStorage {
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<com.grillecube.common.VoxelEngine.Callable<Taskable>> tasks) {
 
-		Collection<Entity> entities_collection = this.getEntities();
+		Collection<WorldEntity> entities_collection = this.getEntities();
 		int size = entities_collection.size();
-		Entity[] entities = entities_collection.toArray(new Entity[size]);
+		WorldEntity[] entities = entities_collection.toArray(new WorldEntity[size]);
 
 		tasks.add(engine.new Callable<Taskable>() {
 
 			@Override
 			public WorldEntityStorage call() throws Exception {
 
+				double dt = engine.getTimer().getDt();
+
 				for (int i = 0; i < entities.length; i++) {
-					Entity entity = entities[i];
-					entity.update(engine.getTimer().getDt());
+					WorldEntity entity = entities[i];
+					entity.preWorldUpdate(engine.getTimer().getDt());
+				}
+
+				physics.update(dt);
+
+				for (int i = 0; i < entities.length; i++) {
+					WorldEntity entity = entities[i];
+					entity.postWorldUpdate(dt);
 				}
 				return (WorldEntityStorage.this);
 			}

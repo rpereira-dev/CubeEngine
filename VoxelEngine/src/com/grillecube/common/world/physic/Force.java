@@ -1,7 +1,6 @@
-package com.grillecube.common.world.entity.forces;
+package com.grillecube.common.world.physic;
 
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.entity.collision.PhysicObject;
 
 /**
  * Represent a force to be applied to entities
@@ -9,7 +8,7 @@ import com.grillecube.common.world.entity.collision.PhysicObject;
  * @author Romain
  *
  */
-public abstract class Force<T extends PhysicObject> {
+public abstract class Force<T extends WorldObject> {
 
 	/** gravity */
 	public static final ForceGravity GRAVITY = new ForceGravity();

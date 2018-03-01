@@ -10,8 +10,8 @@ import com.grillecube.client.opengl.window.event.GLFWEventMouseScroll;
 import com.grillecube.client.opengl.window.event.GLFWListener;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.entity.collision.Positioneable;
-import com.grillecube.common.world.entity.collision.Sizeable;
+import com.grillecube.common.world.physic.Positioneable;
+import com.grillecube.common.world.physic.Sizeable;
 
 public abstract class CameraProjective extends CameraView {
 

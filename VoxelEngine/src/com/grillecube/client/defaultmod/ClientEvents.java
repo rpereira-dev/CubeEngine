@@ -10,7 +10,7 @@ import com.grillecube.common.mod.IModResource;
 import com.grillecube.common.mod.Mod;
 import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.resources.ResourceManager;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public class ClientEvents implements IModResource {
 
@@ -28,7 +28,7 @@ public class ClientEvents implements IModResource {
 
 			@Override
 			public void post(EventEntityPlaySound event) {
-				Entity e = event.getEntity();
+				WorldEntity e = event.getEntity();
 				float x = e.getPositionX();
 				float y = e.getPositionY();
 				float z = e.getPositionZ();

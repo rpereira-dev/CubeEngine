@@ -23,7 +23,7 @@ public class CameraPerspectiveWorldCentered extends CameraPerspectiveWorld {
 	@Override
 	public void update() {
 		super.update();
-		this.calculateCameraPosition();
+		this.calculateCameraPosition(this.r);
 	}
 
 	public final void setCenter(Vector3f center) {
@@ -78,11 +78,11 @@ public class CameraPerspectiveWorldCentered extends CameraPerspectiveWorld {
 	 * calculate camera world position depending on r, theta and phi (which are
 	 * relative to the center)
 	 */
-	private final void calculateCameraPosition() {
+	protected void calculateCameraPosition(float distance) {
 
-		float x = (float) (this.center.x + this.r * Math.cos(this.getTheta()) * Math.sin(this.getPhi()));
-		float y = (float) (this.center.y + this.r * Math.cos(this.getTheta()) * Math.cos(this.getPhi()));
-		float z = (float) (this.center.z + this.r * Math.sin(this.getTheta()));
+		float x = (float) (this.center.x + distance * Math.cos(this.getTheta()) * Math.sin(this.getPhi()));
+		float y = (float) (this.center.y + distance * Math.cos(this.getTheta()) * Math.cos(this.getPhi()));
+		float z = (float) (this.center.z + distance * Math.sin(this.getTheta()));
 		super.setPosition(x, y, z);
 
 		// this.setRotX(this.theta + Maths.PI);

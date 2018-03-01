@@ -62,9 +62,11 @@ class PostRenderCallback extends Listener<EventPreWorldRender> {
 
 	@Override
 	public void post(EventPreWorldRender event) {
+		if (true) {
+			return;
+		}
 
 		ParticleRendererFactory renderer = event.getWorldRenderer().getParticleRendererFactory();
-
 		Random rng = event.getRenderer().getRNG();
 
 		if (event.getGLFWWindow().isKeyPressed(GLFW.GLFW_KEY_E)) {

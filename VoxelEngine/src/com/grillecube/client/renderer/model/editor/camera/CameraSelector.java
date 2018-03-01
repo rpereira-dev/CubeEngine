@@ -9,8 +9,8 @@ import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.utils.Color;
-import com.grillecube.common.world.entity.collision.Positioneable;
-import com.grillecube.common.world.entity.collision.Sizeable;
+import com.grillecube.common.world.physic.Positioneable;
+import com.grillecube.common.world.physic.Sizeable;
 
 public abstract class CameraSelector implements Positioneable, Sizeable {
 

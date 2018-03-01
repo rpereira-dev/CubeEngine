@@ -1,12 +1,12 @@
 package com.grillecube.common.event.world.entity;
 
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public class EventEntityPlaySound extends EventEntity {
 
 	private final String sound;
 
-	public EventEntityPlaySound(Entity entity, String sound) {
+	public EventEntityPlaySound(WorldEntity entity, String sound) {
 		super(entity);
 		this.sound = sound;
 	}

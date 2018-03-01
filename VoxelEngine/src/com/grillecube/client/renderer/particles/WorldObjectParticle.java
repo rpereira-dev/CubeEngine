@@ -2,12 +2,12 @@ package com.grillecube.client.renderer.particles;
 
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
-import com.grillecube.common.world.entity.collision.PhysicObject;
-import com.grillecube.common.world.entity.collision.Positioneable;
-import com.grillecube.common.world.entity.collision.Rotationable;
-import com.grillecube.common.world.entity.collision.Sizeable;
+import com.grillecube.common.world.physic.Positioneable;
+import com.grillecube.common.world.physic.Rotationable;
+import com.grillecube.common.world.physic.Sizeable;
+import com.grillecube.common.world.physic.WorldObject;
 
-public class Particle extends PhysicObject {
+public class WorldObjectParticle extends WorldObject {
 
 	protected final Vector3f pos;
 	protected final Vector3f rot;
@@ -23,7 +23,8 @@ public class Particle extends PhysicObject {
 	protected int health;
 	protected float healthRatio;
 
-	public Particle(int health) {
+	public WorldObjectParticle(int health) {
+		super(null);
 		this.maxhealth = health;
 		this.health = health;
 		this.healthRatio = 1;
@@ -52,8 +53,8 @@ public class Particle extends PhysicObject {
 	}
 
 	/**
-	 * a ratio in range of [0,1] which determine particle health statues (0 is
-	 * dead, 1 is born)
+	 * a ratio in range of [0,1] which determine particle health statues (0 is dead,
+	 * 1 is born)
 	 */
 	public final float getHealthRatio() {
 		return (this.healthRatio);

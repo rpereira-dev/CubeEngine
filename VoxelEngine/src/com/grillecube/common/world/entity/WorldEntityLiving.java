@@ -3,7 +3,7 @@ package com.grillecube.common.world.entity;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.items.Item;
 
-public abstract class EntityLiving extends Entity {
+public abstract class WorldEntityLiving extends WorldEntity {
 
 	/** default inventory size */
 	private static final int DEFAULT_EQUIPMENT_COUNT = 1;
@@ -11,12 +11,14 @@ public abstract class EntityLiving extends Entity {
 	/** the items held by this entity */
 	private final Item[] equipments;
 
-	public EntityLiving(World world) {
-		this(world, 1.0f, 1.0f, 1.0f);
+	/** the entity rigid body */
+
+	public WorldEntityLiving(World world) {
+		this(world, 1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-	public EntityLiving(World world, float width, float height, float depth) {
-		super(world, width, height, depth);
+	public WorldEntityLiving(World world, float mass, float width, float height, float depth) {
+		super(world, mass, width, height, depth);
 		if (this.getEquipmentCount() > 0) {
 			this.equipments = new Item[this.getEquipmentCount()];
 		} else {
@@ -47,7 +49,7 @@ public abstract class EntityLiving extends Entity {
 
 	/** return the number of equipment which can be equipped */
 	public int getEquipmentCount() {
-		return (EntityLiving.DEFAULT_EQUIPMENT_COUNT);
+		return (WorldEntityLiving.DEFAULT_EQUIPMENT_COUNT);
 	}
 
 	public Item[] getEquipments() {

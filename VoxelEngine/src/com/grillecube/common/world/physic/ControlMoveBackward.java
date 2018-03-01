@@ -1,12 +1,12 @@
-package com.grillecube.common.world.entity.control;
+package com.grillecube.common.world.physic;
 
-import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.entity.Entity;
-import com.grillecube.common.world.entity.collision.PhysicObject;
+import javax.vecmath.Vector3f;
 
-public class ControlMoveBackward extends Control<Entity> {
+import com.grillecube.common.world.entity.WorldEntity;
+
+public class ControlMoveBackward extends Control<WorldEntity> {
 	@Override
-	public void run(Entity entity, double dt) {
+	public void run(WorldEntity entity, double dt) {
 		// save velocity
 		float vx = entity.getPositionVelocityX();
 		float vy = entity.getPositionVelocityY();
@@ -15,7 +15,7 @@ public class ControlMoveBackward extends Control<Entity> {
 		// set control velocity, and move
 		Vector3f view = entity.getViewVector();
 		entity.setPositionVelocity(-view.x * entity.getSpeed(), -view.y * entity.getSpeed(), 0.0f);
-		PhysicObject.move(entity.getWorld(), entity, dt);
+		WorldObject.move(entity.getWorld(), entity, dt);
 
 		// reset velocities
 		entity.setPositionVelocity(vx, vy, vz);

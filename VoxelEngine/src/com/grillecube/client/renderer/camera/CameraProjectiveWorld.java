@@ -35,11 +35,19 @@ public abstract class CameraProjectiveWorld extends CameraProjective implements 
 	@Override
 	public void update() {
 		super.update();
-		if (this.getWorld() == null) {
-			return;
+	}
+
+	/**
+	 * update the currently looked block by raycasting
+	 * 
+	 * @param maxRange
+	 *            : max raycasting range in world
+	 */
+	public final void updateLookBlock(float maxRange) {
+		if (this.getWorld() != null) {
+			this.getWorld().getTerrainIndex(this.getPosition(), this.world_index);
+			Raycasting.raycast(this.getPosition(), this.getViewVector(), maxRange, this);
 		}
-		this.getWorld().getTerrainIndex(this.getPosition(), this.world_index);
-		Raycasting.raycast(this.getPosition(), this.getViewVector(), 128.0f, this);
 	}
 
 	@Override

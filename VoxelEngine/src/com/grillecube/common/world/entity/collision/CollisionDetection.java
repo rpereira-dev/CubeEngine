@@ -3,14 +3,18 @@ package com.grillecube.common.world.entity.collision;
 import java.util.ArrayList;
 
 import com.grillecube.common.maths.Maths;
+import com.grillecube.common.world.physic.WorldObject;
 
 public class CollisionDetection {
 
+	/** the margin to use */
+	public static final float MARGIN = 0.0f;
+
 	/** the moving physic object which collided with 'collided' */
-	public final PhysicObject moving;
+	public final WorldObject moving;
 
 	/** the physic object with which the collision occured */
-	public final PhysicObject collided;
+	public final WorldObject collided;
 
 	/** normal x between the face and the direction */
 	public final float nx;
@@ -24,7 +28,7 @@ public class CollisionDetection {
 	/** time until the collision will happens */
 	public final float dt;
 
-	public CollisionDetection(PhysicObject moving, PhysicObject collided, float nx, float ny, float nz, float dt) {
+	public CollisionDetection(WorldObject moving, WorldObject collided, float nx, float ny, float nz, float dt) {
 		this.moving = moving;
 		this.collided = collided;
 		this.nx = nx;
@@ -39,7 +43,9 @@ public class CollisionDetection {
 			return (false);
 		}
 		CollisionDetection o = (CollisionDetection) other;
-		return (this.nx == o.nx && this.ny == o.ny && this.nz == o.nz && this.dt == o.dt);
+		return (Maths.abs(this.nx - o.nx) <= MARGIN && Maths.abs(this.ny - o.ny) <= MARGIN
+				&& Maths.abs(this.nz - o.nz) <= MARGIN
+				&& Maths.abs(this.dt - o.dt) <= o.moving.getPositionVelocity() / MARGIN);
 	}
 
 	@Override
@@ -63,8 +69,7 @@ public class CollisionDetection {
 	 *            : the time length during b1 moves
 	 * @return
 	 */
-	public static final CollisionDetection detectAABB(PhysicObject b1, PhysicObject b2, double dt) {
-
+	public static final CollisionDetection detectAABB(WorldObject b1, WorldObject b2, double dt) {
 		// velocity
 		float vx = b1.getPositionVelocityX();
 		float vy = b1.getPositionVelocityY();
@@ -80,14 +85,23 @@ public class CollisionDetection {
 		float z2 = b2.getPositionZ();
 
 		// extract size
-		float sx1 = b1.getSizeX();
-		float sy1 = b1.getSizeY();
-		float sz1 = b1.getSizeZ();
+		float sx1 = b1.getSizeX() - MARGIN;
+		float sy1 = b1.getSizeY() - MARGIN;
+		float sz1 = b1.getSizeZ() - MARGIN;
 
-		float sx2 = b2.getSizeX();
-		float sy2 = b2.getSizeY();
-		float sz2 = b2.getSizeZ();
+		float sx2 = b2.getSizeX() - MARGIN;
+		float sy2 = b2.getSizeY() - MARGIN;
+		float sz2 = b2.getSizeZ() - MARGIN;
 
+		if (vx == 0.0f && (x1 + sx1 <= x2 || x1 >= x2 + sx2)) {
+			return (null);
+		}
+		if (vy == 0.0f && (y1 + sy1 <= y2 || y1 >= y2 + sy2)) {
+			return (null);
+		}
+		if (vz == 0.0f && (z1 + sz1 <= z2 || z1 >= z2 + sz2)) {
+			return (null);
+		}
 		// find the distance between the objects on the near and far sides of
 		// each axis
 		float xInvEntry, yInvEntry, zInvEntry;
@@ -201,14 +215,15 @@ public class CollisionDetection {
 	 *            : duration of movement
 	 * @return : the collision detected, or NULL if no collision
 	 */
-	public static final CollisionDetection detect(PhysicObject b1, ArrayList<PhysicObject> b2s, double dt) {
+	public static final CollisionDetection detect(WorldObject b1, ArrayList<WorldObject> b2s, double dt) {
+		// TODO : keep this? two entities may overlap
 		if (b1.getPositionVelocityX() == 0.0f && b1.getPositionVelocityY() == 0.0f
 				&& b1.getPositionVelocityZ() == 0.0f) {
 			return (null);
 		}
 
 		CollisionDetection collisionResponse = null;
-		for (PhysicObject b2 : b2s) {
+		for (WorldObject b2 : b2s) {
 			if (b1 == b2) {
 				continue;
 			}

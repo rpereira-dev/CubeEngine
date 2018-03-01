@@ -1,4 +1,4 @@
-package com.grillecube.common.world.entity.collision;
+package com.grillecube.common.world.physic;
 
 public interface Rotationable {
 

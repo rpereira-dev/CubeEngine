@@ -556,4 +556,8 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 		return (dst);
 
 	}
+
+	public void add(javax.vecmath.Vector3f v) {
+		this.add(v.x, v.y, v.z);
+	}
 }

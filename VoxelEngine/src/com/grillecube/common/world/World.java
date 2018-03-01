@@ -24,12 +24,13 @@ import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.instances.BlockInstance;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 import com.grillecube.common.world.entity.WorldEntityStorage;
-import com.grillecube.common.world.entity.collision.PhysicObject;
-import com.grillecube.common.world.entity.collision.PhysicObjectBlock;
 import com.grillecube.common.world.generator.WorldGenerator;
 import com.grillecube.common.world.generator.WorldGeneratorEmpty;
+import com.grillecube.common.world.physic.WorldObject;
+import com.grillecube.common.world.physic.WorldObjectBlock;
+import com.grillecube.common.world.physic.WorldPhysicSystem;
 
 /**
  * TODO Main world class, may change to a "Planet" class, and a new World class
@@ -202,7 +203,7 @@ public abstract class World implements Taskable {
 	}
 
 	/** spawn an entity into the world */
-	public final Entity spawnEntity(Entity entity) {
+	public final WorldEntity spawnEntity(WorldEntity entity) {
 		return (this.entities.spawn(entity));
 	}
 
@@ -272,15 +273,14 @@ public abstract class World implements Taskable {
 	}
 
 	/**
-	 * get the PhysicObjects (blocks and entities) colliding with the
-	 * PhysicObject
+	 * get the PhysicObjects (blocks and entities) colliding with the PhysicObject
 	 * 
 	 * @param physicObject
 	 * @return : the physic object list
 	 */
-	public final ArrayList<PhysicObject> getCollidingPhysicObjects(PhysicObject exclude, float minx, float miny,
+	public final ArrayList<WorldObject> getCollidingPhysicObjects(WorldObject exclude, float minx, float miny,
 			float minz, float maxx, float maxy, float maxz) {
-		ArrayList<PhysicObject> lst = new ArrayList<PhysicObject>();
+		ArrayList<WorldObject> lst = new ArrayList<WorldObject>();
 
 		int mx = Maths.floor(minx);
 		int Mx = Maths.ceil(maxx);
@@ -295,7 +295,7 @@ public abstract class World implements Taskable {
 				for (int z = mz; z < Mz; z++) {
 					Block block = this.getBlock(x, y, z);
 					if (!block.isCrossable()) {
-						lst.add(new PhysicObjectBlock(block, x, y, z));
+						lst.add(new WorldObjectBlock(this, block, x, y, z));
 					}
 				}
 			}

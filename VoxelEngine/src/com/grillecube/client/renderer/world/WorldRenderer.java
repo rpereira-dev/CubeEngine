@@ -36,7 +36,7 @@ import com.grillecube.client.renderer.particles.ParticleRendererFactory;
 import com.grillecube.common.Logger;
 import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public abstract class WorldRenderer<T extends World> extends RendererFactorized {
 
@@ -134,7 +134,7 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		this.fboDepthBuffer.storage(GL11.GL_DEPTH_COMPONENT, this.width, this.height);
 	}
 
-	private final HashMap<Entity, Integer> BB = new HashMap<Entity, Integer>();
+	private final HashMap<WorldEntity, Integer> BB = new HashMap<WorldEntity, Integer>();
 
 	// TODO : remove this
 	private final void renderEntitiesAABB() {

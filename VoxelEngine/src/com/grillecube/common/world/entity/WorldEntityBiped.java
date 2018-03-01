@@ -2,13 +2,7 @@ package com.grillecube.common.world.entity;
 
 import com.grillecube.common.world.World;
 
-public abstract class EntityBiped extends EntityLiving {
-
-	public EntityBiped(World world) {
-		super(world);
-		// TODO Auto-generated constructor stub
-	}
-
+public abstract class WorldEntityBiped extends WorldEntityLiving {
 	/** equipment ids */
 	public static final int EQUIPMENT_BOOTS = 0;
 	public static final int EQUIPMENT_LEGGINGS = 1;
@@ -20,12 +14,16 @@ public abstract class EntityBiped extends EntityLiving {
 	public static final int EQUIPMENT_RIGHT_HAND = 7;
 	public static final int EQUIPMENT_COUNT = 8;
 
+	public WorldEntityBiped(World world, float mass, float width, float height, float depth) {
+		super(world, mass, width, height, depth);
+	}
+
 	@Override
 	protected void onUpdate(double dt) {
 	}
 
 	@Override
 	public int getEquipmentCount() {
-		return (EntityBiped.EQUIPMENT_COUNT);
+		return (WorldEntityBiped.EQUIPMENT_COUNT);
 	}
 }

@@ -1,6 +1,7 @@
 package com.grillecube.common.world.entity.collision;
 
 import com.grillecube.common.maths.Maths;
+import com.grillecube.common.world.physic.WorldObject;
 
 public class CollisionResponse {
 	/**
@@ -12,11 +13,11 @@ public class CollisionResponse {
 	 *            : the physic object
 	 * @param collisionResponse
 	 *            : the collision response, (returned by
-	 *            {@link #detectAABB(PhysicObject, PhysicObject)}
+	 *            {@link #detectAABB(WorldObject, WorldObject)}
 	 * @param absorption
 	 *            : amount of velocity to be absorbed by the collision
 	 */
-	public static final void stick(PhysicObject physicObject, CollisionDetection collisionResponse) {
+	public static final void stick(WorldObject physicObject, CollisionDetection collisionResponse) {
 		if (Maths.abs(collisionResponse.nx) > Maths.ESPILON) {
 			physicObject.setPositionVelocityX(0.0f);
 		}
@@ -37,14 +38,14 @@ public class CollisionResponse {
 	 *            : the physic object
 	 * @param collisionResponse
 	 *            : the collision response, (returned by
-	 *            {@link #detectAABB(PhysicObject, PhysicObject)}
+	 *            {@link #detectAABB(WorldObject, WorldObject)}
 	 * @param vx,
 	 *            vy, vz : velocities on collision
 	 * 
 	 * @param absorption
 	 *            : velocity percentage to be absorbed
 	 */
-	public static final void deflects(PhysicObject physicObject, CollisionDetection collisionResponse, float vx,
+	public static final void deflects(WorldObject physicObject, CollisionDetection collisionResponse, float vx,
 			float vy, float vz, float absorption) {
 		if (Maths.abs(collisionResponse.nx) > Maths.ESPILON) {
 			physicObject.setPositionVelocityX(-vx * absorption);
@@ -57,7 +58,7 @@ public class CollisionResponse {
 		}
 	}
 
-	public static final void deflects(PhysicObject physicObject, CollisionDetection collisionResponse,
+	public static final void deflects(WorldObject physicObject, CollisionDetection collisionResponse,
 			float absorption) {
 		float vx = physicObject.getPositionVelocityX();
 		float vy = physicObject.getPositionVelocityY();
@@ -73,11 +74,11 @@ public class CollisionResponse {
 	 *            : the physic object
 	 * @param collisionResponse
 	 *            : the collision response, (returned by
-	 *            {@link #detectAABB(PhysicObject, PhysicObject)}
+	 *            {@link #detectAABB(WorldObject, WorldObject)}
 	 * @param dt
 	 *            : remaining time
 	 */
-	public static final void push(PhysicObject physicObject, CollisionDetection collisionResponse) {
+	public static final void push(WorldObject physicObject, CollisionDetection collisionResponse) {
 		// push
 		float vx = physicObject.getPositionVelocityX();
 		float vy = physicObject.getPositionVelocityY();
@@ -101,11 +102,11 @@ public class CollisionResponse {
 	 *            : the physic object
 	 * @param collisionResponse
 	 *            : the collision response, (returned by
-	 *            {@link #detectAABB(PhysicObject, PhysicObject)}
+	 *            {@link #detectAABB(WorldObject, WorldObject)}
 	 * @param absorption
 	 *            : amount of velocity to be absorbed by the collision
 	 */
-	public static final void slide(PhysicObject physicObject, CollisionDetection collisionResponse) {
+	public static final void slide(WorldObject physicObject, CollisionDetection collisionResponse) {
 		// TODO
 	}
 }

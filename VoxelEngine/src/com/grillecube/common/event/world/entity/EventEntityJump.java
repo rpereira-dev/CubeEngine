@@ -1,10 +1,10 @@
 package com.grillecube.common.event.world.entity;
 
 import com.grillecube.common.VoxelEngine;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public class EventEntityJump extends EventEntity {
-	public EventEntityJump(Entity entity) {
+	public EventEntityJump(WorldEntity entity) {
 		super(entity);
 	}
 

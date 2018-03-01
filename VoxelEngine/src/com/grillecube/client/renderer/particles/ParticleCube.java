@@ -16,7 +16,7 @@ package com.grillecube.client.renderer.particles;
 
 import com.grillecube.common.maths.Matrix4f;
 
-public class ParticleCube extends Particle {
+public class ParticleCube extends WorldObjectParticle {
 	protected Matrix4f transfMatrix;
 
 	public ParticleCube(int health) {

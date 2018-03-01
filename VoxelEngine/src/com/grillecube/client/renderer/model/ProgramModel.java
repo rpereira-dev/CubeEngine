@@ -25,7 +25,7 @@ import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public class ProgramModel extends GLProgram {
 
@@ -83,7 +83,7 @@ public class ProgramModel extends GLProgram {
 
 		// transformation matrix
 		Matrix4f transf = new Matrix4f();
-		Entity entity = modelInstance.getEntity();
+		WorldEntity entity = modelInstance.getEntity();
 		transf.translate(entity.getPositionX(), entity.getPositionY(), entity.getPositionZ());
 		transf.translate(entity.getSizeX() * 0.5f, entity.getSizeY() * 0.5f, entity.getSizeZ() * 0.5f);
 		transf.rotateXYZ((float) Math.toRadians(entity.getRotationX()), (float) Math.toRadians(entity.getRotationY()),

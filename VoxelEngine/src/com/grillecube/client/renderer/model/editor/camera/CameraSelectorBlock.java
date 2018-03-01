@@ -15,7 +15,7 @@ import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.maths.Vector4f;
 import com.grillecube.common.utils.Color;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public class CameraSelectorBlock extends CameraSelector {
 
@@ -100,7 +100,7 @@ public class CameraSelectorBlock extends CameraSelector {
 			return;
 		}
 
-		Entity entity = modelInstance.getEntity();
+		WorldEntity entity = modelInstance.getEntity();
 		float s = modelLayer.getBlockSizeUnit();
 		ModelEditorCamera camera = (ModelEditorCamera) this.getCamera();
 

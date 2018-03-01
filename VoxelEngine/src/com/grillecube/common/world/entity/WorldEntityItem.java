@@ -5,9 +5,9 @@ import com.grillecube.common.world.World;
 /**
  * represent an item entity (an item on ground basically)
  */
-public class EntityItem extends EntityObject {
+public class WorldEntityItem extends WorldEntityStatic {
 
-	public EntityItem(World world) {
+	public WorldEntityItem(World world) {
 		super(world);
 	}
 

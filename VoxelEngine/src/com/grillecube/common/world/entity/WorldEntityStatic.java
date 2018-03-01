@@ -2,9 +2,10 @@ package com.grillecube.common.world.entity;
 
 import com.grillecube.common.world.World;
 
-public abstract class EntityObject extends Entity {
+/** represent static entities (chair...) */
+public abstract class WorldEntityStatic extends WorldEntity {
 
-	public EntityObject(World world) {
+	public WorldEntityStatic(World world) {
 		super(world);
 	}
 

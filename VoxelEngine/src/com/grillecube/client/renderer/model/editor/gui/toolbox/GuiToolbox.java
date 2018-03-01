@@ -27,7 +27,7 @@ import com.grillecube.common.Logger;
 import com.grillecube.common.event.Listener;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.utils.Color;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public class GuiToolbox extends Gui {
 
@@ -153,7 +153,7 @@ public class GuiToolbox extends Gui {
 	}
 
 	private final void importModel(String absolutePath) {
-		Entity entity = new Entity() {
+		WorldEntity entity = new WorldEntity() {
 			@Override
 			public void update(double dt) {
 			}

@@ -1,15 +1,15 @@
-package com.grillecube.common.world.entity.forces;
+package com.grillecube.common.world.physic;
 
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
-public abstract class ForceFriction extends Force<Entity> {
+public abstract class ForceFriction extends Force<WorldEntity> {
 
 	public ForceFriction() {
 	}
 
 	@Override
-	public void onUpdateResultant(Entity entity, Vector3f resultant) {
+	public void onUpdateResultant(WorldEntity entity, Vector3f resultant) {
 		// F = 1/2 * p * v * C * A
 
 		float vx = entity.getPositionVelocityX();
@@ -35,5 +35,5 @@ public abstract class ForceFriction extends Force<Entity> {
 	public abstract float getFluidDensity();
 
 	/** fluid drag coefficient (constant) (no unit) */
-	public abstract float getDragCoefficient(Entity entity);
+	public abstract float getDragCoefficient(WorldEntity entity);
 }

@@ -21,11 +21,11 @@ import java.util.Iterator;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.ModelMesh;
 import com.grillecube.client.renderer.model.animation.ModelSkeletonAnimation;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public class ModelInstance {
 	/** entity reference */
-	private final Entity entity;
+	private final WorldEntity entity;
 
 	/** model reference */
 	private final Model model;
@@ -41,11 +41,11 @@ public class ModelInstance {
 
 	private long lastUpdate;
 
-	public ModelInstance(Model model, Entity entity) {
+	public ModelInstance(Model model, WorldEntity entity) {
 		this(model, entity, true);
 	}
 
-	public ModelInstance(Model model, Entity entity, boolean entitySizeMatchModel) {
+	public ModelInstance(Model model, WorldEntity entity, boolean entitySizeMatchModel) {
 		this.entity = entity;
 		this.skinID = 0;
 		this.model = model;
@@ -60,6 +60,10 @@ public class ModelInstance {
 	 * update the instance AABB to match the model vertices
 	 */
 	public final void boxMatchModel() {
+		if (true) {
+			return;
+		}
+
 		if (this.getModel() == null) {
 			entity.setSizeX(0.05f);
 			entity.setSizeY(0.05f);
@@ -144,7 +148,7 @@ public class ModelInstance {
 	}
 
 	/** @return : get this model instance entity */
-	public Entity getEntity() {
+	public WorldEntity getEntity() {
 		return (this.entity);
 	}
 
