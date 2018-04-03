@@ -21,7 +21,7 @@ import com.grillecube.client.opengl.GLProgram;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
-import com.grillecube.common.world.Sky;
+import com.grillecube.common.world.sky.Sky;
 
 public class ProgramSky extends GLProgram {
 	private int _proj_matrix;

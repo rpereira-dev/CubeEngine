@@ -31,7 +31,6 @@
  */
 package com.grillecube.common.maths;
 
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 /**
@@ -42,7 +41,7 @@ import java.nio.ByteBuffer;
  * @version $Revision$ $Id$
  */
 
-public class Vector4f extends Vector implements Serializable, ReadableVector4f {
+public class Vector4f extends Vector3f {
 
 	private static final long serialVersionUID = 1L;
 
@@ -58,14 +57,14 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 	/**
 	 * Constructor
 	 */
-	public Vector4f(ReadableVector3f src, float w) {
-		set(src, w);
+	public Vector4f(Vector3f src, float w) {
+		this.set(src.x, src.y, src.z, w);
 	}
 
 	/**
 	 * Constructor
 	 */
-	public Vector4f(ReadableVector4f src) {
+	public Vector4f(Vector3f src) {
 		set(src);
 	}
 
@@ -79,33 +78,7 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.lwjgl.util.vector.WritableVector2f#set(float, float)
-	 */
-	public void set(float x, float y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public void set(ReadableVector3f src, float w) {
-		set(src.getX(), src.getY(), src.getZ(), w);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.lwjgl.util.vector.WritableVector3f#set(float, float, float)
-	 */
-	public void set(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.lwjgl.util.vector.WritableVector4f#set(float, float, float,
-	 * float)
+	 * @see org.lwjgl.util.vector.WritableVector4f#set(float, float, float, float)
 	 */
 	public Vector4f set(float x, float y, float z, float w) {
 		this.x = x;
@@ -122,12 +95,8 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 	 *            The source vector
 	 * @return this
 	 */
-	public Vector4f set(ReadableVector4f src) {
-		x = src.getX();
-		y = src.getY();
-		z = src.getZ();
-		w = src.getW();
-		return this;
+	public Vector4f set(Vector4f src) {
+		return (this.set(src.x, src.y, src.z, src.w));
 	}
 
 	/**
@@ -155,16 +124,14 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 	}
 
 	/**
-	 * Add a vector to another vector and place the result in a destination
-	 * vector.
+	 * Add a vector to another vector and place the result in a destination vector.
 	 * 
 	 * @param left
 	 *            The LHS vector
 	 * @param right
 	 *            The RHS vector
 	 * @param dest
-	 *            The destination vector, or null if a new vector is to be
-	 *            created
+	 *            The destination vector, or null if a new vector is to be created
 	 * @return the sum of left and right in dest
 	 */
 	public static Vector4f add(Vector4f left, Vector4f right, Vector4f dest) {
@@ -177,16 +144,15 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 	}
 
 	/**
-	 * Subtract a vector from another vector and place the result in a
-	 * destination vector.
+	 * Subtract a vector from another vector and place the result in a destination
+	 * vector.
 	 * 
 	 * @param left
 	 *            The LHS vector
 	 * @param right
 	 *            The RHS vector
 	 * @param dest
-	 *            The destination vector, or null if a new vector is to be
-	 *            created
+	 *            The destination vector, or null if a new vector is to be created
 	 * @return left minus right in dest
 	 */
 	public static Vector4f sub(Vector4f left, Vector4f right, Vector4f dest) {
@@ -215,8 +181,7 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 	 * Negate a vector and place the result in a destination vector.
 	 * 
 	 * @param dest
-	 *            The destination vector or null if a new vector is to be
-	 *            created
+	 *            The destination vector or null if a new vector is to be created
 	 * @return the negated vector
 	 */
 	public Vector4f negate(Vector4f dest) {
@@ -233,8 +198,7 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 	 * Normalise this vector and place the result in another vector.
 	 * 
 	 * @param dest
-	 *            The destination vector, or null if a new vector is to be
-	 *            created
+	 *            The destination vector, or null if a new vector is to be created
 	 * @return the normalised vector
 	 */
 	public Vector4f normalise(Vector4f dest) {
@@ -249,8 +213,8 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 	}
 
 	/**
-	 * The dot product of two vectors is calculated as v1.x * v2.x + v1.y * v2.y
-	 * + v1.z * v2.z + v1.w * v2.w
+	 * The dot product of two vectors is calculated as v1.x * v2.x + v1.y * v2.y +
+	 * v1.z * v2.z + v1.w * v2.w
 	 * 
 	 * @param left
 	 *            The LHS vector
@@ -293,16 +257,10 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 		return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.lwjgl.vector.Vector#scale(float)
-	 */
+	@Override
 	public Vector scale(float scale) {
-		x *= scale;
-		y *= scale;
-		z *= scale;
-		w *= scale;
+		super.scale(scale);
+		this.w *= scale;
 		return this;
 	}
 
@@ -326,61 +284,11 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 	}
 
 	/**
-	 * @return x
-	 */
-	public final float getX() {
-		return x;
-	}
-
-	/**
-	 * @return y
-	 */
-	public final float getY() {
-		return y;
-	}
-
-	/**
-	 * Set X
-	 * 
-	 * @param x
-	 */
-	public final void setX(float x) {
-		this.x = x;
-	}
-
-	/**
-	 * Set Y
-	 * 
-	 * @param y
-	 */
-	public final void setY(float y) {
-		this.y = y;
-	}
-
-	/**
-	 * Set Z
-	 * 
-	 * @param z
-	 */
-	public void setZ(float z) {
-		this.z = z;
-	}
-
-	/*
-	 * (Overrides)
-	 * 
-	 * @see org.lwjgl.vector.ReadableVector3f#getZ()
-	 */
-	public float getZ() {
-		return z;
-	}
-
-	/**
 	 * Set W
 	 * 
 	 * @param w
 	 */
-	public void setW(float w) {
+	public final void setW(float w) {
 		this.w = w;
 	}
 
@@ -389,7 +297,7 @@ public class Vector4f extends Vector implements Serializable, ReadableVector4f {
 	 * 
 	 * @see org.lwjgl.vector.ReadableVector3f#getZ()
 	 */
-	public float getW() {
+	public final float getW() {
 		return w;
 	}
 

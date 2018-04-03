@@ -2,16 +2,16 @@ package com.grillecube.client.renderer.blocks;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.renderer.world.BlockFace;
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
-import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 /** the default cube renderer */
 public class BlockRendererPlant extends BlockRenderer {
@@ -37,7 +37,7 @@ public class BlockRendererPlant extends BlockRenderer {
 	}
 
 	@Override
-	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
+	public void generateBlockVertices(TerrainMesher terrainMesher, WorldObjectTerrain terrain, Block block, int x, int y, int z,
 			BlockFace[][][][] faces, ArrayList<TerrainMeshTriangle> stack) {
 		for (Face face : Face.faces) {
 			Vector3i vec = face.getVector();
@@ -49,7 +49,7 @@ public class BlockRendererPlant extends BlockRenderer {
 		}
 	}
 
-	private final void createPlantVertices(Terrain terrain, Block block, int x, int y, int z,
+	private final void createPlantVertices(WorldObjectTerrain terrain, Block block, int x, int y, int z,
 			ArrayList<TerrainMeshTriangle> stack) {
 		TerrainMeshVertex v0 = this.createBlockFaceVertex(terrain, Face.F_RIGHT, x, y, z, 0);
 		TerrainMeshVertex v1 = this.createBlockFaceVertex(terrain, Face.F_RIGHT, x, y, z, 1);
@@ -70,7 +70,7 @@ public class BlockRendererPlant extends BlockRenderer {
 	/**
 	 * return the vertex for the given vertex ID at the given coordinates
 	 */
-	public TerrainMeshVertex createBlockFaceVertex(Terrain terrain, Face face, int x, int y, int z, int vertexID) {
+	public TerrainMeshVertex createBlockFaceVertex(WorldObjectTerrain terrain, Face face, int x, int y, int z, int vertexID) {
 		Vector3i[] neighboors = FACES_NEIGHBORS[face.getID()][vertexID];
 
 		// position

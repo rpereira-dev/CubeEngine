@@ -2,18 +2,18 @@ package com.grillecube.common.event.world;
 
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.event.Event;
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public abstract class EventTerrain extends Event {
 
-	private final Terrain terrain;
+	private final WorldObjectTerrain terrain;
 
-	public EventTerrain(Terrain terrain) {
+	public EventTerrain(WorldObjectTerrain terrain) {
 		super();
 		this.terrain = terrain;
 	}
 
-	public final Terrain getTerrain() {
+	public final WorldObjectTerrain getTerrain() {
 		return (this.terrain);
 	}
 }

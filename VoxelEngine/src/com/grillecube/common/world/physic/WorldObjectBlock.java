@@ -1,8 +1,8 @@
 package com.grillecube.common.world.physic;
 
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class WorldObjectBlock extends WorldObject {
 
@@ -219,17 +219,17 @@ public class WorldObjectBlock extends WorldObject {
 
 	@Override
 	public float getSizeX() {
-		return (Terrain.BLOCK_SIZE);
+		return (WorldObjectTerrain.BLOCK_SIZE);
 	}
 
 	@Override
 	public float getSizeY() {
-		return (Terrain.BLOCK_SIZE);
+		return (WorldObjectTerrain.BLOCK_SIZE);
 	}
 
 	@Override
 	public float getSizeZ() {
-		return (Terrain.BLOCK_SIZE);
+		return (WorldObjectTerrain.BLOCK_SIZE);
 	}
 
 	@Override

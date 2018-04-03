@@ -31,7 +31,6 @@
  */
 package com.grillecube.common.maths;
 
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 /**
@@ -42,7 +41,7 @@ import java.nio.ByteBuffer;
  * @version $Revision$ $Id$
  */
 
-public class Vector3f extends Vector implements Serializable, ReadableVector3f {
+public class Vector3f extends Vector2f {
 
 	public static final Vector3f AXIS_X = new Vector3f(1, 0, 0);
 	public static final Vector3f AXIS_Y = new Vector3f(0, 1, 0);
@@ -65,7 +64,7 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	/**
 	 * Constructor
 	 */
-	public Vector3f(ReadableVector3f src) {
+	public Vector3f(Vector3f src) {
 		set(src);
 	}
 
@@ -84,16 +83,6 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 
 	public Vector3f(float value) {
 		this(value, value, value);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.lwjgl.util.vector.WritableVector2f#set(float, float)
-	 */
-	public void set(float x, float y) {
-		this.x = x;
-		this.y = y;
 	}
 
 	public void set(float value) {
@@ -121,18 +110,12 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	 *            The source vector
 	 * @return this
 	 */
-	public Vector3f set(ReadableVector3f src) {
-		x = src.getX();
-		y = src.getY();
-		z = src.getZ();
-		return this;
+	public Vector3f set(Vector3f src) {
+		return (this.set(src.x, src.y, src.z));
 	}
 
 	public Vector3f set(Vector3i src) {
-		x = src.getX();
-		y = src.getY();
-		z = src.getZ();
-		return this;
+		return (this.set(src.x, src.y, src.z));
 	}
 
 	/**
@@ -328,12 +311,10 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	 * 
 	 * @see org.lwjgl.vector.Vector#scale(float)
 	 */
-	public Vector3f scale(float scale) {
-
-		x *= scale;
-		y *= scale;
-		z *= scale;
-
+	@Override
+	public Vector scale(float scale) {
+		super.scale(scale);
+		this.z *= scale;
 		return this;
 
 	}
@@ -378,43 +359,11 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	}
 
 	/**
-	 * @return x
-	 */
-	public final float getX() {
-		return x;
-	}
-
-	/**
-	 * @return y
-	 */
-	public final float getY() {
-		return y;
-	}
-
-	/**
-	 * Set X
-	 * 
-	 * @param x
-	 */
-	public final void setX(float x) {
-		this.x = x;
-	}
-
-	/**
-	 * Set Y
-	 * 
-	 * @param y
-	 */
-	public final void setY(float y) {
-		this.y = y;
-	}
-
-	/**
 	 * Set Z
 	 * 
 	 * @param z
 	 */
-	public void setZ(float z) {
+	public final void setZ(float z) {
 		this.z = z;
 	}
 
@@ -423,10 +372,11 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f {
 	 * 
 	 * @see org.lwjgl.vector.ReadableVector3f#getZ()
 	 */
-	public float getZ() {
+	public final float getZ() {
 		return z;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;

@@ -31,7 +31,7 @@ import com.grillecube.client.renderer.geometry.Sphere;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
-import com.grillecube.common.world.Sky;
+import com.grillecube.common.world.sky.Sky;
 
 public class SkyRenderer extends Renderer {
 

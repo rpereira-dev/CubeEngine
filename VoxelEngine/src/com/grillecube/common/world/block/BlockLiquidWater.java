@@ -1,6 +1,6 @@
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class BlockLiquidWater extends BlockLiquid {
 
@@ -23,14 +23,14 @@ public class BlockLiquidWater extends BlockLiquid {
 	}
 
 	@Override
-	public void update(Terrain terrain, int x, int y, int z) {
+	public void update(WorldObjectTerrain terrain, int x, int y, int z) {
 		// if (terrain.getWorld().getRNG().nextInt(128) == 0) {
 		// this.spawnWaterParticles(terrain, x, y, z, 1);
 		// }
 	}
 
 	@Override
-	public void onSet(Terrain terrain, int x, int y, int z) {
+	public void onSet(WorldObjectTerrain terrain, int x, int y, int z) {
 		// this.spawnWaterParticles(terrain, x, y, z, 8);
 	}
 

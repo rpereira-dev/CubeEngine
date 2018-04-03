@@ -12,7 +12,6 @@ import com.grillecube.common.event.world.entity.EventEntityDespawn;
 import com.grillecube.common.event.world.entity.EventEntitySpawn;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldStorage;
-import com.grillecube.common.world.physic.WorldPhysicSystem;
 
 /**
  * data structure which contains every entities
@@ -21,7 +20,7 @@ import com.grillecube.common.world.physic.WorldPhysicSystem;
  * be able to get sorted entities (by type, so model) fastly, to optimize
  * rendering Insertion and deletion are also optimized
  **/
-public class WorldEntityStorage extends WorldStorage {
+public class WorldEntityStorage extends WorldStorage<WorldEntity> implements Iterable<WorldEntity> {
 
 	/** the entities by their UUID */
 	private HashMap<Integer, WorldEntity> entities;
@@ -29,19 +28,20 @@ public class WorldEntityStorage extends WorldStorage {
 	/** the list of the entities sharing the class */
 	private HashMap<Class<? extends WorldEntity>, ArrayList<WorldEntity>> entitiesByClass;
 
-	/** world physic */
-	private final WorldPhysicSystem physics;
-
 	public WorldEntityStorage(World world) {
 		super(world);
 		this.entities = new HashMap<Integer, WorldEntity>();
 		this.entitiesByClass = new HashMap<Class<? extends WorldEntity>, ArrayList<WorldEntity>>();
-		this.physics = new WorldPhysicSystem();
 	}
 
 	/** get all entities */
 	public Collection<WorldEntity> getEntities() {
 		return (this.entities.values());
+	}
+
+	@Override
+	public Collection<WorldEntity> get() {
+		return (this.getEntities());
 	}
 
 	public WorldEntity getEntity(Integer worldID) {
@@ -79,8 +79,8 @@ public class WorldEntityStorage extends WorldStorage {
 		return (this.entities.containsKey(entityID));
 	}
 
-	/** add an entity to the storage */
-	public WorldEntity spawn(WorldEntity entity) {
+	@Override
+	public WorldEntity add(WorldEntity entity) {
 
 		if (this.contains(entity)) {
 			Logger.get().log(Logger.Level.WARNING, "Tried to spawn an already spawned entity", entity);
@@ -137,8 +137,8 @@ public class WorldEntityStorage extends WorldStorage {
 		return (id);
 	}
 
-	/** remove the given entity */
-	public WorldEntity despawn(WorldEntity entity) {
+	@Override
+	public WorldEntity remove(WorldEntity entity) {
 		if (!(this.contains(entity))) {
 			Logger.get().log(Level.WARNING, "Tried to remove an entity which wasnt in the world");
 			return (null);
@@ -171,27 +171,12 @@ public class WorldEntityStorage extends WorldStorage {
 	@Override
 	public void getTasks(VoxelEngine engine, ArrayList<com.grillecube.common.VoxelEngine.Callable<Taskable>> tasks) {
 
-		Collection<WorldEntity> entities_collection = this.getEntities();
-		int size = entities_collection.size();
-		WorldEntity[] entities = entities_collection.toArray(new WorldEntity[size]);
-
 		tasks.add(engine.new Callable<Taskable>() {
-
 			@Override
 			public WorldEntityStorage call() throws Exception {
-
 				double dt = engine.getTimer().getDt();
-
-				for (int i = 0; i < entities.length; i++) {
-					WorldEntity entity = entities[i];
-					entity.preWorldUpdate(engine.getTimer().getDt());
-				}
-
-				physics.update(dt);
-
-				for (int i = 0; i < entities.length; i++) {
-					WorldEntity entity = entities[i];
-					entity.postWorldUpdate(dt);
+				for (WorldEntity entity : WorldEntityStorage.this) {
+					entity.update(dt);
 				}
 				return (WorldEntityStorage.this);
 			}
@@ -206,5 +191,10 @@ public class WorldEntityStorage extends WorldStorage {
 	@Override
 	public void delete() {
 		this.removeAll();
+	}
+
+	@Override
+	public int size() {
+		return (this.entities.size());
 	}
 }

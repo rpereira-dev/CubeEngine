@@ -24,7 +24,6 @@ import com.grillecube.common.network.INetwork;
 import com.grillecube.common.resources.AssetsPack;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
-import com.grillecube.common.world.Timer;
 import com.grillecube.common.world.World;
 
 public abstract class VoxelEngine {

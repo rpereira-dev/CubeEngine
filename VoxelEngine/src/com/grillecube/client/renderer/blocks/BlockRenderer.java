@@ -46,14 +46,14 @@ package com.grillecube.client.renderer.blocks;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.renderer.world.BlockFace;
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMesher;
-import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.client.resources.BlockRendererManager;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Block;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 /** the block renderer class */
 public abstract class BlockRenderer {
@@ -297,7 +297,7 @@ public abstract class BlockRenderer {
 	 * If the block has a special rendering, add the vertices directly onto the
 	 * stack
 	 */
-	public abstract void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y,
+	public abstract void generateBlockVertices(TerrainMesher terrainMesher, WorldObjectTerrain terrain, Block block, int x, int y,
 			int z, BlockFace[][][][] faces, ArrayList<TerrainMeshTriangle> stack);
 
 	/** return the x texture coodinates for this textureID */
@@ -311,7 +311,7 @@ public abstract class BlockRenderer {
 	}
 
 	/** get block light by getting the average of neighboors blocks */
-	public static final float getBlockLight(Terrain terrain, int x, int y, int z, Vector3i... neighboors) {
+	public static final float getBlockLight(WorldObjectTerrain terrain, int x, int y, int z, Vector3i... neighboors) {
 		float blockLight = 0.0f;
 		for (Vector3i n : neighboors) {
 			blockLight += terrain.getBlockLight(x + n.x, y + n.y, z + n.z);
@@ -320,12 +320,12 @@ public abstract class BlockRenderer {
 	}
 
 	/** get block light by getting the average of neighboors blocks */
-	public static final float getBlockLight(Terrain terrain, int x, int y, int z, int faceID, int faceVertexID) {
+	public static final float getBlockLight(WorldObjectTerrain terrain, int x, int y, int z, int faceID, int faceVertexID) {
 		return (getBlockLight(terrain, x, y, z, getNeighboors(faceID, faceVertexID)));
 	}
 
 	/** get block light by getting the average of neighboors blocks */
-	public static final float getSunLight(Terrain terrain, int x, int y, int z, Vector3i... neighboors) {
+	public static final float getSunLight(WorldObjectTerrain terrain, int x, int y, int z, Vector3i... neighboors) {
 		float sunLight = 0.0f;
 		for (Vector3i n : neighboors) {
 			sunLight += terrain.getSunLight(x + n.x, y + n.y, z + n.z);
@@ -334,7 +334,7 @@ public abstract class BlockRenderer {
 	}
 
 	/** get block light by getting the average of neighboors blocks */
-	public static final float getSunLight(Terrain terrain, int x, int y, int z, int faceID, int vertexID) {
+	public static final float getSunLight(WorldObjectTerrain terrain, int x, int y, int z, int faceID, int vertexID) {
 		return (getSunLight(terrain, x, y, z, getNeighboors(faceID, vertexID)));
 	}
 
@@ -345,7 +345,7 @@ public abstract class BlockRenderer {
 
 	public static final float AO_UNIT = 0.06f;
 
-	public static final float getAmbiantOcclusion(Terrain terrain, int x, int y, int z, Vector3i... neighboors) {
+	public static final float getAmbiantOcclusion(WorldObjectTerrain terrain, int x, int y, int z, Vector3i... neighboors) {
 		Block side1 = terrain.getBlock(x + neighboors[0].x, y + neighboors[0].y, z + neighboors[0].z);
 		Block side2 = terrain.getBlock(x + neighboors[1].x, y + neighboors[1].y, z + neighboors[1].z);
 		Block corner = terrain.getBlock(x + neighboors[2].x, y + neighboors[2].y, z + neighboors[2].z);
@@ -363,7 +363,7 @@ public abstract class BlockRenderer {
 		return (c ? AO_UNIT : 0.0f);
 	}
 
-	public static final float getAmbiantOcclusion(Terrain terrain, int x, int y, int z, int faceID, int vertexID) {
+	public static final float getAmbiantOcclusion(WorldObjectTerrain terrain, int x, int y, int z, int faceID, int vertexID) {
 		return (getAmbiantOcclusion(terrain, x, y, z, getNeighboors(faceID, vertexID)));
 	}
 

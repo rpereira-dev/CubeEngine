@@ -14,7 +14,7 @@
 
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class BlockAir extends Block {
 	public BlockAir() {
@@ -47,14 +47,19 @@ public class BlockAir extends Block {
 	}
 
 	@Override
-	public void update(Terrain terrain, int x, int y, int z) {
+	public void update(WorldObjectTerrain terrain, int x, int y, int z) {
 	}
 
 	@Override
-	public void onSet(Terrain terrain, int x, int y, int z) {
+	public void onSet(WorldObjectTerrain terrain, int x, int y, int z) {
 	}
 
 	@Override
-	public void onUnset(Terrain terrain, int x, int y, int z) {
+	public void onUnset(WorldObjectTerrain terrain, int x, int y, int z) {
+	}
+
+	@Override
+	public float getMass() {
+		return (0.0f);
 	}
 }

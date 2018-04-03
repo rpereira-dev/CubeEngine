@@ -1,12 +1,12 @@
 package com.grillecube.common.world.generator;
 
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Blocks;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class WorldGeneratorFlat extends WorldGenerator {
 
 	@Override
-	public void generate(Terrain terrain) {
+	public void generate(WorldObjectTerrain terrain) {
 //		for (int x = 0; x < Terrain.DIMX; x++) {
 //			for (int y = 0; y < Terrain.DIMY; y++) {
 //				// terrain.setBlockAt((x + z) % 2 == 0 ? Blocks.GRASS :
@@ -19,8 +19,8 @@ public class WorldGeneratorFlat extends WorldGenerator {
 //			}
 //		}
 
-		for (int x = 0; x < Terrain.DIMX; x++) {
-			for (int y = 0; y < Terrain.DIMY; y++) {
+		for (int x = 0; x < WorldObjectTerrain.DIMX; x++) {
+			for (int y = 0; y < WorldObjectTerrain.DIMY; y++) {
 				// terrain.setBlockAt((x + z) % 2 == 0 ? Blocks.GRASS :
 				// Blocks.LOG, x, 4, z);
 				terrain.setBlockAt(Blocks.GRASS, x, y, 4);

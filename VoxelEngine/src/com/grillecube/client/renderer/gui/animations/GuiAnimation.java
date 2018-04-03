@@ -1,7 +1,7 @@
 package com.grillecube.client.renderer.gui.animations;
 
 import com.grillecube.client.renderer.gui.components.Gui;
-import com.grillecube.common.world.Timer;
+import com.grillecube.common.Timer;
 
 public abstract class GuiAnimation<T extends Gui> {
 

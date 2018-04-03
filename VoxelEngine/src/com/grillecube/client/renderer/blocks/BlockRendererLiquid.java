@@ -2,17 +2,17 @@ package com.grillecube.client.renderer.blocks;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.renderer.world.BlockFace;
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
-import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.BlockLiquid;
 import com.grillecube.common.world.block.Blocks;
 import com.grillecube.common.world.block.instances.BlockInstanceLiquid;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class BlockRendererLiquid extends BlockRendererCube {
 
@@ -21,7 +21,7 @@ public class BlockRendererLiquid extends BlockRendererCube {
 	}
 
 	@Override
-	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
+	public void generateBlockVertices(TerrainMesher terrainMesher, WorldObjectTerrain terrain, Block block, int x, int y, int z,
 			BlockFace[][][][] faces, ArrayList<TerrainMeshTriangle> stack) {
 		for (Face face : Face.values()) {
 			Vector3i vec = face.getVector();
@@ -37,7 +37,7 @@ public class BlockRendererLiquid extends BlockRendererCube {
 	}
 
 	/** push vertices for a liquid */
-	private void pushFaceVertices(TerrainMesher mesher, Terrain terrain, Block neighbor,
+	private void pushFaceVertices(TerrainMesher mesher, WorldObjectTerrain terrain, Block neighbor,
 			ArrayList<TerrainMeshTriangle> stack, int x, int y, int z, Face face) {
 
 		// get the instance for this block

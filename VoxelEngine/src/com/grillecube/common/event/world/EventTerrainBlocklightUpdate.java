@@ -1,10 +1,10 @@
 package com.grillecube.common.event.world;
 
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class EventTerrainBlocklightUpdate extends EventTerrain {
 
-	public EventTerrainBlocklightUpdate(Terrain terrain) {
+	public EventTerrainBlocklightUpdate(WorldObjectTerrain terrain) {
 		super(terrain);
 	}
 

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import com.grillecube.common.event.world.entity.EventEntityPlaySound;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.EventManager;
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.Blocks;
@@ -28,6 +27,7 @@ import com.grillecube.common.world.entity.ai.EntityAIIdle;
 import com.grillecube.common.world.physic.Control;
 import com.grillecube.common.world.physic.Force;
 import com.grillecube.common.world.physic.WorldObjectEntity;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public abstract class WorldEntity extends WorldObjectEntity {
 
@@ -128,9 +128,9 @@ public abstract class WorldEntity extends WorldObjectEntity {
 
 		// m.a = F
 		float m = this.getMass();
-		float ax = resultant.x * Terrain.BLOCKS_PER_METER / m;
-		float ay = resultant.y * Terrain.BLOCKS_PER_METER / m;
-		float az = resultant.z * Terrain.BLOCKS_PER_METER / m;
+		float ax = resultant.x * WorldObjectTerrain.BLOCKS_PER_METER / m;
+		float ay = resultant.y * WorldObjectTerrain.BLOCKS_PER_METER / m;
+		float az = resultant.z * WorldObjectTerrain.BLOCKS_PER_METER / m;
 		this.setPositionAccelerationX(ax);
 		this.setPositionAccelerationY(ay);
 		this.setPositionAccelerationZ(az);

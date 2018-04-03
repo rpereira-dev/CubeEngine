@@ -2,10 +2,10 @@ package com.grillecube.common.world.block.instances;
 
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.BlockLiquid;
 import com.grillecube.common.world.block.Blocks;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 /**
  * the block instance class of a liquid
@@ -36,7 +36,7 @@ public class BlockInstanceLiquid extends BlockInstance {
 	public static final float LIQUID_HEIGHT_UNIT = MIN_LIQUID_AMOUNT / (float) MAX_LIQUID_AMOUNT;
 	private static final short DEFAULT_WATER_AMOUNT = MAX_LIQUID_AMOUNT;
 
-	public BlockInstanceLiquid(Terrain terrain, Block block, int index) {
+	public BlockInstanceLiquid(WorldObjectTerrain terrain, Block block, int index) {
 		super(terrain, block, index);
 		this.setAmount(DEFAULT_WATER_AMOUNT);
 		this.lastUpdate = terrain.getWorld().getTick();
@@ -79,14 +79,14 @@ public class BlockInstanceLiquid extends BlockInstance {
 	/** flow the water around */
 	private void flow() {
 
-		Terrain terrain = super.getTerrain();
+		WorldObjectTerrain terrain = super.getTerrain();
 		int index = super.getIndex();
 		int z = terrain.getZFromIndex(index);
 		int y = terrain.getYFromIndex(index, z);
 		int x = terrain.getXFromIndex(index, y, z);
 
 		int[] under = { x, y - 1, z };
-		Terrain terrainUnder = terrain.getRelativeTerrain(under);
+		WorldObjectTerrain terrainUnder = terrain.getRelativeTerrain(under);
 		if (terrainUnder != null) {
 
 			int indexUnder = terrainUnder.getIndex(under);
@@ -128,7 +128,7 @@ public class BlockInstanceLiquid extends BlockInstance {
 
 					int[] bxyz = { x + d.x, y + d.y, z + d.z };
 
-					Terrain neighborTerrain = terrain.getRelativeTerrain(bxyz);
+					WorldObjectTerrain neighborTerrain = terrain.getRelativeTerrain(bxyz);
 					if (neighborTerrain == null) {
 						continue;
 					}

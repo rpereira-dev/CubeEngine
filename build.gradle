@@ -41,10 +41,9 @@ subprojects {
         compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:natives-macos"
 
 		compile "io.netty:netty-all:4.0.30.Final"
-
-		compile "cz.advel.jbullet:jbullet:20101010-1"
-		
 		compile "org.json:json:20141113"
+		
+		compile "cz.advel.jbullet:jbullet:20101010-1"
 	}
 
 

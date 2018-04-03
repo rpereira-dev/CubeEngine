@@ -14,8 +14,8 @@
 
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.instances.BlockInstance;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public abstract class Block {
 
@@ -72,7 +72,7 @@ public abstract class Block {
 	 * 
 	 * @see createBlockInstance(Terrain terrain, short index)
 	 */
-	public abstract void update(Terrain terrain, int x, int y, int z);
+	public abstract void update(WorldObjectTerrain terrain, int x, int y, int z);
 
 	public final short getID() {
 		return (this.id);
@@ -89,7 +89,7 @@ public abstract class Block {
 	 * @return a BlockInstance for this block, or null if the block should be
 	 *         instanced (i.e, if the block is a static cube)
 	 */
-	public BlockInstance createBlockInstance(Terrain terrain, int index) {
+	public BlockInstance createBlockInstance(WorldObjectTerrain terrain, int index) {
 		return (null);
 	}
 
@@ -105,10 +105,10 @@ public abstract class Block {
 	 * @param z
 	 *            : z coordinate (relative to the terrain)
 	 */
-	public abstract void onSet(Terrain terrain, int x, int y, int z);
+	public abstract void onSet(WorldObjectTerrain terrain, int x, int y, int z);
 
 	/** @see onSet */
-	public abstract void onUnset(Terrain terrain, int x, int y, int z);
+	public abstract void onUnset(WorldObjectTerrain terrain, int x, int y, int z);
 
 	/** return true if one can pass though this block, ignoring collision */
 	public boolean isCrossable() {
@@ -118,5 +118,9 @@ public abstract class Block {
 	/** return true if this block bypass raycast */
 	public boolean bypassRaycast() {
 		return (false);
+	}
+
+	public float getMass() {
+		return (1.0f);
 	}
 }

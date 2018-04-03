@@ -14,7 +14,7 @@
 
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class BlockGrass extends BlockCubeOpaque {
 	public BlockGrass(int blockID) {
@@ -27,7 +27,7 @@ public class BlockGrass extends BlockCubeOpaque {
 	}
 
 	@Override
-	public void update(Terrain terrain, int x, int y, int z) {
+	public void update(WorldObjectTerrain terrain, int x, int y, int z) {
 		// if (terrain.getWorld().getRNG().nextInt(50) == 0) {
 		// ParticleCube particle = new ParticleCube();
 		// particle.setColor(1, 0, 0, 1);

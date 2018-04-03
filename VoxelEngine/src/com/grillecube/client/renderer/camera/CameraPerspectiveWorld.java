@@ -4,12 +4,12 @@ import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.Logger;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class CameraPerspectiveWorld extends CameraProjectiveWorld {
 
 	public static final int TERRAIN_RENDER_DISTANCE = 32;
-	public static final float RENDER_DISTANCE = Terrain.DIMX_SIZE * TERRAIN_RENDER_DISTANCE;
+	public static final float RENDER_DISTANCE = WorldObjectTerrain.DIMX_SIZE * TERRAIN_RENDER_DISTANCE;
 	public static final float FAR_DISTANCE = RENDER_DISTANCE * 1.2f;
 	/** planes attributes */
 	private float fov;

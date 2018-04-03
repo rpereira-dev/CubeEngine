@@ -42,7 +42,7 @@ import java.nio.ByteBuffer;
  * @version $Revision$ $Id$
  */
 
-public class Vector2f extends Vector implements Serializable, ReadableVector2f {
+public class Vector2f extends Vector implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -58,8 +58,8 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f {
 	/**
 	 * Constructor.
 	 */
-	public Vector2f(ReadableVector2f src) {
-		set(src);
+	public Vector2f(Vector2f src) {
+		this.set(src);
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f {
 	 *            The source vector
 	 * @return this
 	 */
-	public Vector2f set(ReadableVector2f src) {
+	public Vector2f set(Vector2f src) {
 		x = src.getX();
 		y = src.getY();
 		return this;
@@ -130,8 +130,7 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f {
 	 * Negate a vector and place the result in a destination vector.
 	 * 
 	 * @param dest
-	 *            The destination vector or null if a new vector is to be
-	 *            created
+	 *            The destination vector or null if a new vector is to be created
 	 * @return the negated vector
 	 */
 	public Vector2f negate(Vector2f dest) {
@@ -146,8 +145,7 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f {
 	 * Normalise this vector and place the result in another vector.
 	 * 
 	 * @param dest
-	 *            The destination vector, or null if a new vector is to be
-	 *            created
+	 *            The destination vector, or null if a new vector is to be created
 	 * @return the normalised vector
 	 */
 	public Vector2f normalise(Vector2f dest) {
@@ -162,8 +160,8 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f {
 	}
 
 	/**
-	 * The dot product of two vectors is calculated as v1.x * v2.x + v1.y * v2.y
-	 * + v1.z * v2.z
+	 * The dot product of two vectors is calculated as v1.x * v2.x + v1.y * v2.y +
+	 * v1.z * v2.z
 	 * 
 	 * @param left
 	 *            The LHS vector
@@ -194,16 +192,14 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f {
 	}
 
 	/**
-	 * Add a vector to another vector and place the result in a destination
-	 * vector.
+	 * Add a vector to another vector and place the result in a destination vector.
 	 * 
 	 * @param left
 	 *            The LHS vector
 	 * @param right
 	 *            The RHS vector
 	 * @param dest
-	 *            The destination vector, or null if a new vector is to be
-	 *            created
+	 *            The destination vector, or null if a new vector is to be created
 	 * @return the sum of left and right in dest
 	 */
 	public static Vector2f add(Vector2f left, Vector2f right, Vector2f dest) {
@@ -216,16 +212,15 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f {
 	}
 
 	/**
-	 * Subtract a vector from another vector and place the result in a
-	 * destination vector.
+	 * Subtract a vector from another vector and place the result in a destination
+	 * vector.
 	 * 
 	 * @param left
 	 *            The LHS vector
 	 * @param right
 	 *            The RHS vector
 	 * @param dest
-	 *            The destination vector, or null if a new vector is to be
-	 *            created
+	 *            The destination vector, or null if a new vector is to be created
 	 * @return left minus right in dest
 	 */
 	public static Vector2f sub(Vector2f left, Vector2f right, Vector2f dest) {
@@ -263,16 +258,10 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f {
 		return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.lwjgl.vector.Vector#scale(float)
-	 */
-	public Vector2f scale(float scale) {
-
-		x *= scale;
-		y *= scale;
-
+	@Override
+	public Vector scale(float scale) {
+		this.x *= scale;
+		this.y *= scale;
 		return this;
 	}
 

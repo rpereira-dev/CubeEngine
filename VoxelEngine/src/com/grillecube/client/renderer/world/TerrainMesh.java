@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 import com.grillecube.client.opengl.GLVertexArray;
 import com.grillecube.client.opengl.GLVertexBuffer;
 import com.grillecube.client.renderer.Mesh;
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class TerrainMesh extends Mesh {
 
@@ -31,13 +31,13 @@ public class TerrainMesh extends Mesh {
 	public static final int BYTES_PER_VERTEX = 13 * 4;
 
 	/** the terrain */
-	private final Terrain terrain;
+	private final WorldObjectTerrain terrain;
 	private boolean cull;
 
-	public TerrainMesh(Terrain terrain) {
+	public TerrainMesh(WorldObjectTerrain terrain) {
 		super();
 		this.terrain = terrain;
-		super.getPosition().set(this.terrain.getWorldPos());
+		super.getPosition().set(this.terrain.getWorldPosition());
 		super.updateTransformationMatrix();
 		this.cull = false;
 	}
@@ -70,7 +70,7 @@ public class TerrainMesh extends Mesh {
 		}
 	}
 
-	public Terrain getTerrain() {
+	public WorldObjectTerrain getTerrain() {
 		return (this.terrain);
 	}
 
