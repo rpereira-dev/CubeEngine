@@ -31,6 +31,7 @@
  */
 package com.grillecube.common.maths;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 /**
@@ -41,7 +42,7 @@ import java.nio.ByteBuffer;
  * @version $Revision$ $Id$
  */
 
-public class Vector3f extends Vector2f {
+public class Vector3f extends Vector implements Serializable {
 
 	public static final Vector3f AXIS_X = new Vector3f(1, 0, 0);
 	public static final Vector3f AXIS_Y = new Vector3f(0, 1, 0);
@@ -313,7 +314,8 @@ public class Vector3f extends Vector2f {
 	 */
 	@Override
 	public Vector scale(float scale) {
-		super.scale(scale);
+		this.x *= scale;
+		this.y *= scale;
 		this.z *= scale;
 		return this;
 

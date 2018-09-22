@@ -366,9 +366,9 @@ public class ModelMesherCull extends ModelMesher {
 		vertex.uvx = uvx;
 		vertex.uvy = uvy;
 
-		vertex.nx = Face.get(faceID).getNormal().getX();
-		vertex.ny = Face.get(faceID).getNormal().getY();
-		vertex.nz = Face.get(faceID).getNormal().getZ();
+		vertex.nx = Face.get(faceID).getNormal().x;
+		vertex.ny = Face.get(faceID).getNormal().y;
+		vertex.nz = Face.get(faceID).getNormal().z;
 
 		vertex.b1 = this.getBoneID(editableModel, modelLayer, modelBlockData, 0);
 		vertex.b2 = this.getBoneID(editableModel, modelLayer, modelBlockData, 1);

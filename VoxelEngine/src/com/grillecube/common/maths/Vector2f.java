@@ -88,8 +88,8 @@ public class Vector2f extends Vector implements Serializable {
 	 * @return this
 	 */
 	public Vector2f set(Vector2f src) {
-		x = src.getX();
-		y = src.getY();
+		x = src.x;
+		y = src.y;
 		return this;
 	}
 
@@ -279,38 +279,6 @@ public class Vector2f extends Vector implements Serializable {
 		sb.append(y);
 		sb.append(']');
 		return sb.toString();
-	}
-
-	/**
-	 * @return x
-	 */
-	public final float getX() {
-		return x;
-	}
-
-	/**
-	 * @return y
-	 */
-	public final float getY() {
-		return y;
-	}
-
-	/**
-	 * Set X
-	 * 
-	 * @param x
-	 */
-	public final void setX(float x) {
-		this.x = x;
-	}
-
-	/**
-	 * Set Y
-	 * 
-	 * @param y
-	 */
-	public final void setY(float y) {
-		this.y = y;
 	}
 
 	public boolean equals(Object obj) {

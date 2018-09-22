@@ -308,14 +308,14 @@ public class GuiToolboxModelPanelAnimation extends GuiToolboxModelPanel {
 				Quaternion quat = bt.getRotation();
 				Vector3f rot = Quaternion.toEulerAngle(quat);
 
-				rot.setX(rotX.getPrompt().asFloat(rot.x));
-				rot.setY(rotY.getPrompt().asFloat(rot.y));
-				rot.setZ(rotZ.getPrompt().asFloat(rot.z));
+				rot.x = rotX.getPrompt().asFloat(rot.x);
+				rot.y = rotY.getPrompt().asFloat(rot.y);
+				rot.z = rotZ.getPrompt().asFloat(rot.z);
 				Quaternion.toQuaternion(quat, rot);
 
-				pos.setX(posX.getPrompt().asFloat(bt.getTranslation().x));
-				pos.setY(posY.getPrompt().asFloat(bt.getTranslation().y));
-				pos.setZ(posZ.getPrompt().asFloat(bt.getTranslation().z));
+				pos.x = posX.getPrompt().asFloat(bt.getTranslation().x);
+				pos.y = posY.getPrompt().asFloat(bt.getTranslation().y);
+				pos.z = posZ.getPrompt().asFloat(bt.getTranslation().z);
 				bt.set(pos, quat);
 			}
 		};

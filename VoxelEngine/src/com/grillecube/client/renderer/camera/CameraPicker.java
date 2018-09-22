@@ -46,12 +46,12 @@ public class CameraPicker {
 		Vector4f clipcoords = new Vector4f(mouseX, mouseY, -1.0f, 1.0f);
 		Matrix4f invertedprojection = Matrix4f.invert(camera.getProjectionMatrix(), null);
 		Vector4f eyecoords = Matrix4f.transform(invertedprojection, clipcoords, null);
-		eyecoords.setZ(-1);
+		eyecoords.x = -1.0f;
 		eyecoords.setW(0);
 		Matrix4f invertedview = Matrix4f.invert(camera.getViewMatrix(), null);
 		Vector4f rayworld = Matrix4f.transform(invertedview, eyecoords, null);
-		ray.setX(rayworld.x);
-		ray.setY(rayworld.y);
-		ray.setZ(rayworld.z);
+		ray.x = rayworld.x;
+		ray.y = rayworld.y;
+		ray.z = rayworld.z;
 	}
 }

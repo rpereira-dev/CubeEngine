@@ -24,27 +24,25 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 	}
 
 	protected void updateMove() {
-		Vector3f vel = new Vector3f();
+		Vector3f vel = new Vector3f(0, 0, 0);
+		Vector3f vv = this.getViewVector();
+		
 		if (this.hasState(STATE_MOVE_FORWARD)) {
-			vel.setX(this.getViewVector().x);
-			vel.setY(this.getViewVector().y);
-			vel.setZ(this.getViewVector().z);
+			vel.x = vv.x;
+			vel.y = vv.y;
+			vel.z = vv.z;
 		} else if (this.hasState(STATE_MOVE_BACKWARD)) {
-			vel.setX(-this.getViewVector().x);
-			vel.setY(-this.getViewVector().y);
-			vel.setZ(-this.getViewVector().z);
+			vel.x = -vv.x;
+			vel.y = -vv.y;
+			vel.z = -vv.z;
 		} else if (this.hasState(STATE_MOVE_RIGHT)) {
-			vel.setX(this.getViewVector().y);
-			vel.setY(-this.getViewVector().x);
-			vel.setZ(0);
+			vel.x =  vv.y;
+			vel.y = -vv.x;
+			vel.z = 0;
 		} else if (this.hasState(STATE_MOVE_LEFT)) {
-			vel.setX(-this.getViewVector().y);
-			vel.setY(this.getViewVector().x);
-			vel.setZ(0);
-		} else {
-			vel.setX(0);
-			vel.setY(0);
-			vel.setZ(0);
+			vel.x = -vv.y;
+			vel.y =  vv.x;
+			vel.z = 0;
 		}
 
 		this.move(vel, 2.0f);

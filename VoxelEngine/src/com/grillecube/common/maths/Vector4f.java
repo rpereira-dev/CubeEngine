@@ -31,6 +31,7 @@
  */
 package com.grillecube.common.maths;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 /**
@@ -41,7 +42,7 @@ import java.nio.ByteBuffer;
  * @version $Revision$ $Id$
  */
 
-public class Vector4f extends Vector3f {
+public class Vector4f extends Vector implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -59,13 +60,6 @@ public class Vector4f extends Vector3f {
 	 */
 	public Vector4f(Vector3f src, float w) {
 		this.set(src.x, src.y, src.z, w);
-	}
-
-	/**
-	 * Constructor
-	 */
-	public Vector4f(Vector3f src) {
-		set(src);
 	}
 
 	/**
@@ -259,7 +253,9 @@ public class Vector4f extends Vector3f {
 
 	@Override
 	public Vector scale(float scale) {
-		super.scale(scale);
+		this.x *= scale;
+		this.y *= scale;
+		this.z *= scale;
 		this.w *= scale;
 		return this;
 	}

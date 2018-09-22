@@ -1,6 +1,7 @@
 package com.pot.client;
 
 import com.grillecube.client.VoxelEngineClient;
+import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldFree;
 import com.grillecube.client.renderer.gui.components.GuiViewDebug;
 import com.grillecube.client.renderer.gui.components.GuiViewWorld;
@@ -51,13 +52,13 @@ public class Main {
 		// CameraPerspectiveWorldEntity camera = new
 		// CameraPerspectiveWorldEntity(engine.getGLFWWindow());
 		// camera.setPosition(0.0f, 170.0f, -40.0f);
-		World world = engine.getWorld(POTWorlds.DEFAULT);
-		WorldEntityBipedTest player = new WorldEntityBipedTest(world);
-		player.setPosition(0, 0, 32);
-		world.spawnEntity(player);
+		// World world = engine.getWorld(POTWorlds.DEFAULT);
+		// WorldEntityBipedTest player = new WorldEntityBipedTest(world);
+		// player.setPosition(0, 0, 32);
+		// world.spawnEntity(player);
 		// camera.setWorld(world);
 		// camera.setEntity(player);
-
+	
 		CameraPerspectiveWorldFree camera = new CameraPerspectiveWorldFree(engine.getGLFWWindow());
 
 		engine.getRenderer().getGuiRenderer().addGui(new GuiViewWorld(camera, POTWorlds.DEFAULT));
