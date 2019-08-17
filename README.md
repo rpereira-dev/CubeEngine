@@ -4,7 +4,12 @@
 
 A Game engine for Voxel games, using OpenGL, GLFW, OpenAL, Netty
 
+**ABANDONNED**
+
 -----------------------------------------------------------------------
+
+## DEMO VIDEOS
+https://www.youtube.com/playlist?list=PLTsKtD9K5K8nkeK2MzVr3JFv4ofuJTugb
 
 ## HOW TO USE ##
         - >> git clone https://github.com/toss-dev/VoxelEngine.git
@@ -172,9 +177,7 @@ For example, there is the ModelRenderer (which render every entity's model), the
 Any modder can register new world renderer if needed.
 The world is rendered to it own FBO and texture. It can be displayed using a 'GuiTexture' for example.
 
-• Gui Renderer:
-
-Every concrete rendering are done here.
+• Gui Renderer
 
 # GUI System
 
