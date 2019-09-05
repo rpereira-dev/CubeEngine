@@ -2,15 +2,15 @@ package com.grillecube.client.renderer.blocks;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.renderer.world.BlockFace;
 import com.grillecube.client.renderer.world.TerrainMeshTriangle;
 import com.grillecube.client.renderer.world.TerrainMeshVertex;
 import com.grillecube.client.renderer.world.TerrainMesher;
-import com.grillecube.client.renderer.world.flat.BlockFace;
 import com.grillecube.common.Logger;
 import com.grillecube.common.faces.Face;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Block;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 /** the default cube renderer */
 public class BlockRendererCube extends BlockRenderer {
@@ -31,9 +31,8 @@ public class BlockRendererCube extends BlockRenderer {
 	 *            : the face and texture ID's
 	 * 
 	 *            e.g: new BlockRendererCube(Blocks.GRASS, Face.LEFT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.RIGHT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.FRONT,
-	 *            ClientBlocks.T_GRASS_SIDE, Face.BACK,
+	 *            ClientBlocks.T_GRASS_SIDE, Face.RIGHT, ClientBlocks.T_GRASS_SIDE,
+	 *            Face.FRONT, ClientBlocks.T_GRASS_SIDE, Face.BACK,
 	 *            ClientBlocks.T_GRASS_SIDE, Face.TOP, ClientBlocks.T_GRASS_TOP,
 	 *            Face.BOT, ClientBlocks.T_DIRT);
 	 */
@@ -84,7 +83,7 @@ public class BlockRendererCube extends BlockRenderer {
 	}
 
 	@Override
-	public void generateBlockVertices(TerrainMesher terrainMesher, Terrain terrain, Block block, int x, int y, int z,
+	public void generateBlockVertices(TerrainMesher terrainMesher, WorldObjectTerrain terrain, Block block, int x, int y, int z,
 			BlockFace[][][][] faces, ArrayList<TerrainMeshTriangle> stack) {
 
 		for (Face face : Face.faces) {
@@ -92,26 +91,27 @@ public class BlockRendererCube extends BlockRenderer {
 		}
 	}
 
-	private final BlockFace createBlockFace(Terrain terrain, Block block, Face face, int x, int y, int z) {
+	private final BlockFace createBlockFace(WorldObjectTerrain terrain, Block block, Face face, int x, int y, int z) {
 
 		// if the face-neighboor block is visible isnt transparent
-		// TODO : find a solution on leaves square
 		if (!this.canRenderFace(terrain, block, face, x, y, z)) {
 			// the face isnt visible
 			return (null);
 		}
+
+		byte durability = terrain.getDurability(x, y, z);
 
 		// else the face is visible, create it!
 		TerrainMeshVertex v0 = this.createBlockFaceVertex(terrain, face, x, y, z, 0);
 		TerrainMeshVertex v1 = this.createBlockFaceVertex(terrain, face, x, y, z, 1);
 		TerrainMeshVertex v2 = this.createBlockFaceVertex(terrain, face, x, y, z, 2);
 		TerrainMeshVertex v3 = this.createBlockFaceVertex(terrain, face, x, y, z, 3);
-		BlockFace blockface = new BlockFace(block, this.textureIDs[face.getID()], v0, v1, v2, v3);
+		BlockFace blockface = new BlockFace(block, this.textureIDs[face.getID()], durability, v0, v1, v2, v3);
 		return (blockface);
 
 	}
 
-	protected boolean canRenderFace(Terrain terrain, Block block, Face face, int x, int y, int z) {
+	protected boolean canRenderFace(WorldObjectTerrain terrain, Block block, Face face, int x, int y, int z) {
 		Vector3i vec = face.getVector();
 
 		// get the neighbor of this face
@@ -121,21 +121,21 @@ public class BlockRendererCube extends BlockRenderer {
 	}
 
 	/**
-	 * return the vertex for the given face at the given coordinates, for it
-	 * given id
+	 * return the vertex for the given face at the given coordinates, for it given
+	 * id
 	 */
-	public TerrainMeshVertex createBlockFaceVertex(Terrain terrain, Face face, int x, int y, int z, int faceVertexID) {
+	public TerrainMeshVertex createBlockFaceVertex(WorldObjectTerrain terrain, Face face, int x, int y, int z, int faceVertexID) {
 
 		int vertexID = FACES_VERTICES[face.getID()][faceVertexID];
 
 		// position
-		float px = (x + VERTICES[vertexID].x) * Terrain.BLOCK_SIZE;
-		float py = (y + VERTICES[vertexID].y) * Terrain.BLOCK_SIZE;
-		float pz = (z + VERTICES[vertexID].z) * Terrain.BLOCK_SIZE;
+		float px = (x + VERTICES[vertexID].x);
+		float py = (y + VERTICES[vertexID].y);
+		float pz = (z + VERTICES[vertexID].z);
 
 		// uv
-		float uvx = FACES_UV[faceVertexID][0];
-		float uvy = FACES_UV[faceVertexID][1];
+		float u = FACES_UV[faceVertexID][0];
+		float v = FACES_UV[faceVertexID][1];
 		int textureID = this.textureIDs[face.getID()];
 		float atlasX = super.getAtlasX(textureID);
 		float atlasY = super.getAtlasY(textureID);
@@ -165,8 +165,7 @@ public class BlockRendererCube extends BlockRenderer {
 		float nx = face.getNormal().x;
 		float ny = face.getNormal().y;
 		float nz = face.getNormal().z;
-		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, uvx, uvy, color, brightness, ao,
-				durability));
+		return (new TerrainMeshVertex(px, py, pz, nx, ny, nz, atlasX, atlasY, u, v, color, brightness, ao, durability));
 	}
 
 	@Override

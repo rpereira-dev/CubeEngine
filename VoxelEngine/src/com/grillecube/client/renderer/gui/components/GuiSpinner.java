@@ -81,11 +81,7 @@ public abstract class GuiSpinner extends Gui {
 
 	/** add a value to the spinner */
 	public final Object remove(Object value) {
-		if (!this.values.remove(value)) {
-			return (false);
-		}
-		this.valuesNames.remove(value);
-		return (value);
+		return (this.remove(this.values.indexOf(value)));
 	}
 
 	public final Object remove(int index) {
@@ -103,8 +99,8 @@ public abstract class GuiSpinner extends Gui {
 	}
 
 	/**
-	 * sort the spinner, keep the selected object as selected (meaning sorting
-	 * may changes picked index)
+	 * sort the spinner, keep the selected object as selected (meaning sorting may
+	 * changes picked index)
 	 */
 	public final void sort(Comparator<Object> comparator) {
 		Object picked = this.getPickedObject();

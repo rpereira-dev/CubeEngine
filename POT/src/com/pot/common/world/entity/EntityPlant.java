@@ -1,9 +1,9 @@
 package com.pot.common.world.entity;
 
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.entity.EntityLiving;
+import com.grillecube.common.world.entity.WorldEntityLiving;
 
-public class EntityPlant extends EntityLiving {
+public class EntityPlant extends WorldEntityLiving {
 
 	public EntityPlant(World world) {
 		super(world);

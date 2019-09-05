@@ -35,14 +35,21 @@ public abstract class GuiInputManager {
 
 	/** update the input manager */
 	public final void update(ArrayList<Gui> guis) {
+		this.updateGuis(guis);
+		this.onUpdate();
+	}
+
+	private void updateGuis(ArrayList<Gui> guis) {
 		Gui g = this.getFocusedGui();
 		if (g != null && g.requestedUnfocus()) {
 			this.setFocusedGui(null);
 		}
-		this.onUpdate(guis);
+		this.onGuisUpdate(guis);
 	}
 
-	protected abstract void onUpdate(ArrayList<Gui> guis);
+	protected abstract void onGuisUpdate(ArrayList<Gui> guis);
+
+	protected abstract void onUpdate();
 
 	protected final void setFocusedGui(Gui gui) {
 		if (this.focusedGui == gui) {

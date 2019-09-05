@@ -1,6 +1,5 @@
 package com.grillecube.common.defaultmod;
 
-import com.grillecube.common.event.Events;
 import com.grillecube.common.mod.IMod;
 import com.grillecube.common.mod.Mod;
 import com.grillecube.common.mod.ModInfo;
@@ -12,7 +11,6 @@ public class VoxelEngineDefaultMod implements IMod {
 	@Override
 	public void initialize(Mod mod) {
 		mod.addResource(new Blocks());
-		mod.addResource(new Events());
 	}
 
 	@Override

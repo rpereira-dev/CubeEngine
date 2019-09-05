@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLVertexBuffer;
+import com.grillecube.client.opengl.GLVertexBuffer;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.camera.CameraProjective;

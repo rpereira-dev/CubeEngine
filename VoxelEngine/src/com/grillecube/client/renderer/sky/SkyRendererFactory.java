@@ -3,7 +3,7 @@ package com.grillecube.client.renderer.sky;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.client.renderer.camera.CameraProjective;
-import com.grillecube.common.world.Sky;
+import com.grillecube.common.world.sky.Sky;
 
 public class SkyRendererFactory extends RendererFactory {
 

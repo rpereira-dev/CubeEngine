@@ -16,7 +16,7 @@ import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.utils.Color;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 /** a view which handles model creation */
 public class GuiToolboxModel extends GuiView {
@@ -135,7 +135,7 @@ public class GuiToolboxModel extends GuiView {
 		return (this.modelInstance);
 	}
 
-	public final Entity getEntity() {
+	public final WorldEntity getEntity() {
 		return (this.modelInstance.getEntity());
 	}
 

@@ -133,7 +133,7 @@ public abstract class Gui {
 	private ArrayList<GuiAnimation<Gui>> animations;
 
 	/** hashmap: class of 'GuiEvent', and list of GuiListener<GuiEvent> */
-	private HashMap<Class<?>, ArrayList<GuiListener<?>>> listeners;
+	private HashMap<Class<?>, ArrayList<GuiListener<?>>> eventListeners;
 
 	public static final Comparator<? super Gui> LAYER_COMPARATOR = new Comparator<Gui>() {
 		@Override
@@ -190,13 +190,13 @@ public abstract class Gui {
 		if (listener == null) {
 			return;
 		}
-		if (this.listeners == null) {
-			this.listeners = new HashMap<Class<?>, ArrayList<GuiListener<?>>>();
+		if (this.eventListeners == null) {
+			this.eventListeners = new HashMap<Class<?>, ArrayList<GuiListener<?>>>();
 		}
-		ArrayList<GuiListener<?>> lst = this.listeners.get(listener.getEventClass());
+		ArrayList<GuiListener<?>> lst = this.eventListeners.get(listener.getEventClass());
 		if (lst == null) {
 			lst = new ArrayList<GuiListener<?>>();
-			this.listeners.put(listener.getEventClass(), lst);
+			this.eventListeners.put(listener.getEventClass(), lst);
 		}
 
 		lst.add(listener);
@@ -204,16 +204,16 @@ public abstract class Gui {
 
 	/** a listener to the mouse entering the gui */
 	public void removeListener(GuiListener<?> listener) {
-		ArrayList<GuiListener<?>> lst = this.listeners.get(listener.getEventClass());
+		ArrayList<GuiListener<?>> lst = this.eventListeners.get(listener.getEventClass());
 		if (lst == null) {
 			return;
 		}
 		lst.remove(listener);
 		if (lst.size() == 0) {
-			this.listeners.remove(listener.getEventClass());
+			this.eventListeners.remove(listener.getEventClass());
 		}
-		if (this.listeners.size() == 0) {
-			this.listeners = null;
+		if (this.eventListeners.size() == 0) {
+			this.eventListeners = null;
 		}
 	}
 
@@ -482,11 +482,11 @@ public abstract class Gui {
 
 	/** stack an event, it listeners will be caled using Gui#unstackEvents() */
 	public final void stackEvent(GuiEvent<?> guiEvent) {
-		if (this.listeners == null) {
+		if (this.eventListeners == null) {
 			return;
 		}
 
-		ArrayList<GuiListener<?>> listeners = this.listeners.get(guiEvent.getClass());
+		ArrayList<GuiListener<?>> listeners = this.eventListeners.get(guiEvent.getClass());
 		if (listeners == null) {
 			return;
 		}
@@ -498,11 +498,11 @@ public abstract class Gui {
 
 	/** release the stack events and call their listener */
 	public final void unstackEvents() {
-		if (this.listeners == null) {
+		if (this.eventListeners == null) {
 			return;
 		}
 
-		Collection<ArrayList<GuiListener<?>>> allListeners = this.listeners.values();
+		Collection<ArrayList<GuiListener<?>>> allListeners = this.eventListeners.values();
 
 		for (ArrayList<GuiListener<?>> listeners : allListeners) {
 			for (GuiListener<?> listener : listeners) {

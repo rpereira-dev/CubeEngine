@@ -7,13 +7,13 @@ import org.junit.runner.notification.Failure;
 import com.grillecube.client.tests.WorldTests;
 import com.grillecube.common.Logger;
 import com.grillecube.common.maths.MathTests;
-import com.grillecube.common.world.entity.collision.Collision;
+import com.grillecube.common.world.entity.collision.CollisionUnitTests;
 
 public class JUnitTestAll {
 
 	public static void main(String[] args) {
 		Logger.get().log(Logger.Level.FINE, "running tests...");
-		Class<?> classes[] = { Collision.class, WorldTests.class, MathTests.class };
+		Class<?> classes[] = { CollisionUnitTests.class, WorldTests.class, MathTests.class };
 		for (Class<?> classToTest : classes) {
 			Logger.get().log(Logger.Level.FINE, "running test for class: " + classToTest.getSimpleName());
 			Result result = JUnitCore.runClasses(classToTest);

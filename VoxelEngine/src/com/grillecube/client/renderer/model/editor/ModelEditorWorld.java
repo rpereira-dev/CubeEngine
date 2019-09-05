@@ -1,8 +1,7 @@
 package com.grillecube.client.renderer.model.editor;
 
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.WorldFlat;
-import com.grillecube.common.world.generator.WorldGeneratorFlat;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class ModelEditorWorld extends WorldFlat {
 
@@ -12,10 +11,10 @@ public class ModelEditorWorld extends WorldFlat {
 
 	@Override
 	public void onLoaded() {
-		this.setWorldGenerator(new WorldGeneratorFlat());
+		this.setWorldGenerator(new ModelEditorWorldGenerator());
 		for (int x = -4; x < 4; x++) {
-			for (int z = -4; z < 4; z++) {
-				Terrain terrain = this.spawnTerrain(new Terrain(x, -1, z));
+			for (int y = -4; y < 4; y++) {
+				WorldObjectTerrain terrain = this.spawnTerrain(new WorldObjectTerrain(this, x, y, -1));
 				this.generateTerrain(terrain);
 			}
 		}

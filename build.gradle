@@ -1,12 +1,14 @@
-project.ext.lwjglVersion = "3.1.2"
+project.ext.lwjglVersion = "3.1.4"
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
 
     repositories {
-       mavenCentral()
-       maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    	mavenCentral()
+    	maven {
+    		url "https://oss.sonatype.org/content/repositories/snapshots/"
+       	}
     }
 
     dependencies {
@@ -39,9 +41,8 @@ subprojects {
         compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:natives-macos"
 
 		compile "io.netty:netty-all:4.0.30.Final"
-		
 		compile "org.json:json:20141113"
-	
+		compile "cz.advel.jbullet:jbullet:20101010-1"
 	}
 
 

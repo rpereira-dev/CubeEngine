@@ -2,8 +2,10 @@ package com.grillecube.client.renderer.model.editor.gui;
 
 import java.util.ArrayList;
 
+import com.grillecube.client.renderer.camera.CameraDestinationCenter;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
+import com.grillecube.client.renderer.gui.components.GuiButton;
 import com.grillecube.client.renderer.gui.components.GuiViewDebug;
 import com.grillecube.client.renderer.gui.components.GuiViewWorld;
 import com.grillecube.client.renderer.gui.event.GuiEventKeyPress;
@@ -13,6 +15,7 @@ import com.grillecube.client.renderer.gui.event.GuiEventMouseMove;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseRightPress;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseRightRelease;
 import com.grillecube.client.renderer.gui.event.GuiEventMouseScroll;
+import com.grillecube.client.renderer.gui.event.GuiEventPress;
 import com.grillecube.client.renderer.gui.event.GuiListener;
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.editor.ModelEditorMod;
@@ -23,6 +26,8 @@ import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.world.WorldRenderer;
 import com.grillecube.common.VoxelEngine;
+import com.grillecube.common.maths.Maths;
+import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldFlat;
@@ -33,6 +38,10 @@ public class GuiModelView extends Gui {
 	private ArrayList<ModelInstance> modelInstances;
 	private GuiViewWorld guiViewWorld;
 	private ModelEditorCamera camera;
+	private GuiButton view;
+	private GuiButton rotateX;
+	private GuiButton rotateY;
+	private GuiButton rotateZ;
 
 	public GuiModelView() {
 		super();
@@ -48,10 +57,70 @@ public class GuiModelView extends Gui {
 		this.guiViewWorld.setHoverable(false);
 		this.guiViewWorld.set(this.camera, worldID);
 		this.guiViewWorld.initialize(renderer);
-		this.camera.loadTools(this);
-
 		this.addChild(this.guiViewWorld);
+
+		this.camera.loadTools(this);
 		this.addChild(new GuiViewDebug(camera));
+
+		this.view = new GuiButton();
+		this.view.setBox(0.80f, 0.95f, 0.05f, 0.05f, 0.0f);
+		this.view.setText("P");
+		this.addChild(this.view);
+		this.view.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
+			@Override
+			public void invoke(GuiEventPress<GuiButton> event) {
+				getCamera().setCenter(getSelectedModel() == null ? Vector3f.NULL_VEC : getSelectedModel().getOrigin());
+				float phi = getCamera().getPhi() - getCamera().getPhi() % (2.0f * Maths.PI) + Maths.PI_4 - Maths.PI_2;
+				float theta = getCamera().getTheta() - getCamera().getTheta() % (2.0f * Maths.PI) + Maths.PI_4 / 2.0f;
+				getCamera().addDestination(
+						new CameraDestinationCenter(getCamera().getR(), phi, theta, getCamera().getCenter(), 1));
+			}
+		});
+
+		this.rotateX = new GuiButton();
+		this.rotateX.setBox(0.85f, 0.95f, 0.05f, 0.05f, 0.0f);
+		this.rotateX.setText("X");
+		this.addChild(this.rotateX);
+		this.rotateX.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
+			@Override
+			public void invoke(GuiEventPress<GuiButton> event) {
+				getCamera().setCenter(getSelectedModel() == null ? Vector3f.NULL_VEC : getSelectedModel().getOrigin());
+				float phi = getCamera().getPhi() - getCamera().getPhi() % (2.0f * Maths.PI) - Maths.PI_2;
+				float theta = getCamera().getTheta() - getCamera().getTheta() % (2.0f * Maths.PI);
+				getCamera().addDestination(
+						new CameraDestinationCenter(getCamera().getR(), phi, theta, getCamera().getCenter(), 1));
+			}
+		});
+
+		this.rotateY = new GuiButton();
+		this.rotateY.setBox(0.90f, 0.95f, 0.05f, 0.05f, 0.0f);
+		this.rotateY.setText("Y");
+		this.addChild(this.rotateY);
+		this.rotateY.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
+			@Override
+			public void invoke(GuiEventPress<GuiButton> event) {
+				getCamera().setCenter(getSelectedModel() == null ? Vector3f.NULL_VEC : getSelectedModel().getOrigin());
+				float phi = getCamera().getPhi() - getCamera().getPhi() % (2.0f * Maths.PI);
+				float theta = getCamera().getTheta() - getCamera().getTheta() % (2.0f * Maths.PI);
+				getCamera().addDestination(
+						new CameraDestinationCenter(getCamera().getR(), phi, theta, getCamera().getCenter(), 1));
+			}
+		});
+
+		this.rotateZ = new GuiButton();
+		this.rotateZ.setBox(0.95f, 0.95f, 0.05f, 0.05f, 0.0f);
+		this.rotateZ.setText("Z");
+		this.addChild(this.rotateZ);
+		this.rotateZ.addListener(new GuiListener<GuiEventPress<GuiButton>>() {
+			@Override
+			public void invoke(GuiEventPress<GuiButton> event) {
+				getCamera().setCenter(getSelectedModel() == null ? Vector3f.NULL_VEC : getSelectedModel().getOrigin());
+				float phi = getCamera().getPhi() - getCamera().getPhi() % (2.0f * Maths.PI) - Maths.PI_2;
+				float theta = getCamera().getPhi() - getCamera().getPhi() % (2.0f * Maths.PI) + Maths.PI_2;
+				getCamera().addDestination(
+						new CameraDestinationCenter(getCamera().getR(), phi, theta, getCamera().getCenter(), 1));
+			}
+		});
 
 		this.addListener(Gui.ON_HOVERED_FOCUS_LISTENER);
 		this.addListener(new GuiListener<GuiEventKeyPress<GuiModelView>>() {

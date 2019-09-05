@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.GLTexture;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
@@ -31,13 +31,15 @@ import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
 import com.grillecube.common.maths.Vector3f;
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.resources.R;
 import com.grillecube.common.world.WorldFlat;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class TerrainRenderer extends Renderer {
 
 	/** rendering program */
 	private ProgramTerrain terrainProgram;
+	private GLTexture breakAtlas;
 
 	public TerrainRenderer(MainRenderer mainRenderer) {
 		super(mainRenderer);
@@ -46,6 +48,7 @@ public class TerrainRenderer extends Renderer {
 	@Override
 	public void initialize() {
 		this.terrainProgram = new ProgramTerrain();
+		this.breakAtlas = GLH.glhGenTexture(R.getResPath("textures/block_atlas/break.png"));
 	}
 
 	@Override
@@ -56,17 +59,17 @@ public class TerrainRenderer extends Renderer {
 
 	private final void bindTextureAtlas(TerrainMesh mesh, CameraView camera) {
 
-		float distance = (float) Vector3f.distance(camera.getPosition(), mesh.getTerrain().getWorldPosCenter());
+		float distance = (float) Vector3f.distance(camera.getPosition(), mesh.getTerrain().getWorldPosition());
 		BlockRendererManager manager = this.getMainRenderer().getResourceManager().getBlockTextureManager();
 		GLTexture texture = null;
 
-		if (distance < Terrain.SIZE_DIAGONAL3 * 1) {
+		if (distance < WorldObjectTerrain.SIZE_DIAGONAL3 * 1) {
 			texture = manager.getTextureAtlas(BlockRendererManager.RESOLUTION_16x16);
-		} else if (distance < Terrain.SIZE_DIAGONAL3 * 2.0f) {
+		} else if (distance < WorldObjectTerrain.SIZE_DIAGONAL3 * 2.0f) {
 			texture = manager.getTextureAtlas(BlockRendererManager.RESOLUTION_8x8);
-		} else if (distance < Terrain.SIZE_DIAGONAL3 * 3.0f) {
+		} else if (distance < WorldObjectTerrain.SIZE_DIAGONAL3 * 3.0f) {
 			texture = manager.getTextureAtlas(BlockRendererManager.RESOLUTION_4x4);
-		} else if (distance < Terrain.SIZE_DIAGONAL3 * 4.0f) {
+		} else if (distance < WorldObjectTerrain.SIZE_DIAGONAL3 * 4.0f) {
 			texture = manager.getTextureAtlas(BlockRendererManager.RESOLUTION_2x2);
 		} else {
 			texture = manager.getTextureAtlas(BlockRendererManager.RESOLUTION_1x1);
@@ -75,6 +78,7 @@ public class TerrainRenderer extends Renderer {
 		if (texture != null) {
 			texture.bind(GL13.GL_TEXTURE0, GL11.GL_TEXTURE_2D);
 		}
+		this.breakAtlas.bind(GL13.GL_TEXTURE1, GL11.GL_TEXTURE_2D);
 
 	}
 

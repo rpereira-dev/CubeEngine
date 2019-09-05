@@ -21,31 +21,33 @@ public interface Face {
 
 	public static final int NULL = -1;
 
-	/** z - */
-	public static final int LEFT = 0;
-
 	/** z + */
-	public static final int RIGHT = 1;
+	public static final int TOP = 0;
+
+	/** z - */
+	public static final int BOT = 1;
 
 	/** y + */
-	public static final int TOP = 2;
+	public static final int RIGHT = 2;
 
 	/** y - */
-	public static final int BOT = 3;
-
-	/** x - */
-	public static final int FRONT = 4;
+	public static final int LEFT = 3;
 
 	/** x + */
+	public static final int FRONT = 4;
+
+	/** x - */
 	public static final int BACK = 5;
 
-	static final Face[] faces = { new FaceLeft(), new FaceRight(), new FaceTop(), new FaceBot(), new FaceFront(),
-			new FaceBack(), };
+	public static final Face[] faces = new Face[] { new FaceTop(), new FaceBot(), new FaceRight(), new FaceLeft(),
+			new FaceFront(), new FaceBack()
 
-	public static final Face F_LEFT = Face.get(LEFT);
-	public static final Face F_RIGHT = Face.get(RIGHT);
+	};
+
 	public static final Face F_TOP = Face.get(TOP);
 	public static final Face F_BOT = Face.get(BOT);
+	public static final Face F_RIGHT = Face.get(RIGHT);
+	public static final Face F_LEFT = Face.get(LEFT);
 	public static final Face F_FRONT = Face.get(FRONT);
 	public static final Face F_BACK = Face.get(BACK);
 
@@ -71,41 +73,43 @@ public interface Face {
 
 	public static Face fromVec(Vector3f vec) {
 		if (vec.x > 0 && vec.x > vec.y && vec.x > vec.z) {
-			return (Face.get(Face.BACK));
-		}
-		if (vec.x < 0 && vec.x < vec.y && vec.x < vec.z) {
 			return (Face.get(Face.FRONT));
 		}
+		if (vec.x < 0 && vec.x < vec.y && vec.x < vec.z) {
+			return (Face.get(Face.BACK));
+		}
 		if (vec.y > 0 && vec.y > vec.x && vec.y > vec.z) {
-			return (Face.get(Face.TOP));
-		}
-		if (vec.y < 0 && vec.y < vec.x && vec.y < vec.z) {
-			return (Face.get(Face.BOT));
-		}
-		if (vec.z > 0 && vec.z > vec.x && vec.z > vec.y) {
 			return (Face.get(Face.RIGHT));
 		}
-		return (Face.get(Face.LEFT));
+		if (vec.y < 0 && vec.y < vec.x && vec.y < vec.z) {
+			return (Face.get(Face.LEFT));
+		}
+		if (vec.z > 0 && vec.z > vec.x && vec.z > vec.y) {
+			return (Face.get(Face.TOP));
+		}
+		return (Face.get(Face.BOT));
 	}
 
 	public static Face fromVec(Vector3i vec) {
 		if (vec.x > 0 && vec.x > vec.y && vec.x > vec.z) {
-			return (Face.get(Face.BACK));
-		}
-		if (vec.x < 0 && vec.x < vec.y && vec.x < vec.z) {
 			return (Face.get(Face.FRONT));
 		}
+		if (vec.x < 0 && vec.x < vec.y && vec.x < vec.z) {
+			return (Face.get(Face.BACK));
+		}
 		if (vec.y > 0 && vec.y > vec.x && vec.y > vec.z) {
-			return (Face.get(Face.TOP));
-		}
-		if (vec.y < 0 && vec.y < vec.x && vec.y < vec.z) {
-			return (Face.get(Face.BOT));
-		}
-		if (vec.z > 0 && vec.z > vec.x && vec.z > vec.y) {
 			return (Face.get(Face.RIGHT));
 		}
-		return (Face.get(Face.LEFT));
+		if (vec.y < 0 && vec.y < vec.x && vec.y < vec.z) {
+			return (Face.get(Face.LEFT));
+		}
+		if (vec.z > 0 && vec.z > vec.x && vec.z > vec.y) {
+			return (Face.get(Face.TOP));
+		}
+		return (Face.get(Face.BOT));
 	}
 
 	public Vector3i getAllowedTranslation();
+
+	public Vector3i[] getNeighbors();
 }

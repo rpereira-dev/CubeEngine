@@ -29,10 +29,10 @@ public class TestGui {
 
 			@Override
 			protected void onInitialized(GuiRenderer renderer) {
-				// this.addGuiTexture();
-				// this.addGuiLabel();
+				this.addGuiTexture();
+				this.addGuiLabel();
 				this.addGuiTextPrompt();
-				// this.addGuiSliderBar();
+				this.addGuiSliderBar();
 			}
 
 			private void addGuiSliderBar() {

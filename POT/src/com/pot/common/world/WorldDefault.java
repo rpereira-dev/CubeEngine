@@ -1,5 +1,5 @@
 /**
-**	This file is part of the project https://github.com/toss-dev/VoxelEngine
+**	This file is part of the project https://githubcreateProjectionMatrix.com/toss-dev/VoxelEngine
 **
 **	License is available here: https://raw.githubusercontent.com/toss-dev/VoxelEngine/master/LICENSE.md
 **
@@ -16,7 +16,6 @@ package com.pot.common.world;
 
 import com.grillecube.common.world.WorldFlat;
 import com.grillecube.common.world.generator.WorldGeneratorHoles;
-import com.pot.common.world.entity.EntityPlant;
 
 public class WorldDefault extends WorldFlat {
 
@@ -27,21 +26,22 @@ public class WorldDefault extends WorldFlat {
 	@Override
 	public void onLoaded() {
 		this.setWorldGenerator(new WorldGeneratorHoles());
-		for (int y = 1; y > 0; y--) {
+		// this.setWorldGenerator(new WorldGeneratorFlat());
+		for (int z = 2; z > 0; z--) {
 			for (int x = -4; x < 4; x++) {
-				for (int z = -4; z < 4; z++) {
-					this.generateTerrain(x, y, z);
+				for (int y = -4; y < 4; y++) {
+					this.generateTerrain(x, y, 0);
 				}
 			}
 		}
 
-		for (int x = 0; x < 4; x++) {
-			for (int z = 0; z < 4; z++) {
-				EntityPlant entityTest = new EntityPlant(this);
-				entityTest.setPosition(x * 8.0f, 140.0f, z * 8.0f);
-				this.spawnEntity(entityTest);
-			}
-		}
+		// for (int x = 0; x < 4; x++) {
+		// for (int z = 0; z < 4; z++) {
+		// EntityPlant entityTest = new EntityPlant(this);
+		// entityTest.setPosition(x * 8.0f, 140.0f, z * 8.0f);
+		// this.spawnEntity(entityTest);
+		// }
+		// }
 	}
 
 	@Override

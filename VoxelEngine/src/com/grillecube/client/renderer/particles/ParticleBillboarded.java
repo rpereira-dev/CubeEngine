@@ -14,7 +14,7 @@
 
 package com.grillecube.client.renderer.particles;
 
-public class ParticleBillboarded extends Particle {
+public class ParticleBillboarded extends WorldObjectParticle {
 
 	/** sprite to use */
 	private TextureSprite sprite;

@@ -1,11 +1,8 @@
 package com.grillecube.common.world.entity.ai;
 
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
-public abstract class EntityAI {
-
-	/** the entity for this ai */
-	private final Entity entity;
+public abstract class EntityAI<T extends WorldEntity> {
 
 	/** in seconds, accumulate times since last update */
 	private double accumulator;
@@ -13,21 +10,21 @@ public abstract class EntityAI {
 	/** time needed to accumulate before updating */
 	private double updateTime;
 
-	public EntityAI(Entity entity) {
-		this.entity = entity;
+	public EntityAI() {
 		this.accumulator = 0;
 		this.updateTime = Double.MAX_VALUE;
 	}
 
 	/** called on every entity's update */
-	public final void update(double dt) {
-		this.onUpdate(dt);
+	public final void update(T entity, double dt) {
+		this.onUpdate(entity, dt);
 		this.accumulator += dt;
 		int n = (int) (this.accumulator / this.updateTime);
+
 		if (n > 0) {
 			do {
 				--n;
-				this.onTimedUpdate();
+				this.onTimedUpdate(entity);
 			} while (n > 0);
 			this.accumulator -= n * this.updateTime;
 		}
@@ -36,15 +33,17 @@ public abstract class EntityAI {
 	/**
 	 * called on every entity's update
 	 * 
+	 * @param entity
+	 *            the entity
 	 * @param dt
 	 */
-	protected abstract void onUpdate(double dt);
+	protected abstract void onUpdate(T entity, double dt);
 
 	/**
-	 * called until the time stored in {@link #accumulator} <
-	 * {@link #updateTime} needed by the accumulator
+	 * called until the time stored in {@link #accumulator} < {@link #updateTime}
+	 * needed by the accumulator
 	 */
-	protected abstract void onTimedUpdate();
+	protected abstract void onTimedUpdate(T entity);
 
 	public final double getUpdateTime() {
 		return (this.updateTime);
@@ -57,9 +56,5 @@ public abstract class EntityAI {
 
 	public final double getAccumulator() {
 		return (this.accumulator);
-	}
-
-	public final Entity getEntity() {
-		return (this.entity);
 	}
 }

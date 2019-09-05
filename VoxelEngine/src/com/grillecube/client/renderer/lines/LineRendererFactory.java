@@ -7,8 +7,8 @@ import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.utils.Color;
-import com.grillecube.common.world.entity.collision.Positioneable;
-import com.grillecube.common.world.entity.collision.Sizeable;
+import com.grillecube.common.world.physic.Positioneable;
+import com.grillecube.common.world.physic.Sizeable;
 
 public class LineRendererFactory extends RendererFactory {
 

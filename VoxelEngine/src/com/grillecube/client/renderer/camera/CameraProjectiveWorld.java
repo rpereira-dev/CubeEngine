@@ -3,9 +3,9 @@ package com.grillecube.client.renderer.camera;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.block.Block;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public abstract class CameraProjectiveWorld extends CameraProjective implements RaycastingCallback {
 
@@ -35,11 +35,19 @@ public abstract class CameraProjectiveWorld extends CameraProjective implements 
 	@Override
 	public void update() {
 		super.update();
-		if (this.getWorld() == null) {
-			return;
+	}
+
+	/**
+	 * update the currently looked block by raycasting
+	 * 
+	 * @param maxRange
+	 *            : max raycasting range in world
+	 */
+	public final void updateLookBlock(float maxRange) {
+		if (this.getWorld() != null) {
+			this.getWorld().getTerrainIndex(this.getPosition(), this.world_index);
+			Raycasting.raycast(this.getPosition(), this.getViewVector(), maxRange, this);
 		}
-		this.getWorld().getTerrainIndex(this.getPosition(), this.world_index);
-		Raycasting.raycast(this.getPosition(), this.getViewVector(), 128.0f, this);
 	}
 
 	@Override
@@ -70,7 +78,7 @@ public abstract class CameraProjectiveWorld extends CameraProjective implements 
 			return;
 		}
 
-		Terrain terrain = this.getWorld().setBlock(block, pos.x, pos.y, pos.z);
+		WorldObjectTerrain terrain = this.getWorld().setBlock(block, pos.x, pos.y, pos.z);
 
 		if (terrain == null) {
 			return;

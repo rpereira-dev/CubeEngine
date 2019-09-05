@@ -1,6 +1,6 @@
 package com.grillecube.client.renderer.gui.event;
 
-import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.GLTexture;
 import com.grillecube.client.renderer.gui.components.GuiTexture;
 
 public abstract class GuiTextureEvent<T extends GuiTexture> extends GuiEvent<T> {

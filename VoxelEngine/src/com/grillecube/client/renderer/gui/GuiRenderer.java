@@ -24,7 +24,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.GLTexture;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
@@ -299,9 +299,8 @@ public class GuiRenderer extends Renderer {
 		if (value == null) {
 			return (null);
 		}
-		Color color = new Color((int) Long.parseLong(value.replace("#", ""), 16));
+		int colorInt = 0xFF000000 | Integer.parseInt(value.replace("#", ""), 16);
+		Color color = new Color(colorInt);
 		return (color);
 	}
-
-	// TODO : more tiny fd dialogs
 }

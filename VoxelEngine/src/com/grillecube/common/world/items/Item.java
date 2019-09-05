@@ -1,7 +1,7 @@
 package com.grillecube.common.world.items;
 
 import com.grillecube.common.resources.R;
-import com.grillecube.common.world.entity.EntityLiving;
+import com.grillecube.common.world.entity.WorldEntityLiving;
 
 public abstract class Item {
 
@@ -52,13 +52,13 @@ public abstract class Item {
 	 * called when this item is unequipped on a living entity at the given
 	 * equipment id
 	 */
-	public void onUnequipped(EntityLiving entity, int equipmentID) {
+	public void onUnequipped(WorldEntityLiving entity, int equipmentID) {
 	}
 
 	/**
 	 * called when this item is equipped on a living entity at the given
 	 * equipment id
 	 */
-	public void onEquipped(EntityLiving entity, int equipmentID) {
+	public void onEquipped(WorldEntityLiving entity, int equipmentID) {
 	}
 }

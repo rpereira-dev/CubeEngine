@@ -17,6 +17,13 @@ package com.grillecube.common.world;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.bulletphysics.collision.broadphase.BroadphaseInterface;
+import com.bulletphysics.collision.broadphase.DbvtBroadphase;
+import com.bulletphysics.collision.dispatch.CollisionDispatcher;
+import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
+import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
+import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
+import com.bulletphysics.extras.gimpact.GImpactCollisionAlgorithm;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.maths.Maths;
@@ -24,12 +31,15 @@ import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
 import com.grillecube.common.world.block.Block;
 import com.grillecube.common.world.block.instances.BlockInstance;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 import com.grillecube.common.world.entity.WorldEntityStorage;
-import com.grillecube.common.world.entity.collision.PhysicObject;
-import com.grillecube.common.world.entity.collision.PhysicObjectBlock;
+import com.grillecube.common.world.generator.SimplexNoiseOctave;
 import com.grillecube.common.world.generator.WorldGenerator;
 import com.grillecube.common.world.generator.WorldGeneratorEmpty;
+import com.grillecube.common.world.physic.WorldObject;
+import com.grillecube.common.world.physic.WorldObjectBlock;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
+import com.grillecube.common.world.terrain.WorldTerrainStorage;
 
 /**
  * TODO Main world class, may change to a "Planet" class, and a new World class
@@ -58,12 +68,24 @@ public abstract class World implements Taskable {
 	/** number of updates which was made for the world */
 	private long tick;
 
+	/** world bullet physics */
+	private final DiscreteDynamicsWorld dynamicsWorld;
+
 	public World() {
 		this.terrains = this.instanciateTerrainStorage();
 		this.entities = new WorldEntityStorage(this);
 		this.rng = new Random();
 		this.tick = 0;
 		this.setWorldGenerator(new WorldGeneratorEmpty());
+
+		// bullet setup
+		BroadphaseInterface broadphase = new DbvtBroadphase();
+		DefaultCollisionConfiguration config = new DefaultCollisionConfiguration();
+		CollisionDispatcher dispatcher = new CollisionDispatcher(config);
+		GImpactCollisionAlgorithm.registerAlgorithm(dispatcher);
+		SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
+		this.dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, config);
+		this.dynamicsWorld.setGravity(new javax.vecmath.Vector3f(0, 0, -9.81f * WorldObjectTerrain.BLOCKS_PER_METER));
 	}
 
 	/** create the terrain storage of this world (can be null) */
@@ -80,21 +102,32 @@ public abstract class World implements Taskable {
 
 	/** call back to add tasks to run */
 	protected void onTasksGet(VoxelEngine engine, ArrayList<VoxelEngine.Callable<Taskable>> tasks) {
+		double dt = engine.getTimer().getDt();
+
+		for (WorldEntity entity : this.entities) {
+			entity.preWorldUpdate(engine.getTimer().getDt());
+		}
+
+		this.dynamicsWorld.stepSimulation((float) dt);
+
+		for (WorldEntity entity : this.entities) {
+			entity.postWorldUpdate(dt);
+		}
 	}
 
 	/**
 	 * generate the terrain for the given coordinates, spawn it if un-existant
 	 */
-	public Terrain generateTerrain(int x, int y, int z) {
-		Terrain terrain = this.getTerrain(x, y, z);
+	public WorldObjectTerrain generateTerrain(int x, int y, int z) {
+		WorldObjectTerrain terrain = this.getTerrain(x, y, z);
 		if (terrain == null) {
-			terrain = new Terrain(x, y, z);
+			terrain = new WorldObjectTerrain(this, x, y, z);
 			this.spawnTerrain(terrain);
 		}
 		return (this.generateTerrain(terrain));
 	}
 
-	public Terrain generateTerrain(Terrain terrain) {
+	public WorldObjectTerrain generateTerrain(WorldObjectTerrain terrain) {
 		terrain.preGenerated();
 		this.generator.generate(terrain);
 		terrain.postGenerated();
@@ -154,7 +187,7 @@ public abstract class World implements Taskable {
 	}
 
 	/** set the block at the given world coordinates */
-	public Terrain setBlock(Block block, float x, float y, float z) {
+	public WorldObjectTerrain setBlock(Block block, float x, float y, float z) {
 		return (this.terrains.setBlock(block, x, y, z));
 	}
 
@@ -163,22 +196,22 @@ public abstract class World implements Taskable {
 	}
 
 	/** return the terrain at the given index */
-	public Terrain getTerrain(int x, int y, int z) {
+	public WorldObjectTerrain getTerrain(int x, int y, int z) {
 		return (this.terrains.get(x, y, z));
 	}
 
 	/** return the terrain at the given index */
-	public Terrain getTerrain(Vector3i pos) {
+	public WorldObjectTerrain getTerrain(Vector3i pos) {
 		return (this.terrains.get(pos));
 	}
 
 	/** return true if the given terrain is loaded */
-	public boolean isTerrainLoaded(Terrain terrain) {
+	public boolean isTerrainLoaded(WorldObjectTerrain terrain) {
 		return (this.terrains.isLoaded(terrain));
 	}
 
 	/** get every loaded terrains */
-	public Terrain[] getLoadedTerrains() {
+	public WorldObjectTerrain[] getLoadedTerrains() {
 		return (this.terrains.getLoaded());
 	}
 
@@ -192,22 +225,22 @@ public abstract class World implements Taskable {
 	}
 
 	/** return true if this world can hold this terrain */
-	public boolean canHoldTerrain(Terrain terrain) {
+	public boolean canHoldTerrain(WorldObjectTerrain terrain) {
 		return (this.terrains.canHold(terrain));
 	}
 
 	/** spawn a terrain */
-	public final Terrain spawnTerrain(Terrain terrain) {
+	public final WorldObjectTerrain spawnTerrain(WorldObjectTerrain terrain) {
 		return (this.terrains.add(terrain));
 	}
 
 	/** spawn an entity into the world */
-	public final Entity spawnEntity(Entity entity) {
-		return (this.entities.spawn(entity));
+	public final WorldEntity spawnEntity(WorldEntity entity) {
+		return (this.entities.add(entity));
 	}
 
 	/** tick the world once */
-	public void tick() {
+	public final void tick() {
 		this.tick++;
 
 		// if (tick % 40 == 0) {
@@ -272,15 +305,14 @@ public abstract class World implements Taskable {
 	}
 
 	/**
-	 * get the PhysicObjects (blocks and entities) colliding with the
-	 * PhysicObject
+	 * get the PhysicObjects (blocks and entities) colliding with the PhysicObject
 	 * 
 	 * @param physicObject
 	 * @return : the physic object list
 	 */
-	public final ArrayList<PhysicObject> getCollidingPhysicObjects(PhysicObject exclude, float minx, float miny,
+	public final ArrayList<WorldObject> getCollidingPhysicObjects(WorldObject exclude, float minx, float miny,
 			float minz, float maxx, float maxy, float maxz) {
-		ArrayList<PhysicObject> lst = new ArrayList<PhysicObject>();
+		ArrayList<WorldObject> lst = new ArrayList<WorldObject>();
 
 		int mx = Maths.floor(minx);
 		int Mx = Maths.ceil(maxx);
@@ -295,7 +327,7 @@ public abstract class World implements Taskable {
 				for (int z = mz; z < Mz; z++) {
 					Block block = this.getBlock(x, y, z);
 					if (!block.isCrossable()) {
-						lst.add(new PhysicObjectBlock(block, x, y, z));
+						lst.add(new WorldObjectBlock(this, block, x, y, z));
 					}
 				}
 			}

@@ -15,7 +15,6 @@
 package com.grillecube.client.renderer.gui.components;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.renderer.camera.CameraPerspectiveWorldCentered;
 import com.grillecube.client.renderer.camera.CameraPerspectiveWorldEntity;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
@@ -24,7 +23,7 @@ import com.grillecube.client.renderer.model.editor.camera.ModelEditorCamera;
 import com.grillecube.common.maths.Maths;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector3i;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public class GuiViewDebug extends GuiView {
 
@@ -57,7 +56,7 @@ public class GuiViewDebug extends GuiView {
 		StringBuilder builder = new StringBuilder();
 
 		if (cam instanceof CameraPerspectiveWorldEntity) {
-			Entity entity = ((CameraPerspectiveWorldEntity) cam).getEntity();
+			WorldEntity entity = ((CameraPerspectiveWorldEntity) cam).getEntity();
 			builder.append("Position: ");
 			builder.append(Maths.approximatate(entity.getPositionX(), 10.0f));
 			builder.append(":");
@@ -119,7 +118,7 @@ public class GuiViewDebug extends GuiView {
 
 			if (cam instanceof ModelEditorCamera) {
 				builder.append("\n");
-				builder.append(((ModelEditorCamera) cam).getTool().getName());
+				builder.append(ModelEditorCamera.TOOLS_NAME[((ModelEditorCamera) cam).getToolID()]);
 			}
 		}
 

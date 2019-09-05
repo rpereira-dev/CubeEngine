@@ -23,11 +23,11 @@ import org.lwjgl.opengl.GL30;
 
 import com.grillecube.client.event.renderer.EventPostWorldRender;
 import com.grillecube.client.event.renderer.EventPreWorldRender;
+import com.grillecube.client.opengl.GLFrameBuffer;
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLFrameBuffer;
-import com.grillecube.client.opengl.object.GLProgramPostProcessing;
-import com.grillecube.client.opengl.object.GLRenderBuffer;
-import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.GLProgramPostProcessing;
+import com.grillecube.client.opengl.GLRenderBuffer;
+import com.grillecube.client.opengl.GLTexture;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
@@ -36,7 +36,7 @@ import com.grillecube.client.renderer.particles.ParticleRendererFactory;
 import com.grillecube.common.Logger;
 import com.grillecube.common.utils.Color;
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public abstract class WorldRenderer<T extends World> extends RendererFactorized {
 
@@ -134,17 +134,17 @@ public abstract class WorldRenderer<T extends World> extends RendererFactorized 
 		this.fboDepthBuffer.storage(GL11.GL_DEPTH_COMPONENT, this.width, this.height);
 	}
 
-	HashMap<Entity, Integer> BB = new HashMap<Entity, Integer>();
+	private final HashMap<WorldEntity, Integer> BB = new HashMap<WorldEntity, Integer>();
 
 	// TODO : remove this
 	private final void renderEntitiesAABB() {
-		for (Entity e : this.world.getEntityStorage().getEntities()) {
-			if (!BB.containsKey(e)) {
-				BB.put(e, this.lineFactory.addBox(e, e));
-			} else {
-				this.lineFactory.setBox(e, e, BB.get(e), Color.BLUE);
-			}
-		}
+		// for (Entity e : this.world.getEntityStorage().getEntities()) {
+		// if (!BB.containsKey(e)) {
+		// BB.put(e, this.lineFactory.addBox(e, e));
+		// } else {
+		// this.lineFactory.setBox(e, e, BB.get(e), Color.BLUE);
+		// }
+		// }
 	}
 
 	/** render the given world */

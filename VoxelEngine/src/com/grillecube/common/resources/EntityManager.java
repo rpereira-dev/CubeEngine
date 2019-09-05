@@ -2,16 +2,16 @@ package com.grillecube.common.resources;
 
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
-public class EntityManager extends GenericManager<Class<? extends Entity>> {
+public class EntityManager extends GenericManager<Class<? extends WorldEntity>> {
 
 	public EntityManager(ResourceManager resource_manager) {
 		super(resource_manager);
 	}
 
 	/** register a new entity from it class */
-	public int registerEntity(Class<? extends Entity> entityclass) {
+	public int registerEntity(Class<? extends WorldEntity> entityclass) {
 		if (super.hasObject(entityclass)) {
 			Logger.get().log(Level.WARNING,
 					"Tried to register an already registered entity: " + entityclass.getSimpleName());
@@ -25,7 +25,7 @@ public class EntityManager extends GenericManager<Class<? extends Entity>> {
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance(int entityID) {
 		try {
-			Class<? extends Entity> entityclass = super.getObjectByID(entityID);
+			Class<? extends WorldEntity> entityclass = super.getObjectByID(entityID);
 			return (T) (entityclass.newInstance());
 		} catch (Exception exception) {
 			Logger.get().log(Level.ERROR, "Exception occured while creating new entity instance:");
@@ -51,6 +51,6 @@ public class EntityManager extends GenericManager<Class<? extends Entity>> {
 	}
 
 	@Override
-	protected void onObjectRegistered(Class<? extends Entity> object) {
+	protected void onObjectRegistered(Class<? extends WorldEntity> object) {
 	}
 }

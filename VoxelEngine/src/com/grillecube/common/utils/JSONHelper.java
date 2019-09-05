@@ -88,9 +88,9 @@ public class JSONHelper {
 
 	public static JSONArray vector3fToJSONArray(Vector3f vec) {
 		JSONArray array = new JSONArray();
-		array.put(vec.getX());
-		array.put(vec.getY());
-		array.put(vec.getZ());
+		array.put(vec.x);
+		array.put(vec.y);
+		array.put(vec.z);
 		return (array);
 	}
 

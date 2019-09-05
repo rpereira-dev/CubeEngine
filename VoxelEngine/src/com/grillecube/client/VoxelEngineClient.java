@@ -16,8 +16,8 @@ import com.grillecube.client.resources.ResourceManagerClient;
 import com.grillecube.common.Logger;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.event.EventGetTasks;
-import com.grillecube.common.event.EventListener;
-import com.grillecube.common.event.EventOnLoop;
+import com.grillecube.common.event.EventLoop;
+import com.grillecube.common.event.Listener;
 import com.grillecube.common.resources.AssetsPack;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
@@ -72,9 +72,14 @@ public class VoxelEngineClient extends VoxelEngine {
 		this.getGLFWWindow().setIcon(files[new Random().nextInt(files.length)]);
 
 		// event callback
-		this.registerEventCallback(new EventListener<EventOnLoop>() {
+		this.registerEventCallback(new Listener<EventLoop>() {
+
 			@Override
-			public void invoke(EventOnLoop event) {
+			public void pre(EventLoop event) {
+			}
+
+			@Override
+			public void post(EventLoop event) {
 
 				// run tasks
 				for (GLTask glTask : glTasks) {
@@ -98,11 +103,9 @@ public class VoxelEngineClient extends VoxelEngine {
 					stopRunning();
 				}
 
-				getTimer().update();
-
 				try {
 					// ensure 60 fps, not more, not less
-					long toSleep = 1000 / (60 + 20) - (long) (getTimer().getDt() * 1000) + 1;
+					long toSleep = 1000 / 60 - (long) (getTimer().getDt() * 1000);
 					if (toSleep > 0 && toSleep < 20) {
 						Thread.sleep(toSleep);
 					}
@@ -113,11 +116,14 @@ public class VoxelEngineClient extends VoxelEngine {
 		});
 
 		// get tasks
-		this.registerEventCallback(new EventListener<EventGetTasks>() {
+		this.registerEventCallback(new Listener<EventGetTasks>() {
 			@Override
-			public void invoke(EventGetTasks event) {
-				// get all renderer tasks
-				renderer.getTasks(event.getEngine(), event.getTasksList());
+			public void pre(EventGetTasks event) {
+			}
+
+			@Override
+			public void post(EventGetTasks event) {
+				renderer.getTasks(VoxelEngineClient.this, event.getTasksList());
 			}
 		});
 	}
@@ -134,8 +140,7 @@ public class VoxelEngineClient extends VoxelEngine {
 	}
 
 	/**
-	 * a task to be run on a gl context (will be run on the next main thread
-	 * update)
+	 * a task to be run on a gl context (will be run on the next main thread update)
 	 */
 	public final void addGLTask(GLTask glTask) {
 		this.glTasks.add(glTask);

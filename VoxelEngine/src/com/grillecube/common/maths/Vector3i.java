@@ -10,11 +10,9 @@ import java.nio.ByteBuffer;
  *         implementations
  */
 
-public class Vector3i extends Vector {
+public class Vector3i extends Vector2i {
 	private static final long serialVersionUID = 1L;
 
-	public int x;
-	public int y;
 	public int z;
 
 	public Vector3i(int x, int y, int z) {

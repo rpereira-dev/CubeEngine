@@ -1,5 +1,6 @@
 package com.grillecube.client.renderer.model.editor.gui.toolbox;
 
+import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.components.Gui;
 import com.grillecube.client.renderer.gui.components.GuiButton;
@@ -17,14 +18,16 @@ import com.grillecube.client.renderer.model.editor.gui.GuiModelEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.client.renderer.model.editor.mesher.EditableModelLayer;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModelMeshingEvent;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.client.renderer.model.json.JSONEditableModelInitializer;
 import com.grillecube.client.renderer.model.json.JSONModelExporter;
 import com.grillecube.client.renderer.model.json.JSONModelInitializer;
 import com.grillecube.common.Logger;
+import com.grillecube.common.event.Listener;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.utils.Color;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 public class GuiToolbox extends Gui {
 
@@ -150,7 +153,7 @@ public class GuiToolbox extends Gui {
 	}
 
 	private final void importModel(String absolutePath) {
-		Entity entity = new Entity() {
+		WorldEntity entity = new WorldEntity() {
 			@Override
 			public void update(double dt) {
 			}
@@ -164,7 +167,7 @@ public class GuiToolbox extends Gui {
 		EditableModel editableModel = new EditableModel(new JSONEditableModelInitializer(absolutePath));
 		try {
 			editableModel.initialize();
-			editableModel.generate();
+			editableModel.requestMeshUpdate();
 		} catch (Exception e) {
 			Logger.get().log(Logger.Level.ERROR, "Error when parsing model", absolutePath);
 			e.printStackTrace(Logger.get().getPrintStream());
@@ -174,6 +177,22 @@ public class GuiToolbox extends Gui {
 
 		ModelInstance modelInstance = new ModelInstance(editableModel, entity);
 		this.addModelInstance(modelInstance);
+
+		VoxelEngineClient.instance().getResourceManager().getEventManager()
+				.addListener(new Listener<EditableModelMeshingEvent>() {
+
+					@Override
+					public void pre(EditableModelMeshingEvent event) {
+					}
+
+					@Override
+					public void post(EditableModelMeshingEvent event) {
+						if (event.getEditableModel() == editableModel) {
+							modelInstance.boxMatchModel();
+						}
+					}
+
+				});
 
 	}
 

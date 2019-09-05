@@ -25,28 +25,32 @@ public class ModelEditor {
 		/* 1 */
 		// initialize engine
 		VoxelEngineClient engine = new VoxelEngineClient();
-		engine.initialize();
-
-		/* 2 */
-		// inject resources to be loaded
-		engine.getModLoader().injectMod(ModelEditorMod.class);
-
-		// load resources (mods)
-		engine.load();
-
-		/* prepare engine before looping */
-		this.prepareEngine(engine);
-
-		/* 3 */
-		// loop, every allocated memory will be released properly on program
-		// termination */
 		try {
+			engine.initialize();
+
+			/* 2 */
+			// inject resources to be loaded
+			engine.getModLoader().injectMod(ModelEditorMod.class);
+
+			// load resources (mods)
+			engine.load();
+
+			/* prepare engine before looping */
+			this.prepareEngine(engine);
+
+			/* 3 */
+			// loop, every allocated memory will be released properly on program
+			// termination */
+
 			engine.loop();
-		} catch (InterruptedException e) {
-			Logger.get().log(Logger.Level.ERROR, "That's unfortunate... VoxelEngine crashed.", e.getLocalizedMessage());
+		} catch (Exception e) {
+			Logger.get().log(Logger.Level.ERROR,
+					"That's unfortunate... VoxelEngine crashed. Please send me the following crash report.");
+			Logger.get().log(Logger.Level.ERROR, e);
+			e.printStackTrace(Logger.get().getPrintStream());
 			String path = R.getResPath("models/tmp/" + System.currentTimeMillis());
 			try {
-				Logger.get().log(Logger.Level.ERROR, "Trying to save model...", path);
+				Logger.get().log(Logger.Level.ERROR, "Trying to save model", path);
 				JSONModelExporter.export(guiModelEditor.getSelectedModel(), path);
 			} catch (Exception exception) {
 				Logger.get().log(Logger.Level.ERROR, "Couldn't save model... sorry bro",

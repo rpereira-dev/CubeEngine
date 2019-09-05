@@ -13,10 +13,11 @@ import com.grillecube.client.renderer.gui.event.GuiPromptEventHeldTextChanged;
 import com.grillecube.client.renderer.gui.event.GuiSpinnerEventPick;
 import com.grillecube.client.renderer.model.ModelSkeleton;
 import com.grillecube.client.renderer.model.animation.Bone;
+import com.grillecube.client.renderer.model.editor.gui.GuiPopUpCallback;
 import com.grillecube.client.renderer.model.editor.gui.GuiPromptEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiSpinnerEditor;
 import com.grillecube.client.renderer.model.editor.gui.GuiWindowNewBone;
-import com.grillecube.common.maths.Matrix4f;
+import com.grillecube.client.renderer.model.editor.mesher.EditableModel;
 import com.grillecube.common.maths.Quaternion;
 import com.grillecube.common.maths.Vector3f;
 
@@ -48,9 +49,9 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 		this.posY = new GuiPromptEditor("Y", "pos. y");
 		this.posZ = new GuiPromptEditor("Z", "pos. z");
 
-		this.rotX = new GuiPromptEditor("X", "rot. x");
-		this.rotY = new GuiPromptEditor("Y", "rot. y");
-		this.rotZ = new GuiPromptEditor("Z", "rot. z");
+		this.rotX = new GuiPromptEditor("RX", "rot. x");
+		this.rotY = new GuiPromptEditor("RY", "rot. y");
+		this.rotZ = new GuiPromptEditor("RZ", "rot. z");
 	}
 
 	@Override
@@ -67,12 +68,29 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.addBone.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 				@Override
 				public void invoke(GuiEventClick<GuiButton> event) {
-					// Bone bone = new Bone(getModel().getSkeleton(),
-					// (System.currentTimeMillis() % 10000) + "");
-					// getModelSkeleton().addBone(bone);
-					// refresh();
-					GuiWindowNewBone win = new GuiWindowNewBone(getSelectedModel());
-					win.open(getOldestParent());
+					new GuiWindowNewBone(getSelectedModel(), new GuiPopUpCallback<GuiWindowNewBone>() {
+
+						@Override
+						public void onConfirm(GuiWindowNewBone win) {
+							EditableModel model = getSelectedModel();
+							Bone bone = new Bone(model.getSkeleton(), win.name.getHeldText());
+							String parentName = (String) win.parent.getPickedObject();
+							if (parentName != null) {
+								bone.setParent(parentName);
+								model.getSkeleton().getBone(parentName).addChild(bone.getName());
+							}
+							model.getSkeleton().addBone(bone);
+							bones.add(bone, bone.getName());
+							bones.pick(bones.count() - 1);
+							guiRenderer.toast("Bone added.");
+							refresh();
+
+						}
+
+						@Override
+						public void onCancel(GuiWindowNewBone win) {
+						}
+					}).open(getOldestParent());
 				}
 			});
 
@@ -96,7 +114,10 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.removeBone.addListener(new GuiListener<GuiEventClick<GuiButton>>() {
 				@Override
 				public void invoke(GuiEventClick<GuiButton> event) {
-					getModelSkeleton().removeBone(getSelectedBone());
+					Bone bone = getSelectedBone();
+					getModelSkeleton().removeBone(bone);
+					bones.remove(bone);
+					guiRenderer.toast("Bone removed.");
 					refresh();
 				}
 			});
@@ -129,36 +150,17 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 			this.rotY.setBox(0, 0.40f, 1.0f, 0.05f, 0);
 			this.rotZ.setBox(0, 0.35f, 1.0f, 0.05f, 0);
 		}
-
-		Bone bone = this.getSelectedBone();
-		if (bone != null) {
-			this.posX.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().x));
-			this.posY.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().y));
-			this.posZ.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().z));
-
-			Vector3f rot = Quaternion.toEulerAngle(bone.getLocalRotation());
-			this.rotX.getPrompt().setHeldText(String.valueOf(rot.x));
-			this.rotY.getPrompt().setHeldText(String.valueOf(rot.y));
-			this.rotZ.getPrompt().setHeldText(String.valueOf(rot.z));
-		}
-
 		GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>> listener = new GuiListener<GuiPromptEventHeldTextChanged<GuiPrompt>>() {
 			@Override
 			public void invoke(GuiPromptEventHeldTextChanged<GuiPrompt> event) {
-				Matrix4f localBindTransform = new Matrix4f();
 				float rx = rotX.getPrompt().asFloat(0.0f);
 				float ry = rotY.getPrompt().asFloat(0.0f);
 				float rz = rotZ.getPrompt().asFloat(0.0f);
-				localBindTransform.rotateXYZ(rx, ry, rz);
-				Quaternion q = Quaternion.toQuaternion(rx, ry, rz);
-				getSelectedBone().getLocalRotation().set(q);
-
+				float rw = 1.0f;
 				float x = posX.getPrompt().asFloat(0.0f);
 				float y = posY.getPrompt().asFloat(0.0f);
 				float z = posZ.getPrompt().asFloat(0.0f);
-				localBindTransform.translate(-x, -y, -z);
-				getSelectedBone().getLocalTranslation().set(x, y, z);
-				getSelectedBone().setLocalBindTransform(localBindTransform);
+				getSelectedBone().setLocalBindTransform(x, y, z, rx, ry, rz, rw);
 				getSelectedBone().calcInverseBindTransform();
 			}
 		};
@@ -172,25 +174,32 @@ public class GuiToolboxModelPanelSkeleton extends GuiToolboxModelPanel {
 
 	@Override
 	public void refresh() {
-		this.bones.removeAll();
-		for (Bone bone : this.getModelSkeleton().getBones()) {
-			this.bones.add(bone, bone.getName());
-		}
-		this.bones.pick(0);
 
-		if (this.bones.count() == 0) {
-			this.boneTransformLabel.setVisible(false);
-			this.posX.setVisible(false);
-			this.posY.setVisible(false);
-			this.posZ.setVisible(false);
-			this.rotX.setVisible(false);
-			this.rotY.setVisible(false);
-			this.rotZ.setVisible(false);
+		Bone bone = this.getSelectedBone();
+		if (bone != null) {
+			this.posX.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().x));
+			this.posY.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().y));
+			this.posZ.getPrompt().setHeldText(String.valueOf(bone.getLocalTranslation().z));
+
+			Vector3f rot = Quaternion.toEulerAngle(bone.getLocalRotation());
+			this.rotX.getPrompt().setHeldText(String.valueOf(rot.x));
+			this.rotY.getPrompt().setHeldText(String.valueOf(rot.y));
+			this.rotZ.getPrompt().setHeldText(String.valueOf(rot.z));
 		}
+
+		this.boneTransformLabel.setVisible(bone != null);
+		this.posX.setVisible(bone != null);
+		this.posY.setVisible(bone != null);
+		this.posZ.setVisible(bone != null);
+		this.rotX.setVisible(bone != null);
+		this.rotY.setVisible(bone != null);
+		this.rotZ.setVisible(bone != null);
+
+		this.removeBone.setEnabled(bone != null);
 	}
 
 	private final void onBonePicked() {
-
+		refresh();
 	}
 
 	public final ModelSkeleton getModelSkeleton() {

@@ -36,6 +36,12 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 			return;
 		}
 
+		JSONObject origin = blocks.getJSONObject("origin");
+		float x = (float) origin.getDouble("x");
+		float y = (float) origin.getDouble("y");
+		float z = (float) origin.getDouble("z");
+		model.setOrigin(x, y, z);
+
 		JSONArray layers = blocks.getJSONArray("layers");
 		for (int i = 0; i < layers.length(); i++) {
 			JSONObject layer = layers.getJSONObject(i);
@@ -58,9 +64,9 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 			JSONArray layerBlocksData = layerData.getJSONArray("blocks");
 
 			for (int j = 0; j < layerBlocksData.length();) {
-				int x = layerBlocksData.getInt(j++);
-				int y = layerBlocksData.getInt(j++);
-				int z = layerBlocksData.getInt(j++);
+				int ix = layerBlocksData.getInt(j++);
+				int iy = layerBlocksData.getInt(j++);
+				int iz = layerBlocksData.getInt(j++);
 				String b1 = layerBlocksData.getString(j++);
 				String b2 = layerBlocksData.getString(j++);
 				String b3 = layerBlocksData.getString(j++);
@@ -68,7 +74,7 @@ public class JSONEditableModelInitializer extends JSONModelInitializer {
 				float w2 = (float) layerBlocksData.getDouble(j++);
 				float w3 = (float) layerBlocksData.getDouble(j++);
 
-				ModelBlockData blockData = new ModelBlockData(x, y, z);
+				ModelBlockData blockData = new ModelBlockData(ix, iy, iz);
 				blockData.setBone(0, b1, w1);
 				blockData.setBone(1, b2, w2);
 				blockData.setBone(2, b3, w3);

@@ -32,7 +32,7 @@ public class ParticleRendererFactory extends RendererFactory {
 	@Override
 	public void update(double dt) {
 
-		this.rainParticles(64);
+//		this.rainParticles(64);
 
 		CameraProjective camera = this.getCamera();
 
@@ -96,8 +96,8 @@ public class ParticleRendererFactory extends RendererFactory {
 			ParticleCube cube = new ParticleCube();
 
 			float x = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
-			float y = rng.nextFloat();
-			float z = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
+			float y = (rng.nextInt(2) == 0) ? -rng.nextFloat() : rng.nextFloat();
+			float z = rng.nextFloat();
 			cube.setPosition(campos.x + x * 16, campos.y + y * 16, campos.z + z * 16);
 			float size = 0.05f;
 			cube.setSize(size, size, size);
@@ -106,7 +106,7 @@ public class ParticleRendererFactory extends RendererFactory {
 			Vector3f color = new Vector3f(0.8f, 0.8f, 0.8f);
 			cube.setColor(color.x, color.y, color.z, 0.5f);
 			cube.setColor(0, 0.2f, 0.9f, 0.5f);
-			cube.setPositionAccelerationY(-1.0f * yfactor);
+			cube.setPositionAccelerationZ(-1.0f * yfactor);
 
 			// rng.nextFloat();
 			cube.setPositionVel(0.0f, 0.0f, 0.0f);

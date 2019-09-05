@@ -15,8 +15,8 @@ import com.grillecube.common.Logger.Level;
 import com.grillecube.common.defaultmod.VoxelEngineDefaultMod;
 import com.grillecube.common.event.Event;
 import com.grillecube.common.event.EventGetTasks;
-import com.grillecube.common.event.EventListener;
-import com.grillecube.common.event.EventOnLoop;
+import com.grillecube.common.event.Listener;
+import com.grillecube.common.event.EventLoop;
 import com.grillecube.common.event.EventPostLoop;
 import com.grillecube.common.event.EventPreLoop;
 import com.grillecube.common.mod.ModLoader;
@@ -24,7 +24,6 @@ import com.grillecube.common.network.INetwork;
 import com.grillecube.common.resources.AssetsPack;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
-import com.grillecube.common.world.Timer;
 import com.grillecube.common.world.World;
 
 public abstract class VoxelEngine {
@@ -85,7 +84,7 @@ public abstract class VoxelEngine {
 
 	/** events */
 	private EventPreLoop eventPreLoop;
-	private EventOnLoop eventOnLoop;
+	private EventLoop eventLoop;
 	private EventPostLoop eventPostLoop;
 
 	/** loaded worlds */
@@ -132,9 +131,9 @@ public abstract class VoxelEngine {
 		this.modLoader.injectMod(VoxelEngineDefaultMod.class);
 
 		// events
-		this.eventPreLoop = new EventPreLoop(this);
-		this.eventOnLoop = new EventOnLoop(this);
-		this.eventPostLoop = new EventPostLoop(this);
+		this.eventPreLoop = new EventPreLoop();
+		this.eventLoop = new EventLoop();
+		this.eventPostLoop = new EventPostLoop();
 
 		// worlds
 		this.loadedWorlds = new ArrayList<World>();
@@ -270,7 +269,7 @@ public abstract class VoxelEngine {
 
 		while (this.isRunning()) {
 			this.timer.update();
-			this.invokeEvent(this.eventOnLoop);
+			this.invokeEvent(this.eventLoop);
 			this.updateTasks();
 		}
 
@@ -284,7 +283,7 @@ public abstract class VoxelEngine {
 		for (World world : this.loadedWorlds) {
 			world.getTasks(this, this.tasks);
 		}
-		this.invokeEvent(new EventGetTasks(this, this.tasks));
+		this.invokeEvent(new EventGetTasks(this.tasks));
 		this.runTasks();
 	}
 
@@ -348,7 +347,7 @@ public abstract class VoxelEngine {
 		this.getResourceManager().getEventManager().invokeEvent(event);
 	}
 
-	protected final void registerEventCallback(EventListener<?> eventCallback) {
+	protected final void registerEventCallback(Listener<?> eventCallback) {
 		this.getResourceManager().getEventManager().addListener(eventCallback);
 	}
 

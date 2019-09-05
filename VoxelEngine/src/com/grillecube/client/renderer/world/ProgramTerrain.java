@@ -17,7 +17,7 @@ package com.grillecube.client.renderer.world;
 import org.lwjgl.opengl.GL20;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLProgram;
+import com.grillecube.client.opengl.GLProgram;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.resources.R;
@@ -29,27 +29,27 @@ public class ProgramTerrain extends GLProgram {
 	public static final int MESH_TYPE_TRANSPARENT = 1;
 
 	/** uniforms location */
-	private int _view_matrix;
-	private int _proj_matrix;
-	private int _transf_matrix;
-	private int _mesh_type;
+	private int blockAtlas;
+	private int breakAtlas;
 
-	private int _fog_color;
-	private int _fog_density;
-	private int _fog_gradient;
+	private int viewMatrix;
+	private int projMatrix;
+	private int transfMatrix;
+	private int meshType;
 
-	private int _sun_color;
-	private int _sun_position;
-	private int _sun_intensity;
+	private int fogColor;
+	private int fogDensity;
+	private int fogGradient;
 
-	private int _ambient_light;
+	private int sunColor;
+	private int sunPosition;
+	private int sunIntensity;
 
-	private int _tx_atlas;
+	private int ambientLight;
 
-	private int _camera_position;
+	private int txAtlas;
 
-	private int _move_factor;
-	private float _move_factor_value;
+	private int cameraPosition;
 
 	public ProgramTerrain() {
 		super();
@@ -71,23 +71,24 @@ public class ProgramTerrain extends GLProgram {
 
 	@Override
 	public void linkUniforms() {
-		this._camera_position = super.getUniform("camera_position");
+		this.blockAtlas = super.getUniform("blockAtlas");
+		this.breakAtlas = super.getUniform("breakAtlas");
 
-		this._proj_matrix = super.getUniform("proj_matrix");
-		this._view_matrix = super.getUniform("view_matrix");
-		this._transf_matrix = super.getUniform("transf_matrix");
-		this._mesh_type = super.getUniform("mesh_type");
-		this._fog_color = super.getUniform("fog_color");
-		this._fog_gradient = super.getUniform("fog_gradient");
-		this._fog_density = super.getUniform("fog_density");
-		this._sun_color = super.getUniform("sun_color");
-		this._sun_position = super.getUniform("sun_position");
-		this._sun_intensity = super.getUniform("sun_intensity");
-		this._ambient_light = super.getUniform("ambient_light");
+		this.cameraPosition = super.getUniform("camera_position");
 
-		this._move_factor = super.getUniform("move_factor");
+		this.projMatrix = super.getUniform("proj_matrix");
+		this.viewMatrix = super.getUniform("view_matrix");
+		this.transfMatrix = super.getUniform("transf_matrix");
+		this.meshType = super.getUniform("mesh_type");
+		this.fogColor = super.getUniform("fog_color");
+		this.fogGradient = super.getUniform("fog_gradient");
+		this.fogDensity = super.getUniform("fog_density");
+		this.sunColor = super.getUniform("sun_color");
+		this.sunPosition = super.getUniform("sun_position");
+		this.sunIntensity = super.getUniform("sun_intensity");
+		this.ambientLight = super.getUniform("ambient_light");
 
-		this._tx_atlas = super.getUniform("tx_atlas");
+		this.txAtlas = super.getUniform("tx_atlas");
 	}
 
 	/** load global terrain uniform */
@@ -95,34 +96,31 @@ public class ProgramTerrain extends GLProgram {
 
 	public void loadUniforms(CameraProjective camera, WorldFlat world) {
 
-		this.loadUniformVec(this._camera_position, camera.getPosition());
-		this.loadUniformMatrix(this._proj_matrix, camera.getProjectionMatrix());
-		this.loadUniformMatrix(this._view_matrix, camera.getViewMatrix());
+		this.loadUniformInteger(this.blockAtlas, 0);
+		this.loadUniformInteger(this.breakAtlas, 1);
 
-		this.loadUniformVec(this._fog_color, world.getSky().getFogColor());
-		this.loadUniformFloat(this._fog_gradient, world.getSky().getFogGradient());
-		this.loadUniformFloat(this._fog_density, world.getSky().getFogDensity());
+		this.loadUniformVec(this.cameraPosition, camera.getPosition());
+		this.loadUniformMatrix(this.projMatrix, camera.getProjectionMatrix());
+		this.loadUniformMatrix(this.viewMatrix, camera.getViewMatrix());
 
-		this.loadUniformVec(this._sun_color, world.getSky().getSun().getColor());
-		this.loadUniformFloat(this._sun_intensity, world.getSky().getSun().getIntensity());
-		this.loadUniformVec(this._sun_position, sunpos.set(world.getSky().getSun().getPosition()));
-		this.loadUniformFloat(this._ambient_light, world.getSky().getAmbientLight());
+		this.loadUniformVec(this.fogColor, world.getSky().getFogColor());
+		this.loadUniformFloat(this.fogGradient, world.getSky().getFogGradient());
+		this.loadUniformFloat(this.fogDensity, world.getSky().getFogDensity());
 
-		this.loadUniformInteger(this._tx_atlas, 0);
+		this.loadUniformVec(this.sunColor, world.getSky().getSun().getColor());
+		this.loadUniformFloat(this.sunIntensity, world.getSky().getSun().getIntensity());
+		this.loadUniformVec(this.sunPosition, sunpos.set(world.getSky().getSun().getPosition()));
+		this.loadUniformFloat(this.ambientLight, world.getSky().getAmbientLight());
 
-		this.loadUniformFloat(this._move_factor, this._move_factor_value);
-		this._move_factor_value += 0.0002f;
-		if (this._move_factor_value >= 1.0f) {
-			this._move_factor_value = 0.0f;
-		}
+		this.loadUniformInteger(this.txAtlas, 0);
 	}
 
 	/** load terrain instance uniforms variable */
 	public void loadInstanceUniforms(TerrainMesh mesh) {
-		this.loadUniformMatrix(this._transf_matrix, mesh.getTransformationMatrix());
+		this.loadUniformMatrix(this.transfMatrix, mesh.getTransformationMatrix());
 	}
 
 	public void loadTypeUniform(int meshType) {
-		this.loadUniformInteger(this._mesh_type, meshType);
+		this.loadUniformInteger(this.meshType, meshType);
 	}
 }

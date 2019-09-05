@@ -9,25 +9,25 @@ import com.grillecube.client.event.renderer.model.EventModelInstanceRemoved;
 import com.grillecube.client.renderer.model.Model;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.Logger;
-import com.grillecube.common.event.EventListener;
+import com.grillecube.common.event.Listener;
 import com.grillecube.common.event.world.entity.EventEntityDespawn;
 import com.grillecube.common.event.world.entity.EventEntitySpawn;
 import com.grillecube.common.resources.EventManager;
 import com.grillecube.common.resources.GenericManager;
 import com.grillecube.common.resources.ResourceManager;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 /** handle models */
 public class ModelManager extends GenericManager<Model> {
 
 	/** the model hashmap */
-	private HashMap<Class<? extends Entity>, Integer> entitiesModels;
+	private HashMap<Class<? extends WorldEntity>, Integer> entitiesModels;
 
 	/** the model instances using the given model */
 	private HashMap<Model, ArrayList<ModelInstance>> modelsModelInstances;
 
 	/** the model instances of the entities */
-	private HashMap<Entity, ModelInstance> entitiesModelInstance;
+	private HashMap<WorldEntity, ModelInstance> entitiesModelInstance;
 
 	/** the model manager */
 	public ModelManager(ResourceManager resourceManager) {
@@ -36,9 +36,9 @@ public class ModelManager extends GenericManager<Model> {
 
 	@Override
 	protected final void onInitialized() {
-		this.entitiesModels = new HashMap<Class<? extends Entity>, Integer>();
+		this.entitiesModels = new HashMap<Class<? extends WorldEntity>, Integer>();
 		this.modelsModelInstances = new HashMap<Model, ArrayList<ModelInstance>>();
-		this.entitiesModelInstance = new HashMap<Entity, ModelInstance>();
+		this.entitiesModelInstance = new HashMap<WorldEntity, ModelInstance>();
 	}
 
 	@Override
@@ -57,10 +57,15 @@ public class ModelManager extends GenericManager<Model> {
 	@Override
 	protected final void onLoaded() {
 		EventManager eventManager = this.getResourceManager().getEventManager();
-		eventManager.addListener(new EventListener<EventEntitySpawn>() {
+		eventManager.addListener(new Listener<EventEntitySpawn>() {
+
 			@Override
-			public void invoke(EventEntitySpawn event) {
-				Entity entity = event.getEntity();
+			public void pre(EventEntitySpawn event) {
+			}
+
+			@Override
+			public void post(EventEntitySpawn event) {
+				WorldEntity entity = event.getEntity();
 				Model model = getModelForEntity(entity);
 				if (model == null) {
 					Logger.get().log(Logger.Level.ERROR, "No model for entity class", entity.getClass());
@@ -76,10 +81,15 @@ public class ModelManager extends GenericManager<Model> {
 			}
 		});
 
-		eventManager.addListener(new EventListener<EventEntityDespawn>() {
+		eventManager.addListener(new Listener<EventEntityDespawn>() {
+
 			@Override
-			public void invoke(EventEntityDespawn event) {
-				Entity entity = event.getEntity();
+			public void pre(EventEntityDespawn event) {
+			}
+
+			@Override
+			public void post(EventEntityDespawn event) {
+				WorldEntity entity = event.getEntity();
 				ModelInstance modelInstance = getModelInstance(entity);
 				if (modelInstance == null) {
 					return;
@@ -121,7 +131,7 @@ public class ModelManager extends GenericManager<Model> {
 	 * instance
 	 */
 	public final void addModelInstance(ModelInstance modelInstance) {
-		Entity entity = modelInstance.getEntity();
+		WorldEntity entity = modelInstance.getEntity();
 		Model model = modelInstance.getModel();
 		ArrayList<ModelInstance> modelInstances = this.modelsModelInstances.get(model);
 		if (modelInstances == null) {
@@ -134,23 +144,22 @@ public class ModelManager extends GenericManager<Model> {
 	}
 
 	/**
-	 * register a new model, link it with the entity class, and return the model
-	 * ID
+	 * register a new model, link it with the entity class, and return the model ID
 	 */
 	public final int registerModel(Model model) {
 		return (super.registerObject(model));
 	}
 
 	/**
-	 * attach an entity to a model, so when the entity spawns, a new model
-	 * instance is created
+	 * attach an entity to a model, so when the entity spawns, a new model instance
+	 * is created
 	 * 
 	 * @param entityClass
 	 *            : the entity class to attach
 	 * @param modelID
 	 *            : the registered modelID
 	 */
-	public final void attachEntityToModel(Class<? extends Entity> entityClass, Integer modelID) {
+	public final void attachEntityToModel(Class<? extends WorldEntity> entityClass, Integer modelID) {
 		this.entitiesModels.put(entityClass, modelID);
 	}
 
@@ -162,14 +171,14 @@ public class ModelManager extends GenericManager<Model> {
 	 * 
 	 * @return : the model
 	 */
-	public final Model getModelForEntity(Class<? extends Entity> entityClass) {
+	public final Model getModelForEntity(Class<? extends WorldEntity> entityClass) {
 		if (!this.entitiesModels.containsKey(entityClass)) {
 			return (null);
 		}
 		return (this.getModelByID(this.entitiesModels.get(entityClass)));
 	}
 
-	public final Model getModelForEntity(Entity entity) {
+	public final Model getModelForEntity(WorldEntity entity) {
 		return (this.getModelForEntity(entity.getClass()));
 	}
 
@@ -179,7 +188,7 @@ public class ModelManager extends GenericManager<Model> {
 	}
 
 	/** get the model instance for the given entity */
-	public final ModelInstance getModelInstance(Entity entity) {
+	public final ModelInstance getModelInstance(WorldEntity entity) {
 		return (this.entitiesModelInstance.get(entity));
 	}
 

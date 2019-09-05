@@ -4,10 +4,10 @@ import org.junit.Test;
 
 import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.common.maths.Maths;
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.World;
 import com.grillecube.common.world.WorldFlat;
 import com.grillecube.common.world.block.Blocks;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 import junit.framework.Assert;
 
@@ -29,9 +29,9 @@ public class WorldTests {
 				return ("Test world");
 			}
 		};
-		world.spawnTerrain(new Terrain(1, 0, 0));
-		world.spawnTerrain(new Terrain(0, 0, 0));
-		world.spawnTerrain(new Terrain(-1, 0, 0));
+		world.spawnTerrain(new WorldObjectTerrain(world, 1, 0, 0));
+		world.spawnTerrain(new WorldObjectTerrain(world, 0, 0, 0));
+		world.spawnTerrain(new WorldObjectTerrain(world, -1, 0, 0));
 		world.setBlock(Blocks.DIRT, 0.0f, 1.0f, 0.0f);
 
 		float e = Maths.ESPILON;

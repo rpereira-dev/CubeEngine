@@ -15,7 +15,7 @@
 package com.grillecube.client.renderer.gui.font;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.GLTexture;
 
 public class Font {
 	/** opengl textureID */

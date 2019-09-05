@@ -8,7 +8,7 @@ import com.grillecube.client.renderer.RendererFactory;
 import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.client.renderer.model.instance.ModelInstance;
 import com.grillecube.common.world.World;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
 /** a factory class which create model renderer lists */
 public class ModelRendererFactory extends RendererFactory {
@@ -88,7 +88,7 @@ public class ModelRendererFactory extends RendererFactory {
 	}
 
 	public final void loadWorldModelInstance(World world) {
-		for (Entity entity : world.getEntityStorage().getEntities()) {
+		for (WorldEntity entity : world.getEntityStorage().getEntities()) {
 			ModelInstance modelInstance = this.getResourceManager().getModelManager().getModelInstance(entity);
 			if (modelInstance == null) {
 				continue;

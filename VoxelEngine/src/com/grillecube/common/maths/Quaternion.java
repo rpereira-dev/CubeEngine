@@ -53,29 +53,36 @@ public class Quaternion {
 		return (toQuaternion(rot.x, rot.y, rot.z));
 	}
 
+	public static final Quaternion toQuaternion(Quaternion dst, Vector3f rot) {
+		return (toQuaternion(dst, rot.x, rot.y, rot.z));
+	}
+
 	/**
 	 * convert euler angles to quaternion
 	 * 
 	 * @param pitch
-	 * @param roll
 	 * @param yaw
+	 * @param roll
 	 * @return
 	 */
-	public static final Quaternion toQuaternion(double pitch, double roll, double yaw) {
-		Quaternion quaternion = new Quaternion();
-		// Abbreviations for the various angular functions
-		double cy = Math.cos(yaw * 0.5);
-		double sy = Math.sin(yaw * 0.5);
-		double cr = Math.cos(roll * 0.5);
-		double sr = Math.sin(roll * 0.5);
-		double cp = Math.cos(pitch * 0.5);
-		double sp = Math.sin(pitch * 0.5);
+	public static final Quaternion toQuaternion(Quaternion dst, double pitch, double yaw, double roll) {
+		if (dst == null) {
+			dst = new Quaternion();
+		}
+		dst.set(pitch, yaw, roll);
+		return (dst);
+	}
 
-		quaternion.w = (float) (cy * cr * cp + sy * sr * sp);
-		quaternion.x = (float) (cy * sr * cp - sy * cr * sp);
-		quaternion.y = (float) (cy * cr * sp + sy * sr * cp);
-		quaternion.z = (float) (sy * cr * cp - cy * sr * sp);
-		return (quaternion);
+	/**
+	 * convert euler angles to quaternion
+	 * 
+	 * @param rx
+	 * @param ry
+	 * @param rz
+	 * @return
+	 */
+	public static final Quaternion toQuaternion(double rx, double ry, double rz) {
+		return (toQuaternion(null, rx, ry, rz));
 	}
 
 	/**
@@ -96,33 +103,53 @@ public class Quaternion {
 		if (rotate == null) {
 			rotate = new Vector3f();
 		}
+		rotate.x = toEulerAngleX(x, y, z, w);
+		rotate.y = toEulerAngleY(x, y, z, w);
+		rotate.z = toEulerAngleZ(x, y, z, w);
 
+		return (rotate);
+	}
+
+	public static final float toEulerAngleX(Quaternion q) {
+		return (toEulerAngleX(q.x, q.y, q.z, q.w));
+	}
+
+	public static final float toEulerAngleY(Quaternion q) {
+		return (toEulerAngleY(q.x, q.y, q.z, q.w));
+	}
+
+	public static final float toEulerAngleZ(Quaternion q) {
+		return (toEulerAngleZ(q.x, q.y, q.z, q.w));
+	}
+
+	public static final float toEulerAngleX(float x, float y, float z, float w) {
+		double sinp = +2.0 * (w * y - z * x);
+		return ((float) (Math.abs(sinp) >= 1 ? Math.PI / 2.0f : Math.asin(sinp)));
+	}
+
+	public static final float toEulerAngleY(float x, float y, float z, float w) {
 		double sinr = +2.0 * (w * x + y * z);
 		double cosr = +1.0 - 2.0 * (x * x + y * y);
+		return ((float) Math.atan2(sinr, cosr));
+	}
 
-		double sinp = +2.0 * (w * y - z * x);
-		rotate.x = (float) (Math.abs(sinp) >= 1 ? Math.PI / 2.0f : Math.asin(sinp));
-
-		rotate.y = (float) Math.atan2(sinr, cosr);
-
+	public static final float toEulerAngleZ(float x, float y, float z, float w) {
 		double siny = +2.0 * (w * z + x * y);
 		double cosy = +1.0 - 2.0 * (y * y + z * z);
-		rotate.z = (float) Math.atan2(siny, cosy);
-		return (rotate);
-
+		return ((float) Math.atan2(siny, cosy));
 	}
 
 	/**
-	 * Converts the quaternion to a 4x4 matrix representing the exact same
-	 * rotation as this quaternion. (The rotation is only contained in the
-	 * top-left 3x3 part, but a 4x4 matrix is returned here for convenience
-	 * seeing as it will be multiplied with other 4x4 matrices).
+	 * Converts the quaternion to a 4x4 matrix representing the exact same rotation
+	 * as this quaternion. (The rotation is only contained in the top-left 3x3 part,
+	 * but a 4x4 matrix is returned here for convenience seeing as it will be
+	 * multiplied with other 4x4 matrices).
 	 * 
 	 * More detailed explanation here:
 	 * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/
 	 * 
-	 * @return The rotation matrix which represents the exact same rotation as
-	 *         this quaternion.
+	 * @return The rotation matrix which represents the exact same rotation as this
+	 *         quaternion.
 	 */
 	public Matrix4f toRotationMatrix() {
 		return toRotationMatrix(this.x, this.y, this.z, this.w);
@@ -159,8 +186,8 @@ public class Quaternion {
 	}
 
 	/**
-	 * Extracts the rotation part of a transformation matrix and converts it to
-	 * a quaternion using the magic of maths.
+	 * Extracts the rotation part of a transformation matrix and converts it to a
+	 * quaternion using the magic of maths.
 	 * 
 	 * More detailed explanation here:
 	 * http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
@@ -203,8 +230,8 @@ public class Quaternion {
 	/**
 	 * Interpolates between two quaternion rotations and returns the resulting
 	 * quaternion rotation. The interpolation method here is "nlerp", or
-	 * "normalized-lerp". Another mnethod that could be used is "slerp", and you
-	 * can see a comparison of the methods here:
+	 * "normalized-lerp". Another mnethod that could be used is "slerp", and you can
+	 * see a comparison of the methods here:
 	 * https://keithmaggio.wordpress.com/2011/02/15/math-magician-lerp-slerp-and-nlerp/
 	 * 
 	 * and here:
@@ -240,6 +267,28 @@ public class Quaternion {
 		this.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	}
 
+	/** setter function using euler angles */
+	public void set(float rx, float ry, float rz) {
+		// Abbreviations for the various angular functions
+		double cp = Math.cos(rx * 0.5);
+		double sp = Math.sin(rx * 0.5);
+		double cr = Math.cos(ry * 0.5);
+		double sr = Math.sin(ry * 0.5);
+		double cy = Math.cos(rz * 0.5);
+		double sy = Math.sin(rz * 0.5);
+
+		this.w = (float) (cy * cr * cp + sy * sr * sp);
+		this.x = (float) (cy * sr * cp - sy * cr * sp);
+		this.y = (float) (cy * cr * sp + sy * sr * cp);
+		this.z = (float) (sy * cr * cp - cy * sr * sp);
+	}
+
+	/** setter function using euler angles */
+	public void set(double rx, double ry, double rz) {
+		this.set((float) rx, (float) ry, (float) rz);
+	}
+
+	/** setter function using quaternions coordinates */
 	public void set(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;

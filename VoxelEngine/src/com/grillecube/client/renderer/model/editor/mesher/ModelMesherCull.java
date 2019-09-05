@@ -96,7 +96,7 @@ public class ModelMesherCull extends ModelMesher {
 
 			for (ModelPlane plane : layerPlanes) {
 				int planeColor = rng.nextInt(Integer.MAX_VALUE) | 0xFF000000;
-				Face planeFace = plane.getFace();
+				int faceID = plane.getFace();
 
 				for (int d1 = 0; d1 < plane.getTextureWidth(); d1++) {
 					for (int d2 = 0; d2 < plane.getTextureHeight(); d2++) {
@@ -106,16 +106,16 @@ public class ModelMesherCull extends ModelMesher {
 						int y = plane.getYMin();
 						int z = plane.getZMin();
 						float ux, uy, vx, vy;
-						if (planeFace.equals(Face.F_TOP) || planeFace.equals(Face.F_BOT)) {
+						if (faceID == Face.TOP || faceID == Face.BOT) {
 							x += d1;
-							z += d2;
+							y += d2;
 							ux = (plane.getU() + d1) * uw;
 							uy = (plane.getV() + d2) * uh;
 							vx = (plane.getU() + d1 + 1) * uw;
 							vy = (plane.getV() + d2 + 1) * uh;
-						} else if (planeFace.equals(Face.F_RIGHT) || planeFace.equals(Face.F_LEFT)) {
+						} else if (faceID == Face.RIGHT || faceID == Face.LEFT) {
 							x += d1;
-							y += d2;
+							z += d2;
 							ux = (plane.getU() + d1) * uw;
 							uy = (plane.getV() + d2) * uh;
 							vx = (plane.getU() + d1 + 1) * uw;
@@ -131,16 +131,20 @@ public class ModelMesherCull extends ModelMesher {
 
 						// the block data
 						ModelBlockData data = datas.get(pos.set(x, y, z));
+						if (data == null) {
+							// Logger.get().log(Logger.Level.ERROR, 2, x, y, z, d1, d2);
+							continue;
+						}
 
 						// add vertices
 
 						// add indices (quad)
 						int i = vertices.size();
 
-						ModelMeshVertex v0 = this.generateVertex(editableModel, modelLayer, planeFace, ux, uy, data, 0);
-						ModelMeshVertex v1 = this.generateVertex(editableModel, modelLayer, planeFace, vx, uy, data, 1);
-						ModelMeshVertex v2 = this.generateVertex(editableModel, modelLayer, planeFace, vx, vy, data, 2);
-						ModelMeshVertex v3 = this.generateVertex(editableModel, modelLayer, planeFace, ux, vy, data, 3);
+						ModelMeshVertex v0 = this.generateVertex(editableModel, modelLayer, faceID, ux, uy, data, 0);
+						ModelMeshVertex v1 = this.generateVertex(editableModel, modelLayer, faceID, vx, uy, data, 1);
+						ModelMeshVertex v2 = this.generateVertex(editableModel, modelLayer, faceID, vx, vy, data, 2);
+						ModelMeshVertex v3 = this.generateVertex(editableModel, modelLayer, faceID, ux, vy, data, 3);
 
 						vertices.push(v0);
 						vertices.push(v1);
@@ -166,13 +170,14 @@ public class ModelMesherCull extends ModelMesher {
 						// skins
 						for (ModelSkin skin : editableModel.getSkins()) {
 							BufferedImage img = skinsData.get(skin);
-							Color color = data.getColor(skin, planeFace);
+							Color color = data.getColor(skin, faceID);
 							int r, g, b, a;
 							int c;
 							if (color != null) {
-								r = Maths.clamp((int) (color.getRed() * planeFace.getFaceFactor()), 0, 255);
-								g = Maths.clamp((int) (color.getGreen() * planeFace.getFaceFactor()), 0, 255);
-								b = Maths.clamp((int) (color.getBlue() * planeFace.getFaceFactor()), 0, 255);
+								float factor = Face.get(faceID).getFaceFactor();
+								r = Maths.clamp((int) (color.getRed() * factor), 0, 255);
+								g = Maths.clamp((int) (color.getGreen() * factor), 0, 255);
+								b = Maths.clamp((int) (color.getBlue() * factor), 0, 255);
 								a = color.getAlpha();
 								c = (a << 24) | (r << 16) | (g << 8) | (b << 0);
 							} else {
@@ -196,32 +201,37 @@ public class ModelMesherCull extends ModelMesher {
 
 		HashMap<Vector3i, ModelBlockData> blockDatas = editableModelLayer.getRawBlockDatas();
 
-		// vector3i buffer
-		Vector3i tmp = new Vector3i();
-
 		int mx = editableModelLayer.getMinx();
 		int my = editableModelLayer.getMiny();
 		int mz = editableModelLayer.getMinz();
 		int Mx = editableModelLayer.getMaxx();
 		int My = editableModelLayer.getMaxy();
 		int Mz = editableModelLayer.getMaxz();
+		int w = Mx - mx;
+		int d = My - my;
+		int h = Mz - mz;
+
+		Vector3i pos = new Vector3i();
 
 		// for each face
-		for (Face face : Face.faces) {
-			int faceID = face.getID();
-			HashMap<Vector3i, Boolean> visited = new HashMap<Vector3i, Boolean>();
+		for (int faceID = 0; faceID < Face.values().length; faceID++) {
 
-			for (int x = mx; x <= Mx; x++) {
-				for (int y = my; y <= My; y++) {
-					for (int z = mz; z <= Mz; z++) {
+			boolean visited[][][] = new boolean[w + 1][d + 1][h + 1];
+
+			for (int iz = 0; iz <= h; iz++) {
+				for (int iy = 0; iy <= d; iy++) {
+					for (int ix = 0; ix <= w; ix++) {
+						int x = ix + mx;
+						int y = iy + my;
+						int z = iz + mz;
 
 						// if already visited, continue
-						tmp.set(x, y, z);
-						if (visited.get(tmp) != null) {
+						if (visited[ix][iy][iz]) {
 							continue;
 						}
+						visited[ix][iy][iz] = true;
 
-						ModelBlockData blockData = blockDatas.get(tmp);
+						ModelBlockData blockData = blockDatas.get(pos.set(x, y, z));
 
 						if (blockData == null) {
 							continue;
@@ -229,12 +239,13 @@ public class ModelMesherCull extends ModelMesher {
 
 						// get the neighbor block, to ensure that this face is
 						// actually visible
-						int nx = x + face.getVector().x;
-						int ny = y + face.getVector().y;
-						int nz = z + face.getVector().z;
+						Vector3i n = Face.get(faceID).getVector();
+						int nx = x + n.x;
+						int ny = y + n.y;
+						int nz = z + n.z;
 
 						// if neighbor face is visible
-						ModelBlockData neighbor = blockDatas.get(tmp.set(nx, ny, nz));
+						ModelBlockData neighbor = blockDatas.get(pos.set(nx, ny, nz));
 						if (neighbor != null) {
 							continue;
 						}
@@ -245,97 +256,97 @@ public class ModelMesherCull extends ModelMesher {
 						// TOP OR BOT FACE
 						if (faceID == Face.TOP || faceID == Face.BOT) {
 							int width = 1;
-							int depth = 1;
 
 							// generate the rectangle width;
-							while (x + width <= Mx && visited.get(tmp.set(x + width, y, z)) == null
-									&& blockDatas.get(tmp.set(x + width, y, z)) != null) {
+							while (ix + width <= w && !visited[ix + width][iy][iz]
+									&& (neighbor = blockDatas.get(pos.set(x + width, y, z))) != null
+									&& blockData.fit(neighbor)) {
+								visited[ix + width][iy][iz] = true;
 								++width;
 							}
 
+							int depth = 1;
+
 							// generate the rectangle depth
-							depth_test: while (z + depth <= Mz) {
+							depth_test: while (iy + depth <= d) {
 								for (int dx = 0; dx < width; dx++) {
-									tmp.set(x + dx, y, z + depth);
-									neighbor = blockDatas.get(tmp);
-									if (visited.get(tmp) != null || neighbor == null || !blockData.fit(neighbor)) {
+									if (visited[ix + dx][iy + depth][iz]
+											|| (neighbor = blockDatas.get(pos.set(x + dx, y + depth, z))) == null
+											|| !blockData.fit(neighbor)) {
 										break depth_test;
 									}
+									visited[ix + dx][iy + depth][iz] = true;
 								}
 								++depth;
 							}
-							modelPlane = new ModelPlane(face, x, y, z, width, depth);
-							this.setVisited(visited, x, y, z, width, 1, depth);
+							modelPlane = new ModelPlane(faceID, x, y, z, width, depth);
+							x += width - 1;
 						}
 						// RIGHT OR LEFT FACE
 						else if (faceID == Face.RIGHT || faceID == Face.LEFT) {
 							int width = 1;
-							int height = 1;
 
-							// generate the rectangle width
-							while (x + width <= Mx && visited.get(tmp.set(x + width, y, z)) == null
-									&& blockDatas.get(tmp.set(x + width, y, z)) != null) {
+							// generate the rectangle width;
+							while (ix + width <= w && !visited[ix + width][iy][iz]
+									&& (neighbor = blockDatas.get(pos.set(x + width, y, z))) != null
+									&& blockData.fit(neighbor)) {
+								visited[ix + width][iy][iz] = true;
 								++width;
 							}
 
 							// generate the rectangle depth
-							height_test: while (y + height <= My) {
+							int height = 1;
+
+							height_test: while (iz + height <= h) {
 								for (int dx = 0; dx < width; dx++) {
-									tmp.set(x + dx, y + height, z);
-									neighbor = blockDatas.get(tmp);
-									if (visited.get(tmp) != null || neighbor == null || !blockData.fit(neighbor)) {
+									if (visited[ix + dx][iy][iz + height]
+											|| (neighbor = blockDatas.get(pos.set(x + dx, y, z + height))) == null
+											|| !blockData.fit(neighbor)) {
 										break height_test;
 									}
+									visited[ix + dx][iy][iz + height] = true;
 								}
 								++height;
 							}
-							modelPlane = new ModelPlane(face, x, y, z, width, height);
-							this.setVisited(visited, x, y, z, width, height, 1);
+							modelPlane = new ModelPlane(faceID, x, y, z, width, height);
+							x += width - 1;
 						}
 						// ELSE : FRONT OR BACK
 						else {
 							int depth = 1;
-							int height = 1;
 
-							// generate the rectangle width
-							while (z + depth <= Mz && visited.get(tmp.set(x, y, z + depth)) == null
-									&& blockDatas.get(tmp.set(x, y, z + depth)) != null) {
+							// generate the rectangle width;
+							while (iy + depth <= d && !visited[ix][iy + depth][iz]
+									&& (neighbor = blockDatas.get(pos.set(x, y + depth, z))) != null
+									&& blockData.fit(neighbor)) {
+								visited[ix][iy + depth][iz] = true;
 								++depth;
 							}
 
 							// generate the rectangle depth
-							height_test: while (y + height <= My) {
-								for (int dz = 0; dz < depth; dz++) {
-									tmp.set(x, y + height, z + dz);
-									neighbor = blockDatas.get(tmp);
-									if (visited.get(tmp) != null || neighbor == null || !blockData.fit(neighbor)) {
+							int height = 1;
+
+							height_test: while (iz + height <= h) {
+								for (int dy = 0; dy < depth; dy++) {
+									if (visited[ix][iy + dy][iz + height]
+											|| (neighbor = blockDatas.get(pos.set(x, y + dy, z + height))) == null
+											|| !blockData.fit(neighbor)) {
 										break height_test;
 									}
+									visited[ix][iy + dy][iz + height] = true;
 								}
 								++height;
 							}
-							modelPlane = new ModelPlane(face, x, y, z, height, depth);
-							this.setVisited(visited, x, y, z, 1, height, depth);
+							modelPlane = new ModelPlane(faceID, x, y, z, depth, height);
 						}
 						modelPlanes.add(modelPlane);
 					}
 				}
 			}
 		}
-		System.out.println(modelPlanes.size());
 	}
 
-	private void setVisited(HashMap<Vector3i, Boolean> visited, int x, int y, int z, int width, int height, int depth) {
-		for (int dx = 0; dx < width; dx++) {
-			for (int dy = 0; dy < height; dy++) {
-				for (int dz = 0; dz < depth; dz++) {
-					visited.put(new Vector3i(x + dx, y + dy, z + dz), true);
-				}
-			}
-		}
-	}
-
-	private final ModelMeshVertex generateVertex(EditableModel editableModel, EditableModelLayer modelLayer, Face face,
+	private final ModelMeshVertex generateVertex(EditableModel editableModel, EditableModelLayer modelLayer, int faceID,
 			float uvx, float uvy, ModelBlockData modelBlockData, int vertexID) {
 
 		ModelMeshVertex vertex = new ModelMeshVertex();
@@ -344,20 +355,20 @@ public class ModelMesherCull extends ModelMesher {
 		int x = modelBlockData.getX();
 		int y = modelBlockData.getY();
 		int z = modelBlockData.getZ();
-		float ao = 1.0f - getAmbiantOcclusion(modelLayer, x, y, z, BlockRenderer.getNeighboors(face.getID(), vertexID));
+		float ao = 1.0f - getAmbiantOcclusion(modelLayer, x, y, z, BlockRenderer.getNeighboors(faceID, vertexID));
 
 		float sizeUnit = modelLayer.getBlockSizeUnit();
 
-		vertex.x = (x + BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][vertexID]].x) * sizeUnit;
-		vertex.y = (y + BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][vertexID]].y) * sizeUnit;
-		vertex.z = (z + BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[face.getID()][vertexID]].z) * sizeUnit;
+		vertex.x = (x + BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][vertexID]].x) * sizeUnit;
+		vertex.y = (y + BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][vertexID]].y) * sizeUnit;
+		vertex.z = (z + BlockRenderer.VERTICES[BlockRenderer.FACES_VERTICES[faceID][vertexID]].z) * sizeUnit;
 
 		vertex.uvx = uvx;
 		vertex.uvy = uvy;
 
-		vertex.nx = face.getNormal().getX();
-		vertex.ny = face.getNormal().getY();
-		vertex.nz = face.getNormal().getZ();
+		vertex.nx = Face.get(faceID).getNormal().x;
+		vertex.ny = Face.get(faceID).getNormal().y;
+		vertex.nz = Face.get(faceID).getNormal().z;
 
 		vertex.b1 = this.getBoneID(editableModel, modelLayer, modelBlockData, 0);
 		vertex.b2 = this.getBoneID(editableModel, modelLayer, modelBlockData, 1);

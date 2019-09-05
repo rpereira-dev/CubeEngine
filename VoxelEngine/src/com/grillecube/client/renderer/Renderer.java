@@ -17,7 +17,7 @@ package com.grillecube.client.renderer;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Taskable;
-import com.grillecube.common.world.Timer;
+import com.grillecube.common.Timer;
 
 public abstract class Renderer implements Taskable {
 

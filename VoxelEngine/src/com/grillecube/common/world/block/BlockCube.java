@@ -14,7 +14,7 @@
 
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public abstract class BlockCube extends Block {
 
@@ -23,13 +23,13 @@ public abstract class BlockCube extends Block {
 	}
 
 	@Override
-	public void update(Terrain terrain, int x, int y, int z) {
+	public void update(WorldObjectTerrain terrain, int x, int y, int z) {
 	}
 
-	public void onSet(Terrain terrain, int x, int y, int z) {
+	public void onSet(WorldObjectTerrain terrain, int x, int y, int z) {
 	}
 
-	public void onUnset(Terrain terrain, int x, int y, int z) {
+	public void onUnset(WorldObjectTerrain terrain, int x, int y, int z) {
 	}
 
 	public boolean influenceAO() {

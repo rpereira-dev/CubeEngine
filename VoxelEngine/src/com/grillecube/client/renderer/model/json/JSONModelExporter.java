@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.grillecube.client.opengl.object.ImageUtils;
+import com.grillecube.client.opengl.ImageUtils;
 import com.grillecube.client.renderer.model.ModelMesh;
 import com.grillecube.client.renderer.model.ModelSkin;
 import com.grillecube.client.renderer.model.animation.Bone;
@@ -46,9 +46,9 @@ public class JSONModelExporter {
 		JSONArray jsonVertices = new JSONArray();
 		float precision = 1000.0f;
 		while (vertices.hasRemaining()) {
-			float x = Maths.approximatate(vertices.getFloat(), precision);
-			float y = Maths.approximatate(vertices.getFloat(), precision);
-			float z = Maths.approximatate(vertices.getFloat(), precision);
+			float x = Maths.approximatate(vertices.getFloat() - editableModel.getOrigin().x, precision);
+			float y = Maths.approximatate(vertices.getFloat() - editableModel.getOrigin().y, precision);
+			float z = Maths.approximatate(vertices.getFloat() - editableModel.getOrigin().z, precision);
 			float u = Maths.approximatate(vertices.getFloat(), precision);
 			float v = Maths.approximatate(vertices.getFloat(), precision);
 			float nx = Maths.approximatate(vertices.getFloat(), precision);
@@ -140,6 +140,11 @@ public class JSONModelExporter {
 		jsonInfo.put("blocks", blocksPath);
 
 		JSONObject jsonBlocks = new JSONObject();
+		JSONObject jsonBlocksOrigin = new JSONObject();
+		jsonBlocksOrigin.put("x", editableModel.getOrigin().x);
+		jsonBlocksOrigin.put("y", editableModel.getOrigin().y);
+		jsonBlocksOrigin.put("z", editableModel.getOrigin().z);
+		jsonBlocks.put("origin", jsonBlocksOrigin);
 
 		JSONArray jsonLayers = new JSONArray();
 		JSONArray jsonLayersData = new JSONArray();
@@ -170,8 +175,6 @@ public class JSONModelExporter {
 		jsonBlocks.put("layers", jsonLayers);
 		jsonBlocks.put("layersData", jsonLayersData);
 		JSONHelper.writeJSONObjectToFile(Paths.get(dirPath, blocksPath).toFile(), jsonBlocks);
-
-		jsonInfo.put("blocks", blocksPath);
 
 		// animations
 		JSONArray jsonAnimations = new JSONArray();

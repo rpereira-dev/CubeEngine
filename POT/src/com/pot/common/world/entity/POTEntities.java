@@ -13,7 +13,7 @@ public class POTEntities implements IModResource {
 	@Override
 	public void load(Mod mod, ResourceManager manager) {
 		PLANT = manager.getEntityManager().registerEntity(EntityPlant.class);
-		BIPED_TEST = manager.getEntityManager().registerEntity(EntityBipedTest.class);
+		BIPED_TEST = manager.getEntityManager().registerEntity(WorldEntityBipedTest.class);
 	}
 
 	@Override

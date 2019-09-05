@@ -9,7 +9,7 @@ import com.grillecube.client.renderer.camera.CameraProjectiveWorld;
 import com.grillecube.client.renderer.gui.GuiRenderer;
 import com.grillecube.client.renderer.gui.event.GuiEventAspectRatio;
 import com.grillecube.client.renderer.gui.event.GuiListener;
-import com.grillecube.client.renderer.world.flat.WorldFlatRenderer;
+import com.grillecube.client.renderer.world.WorldFlatRenderer;
 
 public class GuiViewWorld extends GuiView {
 

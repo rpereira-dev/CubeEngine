@@ -21,8 +21,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLVertexArray;
-import com.grillecube.client.opengl.object.GLVertexBuffer;
+import com.grillecube.client.opengl.GLVertexArray;
+import com.grillecube.client.opengl.GLVertexBuffer;
 import com.grillecube.client.renderer.MainRenderer;
 import com.grillecube.client.renderer.Renderer;
 import com.grillecube.client.renderer.camera.CameraProjective;
@@ -31,7 +31,7 @@ import com.grillecube.client.renderer.geometry.Sphere;
 import com.grillecube.common.Taskable;
 import com.grillecube.common.VoxelEngine;
 import com.grillecube.common.VoxelEngine.Callable;
-import com.grillecube.common.world.Sky;
+import com.grillecube.common.world.sky.Sky;
 
 public class SkyRenderer extends Renderer {
 

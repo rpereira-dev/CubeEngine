@@ -14,7 +14,7 @@
 
 package com.grillecube.common.world.block;
 
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public class BlockLight extends BlockCubeOpaque {
 	public BlockLight(int blockID) {
@@ -27,7 +27,7 @@ public class BlockLight extends BlockCubeOpaque {
 	}
 
 	@Override
-	public void update(Terrain terrain, int x, int y, int z) {
+	public void update(WorldObjectTerrain terrain, int x, int y, int z) {
 	}
 
 	public byte getLightValue() {
@@ -35,12 +35,12 @@ public class BlockLight extends BlockCubeOpaque {
 	}
 
 	@Override
-	public void onSet(Terrain terrain, int x, int y, int z) {
+	public void onSet(WorldObjectTerrain terrain, int x, int y, int z) {
 		terrain.addBlockLight(this.getLightValue(), x, y, z);
 	}
 
 	@Override
-	public void onUnset(Terrain terrain, int x, int y, int z) {
+	public void onUnset(WorldObjectTerrain terrain, int x, int y, int z) {
 		terrain.removeLight(x, y, z);
 	}
 }

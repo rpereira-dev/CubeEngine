@@ -1,7 +1,7 @@
 package com.grillecube.common.world.generator;
 
-import com.grillecube.common.world.Terrain;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 public abstract class WorldGenerator {
-	public abstract void generate(Terrain terrain);
+	public abstract void generate(WorldObjectTerrain terrain);
 }

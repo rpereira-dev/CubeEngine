@@ -10,20 +10,20 @@ import com.grillecube.common.Logger.Level;
 public class CLH {
 
 	/** lists of every allocated gl objects */
-	private static ArrayList<CLObject> _cl_objects;
+	private static ArrayList<CLObject> clObjects;
 
 	/** initialize OpenCL */
 	public static final void clhInit() {
 		Logger.get().log(Level.FINE, "Initializing OpenCL.");
-		_cl_objects = new ArrayList<CLObject>();
+		clObjects = new ArrayList<CLObject>();
 	}
 
 	/** stop opencl properly */
 	public static final void clhStop() {
-		for (CLObject object : _cl_objects) {
+		for (CLObject object : clObjects) {
 			object.delete();
 		}
-		_cl_objects.clear();
+		clObjects.clear();
 	}
 
 	/** check the open al error in the current context : print and returns it */

@@ -9,16 +9,16 @@ import com.grillecube.common.mod.IModResource;
 import com.grillecube.common.mod.Mod;
 import com.grillecube.common.resources.R;
 import com.grillecube.common.resources.ResourceManager;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 import com.pot.common.ModPOT;
-import com.pot.common.world.entity.EntityBipedTest;
+import com.pot.common.world.entity.WorldEntityBipedTest;
 import com.pot.common.world.entity.EntityPlant;
 
 public class POTModels implements IModResource {
 
 	@Override
 	public void load(Mod mod, ResourceManager manager) {
-		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/physicTest2/"), EntityBipedTest.class);
+		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/physicTest2/"), WorldEntityBipedTest.class);
 		registerJSONModel(manager, R.getResPath(ModPOT.MOD_ID, "models/plant/"), EntityPlant.class);
 	}
 
@@ -27,12 +27,12 @@ public class POTModels implements IModResource {
 	}
 
 	public static final int registerJSONModel(ResourceManager manager, String dirpath,
-			Class<? extends Entity> entityClass) {
+			Class<? extends WorldEntity> entityClass) {
 		return (registerModel(manager, new JSONModelInitializer(dirpath), entityClass));
 	}
 
 	public static final int registerModel(ResourceManager manager, ModelInitializer modelInitializer,
-			Class<? extends Entity> entityClass) {
+			Class<? extends WorldEntity> entityClass) {
 		Model model = new Model(modelInitializer);
 		ModelManager modelManager = ((ResourceManagerClient) manager).getModelManager();
 		int modelID = modelManager.registerModel(model);

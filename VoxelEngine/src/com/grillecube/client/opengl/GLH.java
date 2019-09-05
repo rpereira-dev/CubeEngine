@@ -24,14 +24,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
 
-import com.grillecube.client.opengl.object.GLFrameBuffer;
-import com.grillecube.client.opengl.object.GLObject;
-import com.grillecube.client.opengl.object.GLRenderBuffer;
-import com.grillecube.client.opengl.object.GLShader;
-import com.grillecube.client.opengl.object.GLTexture;
-import com.grillecube.client.opengl.object.GLVertexArray;
-import com.grillecube.client.opengl.object.GLVertexBuffer;
-import com.grillecube.client.opengl.object.ImageUtils;
 import com.grillecube.client.opengl.window.GLFWWindow;
 import com.grillecube.common.Logger;
 import com.grillecube.common.Logger.Level;
@@ -44,7 +36,7 @@ public class GLH {
 	/** if we use debug */
 	public static boolean DEBUG = false;
 
-	private static GLFWContext _context;
+	private static GLFWContext theContext;
 
 	/** called to init opengl */
 	public static void glhInit() {
@@ -67,7 +59,7 @@ public class GLH {
 		GL.setCapabilities(context.getCapabilities());
 
 		// singleton update
-		_context = context;
+		theContext = context;
 
 		// add the window to GLH objects so it is clean properly on program
 		// termination
@@ -76,7 +68,7 @@ public class GLH {
 
 	/** get the last set context */
 	public static GLFWContext glhGetContext() {
-		return (_context);
+		return (theContext);
 	}
 
 	public static GLFWWindow glhGetWindow() {
@@ -125,7 +117,7 @@ public class GLH {
 	/** clean all generated data */
 	public static void glhStop() {
 		Logger.get().log(Logger.Level.FINE, "Cleaning GLObjects...");
-		_context.destroy();
+		theContext.destroy();
 	}
 
 	/**
@@ -136,7 +128,7 @@ public class GLH {
 		if (DEBUG) {
 			Logger.get().log(Level.DEBUG, "GLH: adding", object.getClass().getSimpleName());
 		}
-		_context.addObject(object);
+		theContext.addObject(object);
 	}
 
 	/** remove the object */
@@ -149,7 +141,7 @@ public class GLH {
 		if (DEBUG) {
 			Logger.get().log(Level.DEBUG, "GLH: removing", object.getClass().getSimpleName());
 		}
-		_context.removeObject(object);
+		theContext.removeObject(object);
 		object.delete();
 	}
 
@@ -167,8 +159,8 @@ public class GLH {
 	}
 
 	/**
-	 * create opengl textures ID and fill it data with the given bufferedimage
-	 * (rgba format)
+	 * create opengl textures ID and fill it data with the given bufferedimage (rgba
+	 * format)
 	 */
 	public static GLTexture glhGenTexture(BufferedImage image) {
 		GLTexture texture = GLH.glhGenTexture();
@@ -251,20 +243,20 @@ public class GLH {
 
 	public static void glhDrawArrays(int dst, int begin, int vertex_count) {
 		GL11.glDrawArrays(dst, begin, vertex_count);
-		_context.incrementDrawCalls();
-		_context.increaseVerticesDrawn(vertex_count);
+		theContext.incrementDrawCalls();
+		theContext.increaseVerticesDrawn(vertex_count);
 	}
 
 	public static void glhDrawElements(int glTriangles, int indexCount, int indiceType, long indices) {
 		GL11.glDrawElements(glTriangles, indexCount, indiceType, indices);
-		_context.incrementDrawCalls();
-		_context.increaseVerticesDrawn(indexCount / 3);
+		theContext.incrementDrawCalls();
+		theContext.increaseVerticesDrawn(indexCount / 3);
 	}
 
 	public static void glhDrawArraysInstanced(int mode, int first, int count, int primcount) {
 		GL31.glDrawArraysInstanced(mode, first, count, primcount);
-		_context.incrementDrawCalls();
-		_context.increaseVerticesDrawn(3 * count);
+		theContext.incrementDrawCalls();
+		theContext.increaseVerticesDrawn(3 * count);
 	}
 
 	/** MAIN TESTS */
@@ -299,5 +291,11 @@ public class GLH {
 		Logger.get().log(Logger.Level.FINE, "Context set properly. Sleeping 5 seconds");
 		Thread.sleep(5000);
 		GLH.glhStop();
+	}
+
+	/** create a new GLFW image */
+	public static GLIcon glhCreateIcon(String imagePath) {
+		GLIcon glIcon = new GLIcon(imagePath);
+		return (glIcon);
 	}
 }

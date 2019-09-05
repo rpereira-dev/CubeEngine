@@ -20,8 +20,8 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 
 import com.grillecube.client.opengl.GLH;
-import com.grillecube.client.opengl.object.GLProgram;
-import com.grillecube.client.opengl.object.GLTexture;
+import com.grillecube.client.opengl.GLProgram;
+import com.grillecube.client.opengl.GLTexture;
 import com.grillecube.common.maths.Matrix4f;
 import com.grillecube.common.resources.R;
 

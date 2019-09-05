@@ -1,12 +1,12 @@
 package com.grillecube.common.world.block.instances;
 
-import com.grillecube.common.world.Terrain;
 import com.grillecube.common.world.block.Block;
+import com.grillecube.common.world.terrain.WorldObjectTerrain;
 
 /** a class which represent an unique block instance in the world */
 public abstract class BlockInstance {
 
-	private final Terrain terrain;
+	private final WorldObjectTerrain terrain;
 	private final Block block;
 	private final int index;
 
@@ -14,7 +14,7 @@ public abstract class BlockInstance {
 	 * this constructor should be call with given argument inside function:
 	 * Block.createBlockInstance(terrain, x, y, z)
 	 */
-	public BlockInstance(Terrain terrain, Block block, int index) {
+	public BlockInstance(WorldObjectTerrain terrain, Block block, int index) {
 		this.terrain = terrain;
 		this.block = block;
 		this.index = index;
@@ -30,7 +30,7 @@ public abstract class BlockInstance {
 	public abstract void onUnset();
 
 	/** get the terrain where this block instance is */
-	public Terrain getTerrain() {
+	public WorldObjectTerrain getTerrain() {
 		return (this.terrain);
 	}
 

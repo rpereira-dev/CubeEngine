@@ -14,7 +14,7 @@ public class AnimationInstance {
 	private long time;
 
 	/** state of the animation (loop, freeze...) */
-	private static final int STATE_NONE = 0;
+	private static final int STATE_RUNNING = 0;
 	private static final int STATE_LOOP = 1;
 	private static final int STATE_FREEZE = 2;
 	private static final int STATE_STOP = 3;
@@ -22,13 +22,16 @@ public class AnimationInstance {
 
 	public AnimationInstance(ModelSkeletonAnimation animation) {
 		this.animation = animation;
+		this.restart();
+	}
+
+	public final void restart() {
+		this.state = STATE_RUNNING;
 		this.time = 0;
-		this.state = STATE_NONE;
 	}
 
 	/** upate the animation instance, return true if the animation is ended */
 	public void update(long dt) {
-
 		if (this.state == STATE_STOP || this.state == STATE_FREEZE) {
 			return;
 		}
@@ -53,7 +56,7 @@ public class AnimationInstance {
 
 	/** end the animation loop by ending the current loop */
 	public void stopLoop() {
-		this.state = STATE_NONE;
+		this.state = STATE_RUNNING;
 	}
 
 	public boolean isStopped() {
@@ -70,7 +73,7 @@ public class AnimationInstance {
 		KeyFrame next = frames.get(0);
 		for (int i = 1; i < frames.size(); i++) {
 			next = frames.get(i);
-			if (next.getTime() > this.time) {
+			if (next.getTime() >= this.time) {
 				break;
 			}
 			prev = next;
@@ -88,7 +91,9 @@ public class AnimationInstance {
 		this.time = t;
 		if (this.time >= duration) {
 			if (this.state == STATE_LOOP) {
-				this.time %= duration;
+				if (this.time > duration) {
+					this.time %= duration;
+				}
 			} else {
 				this.state = STATE_STOP;
 			}

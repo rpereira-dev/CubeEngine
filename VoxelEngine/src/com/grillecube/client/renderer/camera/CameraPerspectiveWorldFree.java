@@ -20,35 +20,32 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 	@Override
 	public void update() {
 		super.update();
-		this.setSpeed(0.5f);
 		this.updateMove();
 	}
 
 	protected void updateMove() {
-		Vector3f vel = this.getPositionVelocity();
+		Vector3f vel = new Vector3f(0, 0, 0);
+		Vector3f vv = this.getViewVector();
+		
 		if (this.hasState(STATE_MOVE_FORWARD)) {
-			vel.setX(this.getViewVector().x);
-			vel.setY(this.getViewVector().y);
-			vel.setZ(this.getViewVector().z);
+			vel.x = vv.x;
+			vel.y = vv.y;
+			vel.z = vv.z;
 		} else if (this.hasState(STATE_MOVE_BACKWARD)) {
-			vel.setX(-this.getViewVector().x);
-			vel.setY(-this.getViewVector().y);
-			vel.setZ(-this.getViewVector().z);
+			vel.x = -vv.x;
+			vel.y = -vv.y;
+			vel.z = -vv.z;
 		} else if (this.hasState(STATE_MOVE_RIGHT)) {
-			vel.setX(-this.getViewVector().z);
-			vel.setY(0);
-			vel.setZ(this.getViewVector().x);
+			vel.x =  vv.y;
+			vel.y = -vv.x;
+			vel.z = 0;
 		} else if (this.hasState(STATE_MOVE_LEFT)) {
-			vel.setX(this.getViewVector().z);
-			vel.setY(0);
-			vel.setZ(-this.getViewVector().x);
-		} else {
-			vel.setX(0);
-			vel.setY(0);
-			vel.setZ(0);
+			vel.x = -vv.y;
+			vel.y =  vv.x;
+			vel.z = 0;
 		}
 
-		this.move(vel.scale(2.0F));
+		this.move(vel, 2.0f);
 	}
 
 	@Override
@@ -114,9 +111,8 @@ public class CameraPerspectiveWorldFree extends CameraPerspectiveWorld {
 
 	@Override
 	public void invokeCursorPos(GLFWWindow window, double xpos, double ypos) {
-		this.increaseYaw((float) ((xpos - _prevx) * 0.3f));
-		this.increasePitch((float) ((ypos - _prevy) * 0.3f));
-
+		this.increaseRotZ((float) ((xpos - _prevx) * 0.003f));
+		this.increaseRotX((float) ((ypos - _prevy) * 0.003f));
 		_prevx = xpos;
 		_prevy = ypos;
 	}

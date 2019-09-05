@@ -1,20 +1,18 @@
 package com.grillecube.common.event.world.entity;
 
 import com.grillecube.common.event.Event;
-import com.grillecube.common.world.entity.Entity;
+import com.grillecube.common.world.entity.WorldEntity;
 
-public abstract class EventEntity extends Event
-{
-	private Entity _entity;
-	
-	public EventEntity(Entity entity)
-	{
-		this._entity = entity;
+public abstract class EventEntity extends Event {
+	private final WorldEntity entity;
+
+	public EventEntity(WorldEntity entity) {
+		super();
+		this.entity = entity;
 	}
-	
-	public Entity getEntity()
-	{
-		return (this._entity);
+
+	public final WorldEntity getEntity() {
+		return (this.entity);
 	}
 
 }
