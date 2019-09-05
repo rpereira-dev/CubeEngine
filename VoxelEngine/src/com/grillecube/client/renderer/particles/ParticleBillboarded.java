@@ -17,10 +17,12 @@ package com.grillecube.client.renderer.particles;
 public class ParticleBillboarded extends Particle {
 
 	/** sprite to use */
-	private TextureSprite _sprite;
+	private TextureSprite sprite;
 
 	/** true if the particle is blowing (additive blending) */
 	private boolean glows;
+
+	private float ax, ay, az;
 
 	/**
 	 * constructor of a billboarded particles:
@@ -35,7 +37,7 @@ public class ParticleBillboarded extends Particle {
 	public ParticleBillboarded(int health, TextureSprite sprite, boolean glows) {
 		super(health);
 		this.glows = glows;
-		this._sprite = sprite;
+		this.sprite = sprite;
 	}
 
 	public ParticleBillboarded(int health, TextureSprite sprite) {
@@ -47,10 +49,11 @@ public class ParticleBillboarded extends Particle {
 	}
 
 	public final TextureSprite getSprite() {
-		return (this._sprite);
+		return (this.sprite);
 	}
 
 	public final boolean isGlowing() {
 		return (this.glows);
 	}
+
 }

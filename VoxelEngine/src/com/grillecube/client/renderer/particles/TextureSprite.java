@@ -18,43 +18,40 @@ import com.grillecube.client.opengl.GLH;
 import com.grillecube.client.opengl.object.GLTexture;
 
 /** there should be only one instance per texture of this object */
-public class TextureSprite
-{
-	private GLTexture _texture;
+public class TextureSprite {
+	private GLTexture texture;
 
-	private int _cols;
-	private int _lines;
-	private int _maxID;
-	
-	/** particle constructor which generate a gl texture name, so it should be call in a gl context!*/
-	public TextureSprite(String filepath, int cols, int lines)
-	{
-		this._texture = GLH.glhGenTexture(filepath);
-		this._cols = cols;
-		this._lines = lines;
-		this._maxID = cols * lines;
+	private int cols;
+	private int lines;
+	private int maxID;
+
+	/**
+	 * particle constructor which generate a gl texture name, so it should be
+	 * call in a gl context!
+	 */
+	public TextureSprite(String filepath, int cols, int lines) {
+		this.texture = GLH.glhGenTexture(filepath);
+		this.cols = cols;
+		this.lines = lines;
+		this.maxID = cols * lines;
 	}
-	
+
 	/** return the number of cols for this sprite */
-	public int getCols()
-	{
-		return (this._cols);
-	}
-	
-	/** return number of lines for this sprite */
-	public int getLines()
-	{
-		return (this._lines);
-	}
-	
-	/** return opengl texture id */
-	public GLTexture getTexture()
-	{
-		return (this._texture);
+	public int getCols() {
+		return (this.cols);
 	}
 
-	public int getMaxID()
-	{
-		return (this._maxID);
+	/** return number of lines for this sprite */
+	public int getLines() {
+		return (this.lines);
+	}
+
+	/** return opengl texture id */
+	public GLTexture getTexture() {
+		return (this.texture);
+	}
+
+	public int getMaxID() {
+		return (this.maxID);
 	}
 }

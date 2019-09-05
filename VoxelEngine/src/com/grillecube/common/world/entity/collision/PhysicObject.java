@@ -129,7 +129,7 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 	 * @param vz
 	 * @param dt
 	 */
-	public static final void move(World world, PhysicObject physicObject, double dt) {
+	public static final boolean move(World world, PhysicObject physicObject, double dt) {
 		// swept
 		float x = physicObject.getPositionX();
 		float y = physicObject.getPositionY();
@@ -171,10 +171,12 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 			maxz = z + sz;
 		}
 
-//		Logger.get().log(Level.DEBUG, minx, miny, minz, maxx, maxy, maxz);
+		boolean deflected = false;
+		// Logger.get().log(Level.DEBUG, minx, miny, minz, maxx, maxy, maxz);
 		int i = 0;
 		while (dt > Maths.ESPILON) {
-			ArrayList<PhysicObject> objects = world.getCollidingPhysicObjects(physicObject, minx, miny, minz, maxx, maxy, maxz);
+			ArrayList<PhysicObject> objects = world.getCollidingPhysicObjects(physicObject, minx, miny, minz, maxx,
+					maxy, maxz);
 			CollisionResponse collisionResponse = Collision.collisionResponseAABBSwept(physicObject, objects);
 			// if no collision, move
 			if (collisionResponse == null || collisionResponse.dt > dt) {
@@ -190,6 +192,7 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 
 			// stick right before collision, and continue collisions
 			Collision.deflects(physicObject, collisionResponse, 0.15f);
+			deflected = true;
 
 			if (++i >= 5) {
 				Logger.get().log(Logger.Level.WARNING,
@@ -197,5 +200,6 @@ public abstract class PhysicObject implements Positioneable, Rotationable, Sizea
 				break;
 			}
 		}
+		return (deflected);
 	}
 }

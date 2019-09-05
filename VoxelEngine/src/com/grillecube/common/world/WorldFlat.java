@@ -37,6 +37,7 @@ public abstract class WorldFlat extends World {
 	@Override
 	protected void onTasksGet(VoxelEngine engine, ArrayList<VoxelEngine.Callable<Taskable>> tasks) {
 		this.sky.getTasks(engine, tasks);
+		this.sky.setCycleRatio(0.4f);
 	}
 
 	/** return world weather */

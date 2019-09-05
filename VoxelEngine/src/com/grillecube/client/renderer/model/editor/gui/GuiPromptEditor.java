@@ -31,6 +31,9 @@ public class GuiPromptEditor extends Gui {
 		this.prompt.addTextParameter(new GuiTextParameterTextFillBox(0.75f));
 		this.prompt.addTextParameter(new GuiTextParameterTextCenterBox());
 		this.addChild(this.prompt);
+
+		this.prompt.addListener(Gui.ON_HOVERED_FOCUS_LISTENER);
+
 	}
 
 	public final GuiPrompt getPrompt() {

@@ -32,31 +32,39 @@ public class SoundManager extends GenericManager<String> {
 
 	/** sources pool */
 	private ALSourcePool soundPool;
+	
+	private boolean initialized;
 
 	public SoundManager(ResourceManager manager) {
 		super(manager);
 		_instance = this;
+		this.initialized = false;
 	}
 
 	@Override
 	public void onInitialized() {
-		ALH.alhInit();
+		this.initialized = ALH.alhInit();
+		if (this.initialized) {
+			this.soundPool = ALH.alhGenSourcePool(32);
+		}
 	}
 
 	@Override
 	public void onDeinitialized() {
+		if (!this.initialized) {
+			return ;
+		}
+		this.soundPool.stopAll();
+		this.soundPool.destroy();
 		ALH.alhStop();
 	}
 
 	@Override
 	public void onLoaded() {
-		this.soundPool = ALH.alhGenSourcePool(32);
 	}
 
 	@Override
 	public void onUnloaded() {
-		this.soundPool.stopAll();
-		this.soundPool.destroy();
 	}
 
 	/**
@@ -75,20 +83,32 @@ public class SoundManager extends GenericManager<String> {
 	 * are
 	 */
 	public void playSound(ALSound sound) {
+		if (!this.initialized) {
+			return ;
+		}
 		this.soundPool.play(sound);
 	}
 
 	/** play a sound relative to the listener */
 	public void playSoundAt(ALSound sound, Vector3f pos) {
+		if (!this.initialized) {
+			return ;
+		}
 		this.soundPool.playAt(sound, pos);
 	}
 
 	/** play a sound relative to the listener */
 	public void playSoundAt(ALSound sound, Vector3f pos, Vector3f velocity) {
+		if (!this.initialized) {
+			return ;
+		}
 		this.soundPool.playAt(sound, pos, velocity);
 	}
 
 	public void update(CameraView camera) {
+		if (!this.initialized) {
+			return ;
+		}
 		ALH.alhGetListener().setPosition(camera.getPosition());
 		ALH.alhGetListener().setOrientation(camera.getViewVector());
 	}

@@ -1,7 +1,9 @@
 package com.grillecube.client.renderer.particles;
 
+import com.grillecube.client.VoxelEngineClient;
 import com.grillecube.common.maths.Vector3f;
 import com.grillecube.common.maths.Vector4f;
+import com.grillecube.common.world.World;
 import com.grillecube.common.world.entity.collision.PhysicObject;
 import com.grillecube.common.world.entity.collision.Positioneable;
 import com.grillecube.common.world.entity.collision.Rotationable;
@@ -94,16 +96,22 @@ public class Particle extends PhysicObject {
 		Positioneable.velocity(this, dt);
 		Rotationable.rotate(this, dt);
 		Sizeable.resize(this, dt);
-		Positioneable.position(this, dt);
 
-		// World world = VoxelEngineClient.instance().getWorld(0);
-		// if (world == null) {
-		// Positioneable.position(this, dt);
-		// } else {
-		// PhysicObject.move(world, this, dt);
-		// }
-		this.health--;
+		--this.health;
 		this.healthRatio = this.health / (float) this.maxhealth;
+
+//		Positioneable.position(this, dt);
+
+		World world = VoxelEngineClient.instance().getWorld(0);
+		if (world == null) {
+			Positioneable.position(this, dt);
+		} else {
+			if (PhysicObject.move(world, this, dt)) {
+				if (this.health > 60) {
+					this.health = 60;
+				}
+			}
+		}
 
 		this.onUpdate(dt);
 	}

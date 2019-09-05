@@ -40,13 +40,17 @@ public class ALH {
 	private static HashMap<String, ALSound> _sounds;
 
 	/** initialize openal */
-	public static void alhInit() {
+	public static boolean alhInit() {
 		Logger.get().log(Level.FINE, "Initializing OpenAL.");
 
 		_objects = new ArrayList<ALObject>();
 		_sounds = new HashMap<String, ALSound>(128);
-		_context = ALContext.create().makeCurrent();
-
+		_context = ALContext.create();
+		if (_context == null) {
+			return false;
+		}
+		_context.makeCurrent();
+		
 		String version = ALH.alhGetString(AL10.AL_VERSION);
 		String vendor = ALH.alhGetString(AL10.AL_VENDOR);
 		String renderer = ALH.alhGetString(AL10.AL_RENDERER);
@@ -54,6 +58,7 @@ public class ALH {
 		Logger.get().log(Level.FINE, "OpenAL Vendor: " + vendor);
 		Logger.get().log(Level.FINE, "OpenAL Renderer: " + renderer);
 		ALH.alhCheckError("Initialization");
+		return true;
 	}
 
 	public static ALListener alhGetListener() {

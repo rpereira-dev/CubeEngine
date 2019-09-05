@@ -59,6 +59,10 @@ class PostRenderCallback extends EventListener<EventPreWorldRender> {
 	@Override
 	public void invoke(EventPreWorldRender event) {
 
+		if (true) {
+			return;
+		}
+
 		ParticleRendererFactory renderer = event.getWorldRenderer().getParticleRendererFactory();
 
 		Random rng = event.getRenderer().getRNG();
@@ -67,12 +71,15 @@ class PostRenderCallback extends EventListener<EventPreWorldRender> {
 			pos.set(event.getWorldRenderer().getCamera().getPosition());
 		}
 
-		ParticleBillboarded p = new ParticleBillboarded(200, POTParticles.SPRITE_MAGIC, false);
+		ParticleBillboarded p = new ParticleBillboarded(400, POTParticles.SPRITE_MAGIC, true);
 		p.setPositionVel(rng.nextInt(2) == 0 ? -rng.nextFloat() * 4 : rng.nextFloat() * 4,
 				rng.nextInt(2) == 0 ? -rng.nextFloat() * 4 : rng.nextFloat() * 4,
 				rng.nextInt(2) == 0 ? -rng.nextFloat() * 4 : rng.nextFloat() * 4);
-		p.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		// p.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		p.setColor(rng.nextFloat(), rng.nextFloat(), rng.nextFloat(), 1.0f);
+		// p.setColor(0.8f, 0.5f, 0.2f, 1.0f);
 		p.setPosition(pos.x, pos.y, pos.z);
+
 		renderer.spawnParticle(p);
 	}
 

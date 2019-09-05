@@ -25,17 +25,17 @@ import com.grillecube.client.renderer.camera.CameraProjective;
 import com.grillecube.common.resources.R;
 
 public class ProgramParticleBillboarded extends GLProgram {
-	protected int _color;
-	protected int _maxhealth;
-	protected int _health;
-	protected int _mvp_matrix;
+	protected int color;
+	protected int maxhealth;
+	protected int health;
+	protected int mvp_matrix;
 
-	private int _cols;
-	private int _lines;
+	private int cols;
+	private int lines;
 
-	private int _position;
-	private int _scale;
-	private int _camera_pos;
+	private int position;
+	private int scale;
+	private int camerapos;
 
 	public ProgramParticleBillboarded() {
 		super();
@@ -51,18 +51,18 @@ public class ProgramParticleBillboarded extends GLProgram {
 
 	@Override
 	public void linkUniforms() {
-		this._cols = super.getUniform("cols");
-		this._lines = super.getUniform("lines");
+		this.cols = super.getUniform("cols");
+		this.lines = super.getUniform("lines");
 
-		this._maxhealth = super.getUniform("maxhealth");
-		this._health = super.getUniform("health");
-		this._color = super.getUniform("color");
+		this.maxhealth = super.getUniform("maxhealth");
+		this.health = super.getUniform("health");
+		this.color = super.getUniform("color");
 
-		this._position = super.getUniform("position");
-		this._scale = super.getUniform("scale");
+		this.position = super.getUniform("position");
+		this.scale = super.getUniform("scale");
 
-		this._mvp_matrix = super.getUniform("mvp_matrix");
-		this._camera_pos = super.getUniform("camera_pos");
+		this.mvp_matrix = super.getUniform("mvp_matrix");
+		this.camerapos = super.getUniform("camera_pos");
 	}
 
 	/** load particle instance uniforms */
@@ -73,18 +73,18 @@ public class ProgramParticleBillboarded extends GLProgram {
 		} else {
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		}
-		super.loadUniformInteger(this._lines, particle.getSprite().getLines());
-		super.loadUniformInteger(this._cols, particle.getSprite().getCols());
-		super.loadUniformInteger(this._maxhealth, particle.getMaxHealth());
-		super.loadUniformInteger(this._health, particle.getHealth());
+		super.loadUniformInteger(this.lines, particle.getSprite().getLines());
+		super.loadUniformInteger(this.cols, particle.getSprite().getCols());
+		super.loadUniformInteger(this.maxhealth, particle.getMaxHealth());
+		super.loadUniformInteger(this.health, particle.getHealth());
 
-		super.loadUniformVec(this._color, particle.getColor());
-		super.loadUniformVec(this._position, particle.getPosition());
-		super.loadUniformVec(this._scale, particle.getSize());
+		super.loadUniformVec(this.color, particle.getColor());
+		super.loadUniformVec(this.position, particle.getPosition());
+		super.loadUniformVec(this.scale, particle.getSize());
 	}
 
 	public void loadGlobalUniforms(CameraProjective camera) {
-		super.loadUniformVec(this._camera_pos, camera.getPosition());
-		super.loadUniformMatrix(this._mvp_matrix, camera.getMVPMatrix());
+		super.loadUniformVec(this.camerapos, camera.getPosition());
+		super.loadUniformMatrix(this.mvp_matrix, camera.getMVPMatrix());
 	}
 }

@@ -32,7 +32,7 @@ public class ALContext extends ALObject {
 		// AL.createCapabilities(context._device.getID());
 
 		context._device = ALH.alhGetDefaultDevice();
-		if (context._device == null) {
+		if (context._device == null || context._device.getID() == 0) {
 			return (null);
 		}
 		context._id = ALC10.alcCreateContext(context._device.getID(), (IntBuffer) null);
