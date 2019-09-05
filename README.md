@@ -5,6 +5,8 @@
 A Game engine for Voxel games, using OpenGL, GLFW, OpenAL, Netty
 
 **ABANDONNED**
+**WORKING ON A SIMILAR CLOSED-SOURCE PROJECT**
+**DEVELOPED IN C++, USING RAYTRACING**
 
 -----------------------------------------------------------------------
 
